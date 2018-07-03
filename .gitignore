@@ -1,0 +1,32 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+bin/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.log
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+nbproject/private/
+build/
+nbbuild/
+dist/f
+nbdist/
+.nb-gradle/
+WebContent/META-INF/MANIFEST.MF
+sh.exe.stackdump
+
+### sonar ###
+.scannerwork/
+sonar-project.properties
