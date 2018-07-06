@@ -8,7 +8,7 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktech.godmusic.personal;
+package com.sktechx.godmusic.personal;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
