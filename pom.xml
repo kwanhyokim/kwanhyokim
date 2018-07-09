@@ -38,6 +38,7 @@
         <mybatis-starter.version>1.3.2</mybatis-starter.version>
         <swagger2.version>2.9.2</swagger2.version>
         <godmusic-module.version>0.0.1-SNAPSHOT</godmusic-module.version>
+        <maven-model.version>3.5.2</maven-model.version>
     </properties>
 
     <dependencies>
@@ -77,6 +78,11 @@
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
             <version>${swagger2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-model</artifactId>
+            <version>${maven-model.version}</version>
         </dependency>
 
         <dependency>

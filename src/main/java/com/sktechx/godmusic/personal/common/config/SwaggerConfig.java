@@ -2,6 +2,9 @@ package com.sktechx.godmusic.personal.common.config;
 
 import com.sktechx.godmusic.personal.common.interceptor.TransactionIdInterceptor;
 import com.sktechx.godmusic.personal.common.interceptor.UserInfoInterceptor;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -17,6 +20,8 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,7 +39,7 @@ import java.util.List;
 public class SwaggerConfig {
 
     @Bean
-    public Docket api() {
+    public Docket api() throws IOException, XmlPullParserException {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.sktechx.godmusic.personal.rest.controller"))
@@ -45,12 +50,15 @@ public class SwaggerConfig {
                 ;
     }
 
-    private ApiInfo apiInfo() {
+    private ApiInfo apiInfo() throws IOException, XmlPullParserException {
+        MavenXpp3Reader reader = new MavenXpp3Reader();
+        Model model = reader.read(new FileInputStream("pom.xml"));
+
         return new ApiInfoBuilder()
-                .title("Personal API")
-                .description("Personal API 제공")
-                .version("V1")
-                .contact(new Contact("안영현", "", "younghyun.ahn@sk.com"))
+                .title("Personal Api Documentation")
+                .description("Documentation automatically generated")
+                .version(model.getVersion())
+                .contact(new Contact("안영현", "http://172.21.112.100/swagger-ui.html", "younghyun.ahn@sk.com"))
                 .build();
     }
 
