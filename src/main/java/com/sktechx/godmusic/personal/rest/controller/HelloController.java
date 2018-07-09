@@ -23,4 +23,11 @@ public class HelloController {
         return "hello personal ~ " + name + ", " + messageType + ":" + message;
     }
 
+    @ApiOperation(value = "메세지 테스트", httpMethod = "GET", notes = "메세지 테스트 입니다.")
+    @RequestMapping(value = "/hello", method = RequestMethod.GET)
+    public String hello() {
+
+        return "hello personal ~";
+    }
+
 }
