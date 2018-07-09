@@ -57,7 +57,8 @@ public class SwaggerConfig {
         return new ApiInfoBuilder()
                 .title("Personal Api Documentation")
                 .description("Documentation automatically generated")
-                .version(model.getVersion())
+//                .version(model.getVersion())
+                .version("V1")
                 .contact(new Contact("안영현", "http://172.21.112.100/swagger-ui.html", "younghyun.ahn@sk.com"))
                 .build();
     }
