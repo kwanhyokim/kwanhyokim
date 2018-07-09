@@ -2,8 +2,8 @@ package com.sktechx.godmusic.personal.common.config;
 
 import com.sktechx.godmusic.personal.common.interceptor.TransactionIdInterceptor;
 import com.sktechx.godmusic.personal.common.interceptor.UserInfoInterceptor;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+//import org.apache.maven.model.Model;
+//import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,8 +51,8 @@ public class SwaggerConfig {
     }
 
     private ApiInfo apiInfo() throws IOException, XmlPullParserException {
-        MavenXpp3Reader reader = new MavenXpp3Reader();
-        Model model = reader.read(new FileInputStream("pom.xml"));
+//        MavenXpp3Reader reader = new MavenXpp3Reader();
+//        Model model = reader.read(new FileInputStream("pom.xml"));
 
         return new ApiInfoBuilder()
                 .title("Personal Api Documentation")
