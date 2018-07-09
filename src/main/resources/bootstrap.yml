@@ -16,6 +16,9 @@ management :
   context-path : /acturator
   endpoints.web.exposure.include : refresh
 
+eureka:
+  instance:
+    prefer-ip-address: true
 
 ---
 spring :
