@@ -14,6 +14,8 @@ import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -26,10 +28,13 @@ import java.util.List;
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 09.
  */
+
 public abstract class TrackPanel extends Panel {
     @Getter
+    @ApiModelProperty(required = true, example = "", value = "트랙 리스트")
     protected List<TrackDto> trackList;
     @Getter
+    @ApiModelProperty(required = true, example = "중독성 있는 랩/힙합", value = "트랙 전체 개수")
     protected Integer trackCount;
 
     public TrackPanel(RecommendPanelType panelType , String title, String subTitle, List<ImageDto> imgList , List<TrackDto> trackList) throws Exception{

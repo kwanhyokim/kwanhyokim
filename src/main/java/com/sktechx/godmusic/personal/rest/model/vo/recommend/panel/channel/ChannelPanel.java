@@ -14,6 +14,8 @@ import com.sktechx.godmusic.personal.rest.model.dto.ChannelDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import org.springframework.util.StringUtils;
 
@@ -25,10 +27,10 @@ import java.util.List;
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 09.
  */
-
 public class ChannelPanel extends Panel {
 
     @Getter
+    @ApiModelProperty(required = true, value = "채널 정보")
     private ChannelDto channel;
 
     public ChannelPanel(RecommendPanelType panelType, List<ImageDto> imgList ,ChannelDto channel) throws Exception {

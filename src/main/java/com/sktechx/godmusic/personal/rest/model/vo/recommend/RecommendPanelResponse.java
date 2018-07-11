@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.model.vo.recommend;
 
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.List;
@@ -23,5 +24,5 @@ import java.util.List;
  */
 @Data
 public class RecommendPanelResponse {
-    private List<Panel> panelList;
+    List<Panel> panelList;
 }

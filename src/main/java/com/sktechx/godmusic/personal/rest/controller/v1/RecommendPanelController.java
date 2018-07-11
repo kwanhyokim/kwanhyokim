@@ -8,33 +8,33 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.controller;
+package com.sktechx.godmusic.personal.rest.controller.v1;
 
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
 import com.sktechx.godmusic.personal.rest.service.MockRecommendPanelService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 설명 : 추천 패널 컨트롤러
+ * 설명 : 추천 컨트롤러
  *
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 09.
  */
 @RestController
-@RequestMapping("/v1/recommend")
+@RequestMapping("/v1/recommends")
 public class RecommendPanelController {
 
 
     @Autowired
     private MockRecommendPanelService mockRecommendPanelService;
 
-    @ApiOperation(value = "추천 패널 조회", httpMethod = "GET", notes = "추천 패널 조회 MockUp API")
-    @RequestMapping(value = "/panelList", method = RequestMethod.GET)
-    public RecommendPanelResponse recommendPanels(){
+    @ApiOperation(value = "추천 홈 패널 조회", httpMethod = "GET", notes = "추천 패널 조회 MockUp API" , response = RecommendPanelResponse.class)
+    @GetMapping(value = "/home/panels")
+    public RecommendPanelResponse recommendHomePanels(){
         RecommendPanelResponse mockResponse = new RecommendPanelResponse();
         mockResponse.setPanelList(mockRecommendPanelService.createMockUpRecommendPanelList());
         return mockResponse;
