@@ -4,7 +4,6 @@ import com.sktechx.godmusic.personal.common.interceptor.TransactionIdInterceptor
 import com.sktechx.godmusic.personal.common.interceptor.UserInfoInterceptor;
 //import org.apache.maven.model.Model;
 //import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -39,7 +38,7 @@ import java.util.List;
 public class SwaggerConfig {
 
     @Bean
-    public Docket api() throws IOException, XmlPullParserException {
+    public Docket api() throws IOException {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.sktechx.godmusic.personal.rest.controller"))
@@ -50,7 +49,7 @@ public class SwaggerConfig {
                 ;
     }
 
-    private ApiInfo apiInfo() throws IOException, XmlPullParserException {
+    private ApiInfo apiInfo() throws IOException{
 //        MavenXpp3Reader reader = new MavenXpp3Reader();
 //        Model model = reader.read(new FileInputStream("pom.xml"));
 
