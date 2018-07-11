@@ -14,6 +14,8 @@ import com.sktechx.godmusic.personal.rest.model.dto.ChannelDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import org.springframework.util.StringUtils;
 
@@ -28,6 +30,7 @@ import java.util.List;
 public class ChartPanel extends Panel {
 
     @Getter
+    @ApiModelProperty(required = true, example = "", value = "차트 정보")
     private ChannelDto channel;
 
     public ChartPanel(RecommendPanelType panelType , List<ImageDto> imgList, ChannelDto channel) throws Exception{

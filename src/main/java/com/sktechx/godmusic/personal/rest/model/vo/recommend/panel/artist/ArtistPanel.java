@@ -14,6 +14,8 @@ import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import org.springframework.util.CollectionUtils;
 
@@ -28,7 +30,8 @@ import java.util.List;
 public class ArtistPanel extends Panel {
 
     @Getter
-    private List<ArtistDto> artistList;
+    @ApiModelProperty(required = true, example = "", value = "아티스트 리스트")
+    List<ArtistDto> artistList;
 
     public ArtistPanel(RecommendPanelType panelType, List<ArtistDto> artistList)  throws Exception{
         super(panelType , "Musician focus" , neverNullList(artistList).getArtistNm(),neverNullList(artistList).getImgList());
