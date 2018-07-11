@@ -32,9 +32,9 @@ public class RecommendPanelController {
     @Autowired
     private MockRecommendPanelService mockRecommendPanelService;
 
-    @ApiOperation(value = "추천 패널 조회", httpMethod = "GET", notes = "추천 패널 조회 MockUp API" , response = RecommendPanelResponse.class)
-    @GetMapping(value = "/panelList")
-    public RecommendPanelResponse recommendPanels(){
+    @ApiOperation(value = "추천 홈 패널 조회", httpMethod = "GET", notes = "추천 패널 조회 MockUp API" , response = RecommendPanelResponse.class)
+    @GetMapping(value = "/home/panels")
+    public RecommendPanelResponse recommendHomePanels(){
         RecommendPanelResponse mockResponse = new RecommendPanelResponse();
         mockResponse.setPanelList(mockRecommendPanelService.createMockUpRecommendPanelList());
         return mockResponse;
