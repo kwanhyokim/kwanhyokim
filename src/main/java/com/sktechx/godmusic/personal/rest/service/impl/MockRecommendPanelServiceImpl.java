@@ -157,6 +157,7 @@ public class MockRecommendPanelServiceImpl implements MockRecommendPanelService 
         track.setTrackId(30695454L);
         track.setTrackNm("마지막처럼");
         track.setCreateDtime(new Date());
+        track.setTrackSn(1);
         track.setTrackBfSn(6);
         track.setUpdateDtime(new Date());
         track.setArtist(makeArtist());
@@ -168,6 +169,7 @@ public class MockRecommendPanelServiceImpl implements MockRecommendPanelService 
         track.setTrackId(30695455L);
         track.setTrackNm("마지막처럼2");
         track.setCreateDtime(new Date());
+        track.setTrackSn(2);
         track.setTrackBfSn(0);
         track.setUpdateDtime(new Date());
         track.setArtist(makeArtist());
@@ -178,6 +180,7 @@ public class MockRecommendPanelServiceImpl implements MockRecommendPanelService 
         track.setTrackId(30695456L);
         track.setTrackNm("마지막처럼3");
         track.setCreateDtime(new Date());
+        track.setTrackSn(3);
         track.setTrackBfSn(1);
         track.setUpdateDtime(new Date());
         track.setArtist(makeArtist());
@@ -188,6 +191,7 @@ public class MockRecommendPanelServiceImpl implements MockRecommendPanelService 
         track.setTrackId(30695457L);
         track.setTrackNm("마지막처럼4");
         track.setCreateDtime(new Date());
+        track.setTrackSn(4);
         track.setTrackBfSn(0);
         track.setUpdateDtime(new Date());
         track.setArtist(makeArtist());
