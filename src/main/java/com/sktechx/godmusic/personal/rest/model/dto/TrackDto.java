@@ -11,10 +11,12 @@
 package com.sktechx.godmusic.personal.rest.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 설명 : 트랙 DTO
@@ -23,11 +25,15 @@ import java.util.Date;
  * @date 2018. 07. 09.
  */
 @Data
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class TrackDto {
-    @JsonProperty("trackId")
+    @JsonProperty("id")
     private Long trackId;
-    @JsonProperty("trackName")
+    @JsonProperty("name")
     private String trackNm;
+
+    @JsonProperty("priority")
+    private Integer trackSn;
 
     @JsonProperty("beforePriority")
     private Integer trackBfSn;
@@ -40,6 +46,9 @@ public class TrackDto {
     private Date updateDtime;
 
 
+    @JsonProperty("representationArtist")
     private ArtistDto artist;
+    private List<ArtistDto> artistList;
+
     private AlbumDto album;
 }

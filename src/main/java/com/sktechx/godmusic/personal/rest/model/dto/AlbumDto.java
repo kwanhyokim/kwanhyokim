@@ -10,6 +10,8 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.List;
@@ -21,8 +23,10 @@ import java.util.List;
  * @date 2018. 07. 09.
  */
 @Data
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class AlbumDto {
 
+    @JsonProperty("id")
     private Long albumId;
     private String title;
 

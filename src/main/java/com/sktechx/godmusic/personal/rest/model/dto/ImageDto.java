@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 /**
@@ -19,6 +20,7 @@ import lombok.Data;
  * @date 2018. 07. 09.
  */
 @Data
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class ImageDto {
     private int size;
     private String url;
