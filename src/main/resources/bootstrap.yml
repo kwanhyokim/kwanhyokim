@@ -8,42 +8,37 @@
 # you entered into with SK TECHX.
 #
 
-spring.application.name : personal-api
-spring.cloud.config.name : personal-api,lib-module
+spring.application.name: personal-api
 server.port: 80
 spring.profiles.active: dev
 
-management :
+spring.cloud.config.name: personal-api,lib-module
+
+management:
   security.enabled : false
   context-path : /acturator
   endpoints.web.exposure.include : refresh
 
-eureka:
-  instance:
-    non-secure-port: ${server.port}
-    prefer-ip-address: true
+eureka.instance:
+  non-secure-port: ${server.port}
+  prefer-ip-address: true
 
 ---
-spring :
-  profiles : local, dev
-  cloud.config.uri : http://172.21.112.94:8888
-  cloud:
-      config:
-        uri: http://172.21.112.94:8888
-        label: develop
+spring.profiles: local
+spring.cloud.config.uri: http://localhost:8888
+spring.cloud.config.label: develop
 
 ---
-spring :
-  profiles : qa
-  cloud:
-    config:
-      uri: http://TBD
-      label: master
+spring.profiles: dev
+spring.cloud.config.uri: http://172.21.112.94:8888
+spring.cloud.config.label: develop
 
 ---
-spring :
-  profiles : prod
-  cloud:
-    config:
-      uri: http://TBD
-      label: master
+spring.profiles: qa
+spring.cloud.config.url: http://TBD
+spring.cloud.config.label: master
+
+---
+spring.profiles: prod
+spring.cloud.config.url: http://TBD
+spring.cloud.config.label: master
