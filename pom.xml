@@ -57,7 +57,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -103,7 +103,7 @@
         <dependency>
             <groupId>com.sktechx.godmusic</groupId>
             <artifactId>lib-module</artifactId>
-            <version>${godmusic-module.version}</version>
+            <version>LATEST</version>
         </dependency>
     </dependencies>
 
