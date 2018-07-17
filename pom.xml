@@ -15,7 +15,7 @@
 
     <groupId>com.sktechx.godmusic</groupId>
     <artifactId>personal-api</artifactId>
-    <version>0.0.8-SNAPSHOT</version>
+    <version>0.0.10-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>personal-api</name>
@@ -37,7 +37,7 @@
         <findbugs.jsr305.version>3.0.0</findbugs.jsr305.version>
         <mybatis-starter.version>1.3.2</mybatis-starter.version>
         <swagger2.version>2.9.2</swagger2.version>
-        <godmusic-module.version>0.0.8-SNAPSHOT</godmusic-module.version>
+        <godmusic-module.version>0.0.10-SNAPSHOT</godmusic-module.version>
         <maven-model.version>3.5.2</maven-model.version>
     </properties>
 
