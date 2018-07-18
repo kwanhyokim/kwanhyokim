@@ -21,6 +21,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.PreferS
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.RcmmdTrackPanel;
 import com.sktechx.godmusic.personal.rest.service.MockRecommendPanelService;
 import org.springframework.stereotype.Service;
+import sun.net.www.content.image.png;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -60,7 +61,7 @@ public class MockRecommendPanelServiceImpl implements MockRecommendPanelService 
         Panel channelPanel = null;
         try{
 
-            channelPanel = new ChannelPanel(panelType,makePanelBackGroundImageList(),makeDriveChannel());
+            channelPanel = new ChannelPanel(panelType,makePanelBackGroundImageList(""),makeDriveChannel());
         }catch(Exception e){
 
         }
@@ -84,9 +85,9 @@ public class MockRecommendPanelServiceImpl implements MockRecommendPanelService 
         Panel chartPanel = null;
         try{
             if(RecommendPanelType.LIVE_CHART.equals(panelType)){
-                chartPanel = new ChartPanel(panelType ,makePanelBackGroundImageList(),makeLiveChartChannel());
+                chartPanel = new ChartPanel(panelType ,makePanelBackGroundImageList("TRACK1"),makeLiveChartChannel());
             }else{
-                chartPanel = new ChartPanel(panelType ,makePanelBackGroundImageList(),makeKidsChartChannel());
+                chartPanel = new ChartPanel(panelType ,makePanelBackGroundImageList("TRACK1"),makeKidsChartChannel());
             }
 
         }catch(Exception e){
@@ -99,12 +100,12 @@ public class MockRecommendPanelServiceImpl implements MockRecommendPanelService 
         Panel trackPanel = null;
         try{
 
-            if(RecommendPanelType.PREFER_GENRE_SIMILAR_TRACK.equals(recommendPanelType)){
-                    trackPanel = new PreferGenreSimilarTrackPanel(recommendPanelType,makePanelBackGroundImageList(),makeTrackList());
-            }else if(RecommendPanelType.PREFER_SIMILAR_TRACK.equals(recommendPanelType)){
-                trackPanel = new PreferSimilarTrackPanel(recommendPanelType,makePanelBackGroundImageList(),"댄스",makeTrackList());
+            if(RecommendPanelType.PREFER_SIMILAR_TRACK.equals(recommendPanelType)){
+                    trackPanel = new PreferGenreSimilarTrackPanel(recommendPanelType,makePanelBackGroundImageList("RGENRE3"),makeTrackList());
+            }else if(RecommendPanelType.PREFER_GENRE_SIMILAR_TRACK.equals(recommendPanelType)){
+                trackPanel = new PreferSimilarTrackPanel(recommendPanelType,makePanelBackGroundImageList("TRACK1"),"댄스",makeTrackList());
             }else if(RecommendPanelType.RCMMD_TRACK.equals(recommendPanelType)){
-                trackPanel = new RcmmdTrackPanel(recommendPanelType,makePanelBackGroundImageList(),"댄스",makeTrackList());
+                trackPanel = new RcmmdTrackPanel(recommendPanelType,makePanelBackGroundImageList("RGENRE3"),"댄스",makeTrackList());
             }
         }catch(Exception e){
 
@@ -150,55 +151,38 @@ public class MockRecommendPanelServiceImpl implements MockRecommendPanelService 
     }
 
     private List<TrackDto> makeTrackList(){
-
         List<TrackDto> liveChartTrackList = new ArrayList<>();
 
-        TrackDto track = new TrackDto();
-        track.setTrackId(30695454L);
-        track.setTrackNm("마지막처럼");
-        track.setCreateDtime(new Date());
-        track.setTrackSn(1);
-        track.setTrackBfSn(6);
-        track.setUpdateDtime(new Date());
-        track.setArtist(makeArtist());
-        track.setAlbum(makeAlbum());
-        liveChartTrackList.add(track);
+        liveChartTrackList.add(makeTrack(30695454L, "마지막 처럼" , 1 , 6, makeArtist(), makeAlbum()));
+        liveChartTrackList.add(makeTrack(30695455L, "마지막처럼2" , 2 , 0, makeArtist(), makeAlbum()));
+        liveChartTrackList.add(makeTrack(30695456L, "마지막처럼3" , 3 , 1, makeArtist(), makeAlbum()));
+        liveChartTrackList.add(makeTrack(30695457L, "마지막처럼4" , 4 , 0, makeArtist(), makeAlbum()));
+        liveChartTrackList.add(makeTrack(30695458L, "처음처럼" , 5, 0, makeArtist(), makeAlbum()));
+        liveChartTrackList.add(makeTrack(30695459L, "처음처럼1" , 6, 0, makeArtist(), makeAlbum()));
+        liveChartTrackList.add(makeTrack(30695460L, "처음처럼2" , 7, 0, makeArtist(), makeAlbum()));
+        liveChartTrackList.add(makeTrack(30695461L, "처음처럼3" , 8, 0, makeArtist(), makeAlbum()));
+        liveChartTrackList.add(makeTrack(30695462L, "처음처럼4" , 9, 0, makeArtist(), makeAlbum()));
+        liveChartTrackList.add(makeTrack(30695463L, "처음처럼5" , 10, 0, makeArtist(), makeAlbum()));
+        liveChartTrackList.add(makeTrack(30695464L, "처음처럼6" , 11, 0, makeArtist(), makeAlbum()));
+        liveChartTrackList.add(makeTrack(30695465L, "처음처럼7" , 12, 0, makeArtist(), makeAlbum()));
 
-
-        track = new TrackDto();
-        track.setTrackId(30695455L);
-        track.setTrackNm("마지막처럼2");
-        track.setCreateDtime(new Date());
-        track.setTrackSn(2);
-        track.setTrackBfSn(0);
-        track.setUpdateDtime(new Date());
-        track.setArtist(makeArtist());
-        track.setAlbum(makeAlbum());
-        liveChartTrackList.add(track);
-
-        track = new TrackDto();
-        track.setTrackId(30695456L);
-        track.setTrackNm("마지막처럼3");
-        track.setCreateDtime(new Date());
-        track.setTrackSn(3);
-        track.setTrackBfSn(1);
-        track.setUpdateDtime(new Date());
-        track.setArtist(makeArtist());
-        track.setAlbum(makeAlbum());
-        liveChartTrackList.add(track);
-
-        track = new TrackDto();
-        track.setTrackId(30695457L);
-        track.setTrackNm("마지막처럼4");
-        track.setCreateDtime(new Date());
-        track.setTrackSn(4);
-        track.setTrackBfSn(0);
-        track.setUpdateDtime(new Date());
-        track.setArtist(makeArtist());
-        track.setAlbum(makeAlbum());
-        liveChartTrackList.add(track);
 
         return liveChartTrackList;
+    }
+
+    private TrackDto makeTrack(Long trackId ,String trackNm , int trackSn, int trackBfSn, ArtistDto artist, AlbumDto album){
+
+        TrackDto track = new TrackDto();
+        track.setTrackId(trackId);
+        track.setTrackNm(trackNm);
+        track.setCreateDtime(new Date());
+        track.setTrackSn(trackSn);
+        track.setTrackBfSn(trackBfSn);
+        track.setUpdateDtime(new Date());
+        track.setArtist(artist);
+        track.setAlbum(album);
+
+        return track;
     }
 
 
@@ -273,37 +257,53 @@ public class MockRecommendPanelServiceImpl implements MockRecommendPanelService 
         return albumImgList;
     }
 
-    private List<ImageDto> makePanelBackGroundImageList(){
+
+    private String getImageUrl(String pannelType, int size){
+        if("ARTIST3".equals(pannelType)){
+            return "https://api3-dev.musicmates.co.kr/img/recommend/typeB_"+size+".png";
+        }else if("KNAME".equals(pannelType)){
+            return "https://api3-dev.musicmates.co.kr/img/recommend/typeA_"+size+".png";
+        }else if("RGENRE3".equals(pannelType)){
+            return "https://api3-dev.musicmates.co.kr/img/recommend/typeB_"+size+".png";
+
+        }else if("TRACK1".equals(pannelType)){
+            return "https://api3-dev.musicmates.co.kr/img/recommend/typeC_"+size+".png";
+        }else{
+            return "https://api3-dev.musicmates.co.kr/img/recommend/typeB_"+size+".png";
+
+        }
+    }
+    private List<ImageDto> makePanelBackGroundImageList(String pannelType){
         List<ImageDto> artistImgList = new ArrayList<>();
         ImageDto image = new ImageDto();
-        image.setSize(70);
-        image.setUrl("http://asp-image.bugsm.co.kr/artist/images/70/200224/20022492.jpg");
-
-        artistImgList.add(image);
-        image = new ImageDto();
         image.setSize(75);
-        image.setUrl("http://asp-image.bugsm.co.kr/artist/images/75/200224/20022492.jpg");
-        artistImgList.add(image);
+        image.setUrl(getImageUrl(pannelType,75));
 
+        artistImgList.add(image);
         image = new ImageDto();
         image.setSize(140);
-        image.setUrl("http://asp-image.bugsm.co.kr/artist/images/140/200224/20022492.jpg");
+        image.setUrl(getImageUrl(pannelType,140));
         artistImgList.add(image);
-
 
         image = new ImageDto();
         image.setSize(200);
-        image.setUrl("http://asp-image.bugsm.co.kr/artist/images/200/200224/20022492.jpg");
+        image.setUrl(getImageUrl(pannelType,200));
         artistImgList.add(image);
+
 
         image = new ImageDto();
         image.setSize(350);
-        image.setUrl("http://asp-image.bugsm.co.kr/artist/images/350/200224/20022492.jpg");
+        image.setUrl(getImageUrl(pannelType,350));
         artistImgList.add(image);
 
         image = new ImageDto();
         image.setSize(500);
-        image.setUrl("http://asp-image.bugsm.co.kr/artist/images/500/200224/20022492.jpg");
+        image.setUrl(getImageUrl(pannelType,500));
+        artistImgList.add(image);
+
+        image = new ImageDto();
+        image.setSize(1000);
+        image.setUrl(getImageUrl(pannelType,1000));
         artistImgList.add(image);
 
         return artistImgList;
