@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.controller.v1;
 
+import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
 import com.sktechx.godmusic.personal.rest.service.MockRecommendPanelService;
 import io.swagger.annotations.ApiOperation;
@@ -25,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @date 2018. 07. 09.
  */
 @RestController
-@RequestMapping("/v1/recommends")
+@RequestMapping(Naming.serviceCode+"/v1/recommends")
 public class RecommendPanelController {
 
 
