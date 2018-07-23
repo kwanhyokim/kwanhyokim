@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ /*
+  ~  * Copyright (c) 2018 SK TECHX.
+  ~  * All right reserved.
+  ~  *
+  ~  * This software is the confidential and proprietary information of SK TECHX.
+  ~  * You shall not disclose such Confidential Information and
+  ~  * shall use it only in accordance with the terms of the license agreement
+  ~  * you entered into with SK TECHX.
+  ~  */
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.ChartMapper">
+
+    <resultMap id="chartContentListResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.ChnlDto" autoMapping="true">
+        <id property="chnlId" column="chnl_id" />
+
+        <collection property="trackList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.dto.TrackDto" column="chnlId" autoMapping="true" />
+    </resultMap>
+
+    <select id="selectChartContentList" resultMap="chartContentListResultMap">
+        <![CDATA[
+            SELECT
+              a.chnl_id,
+              a.chnl_nm,
+              c.track_id,
+              c.track_nm,
+              b.track_sn,
+              b.track_bf_sn
+            FROM tb_chnl a
+              JOIN tb_map_chnl_track b ON a.chnl_id = b.chnl_id
+              JOIN tb_track c ON b.track_id = c.track_id
+            WHERE a.chnl_id = #{chartId}
+                  AND c.disp_status_yn = 'Y'
+            ORDER BY b.track_sn
+        ]]>
+    </select>
+
+
+</mapper>

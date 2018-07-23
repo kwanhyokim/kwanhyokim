@@ -1,9 +1,7 @@
 package com.sktechx.godmusic.personal.common.config;
 
+import com.sktechx.godmusic.lib.domain.CommonConstant;
 import com.sktechx.godmusic.personal.common.interceptor.TransactionIdInterceptor;
-import com.sktechx.godmusic.personal.common.interceptor.UserInfoInterceptor;
-//import org.apache.maven.model.Model;
-//import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -19,10 +17,12 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+
+//import org.apache.maven.model.Model;
+//import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 
 /**
  * 설명 : http://springfox.github.io/springfox/docs/current/#springfox-swagger2-with-spring-mvc-and-spring-boot
@@ -76,13 +76,24 @@ public class SwaggerConfig {
         );
         operationParameters.add(
                 new ParameterBuilder()
-                        .name(UserInfoInterceptor.XGmUserKey)
+                        .name(CommonConstant.X_FORWARDED_MNO)
                         .required(false)
-                        .description("user info")
+                        .description("회원번호")
                         .parameterType("header")
-                        .defaultValue("{\"member_no\":1234}")
+                        .defaultValue("1")
                         .modelRef(new ModelRef("string"))
                         .build()
+        );
+
+        operationParameters.add(
+                new ParameterBuilder()
+                .name(CommonConstant.X_FORWARDED_CNO)
+                .required(false)
+                .description("캐릭터번호")
+                .parameterType("header")
+                .defaultValue("12")
+                .modelRef(new ModelRef("string"))
+                .build()
         );
         return operationParameters;
     }

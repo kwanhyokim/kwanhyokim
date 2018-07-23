@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ /*
+  ~  * Copyright (c) 2018 SK TECHX.
+  ~  * All right reserved.
+  ~  *
+  ~  * This software is the confidential and proprietary information of SK TECHX.
+  ~  * You shall not disclose such Confidential Information and
+  ~  * shall use it only in accordance with the terms of the license agreement
+  ~  * you entered into with SK TECHX.
+  ~  */
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.GenreMapper">
+
+    <resultMap id="albumResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.AlbumDto" autoMapping="true">
+        <id property="albumId" column="album_Id" />
+
+        <collection property="imgList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.dto.ImageDto" column="albumId" autoMapping="true">
+            <result property="url" column="album_img_url" />
+            <result property="size" column="album_img_size" />
+        </collection>
+    </resultMap>
+
+    <resultMap id="chnlResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.ChnlDto" autoMapping="true">
+        <id property="chnlId" column="chnl_id" />
+
+        <collection property="trackList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.dto.TrackDto" column="chnlId" autoMapping="true">
+            <result property="trackId" column="track_id" />
+            <association property="album" resultMap="albumResultMap" autoMapping="true"/>
+        </collection>
+
+    </resultMap>
+
+    <resultMap id="genreResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.GenreDto" autoMapping="true">
+        <id property="svcGenreId" column="svc_genre_id" />
+
+        <association property="chnl" resultMap="chnlResultMap" autoMapping="true"/>
+
+    </resultMap>
+
+    <select id="selectGenreListByDefault" resultMap="genreResultMap">
+        <![CDATA[
+            SELECT
+              a.svc_genre_id,
+              c.chnl_id,
+              c.chnl_nm,
+              f.track_id,
+--               g.artist_id,
+              h.album_id,
+              i.album_img_url,
+              i.album_img_size
+            FROM tb_svc_genre A /* 차트로 변경 */
+              JOIN tb_svc_genre_popularity_chnl b ON a.svc_genre_id = b.svc_genre_id
+              JOIN tb_chnl c ON b.chnl_id = c.chnl_id
+              JOIN tb_map_chnl_track d ON c.chnl_id = d.chnl_id
+              JOIN tb_track e ON d.track_id = e.track_id
+              JOIN ted_track f ON e.track_id = f.track_id
+--               JOIN ted_artist g ON f.artist_id = g.artist_id
+              JOIN ted_album h ON f.album_id = h.album_id
+              JOIN tb_album_img i ON h.album_id = i.album_id
+            WHERE a.main_disp_std_yn = 'Y'
+                  AND b.disp_sn = 1
+                  AND c.rank_chnl_type IN ('TOP100', 'NEW')
+                  AND d.track_sn = 1
+            ORDER BY a.main_disp_sn
+            LIMIT 12
+        ]]>
+    </select>
+
+    <select id="selectGenreListByCharacterNo" resultMap="genreResultMap">
+        <![CDATA[
+            SELECT
+              aa.svc_genre_id,
+              cc.chnl_id,
+              cc.chnl_nm,
+              ff.track_id,
+--               gg.artist_id,
+              hh.album_id,
+              ii.album_img_url,
+              ii.album_img_size
+            FROM (
+                   SELECT /* 1. 선호 장르에 매핑된 서비스 장르가 1개: 장르 기준 제공 */
+                     10 ord,
+                     b.update_dtime,
+                     d.svc_genre_id
+                   FROM TB_CHARACTER a
+                     JOIN tb_character_prefer_genre b ON a.character_no = b.character_no
+                     JOIN TB_PREFER_GENRE C ON B.PREFER_GENRE_ID = C.PREFER_GENRE_ID
+                     JOIN (SELECT
+                             prefer_genre_id,
+                             svc_genre_id,
+                             disp_sn,
+                             count(*) AS svc_genre_cnt
+                           FROM tb_map_prefer_genre_svc_genre
+                           GROUP BY prefer_genre_id
+                          ) d ON c.prefer_genre_id = d.prefer_genre_id
+                   WHERE a.character_no = #{characterNo}
+                         AND d.svc_genre_cnt = 1
+                   UNION
+                   SELECT /* 2-1. 선호 장르에 매핑된 서비스 장르가 N개 이고 아티스트 미선택: 서비스 장르의 3뎁스 동일명 디폴트 설정:사용 장르 기준 제공 */
+                     21 ord,
+                     b.update_dtime,
+                     f.svc_genre_id
+                   FROM tb_character a
+                     JOIN tb_character_prefer_genre b ON a.character_no = b.character_no
+                     JOIN tb_prefer_genre c ON b.prefer_genre_id = c.prefer_genre_id
+                     JOIN (SELECT
+                             prefer_genre_id,
+                             svc_genre_id,
+                             disp_sn,
+                             count(*) AS svc_genre_cnt
+                           FROM tb_map_prefer_genre_svc_genre
+                           GROUP BY prefer_genre_id
+                          ) d ON c.prefer_genre_id = d.prefer_genre_id
+                     LEFT JOIN (SELECT
+                                  prefer_genre_id,
+                                  count(*) AS prefer_genre_cnt
+                                FROM tb_prefer_genre_artist
+                                GROUP BY prefer_genre_id
+                               ) e ON c.prefer_genre_id = e.prefer_genre_cnt
+                     JOIN tb_svc_genre f ON d.svc_genre_id = f.svc_genre_id
+                   WHERE a.character_no = #{characterNo}
+                         AND d.svc_genre_cnt > 1
+                         AND f.browser_disp_std_yn = 'Y' #3뎁스 동일명 디폴트 설정:사용 으로 변경
+                         AND e.prefer_genre_id IS NULL
+                   UNION
+                   SELECT /* 2-2. 선호 장르에 매핑된 서비스 장르가 N개 이고 아티스트 선택: 선호 아티스트 국가와 장르의 최상위 장르(1레벨) 구분으로 매핑된 장르 기준 제공 */
+                     22 ord,
+                     c.update_dtime,
+                     e.svc_genre_id
+                   FROM tb_character a
+                     JOIN tb_character_prefer_genre b ON a.character_no = b.character_no
+                     JOIN tb_prefer_genre_artist C ON b.prefer_genre_id = c.prefer_genre_id
+                     JOIN (SELECT
+                             prefer_genre_id,
+                             svc_genre_id,
+                             disp_sn,
+                             count(*) AS svc_genre_cnt
+                           FROM tb_map_prefer_genre_svc_genre
+                           GROUP BY prefer_genre_id
+                          ) d ON c.prefer_genre_id = d.prefer_genre_id
+                     JOIN (
+                            SELECT
+                              x.svc_genre_id,
+                              x.parents_svc_genre_id,
+                              x.svc_genre_nm,
+                              x.level,
+                              CASE (
+                                CASE level
+                                WHEN 1
+                                  THEN svc_genre_id
+                                WHEN 2
+                                  THEN parents_svc_genre_id
+                                WHEN 3
+                                  THEN (SELECT parents_svc_genre_id
+                                        FROM tb_svc_genre
+                                        WHERE svc_genre_id = x.parents_svc_genre_id)
+                                END
+                              )
+                              WHEN 1
+                                THEN 'KOR'
+                              WHEN 2
+                                THEN 'KOR'
+                              ELSE 'FOR'
+                              END AS root_svc_genre
+                            FROM tb_svc_genre X
+                          ) e ON d.svc_genre_id = e.svc_genre_id
+                     JOIN (
+                            SELECT
+                              b.character_no,
+                              b.prefer_genre_id,
+                              b.artist_id AS prefer_artist_id,
+                              CASE C.nation_cd
+                              WHEN 'KOR'
+                                THEN 1
+                              ELSE 'FOR'
+                              END         AS artist_nation
+                            FROM tb_character A
+                              JOIN tb_character_prefer_artist b ON a.character_no = b.character_no
+                              JOIN ted_artist c ON b.artist_id = c.artist_id
+                            WHERE a.character_no = #{characterNo}
+                          ) f ON d.prefer_genre_id = f.prefer_genre_id and e.root_svc_genre = f.artist_nation
+                   WHERE a.character_no = #{characterNo}
+                         AND d.svc_genre_cnt > 1
+                 ) aa
+              JOIN tb_svc_genre_popularity_chnl bb ON aa.svc_genre_id = bb.svc_genre_id
+              JOIN tb_chnl cc ON bb.chnl_id = cc.chnl_id
+              JOIN tb_map_chnl_track dd ON cc.chnl_id = dd.chnl_id
+              JOIN tb_track ee ON dd.track_id = ee.track_id
+              JOIN ted_track ff ON ee.track_id = ff.track_id
+--               JOIN ted_artist gg ON ff.artist_id = gg.artist_id
+              JOIN ted_album hh ON ff.album_id = hh.album_id
+              JOIN tb_album_img ii ON hh.album_id = ii.album_id
+            WHERE bb.disp_sn = 1
+                  AND cc.rank_chnl_type IN ('TOP100', 'NEW')
+            ORDER BY aa.ord ASC, aa.update_dtime DESC
+            LIMIT 12
+        ]]>
+    </select>
+
+</mapper>
