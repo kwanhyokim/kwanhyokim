@@ -10,16 +10,13 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.artist;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelType;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
 import org.springframework.util.CollectionUtils;
-
-import java.util.List;
 
 /**
  * 설명 : 아티스트형 추천 패널
@@ -27,20 +24,56 @@ import java.util.List;
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 09.
  */
-public class ArtistPanel extends Panel {
+public class ArtistPanel extends Panel{
 
-    @Getter
-    @ApiModelProperty(required = true, example = "", value = "아티스트 리스트")
-    List<ArtistDto> artistList;
+    @JsonIgnore
+    private RecommendArtistDto recommendArtistDto;
 
-    public ArtistPanel(RecommendPanelType panelType, List<ArtistDto> artistList)  throws Exception{
-        super(panelType , "Musician focus" , neverNullList(artistList).getArtistNm(),neverNullList(artistList).getImgList());
-        this.artistList = artistList;
+    public ArtistPanel(RecommendPanelType panelType, RecommendArtistDto recommendArtist ,Integer dispSn)  throws Exception{
+        super(panelType , dispSn);
+        this.recommendArtistDto = recommendArtist;
+        this.initialPanel();
     }
 
-    private static ArtistDto neverNullList(List<ArtistDto> artistList) throws Exception {
-        if(CollectionUtils.isEmpty(artistList))
-            throw new IllegalAccessException("artistList is null.");
-        return artistList.get(0);
+
+    @Override
+    protected void initialPanel() throws Exception{
+        ArtistDto representationArtist = neverNullArtist(recommendArtistDto);
+
+        this.title = "Musician focus";
+        this.subTitle = representationArtist.getArtistNm();
+        this.imgList = representationArtist.getImgList();
+        this.content = createPanelContent();
+
     }
+
+    @Override
+    public PanelContentVo createPanelContent() {
+        PanelContentVo content = new PanelContentVo();
+
+        content.setId(recommendArtistDto.getRcmmdArtistId());
+        content.setArtistCount(recommendArtistDto.getArtistList().size());
+        content.setArtistList(recommendArtistDto.getArtistList());
+        content.setContentType(RecommendPanelType.ARRIST_POPULAR_TRACK);
+        content.setCreateDtime(recommendArtistDto.getCreateDtime());
+        content.setUpdateDtime(recommendArtistDto.getUpdateDtime());
+
+        return content;
+    }
+
+    private static ArtistDto neverNullArtist(RecommendArtistDto recommendArtist) throws Exception {
+        if(recommendArtist == null || CollectionUtils.isEmpty(recommendArtist.getArtistList())){
+            throw new IllegalAccessException("artist is null.");
+        }
+
+        ArtistDto artist = recommendArtist.getArtistList().get(0);
+
+        if(artist==null ||  CollectionUtils.isEmpty(artist.getImgList())){
+            //대체 이미지 패널
+            throw new IllegalAccessException("artist imageList is null.");
+        }
+        return artist;
+    }
+
+
 }

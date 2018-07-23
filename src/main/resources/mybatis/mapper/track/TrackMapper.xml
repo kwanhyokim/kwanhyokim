@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2018 SK TECHX.
+  ~ All right reserved.
+  ~
+  ~ This software is the confidential and proprietary information of SK TECHX.
+  ~ You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with SK TECHX.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.track.TrackMapper" >
+
+    <resultMap id="TrackResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.TrackDto" autoMapping="true">
+        <id property="trackId" column="track_id"/>
+        <collection property="album" resultMap="com.sktechx.godmusic.personal.rest.repository.album.AlbumMapper.albumResultMap"/>
+
+        <collection property="artistList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" column="artist_id">
+            <result property="artistId" column="artist_id"></result>
+            <result property="artistNm" column="artist_nm"></result>
+        </collection>
+
+        <collection property="artist" ofType="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" column="repArtistId">
+            <result property="artistId" column="repArtistId"></result>
+            <result property="artistNm" column="repArtistNm"></result>
+        </collection>
+    </resultMap>
+
+    <select id="selectTrackList" resultMap="TrackResultMap">
+        SELECT
+            a.track_id,
+            a.track_nm,
+            a.album_id,
+            f.artist_id repArtistId,
+            f.artist_nm repArtistNm,
+            a.agency_id,
+            if(a.streaming_premium_yn = 'Y' OR a.pps_yn = 'Y', 'Y', 'N') holdbackYn,
+            a.create_dtime,
+            a.update_dtime,
+            d.artist_id,
+            d.artist_nm,
+            b.album_img_size size,
+            CONCAT(b.album_img_url, '?updateDate=', unix_timestamp(b.update_dtime)) url
+        FROM
+          tb_track a
+        LEFT OUTER JOIN	tb_album_img b
+          ON a.album_id = b.album_id
+        LEFT OUTER JOIN	ted_trackartist as c
+          ON a.track_id = c.track_id AND c.rp_yn = 'Y' and c.db_sts = 'A'
+        LEFT OUTER JOIN	ted_artist d
+          ON c.artist_id = d.artist_id
+        LEFT OUTER JOIN ted_album e
+          ON a.album_id = e.album_id
+        LEFT OUTER JOIN ted_artist f
+          ON a.reprsnt_artist_id = f.artist_id
+      WHERE
+        a.track_id IN
+        <foreach collection="trackIdList" item="trackId"  open="("  index="index" separator="," close=")">
+            #{trackId}
+        </foreach>
+        AND a.disp_status_yn = 'Y'
+    </select>
+
+</mapper>

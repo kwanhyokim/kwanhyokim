@@ -10,13 +10,19 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.chart;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sktechx.godmusic.personal.common.domain.type.ChannelType;
+import com.sktechx.godmusic.personal.common.domain.type.ChartType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChannelDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
-import io.swagger.annotations.ApiModel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -28,19 +34,42 @@ import java.util.List;
  * @date 2018. 07. 09.
  */
 public class ChartPanel extends Panel {
+    @JsonIgnore
+    private ChartDto chart;
 
-    @Getter
-    @ApiModelProperty(required = true, example = "", value = "차트 정보")
-    private ChannelDto channel;
-
-    public ChartPanel(RecommendPanelType panelType , List<ImageDto> imgList, ChannelDto channel) throws Exception{
-        super(panelType , neverNull(channel).getChnlNm() , "",imgList);
-        this.channel = channel;
+    public ChartPanel(RecommendPanelType panelType , ChartDto chart, List<ImageDto> bgImgList,Integer dispSn) throws Exception{
+        super(panelType ,dispSn);
+        this.chart = neverNullChart(chart);
+        this.imgList = neverNullBgImgList(bgImgList);
+        this.initialPanel();
     }
 
-    private static ChannelDto neverNull( ChannelDto channel) throws Exception {
-        if(channel == null || StringUtils.isEmpty(channel.getChnlNm()))
-            throw new IllegalAccessException("channel is null.");
-        return channel;
+    @Override
+    protected void initialPanel() {
+        this.title = chart.getChartNm();
+        //TODO : 업데이트 시간 계산
+        this.subTitle = "17시 기준";
+        this.content = createPanelContent();
+    }
+
+    @Override
+    protected PanelContentVo createPanelContent() {
+        PanelContentVo content = new PanelContentVo();
+
+        content.setId(chart.getChartId());
+
+        content.setContentType(RecommendPanelContentType.CHART);
+        content.setCreateDtime(chart.getCreateDateTime());
+        content.setUpdateDtime(chart.getUpdateDateTime());
+        content.setTrackList(chart.getTrackList());
+        content.setTrackCount(chart.getTrackCount());
+
+        return content;
+    }
+
+    private static ChartDto neverNullChart(ChartDto chart) throws Exception {
+        if(chart == null || StringUtils.isEmpty(chart.getChartNm()))
+            throw new IllegalAccessException("chart is null.");
+        return chart;
     }
 }

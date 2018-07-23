@@ -11,8 +11,10 @@
 package com.sktechx.godmusic.personal.recommend;
 
 import com.sktechx.godmusic.personal.CommonTest;
+import com.sktechx.godmusic.personal.rest.repository.chart.ChartMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 설명 : XXXXXXXX
@@ -21,9 +23,16 @@ import org.junit.Test;
  * @date 2018. 07. 10.
  */
 @Slf4j
-public class RecommendPanelTests extends CommonTest {
+public class RecommendPanelTests extends CommonTest{
+
+    @Autowired
+    private ChartMapper chartMapper;
+
     @Test
     public void 테스트()throws Exception{
-        log.info("test");
+        log.info(""+chartMapper);
+        log.info(""+chartMapper.selectLiveChart());
+//        VisitPhasePanelAssembly visitPhasePanel = new VisitPhasePanelAssembly(1L);
+//        visitPhasePanel.assembleRecommendPanel();
     }
 }

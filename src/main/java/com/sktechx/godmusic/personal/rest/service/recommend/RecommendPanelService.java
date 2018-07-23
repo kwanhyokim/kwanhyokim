@@ -8,7 +8,7 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.service;
+package com.sktechx.godmusic.personal.rest.service.recommend;
 
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 
@@ -20,6 +20,6 @@ import java.util.List;
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 09.
  */
-public interface MockRecommendPanelService {
-    List<Panel> createMockUpRecommendPanelList();
+public interface RecommendPanelService {
+    List<Panel> createRecommendPanelList();
 }

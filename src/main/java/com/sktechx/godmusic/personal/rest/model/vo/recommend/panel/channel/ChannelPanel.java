@@ -10,13 +10,14 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChannelDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.GenreVo;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -27,18 +28,45 @@ import java.util.List;
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 09.
  */
-public class ChannelPanel extends Panel {
-
-    @Getter
-    @ApiModelProperty(required = true, value = "채널 정보")
+public abstract class ChannelPanel extends Panel{
+    @JsonIgnore
     private ChannelDto channel;
+    @JsonIgnore
+    private GenreVo genre;
 
-    public ChannelPanel(RecommendPanelType panelType, List<ImageDto> imgList ,ChannelDto channel) throws Exception {
-        super(panelType,  neverNull(channel).getChnlNm(), null , imgList);
-        this.channel = channel;
+    public ChannelPanel(RecommendPanelType panelType, ChannelDto channel, GenreVo genre,List<ImageDto> bgImgList, Integer dispSn) throws Exception {
+        super(panelType, dispSn);
+        this.channel = neverNullChannel(channel);
+        this.imgList = neverNullBgImgList(bgImgList);
+        this.genre = genre;
+        this.initialPanel();
     }
 
-    private static ChannelDto neverNull( ChannelDto channel) throws Exception {
+    @Override
+    protected void initialPanel() throws Exception{
+        this.title = channel.getChnlNm();
+        this.subTitle = "";
+        this.content = createPanelContent();
+    }
+
+
+    @Override
+    public PanelContentVo createPanelContent() {
+        PanelContentVo content = new PanelContentVo();
+
+        content.setId(channel.getChnlId());
+        content.setContentType(RecommendPanelContentType.CHANNEL);
+        content.setUpdateCount(channel.getUpdateCount());
+        content.setTrackCount(channel.getTrackCount());
+        content.setTrackList(channel.getTrackList());
+        content.setGenre(genre);
+        content.setCreateDtime(channel.getCreateDtime());
+        content.setUpdateDtime(channel.getUpdateDtime());
+
+        return content;
+    }
+
+    private static ChannelDto neverNullChannel(ChannelDto channel) throws Exception {
         if(channel == null || StringUtils.isEmpty(channel.getChnlNm()))
             throw new IllegalAccessException("channel is null.");
         return channel;
