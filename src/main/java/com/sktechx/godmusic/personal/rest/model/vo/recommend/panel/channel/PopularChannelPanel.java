@@ -11,9 +11,8 @@
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel;
 
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
-import com.sktechx.godmusic.personal.rest.model.dto.ChannelDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
 
 import java.util.List;
 
@@ -24,7 +23,7 @@ import java.util.List;
  * @date 2018. 07. 19.
  */
 public class PopularChannelPanel  extends ChannelPanel{
-    public PopularChannelPanel(RecommendPanelType panelType, ChannelDto channel, List<ImageDto> bgImgList ,Integer dispSn) throws Exception {
+    public PopularChannelPanel(RecommendPanelType panelType, ChnlDto channel, List<ImageDto> bgImgList , Integer dispSn) throws Exception {
         super(panelType,channel , null , bgImgList , dispSn);
     }
 }

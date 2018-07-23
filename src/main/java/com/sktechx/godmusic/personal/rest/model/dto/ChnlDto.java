@@ -12,10 +12,14 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sktechx.godmusic.personal.common.domain.type.ChannelType;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,5 +35,25 @@ public class ChnlDto {
     private Long chnlId;
     @JsonProperty("name")
     private String chnlNm;
+
+    private String chnlDispNm;
+
+    @JsonProperty("type")
+    private ChannelType chnlType;
+
+    @JsonIgnore
+    private AlbumDto album;
+
+    private Integer updateCount;
+
+    @JsonProperty("createDateTime")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
+    private Date createDtime;
+
+    @JsonProperty("updateDateTime")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
+    private Date updateDtime;
+
     private List<TrackDto> trackList;
+    private Integer trackCount;
 }

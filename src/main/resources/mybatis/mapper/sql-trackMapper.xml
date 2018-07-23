@@ -13,11 +13,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 
-<mapper namespace="com.sktechx.godmusic.personal.rest.repository.track.TrackMapper" >
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.TrackMapper" >
 
-    <resultMap id="TrackResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.TrackDto" autoMapping="true">
+    <resultMap id="trackResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.TrackDto" autoMapping="true">
         <id property="trackId" column="track_id"/>
-        <collection property="album" resultMap="com.sktechx.godmusic.personal.rest.repository.album.AlbumMapper.albumResultMap"/>
+        <collection property="album" resultMap="com.sktechx.godmusic.personal.rest.repository.AlbumMapper.albumResultMap"/>
 
         <collection property="artistList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" column="artist_id">
             <result property="artistId" column="artist_id"></result>
@@ -30,7 +30,7 @@
         </collection>
     </resultMap>
 
-    <select id="selectTrackList" resultMap="TrackResultMap">
+    <select id="selectTrackList" resultMap="trackResultMap">
         SELECT
             a.track_id,
             a.track_nm,

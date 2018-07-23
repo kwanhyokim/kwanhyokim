@@ -28,7 +28,7 @@ public enum RecommendPanelType implements CodeEnum{
     PREFER_SIMILAR_TRACK("PREFER_SIMILAR_TRACK" , "선호 유사곡"),
     PREFER_GENRE_SIMILAR_TRACK("PREFER_GENRE_SIMILAR_TRACK" , "선호 장르 유사곡"),
     RCMMD_TRACK("RCMMD_TRACK" , "추천 유사곡"),
-    ARRIST_POPULAR_TRACK("ARRIST_POPULAR_TRACK" , "아티스트 인기곡"),
+    ARTIST_POPULAR_TRACK("ARTIST_POPULAR_TRACK" , "아티스트 인기곡"),
     LIVE_CHART("LIVE_CHART" , "실시간 차트"),
     KIDS_CHART("KIDS_CHART" , "키즈 차트");
 

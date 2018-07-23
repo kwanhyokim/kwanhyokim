@@ -8,20 +8,21 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.repository.channel;
+package com.sktechx.godmusic.personal.rest.repository;
 
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
-import com.sktechx.godmusic.personal.rest.model.dto.ChannelDto;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
+
+import java.util.Date;
+import java.util.List;
 
 /**
- * 설명 :  채널 Repository
+ * 설명 :  추천 관련 Repository
  *
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 19.
  */
 @BaseMapper
-public interface ChannelMapper {
-    //TODO : meta api 호출
-    ChannelDto selectChannelById(Long chnlId);
-    Integer selectChannelTrackCount(Long chnlId);
+public interface RecommendMapper {
+    List<PersonalPanel> selectPersonalRecommendPhaseMeta(Long charactorNo, Date standardDate);
 }

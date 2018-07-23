@@ -8,11 +8,10 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.repository.artist;
+package com.sktechx.godmusic.personal.rest.repository;
 
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ChannelDto;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -25,6 +24,6 @@ import java.util.List;
  */
 @BaseMapper
 public interface ArtistMapper {
-    //TODO : meta api 호출
+    //TODO : 추후 meta api 호출
     List<ArtistDto> getArtistList(@Param("artistIdList") List<Long> artistIdList);
 }

@@ -13,10 +13,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 
-<mapper namespace="com.sktechx.godmusic.personal.rest.repository.artist.ArtistMapper" >
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.ArtistMapper" >
 
 
-    <resultMap id="ArtistResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" autoMapping="true">
+    <resultMap id="artistResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" autoMapping="true">
         <id property="artistId" column="artist_id"/>
         <collection property="imgList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.dto.ImageDto" column="artistId" autoMapping="true">
             <result property="size" column="size" />
@@ -24,7 +24,7 @@
         </collection>
     </resultMap>
 
-    <select id="getArtistList" resultMap="ArtistResultMap">
+    <select id="getArtistList" resultMap="artistResultMap">
       SELECT
         a.artist_id ,
         a.artist_nm ,

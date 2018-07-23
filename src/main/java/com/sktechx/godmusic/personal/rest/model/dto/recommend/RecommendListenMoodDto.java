@@ -10,13 +10,10 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto.recommend;
 
-import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ChannelDto;
-import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import lombok.Data;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * 설명 : 추천청취 분위기 인기 채널
@@ -34,6 +31,6 @@ public class RecommendListenMoodDto {
     private Date createDtime;
     private Date updateDtime;
 
-    private ChannelDto channel;
+    private ChnlDto channel;
 
 }

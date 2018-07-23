@@ -8,21 +8,17 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.repository.recommend;
+package com.sktechx.godmusic.personal.rest.repository;
 
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
-
-import java.util.Date;
-import java.util.List;
 
 /**
- * 설명 :  추천 관련 Repository
+ * 설명 :  앨범 Repository
  *
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 19.
  */
 @BaseMapper
-public interface RecommendMapper {
-    public List<PersonalPanel> selectPersonalRecommendPhaseMeta(Long charactorNo, Date standardDate);
+public interface AlbumMapper {
+
 }

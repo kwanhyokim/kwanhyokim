@@ -13,7 +13,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 
-<mapper namespace="com.sktechx.godmusic.personal.rest.repository.recommend.RecommendMapper" >
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.RecommendMapper" >
 
     <resultMap id="personalPanelResultMap" type="com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel">
 

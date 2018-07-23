@@ -11,7 +11,7 @@
 package com.sktechx.godmusic.personal.rest.service.impl;
 
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
-import com.sktechx.godmusic.personal.rest.repository.chart.ChartMapper;
+import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
 import com.sktechx.godmusic.personal.rest.service.ChartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,13 +30,13 @@ public class ChartServiceImpl implements ChartService {
 
     @Override
     public ChartDto getKidsChart() {
-        //TODO : meta api 호출
+        //TODO : 추후 meta api 호출
         return chartMapper.selectLiveChart();
     }
 
     @Override
     public ChartDto getLiveChart() {
-        //TODO : meta api 호출
+        //TODO : 추후 meta api 호출
         return chartMapper.selectLiveChart();
     }
 }

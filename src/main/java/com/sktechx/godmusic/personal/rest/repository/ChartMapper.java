@@ -13,6 +13,7 @@
 package com.sktechx.godmusic.personal.rest.repository;
 
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
+import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.GenreDto;
 import org.apache.ibatis.annotations.Param;
@@ -29,4 +30,6 @@ import java.util.List;
 public interface ChartMapper {
     ChnlDto selectChartContentList(Long chartId);
 
+    //TODO : 추후 meta api 호출
+    ChartDto selectLiveChart();
 }

@@ -54,7 +54,7 @@ public class ArtistPanel extends Panel{
         content.setId(recommendArtistDto.getRcmmdArtistId());
         content.setArtistCount(recommendArtistDto.getArtistList().size());
         content.setArtistList(recommendArtistDto.getArtistList());
-        content.setContentType(RecommendPanelType.ARRIST_POPULAR_TRACK);
+        content.setContentType(RecommendPanelType.ARTIST_POPULAR_TRACK);
         content.setCreateDtime(recommendArtistDto.getCreateDtime());
         content.setUpdateDtime(recommendArtistDto.getUpdateDtime());
 

@@ -13,7 +13,7 @@ package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
-import com.sktechx.godmusic.personal.rest.model.dto.ChannelDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.GenreVo;
@@ -30,11 +30,11 @@ import java.util.List;
  */
 public abstract class ChannelPanel extends Panel{
     @JsonIgnore
-    private ChannelDto channel;
+    private ChnlDto channel;
     @JsonIgnore
     private GenreVo genre;
 
-    public ChannelPanel(RecommendPanelType panelType, ChannelDto channel, GenreVo genre,List<ImageDto> bgImgList, Integer dispSn) throws Exception {
+    public ChannelPanel(RecommendPanelType panelType, ChnlDto channel, GenreVo genre, List<ImageDto> bgImgList, Integer dispSn) throws Exception {
         super(panelType, dispSn);
         this.channel = neverNullChannel(channel);
         this.imgList = neverNullBgImgList(bgImgList);
@@ -66,7 +66,7 @@ public abstract class ChannelPanel extends Panel{
         return content;
     }
 
-    private static ChannelDto neverNullChannel(ChannelDto channel) throws Exception {
+    private static ChnlDto neverNullChannel(ChnlDto channel) throws Exception {
         if(channel == null || StringUtils.isEmpty(channel.getChnlNm()))
             throw new IllegalAccessException("channel is null.");
         return channel;

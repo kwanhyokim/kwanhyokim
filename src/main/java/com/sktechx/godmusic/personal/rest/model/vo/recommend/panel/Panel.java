@@ -11,19 +11,14 @@
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ChannelDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
-import java.awt.*;
 import java.util.List;
 
 /**

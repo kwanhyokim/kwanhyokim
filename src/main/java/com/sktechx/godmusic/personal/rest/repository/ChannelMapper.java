@@ -8,23 +8,20 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.repository.track;
+package com.sktechx.godmusic.personal.rest.repository;
 
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
-import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
-import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
-import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
+import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 
 /**
- * 설명 : 트랙
+ * 설명 :  채널 Repository
  *
  * @author 오경무/SKTECHX (km.oh@sk.com)
- * @date 2018. 07. 23.
+ * @date 2018. 07. 19.
  */
 @BaseMapper
-public interface TrackMapper {
+public interface ChannelMapper {
     //TODO : meta api 호출
-    List<TrackDto> selectTrackList(@Param("trackIdList") List<Long> trackIdList);
+    ChnlDto selectChannelById(Long chnlId);
+    Integer selectChannelTrackCount(Long chnlId);
 }
