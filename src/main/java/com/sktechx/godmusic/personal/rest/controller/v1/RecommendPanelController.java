@@ -10,9 +10,10 @@
 
 package com.sktechx.godmusic.personal.rest.controller.v1;
 
+import com.netflix.discovery.converters.Auto;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
-import com.sktechx.godmusic.personal.rest.service.MockRecommendPanelService;
+import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,16 +29,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(Naming.serviceCode+"/v1/recommends")
 public class RecommendPanelController {
-
-
     @Autowired
-    private MockRecommendPanelService mockRecommendPanelService;
+    private RecommendPanelService recommendPanelService;
 
     @ApiOperation(value = "추천 홈 패널 조회", httpMethod = "GET", notes = "추천 패널 조회 MockUp API" , response = RecommendPanelResponse.class)
     @GetMapping(value = "/home/panels")
     public RecommendPanelResponse recommendHomePanels(){
         RecommendPanelResponse mockResponse = new RecommendPanelResponse();
-        mockResponse.setPanelList(mockRecommendPanelService.createMockUpRecommendPanelList());
+        mockResponse.setPanelList(recommendPanelService.createRecommendPanelList());
         return mockResponse;
     }
 }

@@ -10,11 +10,14 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
-import io.swagger.annotations.ApiModel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.GenreVo;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import org.springframework.util.CollectionUtils;
@@ -28,32 +31,47 @@ import java.util.List;
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 09.
  */
-
 public abstract class TrackPanel extends Panel {
-    @Getter
-    @ApiModelProperty(required = true, example = "", value = "트랙 리스트")
-    protected List<TrackDto> trackList;
-    @Getter
-    @ApiModelProperty(required = true, example = "중독성 있는 랩/힙합", value = "트랙 전체 개수")
-    protected Integer trackCount;
 
-    public TrackPanel(RecommendPanelType panelType , String title, String subTitle, List<ImageDto> imgList , List<TrackDto> trackList) throws Exception{
-        super(panelType , neverNull(title), neverNull(subTitle) , imgList);
-        this.trackList = neverNullList(trackList);
-        this.trackCount = trackList.size();
+    @JsonIgnore
+    private RecommendTrackDto recommendTrackDto;
 
+    public TrackPanel(RecommendPanelType panelType ,String title, String subTitle, RecommendTrackDto recommendTrackDto, List<ImageDto> bgImgList , Integer dispSn) throws Exception{
+        super(panelType , dispSn);
+        this.recommendTrackDto = recommendTrackDto;
+        this.imgList = neverNullBgImgList(bgImgList);
+        this.title = title;
+        this.subTitle = subTitle;
+        initialPanel();
     }
 
-    private static String neverNull( String str) throws Exception {
-        if(StringUtils.isEmpty(str))
-            throw new IllegalAccessException("title or subTitle is null.");
-        return str;
+    @Override
+    protected void initialPanel() {
+        this.content = createPanelContent();
     }
 
-    private static List<TrackDto> neverNullList( List<TrackDto> trackList) throws Exception{
-        if(CollectionUtils.isEmpty(trackList))
-            throw new IllegalAccessException("trackList is null.");
-        return trackList;
+    @Override
+    protected PanelContentVo createPanelContent() {
+        PanelContentVo content = new PanelContentVo();
+
+        content.setId(recommendTrackDto.getRcmmdId());
+        content.setContentType(panelType);
+        content.setTrackList(recommendTrackDto.getTrackList());
+        content.setTrackCount(recommendTrackDto.getTrackList().size());
+        content.setGenre(new GenreVo(recommendTrackDto.getSvcGenreDto()));
+        content.setCreateDtime(recommendTrackDto.getCreateDtime());
+
+        return content;
+    }
+
+    protected static RecommendTrackDto neverRecommdnTrackNull(RecommendTrackDto recommendTrackDto) throws Exception {
+        if(recommendTrackDto == null || CollectionUtils.isEmpty(recommendTrackDto.getTrackList()) )
+            throw new IllegalAccessException("recommendTrackDto is null.");
+
+        if(recommendTrackDto.getSvcGenreDto() == null){
+            throw new IllegalAccessException("recommendTrackDto svcGenre is null.");
+        }
+        return recommendTrackDto;
     }
 
 }

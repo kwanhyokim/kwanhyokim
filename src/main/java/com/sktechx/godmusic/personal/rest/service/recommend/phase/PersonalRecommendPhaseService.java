@@ -8,21 +8,16 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.model.vo.recommend;
+package com.sktechx.godmusic.personal.rest.service.recommend.phase;
+
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 
 /**
- * 설명 : 추천 패널 타입
+ * 설명 : 캐릭터별 추천 단계 및 추천 메타 정보 서비스
  *
  * @author 오경무/SKTECHX (km.oh@sk.com)
- * @date 2018. 07. 09.
+ * @date 2018. 07. 19.
  */
-public enum RecommendPanelType {
-    POPULAR_CHANNEL,
-    PREFER_SIMILAR_TRACK,
-    PREFER_GENRE_SIMILAR_TRACK,
-    RCMMD_TRACK,
-    ARRIST_POPULAR_TRACK,
-    LIVE_CHART,
-    KIDS_CHART
-
+public interface PersonalRecommendPhaseService {
+    PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo);
 }

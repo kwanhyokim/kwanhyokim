@@ -8,54 +8,44 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.model.dto;
+package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sktechx.godmusic.lib.mybatis.code.CodeEnum;
+import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
+import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
 
 /**
- * 설명 : 트랙 DTO
+ * 설명 : 추천 패널에서 사용할 공통 컨텐츠
  *
  * @author 오경무/SKTECHX (km.oh@sk.com)
- * @date 2018. 07. 09.
+ * @date 2018. 07. 20.
  */
 @Data
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
-public class TrackDto {
-    @JsonProperty("id")
-    private Long trackId;
-    @JsonProperty("name")
-    private String trackNm;
+public class PanelContentVo {
+    private Long id;
+    private CodeEnum contentType;
+    private Integer updateCount;
 
-    @JsonProperty("priority")
-    private Integer trackSn;
-
-    @JsonProperty("beforePriority")
-    private Integer trackBfSn;
-
-    private String holdbackYn;
-
-    private String playTime;
-
-    private String titleYn;
-
-    private Long agencyId;
-
-    @JsonProperty("representationArtist")
-    private ArtistDto artist;
+    private List<TrackDto> trackList;
+    private Integer trackCount;
     private List<ArtistDto> artistList;
-
-    private AlbumDto album;
+    private Integer artistCount;
 
     @JsonProperty("createDateTime")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
     private Date createDtime;
+
     @JsonProperty("updateDateTime")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
     private Date updateDtime;
+
+    private GenreVo genre;
 }

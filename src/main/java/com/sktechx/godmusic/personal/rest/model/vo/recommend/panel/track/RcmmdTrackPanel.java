@@ -12,18 +12,21 @@ package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track;
 
 import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.GenreVo;
+import lombok.Getter;
 
 import java.util.List;
 
 /**
- * 설명 : XXXXXXXX
+ * 설명 : 추천 CBF
  *
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 10.
  */
 public class RcmmdTrackPanel extends TrackPanel {
-    public RcmmdTrackPanel(RecommendPanelType panelType , List<ImageDto> imgList , String genreName , List<TrackDto> trackList)throws Exception {
-        super(panelType,"Made for U", genreName, imgList , trackList);
+    public RcmmdTrackPanel(RecommendPanelType panelType , RecommendTrackDto recommendTrackDto, List<ImageDto> bgImgList , Integer dispSn)throws Exception {
+        super(panelType , "Made for U" , neverRecommdnTrackNull(recommendTrackDto).getSvcGenreDto().getSvcGenreNm(),recommendTrackDto ,bgImgList,  dispSn);
     }
 }
