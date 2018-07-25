@@ -13,7 +13,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 
-<mapper namespace="com.sktechx.godmusic.personal.rest.repository.ArtistMapper" >
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.ArtistMapper">
 
 
     <resultMap id="artistResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" autoMapping="true">

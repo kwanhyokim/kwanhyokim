@@ -13,8 +13,10 @@
 package com.sktechx.godmusic.personal.rest.repository;
 
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
-import com.sktechx.godmusic.personal.rest.model.dto.CharacterDto;
+import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * 설명 :
@@ -23,6 +25,6 @@ import org.apache.ibatis.annotations.Param;
  * @date 2018. 7. 22.
  */
 @BaseMapper
-public interface CharacterMapper {
-    CharacterDto selectCharacter(@Param("characterNo") Long characterNo);
+public interface CharacterPreferGenreMapper {
+    List<CharacterPreferGenreDto> selectCharacterPreferGenreList(@Param("characterNo") Long characterNo);
 }

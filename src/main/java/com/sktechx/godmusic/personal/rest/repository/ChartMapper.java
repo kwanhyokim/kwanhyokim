@@ -28,8 +28,10 @@ import java.util.List;
  */
 @BaseMapper
 public interface ChartMapper {
-    ChnlDto selectChartContentList(Long chartId);
-
     //TODO : 추후 meta api 호출
     ChartDto selectLiveChart();
+
+    List<ChartDto> selectChartListByDefaultGenre();
+    List<ChartDto> selectChartListByPreferGenre(@Param("characterNo") Long characterNo);
+    ChartDto selectChartMusicContentList(@Param("chartId") Long chartId);
 }

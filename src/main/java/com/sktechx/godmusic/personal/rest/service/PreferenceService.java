@@ -12,10 +12,8 @@
 
 package com.sktechx.godmusic.personal.rest.service;
 
-import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
-import com.sktechx.godmusic.personal.rest.model.vo.preference.Genre;
-
-import java.util.List;
+import com.sktechx.godmusic.personal.rest.model.vo.preference.Chart;
+import com.sktechx.godmusic.personal.rest.model.vo.preference.PreferGenreResponse;
 
 /**
  * 설명 : 선호 장르 서비스
@@ -24,6 +22,6 @@ import java.util.List;
  * @date 2018. 7. 19.
  */
 public interface PreferenceService {
-    List<Genre> getPreferenceGenreList(Long characterNo);
-    ChnlDto getPreferenceGenre(Long chartId);
+    PreferGenreResponse getPreferenceGenreList(Long characterNo);
+    Chart getPreferenceGenre(Long chartId);
 }

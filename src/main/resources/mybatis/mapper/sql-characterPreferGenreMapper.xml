@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ /*
+  ~  * Copyright (c) 2018 SK TECHX.
+  ~  * All right reserved.
+  ~  *
+  ~  * This software is the confidential and proprietary information of SK TECHX.
+  ~  * You shall not disclose such Confidential Information and
+  ~  * shall use it only in accordance with the terms of the license agreement
+  ~  * you entered into with SK TECHX.
+  ~  */
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.CharacterPreferGenreMapper">
+
+    <resultMap id="characterPreferGenreResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto" autoMapping="true" />
+
+    <select id="selectCharacterPreferGenreList" resultMap="characterPreferGenreResultMap" parameterType="Long">
+        <![CDATA[
+            SELECT
+              a.character_no,
+              a.prefer_genre_id
+            FROM tb_character_prefer_genre a
+            WHERE a.character_no = #{characterNo}
+        ]]>
+    </select>
+
+</mapper>
