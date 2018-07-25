@@ -11,10 +11,14 @@
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.phase;
 
 import com.sktechx.godmusic.lib.redis.service.RedisService;
+import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
 
 /**
  * 설명 : 사용자 청취 단계 / 패널 메타 관리
@@ -29,7 +33,18 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
     public PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo){
         PersonalPhaseMeta personalPhaseMeta = null;
 
+        if(characterNo == null){
+            return getGuestPhaseMeta();
+        }
+        //TODO : 개인화 정보 조회 및 캐쉬 저장 로직 추가 해야함
+
         return personalPhaseMeta;
+    }
+
+    private PersonalPhaseMeta getGuestPhaseMeta(){
+        PersonalPhaseMeta guestPhaseMeta = new PersonalPhaseMeta();
+        guestPhaseMeta.setPhaseList(Arrays.asList(new PersonalPhase(PersonalPhaseType.GUEST, null)));
+        return guestPhaseMeta;
     }
 
 }

@@ -16,34 +16,27 @@ import com.sktechx.godmusic.lib.mybatis.code.CodeEnumTypeHandler;
 import org.apache.ibatis.type.MappedTypes;
 
 /**
- * 설명 : 개인화 단계
- *       GUEST : 비로그인 방문
- *       VISIT : 방문
- *       LISTEN : 청취
- *       RECOMMEND : 추천
+ *  * 설명 : Os 타입
+ *
  * @author 오경무/SKTECHX (km.oh@sk.com)
- * @date 2018. 07. 18.
+ * @date 2018. 07. 09.
  */
-public enum PersonalPhaseType implements CodeEnum {
-    GUEST("GUEST",0, "비로그인 방문"),
-    VISIT("VISIT",1, "방문"),
-    LISTEN("LISTEN",2,"청취"),
-    RECOMMEND("RECOMMEND",3,"추천");
+public enum OsType implements CodeEnum {
+    AOS("AOS", "안드로이드"),
+    IOS("IOS" , "iOS");
 
     private final String code;
-    private final int phase;
     private final String value;
 
-    PersonalPhaseType(String code,int phase, String value) {
+    OsType(String code, String value) {
         this.code = code;
-        this.phase = phase;
         this.value = value;
     }
 
-    @MappedTypes(PersonalPhaseType.class)
-    public static class TypeHandler extends CodeEnumTypeHandler<PersonalPhaseType> {
+    @MappedTypes(OsType.class)
+    public static class TypeHandler extends CodeEnumTypeHandler<OsType> {
         public TypeHandler() {
-            super(PersonalPhaseType.class);
+            super(OsType.class);
         }
     }
 
@@ -53,12 +46,9 @@ public enum PersonalPhaseType implements CodeEnum {
         return code;
     }
 
-    public int getPhase(){ return phase; }
-
     public String getValue() {
         return value;
     }
-
 
     @Override
     public CodeEnum getDefault() {

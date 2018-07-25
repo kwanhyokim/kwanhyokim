@@ -10,9 +10,11 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel;
 
-import com.sktechx.godmusic.personal.rest.model.dto.*;
-import com.sktechx.godmusic.personal.rest.service.recommend.panel.RecommendPanelAssembly;
+import com.sktechx.godmusic.personal.rest.model.dto.PreferGenreDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ServiceGenreDto;
+import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelSignAssembly;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -23,15 +25,9 @@ import java.util.List;
  * @date 2018. 07. 14.
  */
 @Slf4j
-public class VisitPhasePanelAssembly extends RecommendPanelAssembly {
+@Service("visitPhasePanelAssembly")
+public class VisitPhasePanelAssembly extends PanelSignAssembly {
 
-    public VisitPhasePanelAssembly(Long characterNo, List<ServiceGenreDto> preferenceGenreList , List<ArtistDto> preferenceArtistList) {
-        super(characterNo , preferenceGenreList , preferenceArtistList);
-    }
-
-    @Override
-    protected void init(){
-    }
     @Override
     protected void defaultPanelSetting() {
     }

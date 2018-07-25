@@ -22,8 +22,10 @@ import org.apache.ibatis.type.MappedTypes;
  * @date 2018. 07. 09.
  */
 public enum ChartType implements CodeEnum {
-    LIVE("LIVE", "실시간"),
-    KIDS("KIDS" , "어린이");
+    RTIME("RTIME", "실시간"),
+    DAILY("DAILY" , "일간"),
+    MONTHLY("MONTHLY" , "월간"),
+    WEEKLY("WEEKLY" , "주간");
 
     private final String code;
     private final String value;

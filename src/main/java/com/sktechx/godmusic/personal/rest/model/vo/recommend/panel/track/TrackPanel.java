@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
@@ -36,8 +37,8 @@ public abstract class TrackPanel extends Panel {
     @JsonIgnore
     private RecommendTrackDto recommendTrackDto;
 
-    public TrackPanel(RecommendPanelType panelType ,String title, String subTitle, RecommendTrackDto recommendTrackDto, List<ImageDto> bgImgList , Integer dispSn) throws Exception{
-        super(panelType , dispSn);
+    public TrackPanel(RecommendPanelType panelType ,String title, String subTitle, RecommendTrackDto recommendTrackDto, List<ImageDto> bgImgList) throws Exception{
+        super(panelType);
         this.recommendTrackDto = recommendTrackDto;
         this.imgList = neverNullBgImgList(bgImgList);
         this.title = title;
@@ -55,7 +56,7 @@ public abstract class TrackPanel extends Panel {
         PanelContentVo content = new PanelContentVo();
 
         content.setId(recommendTrackDto.getRcmmdId());
-        content.setContentType(panelType);
+        content.setContentType(RecommendPanelContentType.getRecommendPanelContentByPanelType(panelType));
         content.setTrackList(recommendTrackDto.getTrackList());
         content.setTrackCount(recommendTrackDto.getTrackList().size());
         content.setGenre(new GenreVo(recommendTrackDto.getSvcGenreDto()));

@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.artist;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
@@ -29,8 +30,8 @@ public class ArtistPanel extends Panel{
     @JsonIgnore
     private RecommendArtistDto recommendArtistDto;
 
-    public ArtistPanel(RecommendPanelType panelType, RecommendArtistDto recommendArtist ,Integer dispSn)  throws Exception{
-        super(panelType , dispSn);
+    public ArtistPanel(RecommendPanelType panelType, RecommendArtistDto recommendArtist)  throws Exception{
+        super(panelType);
         this.recommendArtistDto = recommendArtist;
         this.initialPanel();
     }
@@ -54,7 +55,7 @@ public class ArtistPanel extends Panel{
         content.setId(recommendArtistDto.getRcmmdArtistId());
         content.setArtistCount(recommendArtistDto.getArtistList().size());
         content.setArtistList(recommendArtistDto.getArtistList());
-        content.setContentType(RecommendPanelType.ARTIST_POPULAR_TRACK);
+        content.setContentType(RecommendPanelContentType.RC_ATST_TR);
         content.setCreateDtime(recommendArtistDto.getCreateDtime());
         content.setUpdateDtime(recommendArtistDto.getUpdateDtime());
 

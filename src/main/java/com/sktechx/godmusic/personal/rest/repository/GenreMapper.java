@@ -14,6 +14,7 @@ package com.sktechx.godmusic.personal.rest.repository;
 
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
 import com.sktechx.godmusic.personal.rest.model.dto.GenreDto;
+import com.sktechx.godmusic.personal.rest.model.dto.PreferGenreDto;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -26,6 +27,4 @@ import java.util.List;
  */
 @BaseMapper
 public interface GenreMapper {
-    List<GenreDto> selectGenreListByDefault();
-    List<GenreDto> selectGenreListByCharacterNo(@Param("characterNo") Long characterNo);
 }

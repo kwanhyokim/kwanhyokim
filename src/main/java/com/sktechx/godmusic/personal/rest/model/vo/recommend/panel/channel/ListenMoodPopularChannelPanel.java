@@ -23,7 +23,7 @@ import java.util.List;
  * @date 2018. 07. 19.
  */
 public class ListenMoodPopularChannelPanel extends ChannelPanel{
-    public ListenMoodPopularChannelPanel(RecommendPanelType panelType, ChnlDto channel, List<ImageDto> bgImgList  , Integer dispSn) throws Exception {
-        super(panelType, channel , null , bgImgList , dispSn);
+    public ListenMoodPopularChannelPanel(RecommendPanelType panelType, ChnlDto channel, List<ImageDto> bgImgList) throws Exception {
+        super(panelType, channel , null , bgImgList);
     }
 }
