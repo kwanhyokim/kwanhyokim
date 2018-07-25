@@ -36,7 +36,7 @@ public class RecommendPanelController {
     @GetMapping(value = "/home/panels")
     public RecommendPanelResponse recommendHomePanels(){
         RecommendPanelResponse mockResponse = new RecommendPanelResponse();
-        mockResponse.setPanelList(recommendPanelService.createRecommendPanelList());
+        mockResponse.setPanelList(recommendPanelService.createMockupRecommendPanelList());
         return mockResponse;
     }
 }

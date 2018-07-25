@@ -26,7 +26,7 @@ import java.util.List;
  * @date 2018. 07. 10.
  */
 public class RcmmdTrackPanel extends TrackPanel {
-    public RcmmdTrackPanel(RecommendPanelType panelType , RecommendTrackDto recommendTrackDto, List<ImageDto> bgImgList , Integer dispSn)throws Exception {
-        super(panelType , "Made for U" , neverRecommdnTrackNull(recommendTrackDto).getSvcGenreDto().getSvcGenreNm(),recommendTrackDto ,bgImgList,  dispSn);
+    public RcmmdTrackPanel(RecommendPanelType panelType , RecommendTrackDto recommendTrackDto, List<ImageDto> bgImgList )throws Exception {
+        super(panelType , "Made for U" , neverRecommdnTrackNull(recommendTrackDto).getSvcGenreDto().getSvcGenreNm(),recommendTrackDto ,bgImgList);
     }
 }

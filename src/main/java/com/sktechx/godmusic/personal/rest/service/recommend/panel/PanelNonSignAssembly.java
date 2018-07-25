@@ -8,24 +8,29 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.service.recommend;
+package com.sktechx.godmusic.personal.rest.service.recommend.panel;
 
 import com.sktechx.godmusic.personal.common.domain.type.OsType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
-import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 설명 : XXXXXXXX
+ * 설명 : 비로그인 사용자 추천 패널 생성기
  *
  * @author 오경무/SKTECHX (km.oh@sk.com)
- * @date 2018. 07. 09.
+ * @date 2018. 07. 24.
  */
-public interface RecommendPanelService {
-    List<Panel> createMockupRecommendPanelList();
-    List<Panel> createRecommendPanelList(Long characterNo, OsType osType);
+public abstract class PanelNonSignAssembly extends PanelAssembly{
 
-    List<ImageDto> getPanelBackgroundImageList(RecommendPanelType recommendPanelType,OsType osType);
+    @Override
+    public List<Panel> assembleRecommendPanel(){
+        panelList = new ArrayList();
+
+        defaultPanelSetting();
+
+        return panelList;
+    }
+
 }

@@ -22,12 +22,12 @@ import org.apache.ibatis.type.MappedTypes;
  * @date 2018. 07. 09.
  */
 public enum RecommendPanelContentType implements CodeEnum{
-    CHANNEL("CHANNEL" , "채널"),
+    CHNL("CHNL" , "채널"),
     CHART("CHART" , "차트"),
-    ARRIST_POPULAR_TRACK("ARRIST_POPULAR_TRACK" , "아티스트 인기곡"),
-    PREFER_SIMILAR_TRACK("PREFER_SIMILAR_TRACK" , "선호 유사곡"),
-    PREFER_GENRE_SIMILAR_TRACK("PREFER_GENRE_SIMILAR_TRACK" , "선호 장르 유사곡"),
-    RCMMD_TRACK("RCMMD_TRACK" , "추천 유사곡");
+    RC_ATST_TR("RC_ATST_TR" , "아티스트 인기곡"),
+    RC_SML_TR("RC_SML_TR" , "선호 유사곡"),
+    RC_GR_TR("RC_GR_TR" , "선호 장르 유사곡"),
+    RC_CF_TR("RC_CF_TR" , "추천 유사곡");
 
     private final String code;
     private final String value;
@@ -56,6 +56,17 @@ public enum RecommendPanelContentType implements CodeEnum{
 
     @Override
     public CodeEnum getDefault() {
+        return null;
+    }
+
+    public static RecommendPanelContentType getRecommendPanelContentByPanelType(RecommendPanelType recommendPanelType){
+        if(RecommendPanelType.RCMMD_TRACK.equals(recommendPanelType)){
+            return RC_CF_TR;
+        }else if(RecommendPanelType.PREFER_GENRE_SIMILAR_TRACK.equals(recommendPanelType)){
+            return RC_GR_TR;
+        }else if(RecommendPanelType.PREFER_SIMILAR_TRACK.equals(recommendPanelType)){
+            return RC_SML_TR;
+        }
         return null;
     }
 }

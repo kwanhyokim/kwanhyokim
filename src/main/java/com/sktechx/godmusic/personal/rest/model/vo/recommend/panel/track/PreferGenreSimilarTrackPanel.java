@@ -24,8 +24,8 @@ import java.util.List;
  */
 public class PreferGenreSimilarTrackPanel extends TrackPanel {
 
-    public PreferGenreSimilarTrackPanel(RecommendPanelType panelType, RecommendTrackDto recommendTrackDto, List<ImageDto> bgImgList, Integer dispSn) throws Exception {
-        super(panelType , "Mix Tape" , neverRecommdnTrackNull(recommendTrackDto).getSvcGenreDto().getSvcGenreNm(),recommendTrackDto ,bgImgList,  dispSn);
+    public PreferGenreSimilarTrackPanel(RecommendPanelType panelType, RecommendTrackDto recommendTrackDto, List<ImageDto> bgImgList) throws Exception {
+        super(panelType , "Mix Tape" , neverRecommdnTrackNull(recommendTrackDto).getSvcGenreDto().getSvcGenreNm(),recommendTrackDto ,bgImgList);
     }
 
 }

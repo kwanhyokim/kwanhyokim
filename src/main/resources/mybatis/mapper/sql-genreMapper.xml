@@ -41,6 +41,9 @@
 
     </resultMap>
 
+    <resultMap id="preferGenreResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.PreferGenreDto" autoMapping="true">
+        <id property="preferGenreId" column=""/>
+    </resultMap>
     <select id="selectGenreListByDefault" resultMap="genreResultMap">
         <![CDATA[
             SELECT
@@ -201,4 +204,15 @@
         ]]>
     </select>
 
+    <select id="selectPreferGenreListByCharacterNo" resultMap="preferGenreResultMap">
+        SELECT
+            a.prefer_genre_id,
+            a.prefer_genre_nm
+        FROM
+            tb_prefer_genre a INNER JOIN tb_character_prefer_genre b ON a.prefer_genre_id = b.prefer_genre_id
+        WHERE
+            b.character_no = #{characterNo}
+        AND
+            a.use_yn = 'Y'
+    </select>
 </mapper>

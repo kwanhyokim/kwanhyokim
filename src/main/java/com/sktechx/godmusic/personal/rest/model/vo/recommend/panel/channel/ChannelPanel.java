@@ -34,8 +34,8 @@ public abstract class ChannelPanel extends Panel{
     @JsonIgnore
     private GenreVo genre;
 
-    public ChannelPanel(RecommendPanelType panelType, ChnlDto channel, GenreVo genre, List<ImageDto> bgImgList, Integer dispSn) throws Exception {
-        super(panelType, dispSn);
+    public ChannelPanel(RecommendPanelType panelType, ChnlDto channel, GenreVo genre, List<ImageDto> bgImgList) throws Exception {
+        super(panelType);
         this.channel = neverNullChannel(channel);
         this.imgList = neverNullBgImgList(bgImgList);
         this.genre = genre;
@@ -43,8 +43,8 @@ public abstract class ChannelPanel extends Panel{
     }
 
     @Override
-    protected void initialPanel() throws Exception{
-        this.title = channel.getChnlNm();
+    protected void initialPanel(){
+        this.title = channel.getChnlDispNm();
         this.subTitle = "";
         this.content = createPanelContent();
     }
@@ -55,7 +55,7 @@ public abstract class ChannelPanel extends Panel{
         PanelContentVo content = new PanelContentVo();
 
         content.setId(channel.getChnlId());
-        content.setContentType(RecommendPanelContentType.CHANNEL);
+        content.setContentType(RecommendPanelContentType.CHNL);
         content.setUpdateCount(channel.getUpdateCount());
         content.setTrackCount(channel.getTrackCount());
         content.setTrackList(channel.getTrackList());

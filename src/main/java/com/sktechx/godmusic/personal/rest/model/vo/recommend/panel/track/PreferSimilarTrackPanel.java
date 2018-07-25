@@ -25,8 +25,8 @@ import java.util.List;
  */
 public class PreferSimilarTrackPanel extends TrackPanel {
 
-    public PreferSimilarTrackPanel(RecommendPanelType panelType, RecommendTrackDto recommendTrackDto,List<ImageDto> bgImgList,  Integer dispSn) throws Exception{
+    public PreferSimilarTrackPanel(RecommendPanelType panelType, RecommendTrackDto recommendTrackDto,List<ImageDto> bgImgList) throws Exception{
         //TODO : 부제목
-        super(panelType , "Like U" , "많이 들었던 노래와\n 유사한 선곡", neverRecommdnTrackNull(recommendTrackDto) ,bgImgList,  dispSn);
+        super(panelType , "Like U" , "많이 들었던 노래와\n 유사한 선곡", neverRecommdnTrackNull(recommendTrackDto) ,bgImgList);
     }
 }

@@ -47,16 +47,11 @@ public abstract class Panel {
     protected List<ImageDto> imgList;
 
     @Getter
-    @ApiModelProperty(required = true, value = "패널 순서")
-    protected Integer dispSn;
-
-    @Getter
     @ApiModelProperty(required = true, value = "패널 컨텐츠")
     protected PanelContentVo content;
 
-    public Panel(RecommendPanelType panelType , Integer dispSn){
+    public Panel(RecommendPanelType panelType){
         this.panelType = panelType;
-        this.dispSn = dispSn;
     }
 
     abstract protected void initialPanel() throws Exception;

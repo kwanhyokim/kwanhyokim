@@ -31,8 +31,8 @@ public class ChartPanel extends Panel {
     @JsonIgnore
     private ChartDto chart;
 
-    public ChartPanel(RecommendPanelType panelType , ChartDto chart, List<ImageDto> bgImgList,Integer dispSn) throws Exception{
-        super(panelType ,dispSn);
+    public ChartPanel(RecommendPanelType panelType , ChartDto chart, List<ImageDto> bgImgList) throws Exception{
+        super(panelType);
         this.chart = neverNullChart(chart);
         this.imgList = neverNullBgImgList(bgImgList);
         this.initialPanel();

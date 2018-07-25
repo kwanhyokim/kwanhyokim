@@ -25,4 +25,12 @@ import java.util.Date;
 public class PersonalPhase {
     private PersonalPhaseType phaseType;
     private Date avaliableDateTime;
+
+    public PersonalPhase(){
+    }
+
+    public PersonalPhase(PersonalPhaseType phaseType , Date avaliableDateTime){
+        this.phaseType = phaseType;
+        this.avaliableDateTime = avaliableDateTime;
+    }
 }
