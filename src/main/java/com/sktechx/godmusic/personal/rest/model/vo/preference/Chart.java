@@ -65,9 +65,10 @@ public class Chart {
     @Data
     @EqualsAndHashCode(callSuper = false)
     public static class Album {
+        @JsonProperty("id")
         private Long albumId;
 
-        @JsonProperty("imageList")
+        @JsonProperty("imgList")
         private List<AlbumImg> albumImgList;
 
         public Album(AlbumDto albumDto) {
