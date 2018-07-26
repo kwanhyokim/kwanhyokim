@@ -111,7 +111,7 @@
               JOIN ted_album f ON e.album_id = f.album_id
               JOIN tb_album_img g ON f.album_id = g.album_id
             WHERE a.main_disp_std_yn = 'Y'
-                  AND b.chart_type_cd IN ('DAILY', 'NEW')
+                  AND b.chart_type IN ('DAILY', 'NEW')
                   AND b.svc_content_type = 'GENRE'
                   AND b.music_content_type = 'TRACK'
                   AND c.disp_sn = 1
@@ -239,7 +239,7 @@
               JOIN ted_track ee ON dd.track_id = ee.track_id
               JOIN ted_album ff ON ee.album_id = ff.album_id
               JOIN tb_album_img gg ON ff.album_id = gg.album_id
-            WHERE bb.chart_type_cd IN ('DAILY', 'NEW')
+            WHERE bb.chart_type IN ('DAILY', 'NEW')
                   AND bb.svc_content_type = 'GENRE'
                   AND bb.music_content_type = 'TRACK'
                   AND cc.disp_sn = 1
