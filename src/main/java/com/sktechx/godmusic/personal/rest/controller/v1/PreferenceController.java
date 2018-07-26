@@ -45,14 +45,14 @@ public class PreferenceController {
     private PreferenceService preferenceService;
 
     @ApiOperation(value = "장르 추천", httpMethod = "GET", notes = "선호 장르 추천 API", response = PreferenceResponse.class)
-    @GetMapping(value = "/geners")
+    @GetMapping(value = "/genres")
     public CommonApiResponse<PreferenceResponse> preferencesGeners(@ApiIgnore @RequestGMContext GMContext ctx) {
         log.info("GMContext : {}", GMContext.getContext());
         return new CommonApiResponse<>(preferenceService.getPreferenceGenreList(ctx.getCharacterNo()));
     }
 
     @ApiOperation(value = "장르 추천 상세", httpMethod = "GET", notes = "선호 장르 추천별 플레이 리스트 API", response = Chart.class)
-    @GetMapping(value = "/geners/{chartId}")
+    @GetMapping(value = "/genres/{chartId}")
     public CommonApiResponse<Chart> preferencesGeners(
             @ApiParam(name = "chartId", required = true, value = "차트아이디", defaultValue = "3325") @PathVariable("chartId") Long chartId) {
         return new CommonApiResponse<>(preferenceService.getPreferenceGenre(chartId));
