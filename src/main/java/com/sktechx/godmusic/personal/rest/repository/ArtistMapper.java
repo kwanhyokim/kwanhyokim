@@ -26,4 +26,6 @@ import java.util.List;
 public interface ArtistMapper {
     //TODO : 추후 meta api 호출
     List<ArtistDto> getArtistList(@Param("artistIdList") List<Long> artistIdList);
+    List<ArtistDto> selectArtistListByPreferArtist(@Param("characterNo") Long characterNo);
+
 }
