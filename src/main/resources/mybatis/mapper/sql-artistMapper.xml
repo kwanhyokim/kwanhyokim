@@ -39,4 +39,38 @@
             #{artistId}
         </foreach>
     </select>
+
+    <select id="selectArtistListByPreferArtist" resultMap="artistResultMap">
+      <![CDATA[
+        SELECT
+          t1.artist_id,
+          t1.artist_nm,
+          t2.url,
+          t2.size
+        FROM (
+               SELECT
+                 a.artist_id,
+                 b.artist_nm
+               FROM (
+                      SELECT x.artist_id
+                      FROM (
+                             SELECT artist_id
+                             FROM tb_character_prefer_artist
+                             WHERE character_no = #{characterNo}
+                             UNION
+                             SELECT artist_id
+                             FROM tb_map_artist_like
+                             WHERE member_no = #{characterNo} # TODO: character_no 로 변경
+                           ) x
+                      ORDER BY RAND()
+                    ) a
+                 JOIN ted_artist b ON a.artist_id = b.artist_id
+                 JOIN ted_track c ON b.artist_id = c.artist_id
+                 JOIN tb_track d ON c.track_id = d.track_id AND d.disp_status_yn = 'Y' AND d.track_popularity > 0
+               GROUP BY a.artist_id, b.artist_nm
+               HAVING COUNT(1) >= 5
+             ) t1
+          JOIN ted_artistimage t2 ON t1.artist_id = t2.artist_id;
+        ]]>
+    </select>
 </mapper>

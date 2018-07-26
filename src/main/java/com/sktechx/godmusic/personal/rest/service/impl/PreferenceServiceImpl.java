@@ -12,10 +12,12 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl;
 
+import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.Chart;
-import com.sktechx.godmusic.personal.rest.model.vo.preference.PreferGenreResponse;
+import com.sktechx.godmusic.personal.rest.model.vo.preference.PreferenceResponse;
+import com.sktechx.godmusic.personal.rest.repository.ArtistMapper;
 import com.sktechx.godmusic.personal.rest.repository.CharacterPreferGenreMapper;
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
 import com.sktechx.godmusic.personal.rest.service.PreferenceService;
@@ -43,8 +45,11 @@ public class PreferenceServiceImpl implements PreferenceService {
     @Autowired
     private ChartMapper chartMapper;
 
+    @Autowired
+    private ArtistMapper artistMapper;
+
     @Override
-    public PreferGenreResponse getPreferenceGenreList(Long characterNo) {
+    public PreferenceResponse getPreferenceGenreList(Long characterNo) {
         List<CharacterPreferGenreDto> characterPreferGenreList = Collections.EMPTY_LIST;
         List<ChartDto> chartDtoList;
 
@@ -61,7 +66,7 @@ public class PreferenceServiceImpl implements PreferenceService {
         log.info("chartList : {}", chartDtoList);
 
         List<Chart> chartList = chartDtoList.stream().map(Chart::new).collect(Collectors.toList()); // FIXME
-        return new PreferGenreResponse<>(chartList);
+        return new PreferenceResponse<>(chartList);
     }
 
     @Override
@@ -74,5 +79,11 @@ public class PreferenceServiceImpl implements PreferenceService {
         chart.setChartMusicCongtentList(chartDto.getTrackList().stream().map(Chart.ChartMusicContent::new).collect(Collectors.toList()));
 
         return chart;
+    }
+
+    @Override
+    public PreferenceResponse getPreferenceArtistList(Long characterNo) {
+        List<ArtistDto> artistDtoList = artistMapper.selectArtistListByPreferArtist(characterNo);
+        return new PreferenceResponse<>(artistDtoList);
     }
 }

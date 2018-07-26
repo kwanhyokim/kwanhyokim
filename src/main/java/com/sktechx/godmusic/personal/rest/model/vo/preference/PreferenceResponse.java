@@ -25,11 +25,11 @@ import java.util.List;
  * @date 2018. 7. 24.
  */
 @Data
-public class PreferGenreResponse<T> {
-    @ApiModelProperty("차트목록")
+public class PreferenceResponse<T> {
+    @ApiModelProperty("선호 장르/아티스트 목록")
     List<T> list;
 
-    public PreferGenreResponse(List<T> list) {
+    public PreferenceResponse(List<T> list) {
         this.list = list;
     }
 }
