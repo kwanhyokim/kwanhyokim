@@ -10,8 +10,11 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel;
 
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.dto.PreferGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ServiceGenreDto;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.PopularChannelPanel;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelSignAssembly;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,9 +33,23 @@ public class VisitPhasePanelAssembly extends PanelSignAssembly {
 
     @Override
     protected void defaultPanelSetting() {
+        List<ImageDto> bgImgList = recommendPanelService.getPanelBackgroundImageList(RecommendPanelType.POPULAR_CHANNEL , personalPhaseMeta.getOsType());
+
+        //TODO : 인기채널 패널 개수 DB 메타로 관리
+        this.hotplayChannelList = channelService.getHotplayChannelList(new Integer(3));
+
+        hotplayChannelList.stream().forEach(channel -> {
+            try{
+                panelList.add(new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL,channel,bgImgList));
+            }catch(Exception e){
+                log.error("VisitPhasePanel defaultPanelSetting error : {}",e.getMessage());
+                e.printStackTrace();
+            }
+        });
     }
     @Override
     protected void appendPreferencePanel(){
+
 
     }
 

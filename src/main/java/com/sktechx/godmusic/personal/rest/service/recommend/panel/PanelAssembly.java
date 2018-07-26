@@ -12,7 +12,9 @@ package com.sktechx.godmusic.personal.rest.service.recommend.panel;
 
 import com.sktechx.godmusic.personal.common.domain.type.OsType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import lombok.extern.slf4j.Slf4j;
@@ -36,12 +38,13 @@ public abstract class PanelAssembly {
 
     protected List<Panel> panelList;
     protected List<ChnlDto> hotplayChannelList;
-    protected OsType osType;
-    protected Long characterNo;
+    protected PersonalPhaseMeta personalPhaseMeta;
 
-    public void setInitialData(Long characterNo , OsType osType){
-        this.osType = osType;
-        this.characterNo = characterNo;
+    // TODO : 패널별 고정 이미지 리스트 필요
+    protected List<List<ImageDto>> panelImageList;
+
+    public void setInitialData(PersonalPhaseMeta personalPhaseMeta){
+        this.personalPhaseMeta = personalPhaseMeta;
     }
     public abstract List<Panel> assembleRecommendPanel();
 

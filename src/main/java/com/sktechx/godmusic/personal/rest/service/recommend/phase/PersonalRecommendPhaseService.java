@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend.phase;
 
+import com.sktechx.godmusic.personal.common.domain.type.OsType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 
 /**
@@ -19,5 +20,5 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase
  * @date 2018. 07. 19.
  */
 public interface PersonalRecommendPhaseService {
-    PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo);
+    PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType);
 }

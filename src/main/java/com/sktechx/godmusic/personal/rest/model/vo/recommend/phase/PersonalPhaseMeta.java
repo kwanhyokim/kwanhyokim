@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.phase;
 
+import com.sktechx.godmusic.personal.common.domain.type.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import lombok.Data;
 import org.springframework.util.CollectionUtils;
@@ -26,6 +27,10 @@ import java.util.List;
  */
 @Data
 public class PersonalPhaseMeta {
+
+    protected OsType osType;
+    protected Long characterNo;
+
     private List<PersonalPhase> phaseList;
     private List<PersonalPanel> panelList;
 

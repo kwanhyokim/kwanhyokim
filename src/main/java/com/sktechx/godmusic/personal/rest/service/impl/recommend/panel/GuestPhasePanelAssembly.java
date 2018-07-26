@@ -32,13 +32,11 @@ public class GuestPhasePanelAssembly extends PanelNonSignAssembly {
 
     @Override
     protected void defaultPanelSetting() {
-        // TODO : 1-A , 1-A' , 2-B 각각의 패널 이미지 필요 여부 확인
-        List<ImageDto> bgImgList = recommendPanelService.getPanelBackgroundImageList(RecommendPanelType.POPULAR_CHANNEL , osType);
+        List<ImageDto> bgImgList = recommendPanelService.getPanelBackgroundImageList(RecommendPanelType.POPULAR_CHANNEL , personalPhaseMeta.getOsType());
 
-        //TODO : 인기채널 패널 개수 DB로 관리
+        //TODO : 인기채널 패널 개수 DB 메타로 관리
         this.hotplayChannelList = channelService.getHotplayChannelList(new Integer(3));
 
-        // 1-A 패널 셋팅
         hotplayChannelList.stream().forEach(channel -> {
             try{
                 panelList.add(new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL,channel,bgImgList));

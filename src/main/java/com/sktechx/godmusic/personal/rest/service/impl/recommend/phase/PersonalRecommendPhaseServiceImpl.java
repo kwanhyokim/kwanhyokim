@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.phase;
 
 import com.sktechx.godmusic.lib.redis.service.RedisService;
+import com.sktechx.godmusic.personal.common.domain.type.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
@@ -30,8 +31,11 @@ import java.util.Arrays;
 public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhaseService {
 
     @Override
-    public PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo){
+    public PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType){
         PersonalPhaseMeta personalPhaseMeta = null;
+
+        personalPhaseMeta.setCharacterNo(characterNo);
+        personalPhaseMeta.setOsType(osType);
 
         if(characterNo == null){
             return getGuestPhaseMeta();

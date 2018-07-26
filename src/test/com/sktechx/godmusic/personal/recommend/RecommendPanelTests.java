@@ -42,6 +42,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.BDDMockito.given;
 
 
@@ -83,7 +84,7 @@ public class RecommendPanelTests extends CommonTest{
     @Test
     public void GUEST_패널_생성_테스트(){
         given(channelService.getHotplayChannelList(anyInt())).willReturn(makeMockHotPlayChannels());
-        given(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(anyLong())).willReturn(makeMockPersonalPhaseMeta(PersonalPhaseType.GUEST));
+        given(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(anyLong() , anyObject())).willReturn(makeMockPersonalPhaseMeta(PersonalPhaseType.GUEST));
         List<Panel> panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
 
         assertNotNull(panelList);
