@@ -60,7 +60,7 @@ public class PreferenceController {
 
 
     @ApiOperation(value = "아티스트 추천", httpMethod = "GET", notes = "선호 아티스트 추천 API", response = ArtistDto.class)
-    @GetMapping(value = "/artits")
+    @GetMapping(value = "/artists")
     public CommonApiResponse<PreferenceResponse> preferencesArtists(@ApiIgnore @RequestGMContext GMContext ctx) {
         return new CommonApiResponse<>(preferenceService.getPreferenceArtistList(ctx.getCharacterNo()));
     }
