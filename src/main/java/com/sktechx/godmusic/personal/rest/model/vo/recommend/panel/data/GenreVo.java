@@ -10,7 +10,9 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data;
 
+import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ServiceGenreDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
 import lombok.Data;
 
 /**
@@ -31,6 +33,13 @@ public class GenreVo {
         if(svcGenreDto != null){
             this.id = svcGenreDto.getSvcGenreId();
             this.name = svcGenreDto.getSvcGenreNm();
+        }
+    }
+
+    public GenreVo(PreferGenrePopularChnlDto characterPreferGenrePopularChnlDto){
+        if(characterPreferGenrePopularChnlDto != null){
+            this.id = characterPreferGenrePopularChnlDto.getPreferGenreId();
+            this.name = null;
         }
     }
 }

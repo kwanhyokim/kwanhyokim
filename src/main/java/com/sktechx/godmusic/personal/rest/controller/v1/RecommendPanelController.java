@@ -10,7 +10,6 @@
 
 package com.sktechx.godmusic.personal.rest.controller.v1;
 
-import com.netflix.discovery.converters.Auto;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;

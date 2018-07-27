@@ -26,4 +26,6 @@ import lombok.Data;
 public class PreferGenreDto {
     private Long preferGenreId;
     private String preferGenreNm;
+
+    private String preferGenreType;
 }

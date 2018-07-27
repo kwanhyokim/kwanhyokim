@@ -11,12 +11,16 @@
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel;
 
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.PopularChannelPanel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelNonSignAssembly;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,20 +35,19 @@ import java.util.List;
 public class GuestPhasePanelAssembly extends PanelNonSignAssembly {
 
     @Override
-    protected void defaultPanelSetting() {
+    protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
+        List<Panel> panelList =  new ArrayList();
         List<ImageDto> bgImgList = recommendPanelService.getPanelBackgroundImageList(RecommendPanelType.POPULAR_CHANNEL , personalPhaseMeta.getOsType());
-
-        //TODO : 인기채널 패널 개수 DB 메타로 관리
-        this.hotplayChannelList = channelService.getHotplayChannelList(new Integer(3));
+        List<ChnlDto> hotplayChannelList = channelService.getHotplayChannelList(new Integer(3));
 
         hotplayChannelList.stream().forEach(channel -> {
             try{
                 panelList.add(new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL,channel,bgImgList));
             }catch(Exception e){
                 log.error("GuestPhasePanel defaultPanelSetting error : {}",e.getMessage());
-                e.printStackTrace();
             }
         });
+        return panelList;
 
     }
 }

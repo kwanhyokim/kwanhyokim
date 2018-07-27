@@ -12,6 +12,9 @@ package com.sktechx.godmusic.personal.rest.repository;
 
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
+
+import java.util.List;
 
 /**
  * 설명 :  채널 Repository
@@ -24,4 +27,7 @@ public interface ChannelMapper {
     //TODO : meta api 호출
     ChnlDto selectChannelById(Long chnlId);
     Integer selectChannelTrackCount(Long chnlId);
+
+    List<PreferGenrePopularChnlDto> selectPreferGenrePopularChannel(Long characterNo);
+
 }

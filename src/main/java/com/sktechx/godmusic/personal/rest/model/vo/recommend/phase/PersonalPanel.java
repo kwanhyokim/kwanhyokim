@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.phase;
 
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import lombok.Data;
 
@@ -24,7 +25,7 @@ import java.util.List;
  */
 @Data
 public class PersonalPanel {
-    private RecommendPanelType recommendPanelType;
+    private RecommendPanelContentType recommendPanelContentType;
     private Date avaliableDateTime;
     private int dispSn;
     private List<Long> recommendIdList;

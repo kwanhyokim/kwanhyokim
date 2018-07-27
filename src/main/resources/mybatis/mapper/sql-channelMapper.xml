@@ -103,6 +103,10 @@
             c.disp_status_yn = 'Y'
     </select>
 
+    <select id="selectPreferGenrePopularChannel">
+
+    </select>
+
 
 
 

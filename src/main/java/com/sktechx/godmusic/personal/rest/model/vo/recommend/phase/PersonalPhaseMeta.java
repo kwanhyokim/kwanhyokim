@@ -12,6 +12,10 @@ package com.sktechx.godmusic.personal.rest.model.vo.recommend.phase;
 
 import com.sktechx.godmusic.personal.common.domain.type.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
+import com.sktechx.godmusic.personal.rest.model.dto.PreferGenreDto;
 import lombok.Data;
 import org.springframework.util.CollectionUtils;
 
@@ -27,18 +31,18 @@ import java.util.List;
  */
 @Data
 public class PersonalPhaseMeta {
-
     protected OsType osType;
     protected Long characterNo;
 
+    private List<PreferGenreDto> preferGenreList;
     private List<PersonalPhase> phaseList;
-    private List<PersonalPanel> panelList;
+    private List<PersonalPanel> rcmmdPanelList;
 
     public PersonalPhaseType getFirstPhaseType(){
         if(!CollectionUtils.isEmpty(phaseList)){
             PersonalPhase firstPhase =  phaseList.stream()
-                    .sorted(Comparator.comparing( PersonalPhase::getPhaseType , (s1,s2)->{
-                        return s2.compareTo(s1);
+                    .sorted(Comparator.comparing( PersonalPhase::getPhaseType , (phase1,phase2)->{
+                        return phase2.compareTo(phase1);
                     }))
                     .findFirst()
                     .orElse(null);
@@ -46,6 +50,36 @@ public class PersonalPhaseMeta {
                 return firstPhase.getPhaseType();
         }
         return PersonalPhaseType.GUEST;
+    }
+
+
+
+    public List<Long> getRecommendPersonlPanelRcmmdIdList(RecommendPanelContentType recommendPanelContentType) {
+        if (!CollectionUtils.isEmpty(rcmmdPanelList)) {
+            PersonalPanel personalPanel = getRecommendPersonalPanel(recommendPanelContentType);
+            if (personalPanel != null && !CollectionUtils.isEmpty(personalPanel.getRecommendIdList())) {
+                return personalPanel.getRecommendIdList();
+            }
+        }
+        return null;
+    }
+    public Long getRecommendPersonalPanelRcmmdId(RecommendPanelContentType recommendPanelContentType){
+        if(!CollectionUtils.isEmpty(rcmmdPanelList)){
+            PersonalPanel personalPanel = getRecommendPersonalPanel(recommendPanelContentType);
+            if(personalPanel != null && !CollectionUtils.isEmpty(personalPanel.getRecommendIdList()) ){
+                return personalPanel.getRecommendIdList().get(0);
+            }
+        }
+        return null;
+    }
+
+    private PersonalPanel getRecommendPersonalPanel(RecommendPanelContentType recommendPanelContentType){
+        if(!CollectionUtils.isEmpty(rcmmdPanelList)){
+            return rcmmdPanelList.stream()
+                    .filter(personalPanel -> recommendPanelContentType.equals(personalPanel.getRecommendPanelContentType()))
+                    .findFirst().orElse(null);
+        }
+        return null;
     }
 
 }

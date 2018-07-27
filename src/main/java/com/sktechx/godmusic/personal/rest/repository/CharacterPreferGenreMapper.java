@@ -14,6 +14,7 @@ package com.sktechx.godmusic.personal.rest.repository;
 
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ServiceGenreDto;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

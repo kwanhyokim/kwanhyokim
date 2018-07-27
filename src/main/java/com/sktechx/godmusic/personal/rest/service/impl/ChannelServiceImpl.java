@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.service.impl;
 
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -28,8 +29,12 @@ import java.util.List;
 @Slf4j
 public class ChannelServiceImpl implements ChannelService {
 
-    //TODO : display api call ? 내부 처리 검토
+    //TODO : 인기채널 GET
     public List<ChnlDto> getHotplayChannelList(Integer size){
+        return null;
+    }
+
+    public List<PreferGenrePopularChnlDto> selectPreferGenrePopularChannel(Long characterNo){
         return null;
     }
 

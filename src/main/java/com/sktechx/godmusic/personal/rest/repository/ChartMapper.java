@@ -30,6 +30,7 @@ import java.util.List;
 public interface ChartMapper {
     //TODO : 추후 meta api 호출
     ChartDto selectLiveChart();
+    ChartDto selectKidsChart();
 
     List<ChartDto> selectChartListByDefaultGenre();
     List<ChartDto> selectChartListByPreferGenre(@Param("characterNo") Long characterNo);

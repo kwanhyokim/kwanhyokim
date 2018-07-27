@@ -27,7 +27,6 @@ import org.springframework.web.context.WebApplicationContext;
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 10.
  */
-//@RunWith(SpringRunner.class)
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ActiveProfiles("local")

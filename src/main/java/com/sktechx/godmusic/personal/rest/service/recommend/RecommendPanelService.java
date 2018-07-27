@@ -13,6 +13,7 @@ package com.sktechx.godmusic.personal.rest.service.recommend;
 import com.sktechx.godmusic.personal.common.domain.type.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 
 import java.util.List;

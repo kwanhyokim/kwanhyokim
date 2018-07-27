@@ -82,9 +82,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         PersonalPhaseMeta personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType);
 
         PanelAssembly panelAssembly = recommendPanelAssemblyFactory.getRecommendPanelAssembly(personalPhaseMeta.getFirstPhaseType());
-        panelAssembly.setInitialData(personalPhaseMeta);
-
-        return panelAssembly.assembleRecommendPanel();
+        return panelAssembly.assembleRecommendPanel(personalPhaseMeta);
     }
 
     @Override

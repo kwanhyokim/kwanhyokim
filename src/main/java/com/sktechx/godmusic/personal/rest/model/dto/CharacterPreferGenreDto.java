@@ -26,6 +26,6 @@ import java.util.List;
 @Data
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class CharacterPreferGenreDto {
-    private Long characterNo;
-    private Long preferGenreId;
+    protected Long characterNo;
+    protected Long preferGenreId;
 }

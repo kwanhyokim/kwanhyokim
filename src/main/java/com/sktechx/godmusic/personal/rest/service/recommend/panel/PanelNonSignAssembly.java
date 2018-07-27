@@ -10,10 +10,9 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend.panel;
 
-import com.sktechx.godmusic.personal.common.domain.type.OsType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,12 +24,8 @@ import java.util.List;
 public abstract class PanelNonSignAssembly extends PanelAssembly{
 
     @Override
-    public List<Panel> assembleRecommendPanel(){
-        panelList = new ArrayList();
-
-        defaultPanelSetting();
-
-        return panelList;
+    public List<Panel> assembleRecommendPanel(PersonalPhaseMeta personalPhaseMeta){
+        return defaultPanelSetting(personalPhaseMeta);
     }
 
 }

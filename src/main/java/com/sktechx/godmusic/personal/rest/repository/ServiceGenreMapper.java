@@ -26,5 +26,5 @@ import java.util.List;
  * @date 2018. 7. 19.
  */
 @BaseMapper
-public interface GenreMapper {
+public interface ServiceGenreMapper {
 }

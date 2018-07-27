@@ -41,6 +41,5 @@ public class RecommendPanelAssemblyFactory {
         }
 
         return applicationContextProvider.getContext().getBean(GuestPhasePanelAssembly.class);
-
     }
 }

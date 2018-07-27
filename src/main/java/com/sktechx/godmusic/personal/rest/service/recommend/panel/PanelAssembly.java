@@ -10,11 +10,12 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend.panel;
 
-import com.sktechx.godmusic.personal.common.domain.type.OsType;
-import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
+import com.sktechx.godmusic.personal.rest.repository.ChannelMapper;
+import com.sktechx.godmusic.personal.rest.repository.CharacterPreferGenreMapper;
+import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
+import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import lombok.extern.slf4j.Slf4j;
@@ -36,19 +37,21 @@ public abstract class PanelAssembly {
     @Autowired
     protected RecommendPanelService recommendPanelService;
 
-    protected List<Panel> panelList;
-    protected List<ChnlDto> hotplayChannelList;
-    protected PersonalPhaseMeta personalPhaseMeta;
+    @Autowired
+    protected ChannelMapper channelMapper;
+    @Autowired
+    protected RecommendMapper recommendMapper;
 
-    // TODO : 패널별 고정 이미지 리스트 필요
-    protected List<List<ImageDto>> panelImageList;
+    @Autowired
+    protected ChartMapper chartMapper;
+    @Autowired
+    protected CharacterPreferGenreMapper characterPreferGenreMapper;
 
-    public void setInitialData(PersonalPhaseMeta personalPhaseMeta){
-        this.personalPhaseMeta = personalPhaseMeta;
-    }
-    public abstract List<Panel> assembleRecommendPanel();
+    public abstract List<Panel> assembleRecommendPanel(PersonalPhaseMeta personalPhaseMeta);
 
-    protected abstract void defaultPanelSetting();
+
+
+    protected abstract List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta);
 
 
 }

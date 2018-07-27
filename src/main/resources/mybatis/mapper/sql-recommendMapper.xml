@@ -24,4 +24,12 @@
 
 
     </select>
+    <select id="selectRecommendArtistByDispDate">
+
+
+    </select>
+    <select id="selectRecommendArtistById">
+
+
+    </select>
 </mapper>
