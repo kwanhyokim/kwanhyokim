@@ -18,7 +18,7 @@ import com.sktechx.godmusic.lib.domain.RequestGMContext;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.Chart;
-import com.sktechx.godmusic.personal.rest.model.vo.preference.PreferenceResponse;
+import com.sktechx.godmusic.personal.rest.model.vo.preference.ChartResponse;
 import com.sktechx.godmusic.personal.rest.service.PreferenceService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -44,46 +44,24 @@ public class PreferenceController {
     @Autowired
     private PreferenceService preferenceService;
 
-    @ApiOperation(value = "장르 추천", httpMethod = "GET", notes = "선호 장르 추천 API", response = PreferenceResponse.class)
+    @ApiOperation(value = "장르 추천", httpMethod = "GET", notes = "선호 장르 추천 API", response = ChartResponse.class)
     @GetMapping(value = "/genres")
-    public CommonApiResponse<PreferenceResponse> preferencesGeners(@ApiIgnore @RequestGMContext GMContext ctx) {
+    public CommonApiResponse<ChartResponse> preferencesGenres(@ApiIgnore @RequestGMContext GMContext ctx) {
         log.info("GMContext : {}", GMContext.getContext());
         return new CommonApiResponse<>(preferenceService.getPreferenceGenreList(ctx.getCharacterNo()));
     }
 
     @ApiOperation(value = "장르 추천 상세", httpMethod = "GET", notes = "선호 장르 추천별 플레이 리스트 API", response = Chart.class)
     @GetMapping(value = "/genres/{chartId}")
-    public CommonApiResponse<Chart> preferencesGeners(
+    public CommonApiResponse<Chart> preferencesGenres(
             @ApiParam(name = "chartId", required = true, value = "차트아이디", defaultValue = "3325") @PathVariable("chartId") Long chartId) {
         return new CommonApiResponse<>(preferenceService.getPreferenceGenre(chartId));
     }
 
-
     @ApiOperation(value = "아티스트 추천", httpMethod = "GET", notes = "선호 아티스트 추천 API", response = ArtistDto.class)
     @GetMapping(value = "/artists")
-    public CommonApiResponse<PreferenceResponse> preferencesArtists(@ApiIgnore @RequestGMContext GMContext ctx) {
+    public CommonApiResponse<ChartResponse> preferencesArtists(@ApiIgnore @RequestGMContext GMContext ctx) {
         return new CommonApiResponse<>(preferenceService.getPreferenceArtistList(ctx.getCharacterNo()));
     }
 
-//    @ApiOperation(value = "아티스트 추천 상세", httpMethod = "GET", notes = "선호 아티스트 추천별 트랙 리스트 API", response = ArtistDto.class)
-//    @GetMapping(value = "/artists/{artistId}")
-//    public CommonApiResponse<ArtistDto> preferenceArtists(
-//            @ApiParam(name = "artistId", required = true, value = "아티스트아이디", defaultValue = "1151") @PathVariable("artistId") Long artistId) {
-//
-//        Map<String, String> uriVariables = new HashMap<>();
-//        uriVariables.put("artistId", "1151");
-//
-//        ResponseEntity<CommonApiResponse<ArtistDto>> responseEntity = new RestTemplate().getForEntity(
-//                "http://localhost:8085/meta/v1/artist/{artistId}",
-//                CommonApiResponse.class,
-//                uriVariables);
-//
-//        CommonApiResponse response = responseEntity.getBody();
-//        ArtistDto artistDto = (ArtistDto) response.getData();
-//
-//        log.info(artistDto.toString());
-//
-//        return new CommonApiResponse<>(artistDto);
-//
-//    }
 }

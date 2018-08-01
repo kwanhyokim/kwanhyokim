@@ -15,7 +15,6 @@ package com.sktechx.godmusic.personal.rest.model.vo.preference;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,11 +24,11 @@ import java.util.List;
  * @date 2018. 7. 24.
  */
 @Data
-public class PreferenceResponse<T> {
+public class ChartResponse<T> {
     @ApiModelProperty("선호 장르/아티스트 목록")
     List<T> list;
 
-    public PreferenceResponse(List<T> list) {
+    public ChartResponse(List<T> list) {
         this.list = list;
     }
 }

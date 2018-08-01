@@ -14,19 +14,13 @@ package com.sktechx.godmusic.personal.rest.model.vo.preference;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sktechx.godmusic.personal.rest.model.dto.AlbumDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
-import com.sktechx.godmusic.personal.rest.model.dto.GenreDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
-import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
-import io.swagger.annotations.ApiModel;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 설명 : 선호 장르 응답 VO
@@ -37,7 +31,13 @@ import java.util.stream.Collectors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Builder
+@JsonPropertyOrder({"type", "id", "name", "imgList", "list"})
 public class Chart {
+
+    @ApiModelProperty(value = "타입")
+    private String type;
+
     @ApiModelProperty(value = "차트아이디")
     @JsonProperty("id")
     private Long chartId;
@@ -46,69 +46,45 @@ public class Chart {
     @JsonProperty("name")
     private String chartNm;
 
-    @ApiModelProperty(value = "앨범")
-    private Album album;
+    @ApiModelProperty(value = "이미지목록(차트.트랙[0].앨범.앨범이미지목록")
+    @JsonProperty("imgList")
+    private List<AlbumImg> albumImgList;
 
-    @ApiModelProperty(value = "차트별 특랙목록")
+    @ApiModelProperty("차트별 특랙목록")
     @JsonProperty("list")
-    private List<ChartMusicContent> chartMusicCongtentList;
-
-    public Chart() {}
-
-    public Chart(ChartDto chartDto) {
-        this.chartId = chartDto.getChartId();
-        this.chartNm = chartDto.getChartNm();
-
-        album = new Album(chartDto.getTrackList().get(0).getAlbum()); // FIXME:
-    }
+    private List<ChartMusicContent> chartMusicContentList;
 
     @Data
     @EqualsAndHashCode(callSuper = false)
-    public static class Album {
-        @JsonProperty("id")
-        private Long albumId;
-
-        @JsonProperty("imgList")
-        private List<AlbumImg> albumImgList;
-
-        public Album(AlbumDto albumDto) {
-            this.albumId = albumDto.getAlbumId();
-            albumImgList = albumDto.getImgList().stream().map(AlbumImg::new).collect(Collectors.toList());
-        }
-    }
-
-    @Data
-    @EqualsAndHashCode(callSuper = false)
+    @Builder
+    @JsonPropertyOrder({"size", "url"})
     public static class AlbumImg {
+        @ApiModelProperty(value = "이미지URL")
         private String url;
-        private int size;
-
-        public AlbumImg(ImageDto image) {
-            this.url = image.getUrl();
-            this.size = image.getSize();
-        }
+        @ApiModelProperty(value = "이미지사이즈")
+        private Integer size;
     }
 
     @Data
     @EqualsAndHashCode(callSuper = false)
+    @Builder
+    @JsonPropertyOrder({"id", "name", "priority", "beforePriority"})
     public static class ChartMusicContent {
+        @ApiModelProperty(value = "트랙아이디")
         @JsonProperty("id")
         private Long trackId;
+
+        @ApiModelProperty(value = "트랙명")
         @JsonProperty("name")
         private String trackNm;
+
+        @ApiModelProperty(value = "순서")
         @JsonProperty("priority")
         private Integer trackSn;
+
+        @ApiModelProperty(value = "이전순서")
         @JsonProperty("beforePriority")
         private Integer trackBfSn;
-
-        public ChartMusicContent(TrackDto trackDto) {
-            this.trackId = trackDto.getTrackId();
-            this.trackNm = trackDto.getTrackNm();
-            this.trackSn = trackDto.getTrackSn();
-            this.trackBfSn = trackDto.getTrackBfSn();
-        }
     }
 
 }
-
-
