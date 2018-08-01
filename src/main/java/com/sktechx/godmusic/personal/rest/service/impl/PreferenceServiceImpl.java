@@ -12,6 +12,7 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl;
 
+import com.sktechx.godmusic.personal.common.domain.domain.HomeContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
@@ -66,7 +67,7 @@ public class PreferenceServiceImpl implements PreferenceService {
             chartDtoList = chartMapper.selectChartListByPreferGenre(characterNo);
         }
 
-        return new ChartResponse<>(preferenceGenreListConvert(chartDtoList));
+        return new ChartResponse<>(preferenceGenreListConvert(chartDtoList), HomeContentType.GENRE);
     }
 
     @Override
@@ -93,7 +94,7 @@ public class PreferenceServiceImpl implements PreferenceService {
     public ChartResponse getPreferenceArtistList(Long characterNo) {
         List<ArtistDto> artistDtoList = artistMapper.selectArtistListByPreferArtist(characterNo);
 
-        return new ChartResponse<>(preferenceArtistListConvert(artistDtoList));
+        return new ChartResponse<>(preferenceArtistListConvert(artistDtoList), HomeContentType.ARTIST);
     }
 
     private List<Chart> preferenceGenreListConvert(List<ChartDto> chartDtoList) {

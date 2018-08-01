@@ -12,6 +12,9 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.preference;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.sktechx.godmusic.personal.common.domain.domain.HomeContentType;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -24,11 +27,16 @@ import java.util.List;
  * @date 2018. 7. 24.
  */
 @Data
+@JsonPropertyOrder({"type", "list"})
 public class ChartResponse<T> {
     @ApiModelProperty("선호 장르/아티스트 목록")
     List<T> list;
 
-    public ChartResponse(List<T> list) {
+    @JsonProperty("type")
+    HomeContentType homeContentType;
+
+    public ChartResponse(List<T> list, HomeContentType homeContentType) {
         this.list = list;
+        this.homeContentType = homeContentType;
     }
 }
