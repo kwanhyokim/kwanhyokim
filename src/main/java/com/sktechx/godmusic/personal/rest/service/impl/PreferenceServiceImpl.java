@@ -15,8 +15,9 @@ package com.sktechx.godmusic.personal.rest.service.impl;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
+import com.sktechx.godmusic.personal.rest.model.vo.preference.Artist;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.Chart;
-import com.sktechx.godmusic.personal.rest.model.vo.preference.PreferenceResponse;
+import com.sktechx.godmusic.personal.rest.model.vo.preference.ChartResponse;
 import com.sktechx.godmusic.personal.rest.repository.ArtistMapper;
 import com.sktechx.godmusic.personal.rest.repository.CharacterPreferGenreMapper;
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
@@ -26,8 +27,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -49,7 +52,7 @@ public class PreferenceServiceImpl implements PreferenceService {
     private ArtistMapper artistMapper;
 
     @Override
-    public PreferenceResponse getPreferenceGenreList(Long characterNo) {
+    public ChartResponse getPreferenceGenreList(Long characterNo) {
         List<CharacterPreferGenreDto> characterPreferGenreList = Collections.EMPTY_LIST;
         List<ChartDto> chartDtoList;
 
@@ -63,27 +66,94 @@ public class PreferenceServiceImpl implements PreferenceService {
             chartDtoList = chartMapper.selectChartListByPreferGenre(characterNo);
         }
 
-        log.info("chartList : {}", chartDtoList);
-
-        List<Chart> chartList = chartDtoList.stream().map(Chart::new).collect(Collectors.toList()); // FIXME
-        return new PreferenceResponse<>(chartList);
+        return new ChartResponse<>(preferenceGenreListConvert(chartDtoList));
     }
 
     @Override
     public Chart getPreferenceGenre(Long chartId) {
         ChartDto chartDto = chartMapper.selectChartMusicContentList(chartId);
 
-        Chart chart = new Chart();
-        chart.setChartId(chartDto.getChartId());
-        chart.setChartNm(chartDto.getChartNm());
-        chart.setChartMusicCongtentList(chartDto.getTrackList().stream().map(Chart.ChartMusicContent::new).collect(Collectors.toList()));
-
-        return chart;
+        return Chart.builder()
+                .chartId(chartDto.getChartId())
+                .chartNm(chartDto.getChartNm())
+                .chartMusicContentList(
+                        chartDto.getTrackList()
+                                .stream()
+                                .map(trackDto -> Chart.ChartMusicContent.builder()
+                                        .trackId(trackDto.getTrackId())
+                                        .trackNm(trackDto.getTrackNm())
+                                        .trackSn(trackDto.getTrackSn())
+                                        .trackBfSn(trackDto.getTrackBfSn())
+                                        .build())
+                                .collect(Collectors.toList()))
+                .build();
     }
 
     @Override
-    public PreferenceResponse getPreferenceArtistList(Long characterNo) {
+    public ChartResponse getPreferenceArtistList(Long characterNo) {
         List<ArtistDto> artistDtoList = artistMapper.selectArtistListByPreferArtist(characterNo);
-        return new PreferenceResponse<>(artistDtoList);
+
+        return new ChartResponse<>(preferenceArtistListConvert(artistDtoList));
     }
+
+    private List<Chart> preferenceGenreListConvert(List<ChartDto> chartDtoList) {
+        List<Chart> chartList = new ArrayList<>();
+
+        for (ChartDto chartDto : chartDtoList) {
+            List<Chart.AlbumImg> albumImgList = new ArrayList<>();
+
+            Optional.ofNullable(chartDto.getTrackList())
+                    .flatMap(trackList -> Optional.ofNullable(trackList.get(0)))
+                    .flatMap(track -> Optional.ofNullable(track.getAlbum()))
+                    .flatMap(album -> Optional.ofNullable(album.getImgList()))
+                    .ifPresent(imageDtoList -> {
+                        albumImgList.addAll(imageDtoList.stream()
+                                .map(imageDto -> Chart.AlbumImg.builder()
+                                        .size(imageDto.getSize())
+                                        .url(imageDto.getUrl())
+                                        .build())
+                                .collect(Collectors.toList()));
+                    });
+
+            Chart chart = Chart.builder()
+                    .chartId(chartDto.getChartId())
+                    .chartNm(chartDto.getChartNm())
+                    .albumImgList(albumImgList)
+                    .build();
+
+            chartList.add(chart);
+        }
+
+        return chartList;
+    }
+
+    private List<Artist> preferenceArtistListConvert(List<ArtistDto> artistDtoList) {
+        List<Artist> artistList = new ArrayList<>();
+
+        for (ArtistDto artistDto : artistDtoList) {
+            List<Artist.ArtistImg> artistImgList = new ArrayList<>();
+
+            Optional.ofNullable(artistDto.getImgList())
+                    .ifPresent(imageDtoList -> {
+                        artistImgList.addAll(
+                                imageDtoList.stream()
+                                        .map(imageDto -> Artist.ArtistImg.builder()
+                                                .size(imageDto.getSize())
+                                                .url(imageDto.getUrl())
+                                                .build())
+                                        .collect(Collectors.toList()));
+                    });
+
+            Artist artist = Artist.builder()
+                    .artistId(artistDto.getArtistId())
+                    .artistNm(artistDto.getArtistNm())
+                    .albumImgList(artistImgList)
+                    .build();
+
+            artistList.add(artist);
+        }
+
+        return artistList;
+    }
+
 }

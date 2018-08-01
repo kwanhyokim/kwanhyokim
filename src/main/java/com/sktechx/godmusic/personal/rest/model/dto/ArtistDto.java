@@ -12,6 +12,7 @@ package com.sktechx.godmusic.personal.rest.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
 
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.List;
  */
 @Data
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({"id", "name", "imgList"})
 public class ArtistDto {
     @JsonProperty("id")
     private Long artistId;
