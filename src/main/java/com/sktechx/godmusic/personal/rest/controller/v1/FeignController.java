@@ -45,7 +45,7 @@ public class FeignController {
     @ApiOperation(value = "아티스트 상세(meta-api)", httpMethod = "GET", notes = "선호 아티스트 추천 API", response = ArtistDto.class)
     @GetMapping(value = "/artists/{artistId}")
     public CommonApiResponse<ArtistDto> artists(@ApiIgnore @RequestGMContext GMContext ctx,
-                                                @ApiParam(name = "artistId", required = true, value = "아티스트아이디", defaultValue = "538") @PathVariable("artistId") Long artistId) {
+                                                @ApiParam(name = "artistId", required = true, value = "아티스트아이디", defaultValue = "583") @PathVariable("artistId") Long artistId) {
         return metaApiProxy.artists(artistId);
     }
 
