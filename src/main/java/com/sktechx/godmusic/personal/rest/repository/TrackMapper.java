@@ -27,4 +27,11 @@ import java.util.List;
 public interface TrackMapper {
     //TODO : 추후 meta api 호출
     List<TrackDto> selectTrackList(@Param("trackIdList") List<Long> trackIdList);
+
+    // added by bob 2018.08.01
+    List<Long> selectRecommendPanelPopularTrackList(@Param("characterNo") Long characterNo, @Param("rcmmdArtistId")Long rcmmdArtistId);
+    List<Long> selectRecommendPanelSimilarTrackList(@Param("characterNo") Long characterNo, @Param("rcmmdTrackId")Long rcmmdTrackId);
+    List<Long> selectRecommendPanelGenreTrackList(@Param("characterNo") Long characterNo, @Param("rcmmdGenreId")Long rcmmdGenreId);
+    List<Long> selectRecommendPanelCfTrackList(@Param("characterNo") Long characterNo, @Param("rcmmdMforuId")Long rcmmdMforuId);
+
 }

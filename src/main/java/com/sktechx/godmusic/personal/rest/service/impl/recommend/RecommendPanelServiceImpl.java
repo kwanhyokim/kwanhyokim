@@ -10,13 +10,12 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend;
 
+import com.sktechx.godmusic.lib.domain.CommonApiResponse;
+import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
 import com.sktechx.godmusic.personal.common.domain.type.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
-import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ServiceGenreDto;
+import com.sktechx.godmusic.personal.rest.model.dto.*;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
@@ -41,12 +40,14 @@ import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriBuilder;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 설명 : 추천 패널 데이터 생성
@@ -264,4 +265,50 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
         return artistImgList;
     }
+
+
+    @Override
+    public List<TrackDto> getRecommendPanelPopularTrackList(Long characterNo, Long rcmmdArtistId) {
+
+        List<Long> trackIdList = trackMapper.selectRecommendPanelPopularTrackList(characterNo, rcmmdArtistId);
+
+        if(CollectionUtils.isEmpty(trackIdList)){
+            return null;
+        }else {
+            return trackMapper.selectTrackList(trackIdList);
+        }
+
+    }
+    @Override
+    public List<TrackDto> getRecommendPanelSimilarTrackList(Long characterNo, Long rcmmdTrackId) {
+        List<Long> trackIdList = trackMapper.selectRecommendPanelSimilarTrackList(characterNo, rcmmdTrackId);
+
+        if(CollectionUtils.isEmpty(trackIdList)){
+            return null;
+        }else {
+            return trackMapper.selectTrackList(trackIdList);
+        }
+    }
+    @Override
+    public List<TrackDto> getRecommendPanelGenreTrackList(Long characterNo, Long rcmmdGenreId) {
+        List<Long> trackIdList = trackMapper.selectRecommendPanelGenreTrackList(characterNo, rcmmdGenreId);
+
+        if(CollectionUtils.isEmpty(trackIdList)){
+            return null;
+        }else {
+            return trackMapper.selectTrackList(trackIdList);
+        }
+    }
+    @Override
+    public List<TrackDto> getRecommendPanelCfTrackList(Long characterNo, Long rcmmdMforuId) {
+
+        List<Long> trackIdList = trackMapper.selectRecommendPanelCfTrackList(characterNo, rcmmdMforuId);
+        if(CollectionUtils.isEmpty(trackIdList)){
+            return null;
+        }else {
+            return trackMapper.selectTrackList(trackIdList);
+        }
+
+    }
+
 }

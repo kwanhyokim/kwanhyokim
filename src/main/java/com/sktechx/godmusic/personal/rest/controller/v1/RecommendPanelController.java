@@ -10,14 +10,20 @@
 
 package com.sktechx.godmusic.personal.rest.controller.v1;
 
+import java.util.List;
+
+import com.sktechx.godmusic.lib.domain.CommonApiResponse;
+import com.sktechx.godmusic.lib.domain.GMContext;
+import com.sktechx.godmusic.lib.domain.RequestGMContext;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
+import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import io.swagger.annotations.ApiOperation;
+import springfox.documentation.annotations.ApiIgnore;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 설명 : 추천 컨트롤러
@@ -38,4 +44,39 @@ public class RecommendPanelController {
         mockResponse.setPanelList(recommendPanelService.createMockupRecommendPanelList());
         return mockResponse;
     }
+
+
+    @ApiOperation(value = "선호/유사 아티스트 인기곡 목록", httpMethod = "GET", notes = "2-C 선호/유사 아티스트 인기곡 조회 API" , response = RecommendPanelResponse.class)
+    @RequestMapping(value = "/panel/{rcmmdArtistId}/popular/track", method = RequestMethod.GET)
+    public CommonApiResponse<List<TrackDto>> recommendPanelPopularTrackList(@ApiIgnore @RequestGMContext GMContext ctx, @PathVariable Long rcmmdArtistId){
+
+	    List<TrackDto> response = recommendPanelService.getRecommendPanelPopularTrackList(ctx.getCharacterNo(), rcmmdArtistId);
+	    return new CommonApiResponse(response);
+    }
+
+
+    @ApiOperation(value = "유사곡 트랙 목록", httpMethod = "GET", notes = "2-A Like U 패널 트랙 목록 조회 API" , response = RecommendPanelResponse.class)
+    @RequestMapping(value = "/panel/{rcmmdTrackId}/similar/track", method = RequestMethod.GET)
+    public CommonApiResponse<List<TrackDto>>  recommendPanelSimilarTrackList(@ApiIgnore @RequestGMContext GMContext ctx, @PathVariable Long rcmmdTrackId){
+	    List<TrackDto> response = recommendPanelService.getRecommendPanelSimilarTrackList(ctx.getCharacterNo(), rcmmdTrackId);
+	    return new CommonApiResponse(response);
+    }
+
+
+    @ApiOperation(value = "선호장르 유사록 패널 트랙 목록", httpMethod = "GET", notes = "2-A' 선호 장르 유사곡 API" , response = RecommendPanelResponse.class)
+    @RequestMapping(value = "/panel/{rcmmdGenreId}/genre/track", method = RequestMethod.GET)
+    public CommonApiResponse<List<TrackDto>>  recommendPanelGenreTrackList(@ApiIgnore @RequestGMContext GMContext ctx, @PathVariable Long rcmmdGenreId){
+	    List<TrackDto> response = recommendPanelService.getRecommendPanelGenreTrackList(ctx.getCharacterNo(), rcmmdGenreId);
+	    return new CommonApiResponse(response);
+    }
+
+
+    @ApiOperation(value = "CF 추천 패널 트랙 목록", httpMethod = "GET", notes = "3-A 추천 CF(collaborative filtering)패널 API" , response = RecommendPanelResponse.class)
+    @RequestMapping(value = "/panel/{rcmmdMforuId}/cf/track", method = RequestMethod.GET)
+    public CommonApiResponse<List<TrackDto>>  recommendPanelCfTrackList(@ApiIgnore @RequestGMContext GMContext ctx, @PathVariable Long rcmmdMforuId){
+	    List<TrackDto> response = recommendPanelService.getRecommendPanelCfTrackList(ctx.getCharacterNo(), rcmmdMforuId);
+	    return new CommonApiResponse(response);
+    }
+
+
 }
