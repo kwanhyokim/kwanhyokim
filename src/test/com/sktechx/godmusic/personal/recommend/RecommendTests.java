@@ -17,6 +17,7 @@ import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentTyp
 import com.sktechx.godmusic.personal.rest.model.dto.*;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
@@ -97,6 +98,22 @@ public class RecommendTests extends CommonTest {
 
         return chartDto;
     }
+    protected List<RecommendTrackDto> makeMockRecommendTrackDto(int size){
+        List<RecommendTrackDto> recommendTrackList = new ArrayList<>();
+
+        for(int i = 0; i < size ; i++){
+
+            RecommendTrackDto trackDto = new RecommendTrackDto();
+            trackDto.setRcmmdId(new Long(i+1));
+            trackDto.setTrackList(makeMockTrackList());
+            trackDto.setSvcGenreDto(new ServiceGenreDto(new Long(i+1),"장르"));
+            trackDto.setCreateDtime(new Date());
+
+            recommendTrackList.add(trackDto);
+        }
+
+        return recommendTrackList;
+    }
     protected RecommendArtistDto makeMockRecommendArtistDto(){
         RecommendArtistDto artistDto = new RecommendArtistDto();
         artistDto.setRcmmdArtistId(1L);
@@ -117,34 +134,51 @@ public class RecommendTests extends CommonTest {
         phaseMeta.setPreferGenreList(preferGenreList);
         return phaseMeta;
     }
-    protected PersonalPanel makeMockPersonalPanel(RecommendPanelContentType recommendPanelContentType , int dispSn, List<Long> recommendIdList){
-        PersonalPanel personalPanel = new PersonalPanel();
-        personalPanel.setRecommendIdList(recommendIdList);
-        personalPanel.setDispSn(dispSn);
-        personalPanel.setRecommendPanelContentType(recommendPanelContentType);
-        return personalPanel;
+
+    protected List<TrackDto> makeMockTrackList(){
+        List<TrackDto> trackList = new ArrayList<>();
+
+        TrackDto track =new TrackDto();
+        track.setTrackId(1L);
+        track.setTrackNm("인기 노래 1");
+
+        trackList.add(track);
+
+        track =new TrackDto();
+        track.setTrackId(2L);
+        track.setTrackNm("인기 노래 2");
+
+        trackList.add(track);
+
+        track =new TrackDto();
+        track.setTrackId(3L);
+        track.setTrackNm("인기 노래 3");
+
+        trackList.add(track);
+
+        return trackList;
     }
-    protected List<ChnlDto> makeMockHotPlayChannels(){
+    protected List<ChnlDto> makeMockHotPlayChannels(int size){
         List<ChnlDto> hotplayList = new ArrayList<>();
 
-        ChnlDto chnl = new ChnlDto();
-        chnl.setChnlId(1L);
-        chnl.setChnlNm("인기채널 1");
-        chnl.setChnlDispNm("인기\n채널 1");
 
-        hotplayList.add(chnl);
-        chnl = new ChnlDto();
-        chnl.setChnlId(2L);
-        chnl.setChnlNm("인기채널 2");
-        chnl.setChnlDispNm("인기\n채널 2");
+        for(int i = 0 ;  i < size ; i++){
+            ChnlDto chnl = new ChnlDto();
+            chnl.setChnlId(new Long(i));
+            chnl.setChnlNm("인기채널 "+i);
+            chnl.setChnlDispNm("인기\n채널 "+i);
 
-        hotplayList.add(chnl);
-        chnl = new ChnlDto();
-        chnl.setChnlId(3L);
-        chnl.setChnlNm("인기채널 3");
-        chnl.setChnlDispNm("인기\n채널 3");
-        hotplayList.add(chnl);
+            hotplayList.add(chnl);
+        }
 
         return hotplayList;
+    }
+
+    protected PersonalPanel makeMockPersonalPanel(RecommendPanelContentType panelContentType , List<Long> rcmmdIdList){
+        PersonalPanel personalPanel = new PersonalPanel();
+        personalPanel.setRecommendPanelContentType(panelContentType);
+        personalPanel.setRecommendIdList(rcmmdIdList);
+
+        return personalPanel;
     }
 }

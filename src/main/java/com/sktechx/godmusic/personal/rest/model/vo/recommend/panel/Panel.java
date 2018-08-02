@@ -11,13 +11,15 @@
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
+import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
+import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.PanelOrderSnService;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
-import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -33,7 +35,7 @@ public abstract class Panel {
     @Getter
     @ApiModelProperty(required = true, value = "추천 패널 타입(POPULAR_CHANNEL:인기 채널, PREFER_SIMILAR_TRACK:유사, PREFER_GENRE_SIMILAR_TRACK:선호장르 유사곡, " +
             "RCMMD_TRACK:청취 추천, ARRIST_POPULAR_TRACK:선호 아티스트 인기곡, LIVE_CHART:top100, KIDS_CHART:키즈 )")
-    protected RecommendPanelType panelType;
+    protected RecommendPanelType type;
 
     @Getter
     @ApiModelProperty(required = true, value = "패널 제목")
@@ -50,16 +52,14 @@ public abstract class Panel {
     @ApiModelProperty(required = true, value = "패널 컨텐츠")
     protected PanelContentVo content;
 
-    public Panel(RecommendPanelType panelType){
-        this.panelType = panelType;
+    public Integer getPanelOrderSn(PersonalPhaseType personalPhaseType){
+        return PanelOrderSnService.getPanelOrderSn(personalPhaseType, this.type);
+    }
+    public Panel(RecommendPanelType type){
+        this.type = type;
     }
 
-    abstract protected void initialPanel() throws Exception;
+    abstract protected void initialPanel() throws CommonBusinessException;
     abstract protected PanelContentVo createPanelContent();
 
-    protected static List<ImageDto> neverNullBgImgList(List<ImageDto> imgList) throws Exception {
-        if(CollectionUtils.isEmpty(imgList))
-            throw new IllegalAccessException("bgImgList is null.");
-        return imgList;
-    }
 }

@@ -14,6 +14,7 @@ import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
 import com.sktechx.godmusic.personal.common.domain.type.OsType;
+import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.*;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
@@ -83,6 +84,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         PersonalPhaseMeta personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType);
 
         PanelAssembly panelAssembly = recommendPanelAssemblyFactory.getRecommendPanelAssembly(personalPhaseMeta.getFirstPhaseType());
+
         return panelAssembly.assembleRecommendPanel(personalPhaseMeta);
     }
 
@@ -180,7 +182,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             mockPanelList.add(rcmmdTrack);
 
 
-            ChartDto kidsChart = chartService.getLiveChart();
+            ChartDto kidsChart = chartService.getKidsChart();
             kidsChart.setChartId(2L);
             kidsChart.setChartNm("Kids");
             liveChart.setChartType(ChartType.RTIME);

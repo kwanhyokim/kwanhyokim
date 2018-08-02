@@ -16,6 +16,7 @@ import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.GenreDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -31,6 +32,10 @@ public interface ChartMapper {
     //TODO : 추후 meta api 호출
     ChartDto selectLiveChart();
     ChartDto selectKidsChart();
+    //TODO : 선호 장르 인기채널
+    List<PreferGenrePopularChnlDto> selectPreferGenrePopularChannel(List<Long> preferGenreIdList);
+
+    ChartDto selectMainPanelChart(String chartType);
 
     List<ChartDto> selectChartListByDefaultGenre();
     List<ChartDto> selectChartListByPreferGenre(@Param("characterNo") Long characterNo);

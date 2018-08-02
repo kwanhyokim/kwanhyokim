@@ -11,18 +11,15 @@
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
-import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.GenreVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
-import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -37,10 +34,10 @@ public abstract class TrackPanel extends Panel {
     @JsonIgnore
     private RecommendTrackDto recommendTrackDto;
 
-    public TrackPanel(RecommendPanelType panelType ,String title, String subTitle, RecommendTrackDto recommendTrackDto, List<ImageDto> bgImgList) throws Exception{
+    public TrackPanel(RecommendPanelType panelType ,String title, String subTitle, RecommendTrackDto recommendTrackDto, List<ImageDto> bgImgList) throws CommonBusinessException {
         super(panelType);
         this.recommendTrackDto = recommendTrackDto;
-        this.imgList = neverNullBgImgList(bgImgList);
+        this.imgList = bgImgList;
         this.title = title;
         this.subTitle = subTitle;
         initialPanel();
@@ -56,7 +53,7 @@ public abstract class TrackPanel extends Panel {
         PanelContentVo content = new PanelContentVo();
 
         content.setId(recommendTrackDto.getRcmmdId());
-        content.setContentType(RecommendPanelContentType.getRecommendPanelContentByPanelType(panelType));
+        content.setType(RecommendPanelContentType.getRecommendPanelContentByPanelType(type));
         content.setTrackList(recommendTrackDto.getTrackList());
         content.setTrackCount(recommendTrackDto.getTrackList().size());
         content.setGenre(new GenreVo(recommendTrackDto.getSvcGenreDto()));
@@ -65,12 +62,12 @@ public abstract class TrackPanel extends Panel {
         return content;
     }
 
-    protected static RecommendTrackDto neverRecommdnTrackNull(RecommendTrackDto recommendTrackDto) throws Exception {
+    protected static RecommendTrackDto neverRecommdnTrackNull(RecommendTrackDto recommendTrackDto) throws CommonBusinessException {
         if(recommendTrackDto == null || CollectionUtils.isEmpty(recommendTrackDto.getTrackList()) )
-            throw new IllegalAccessException("recommendTrackDto is null.");
+            throw new CommonBusinessException("recommendTrackDto is null.");
 
         if(recommendTrackDto.getSvcGenreDto() == null){
-            throw new IllegalAccessException("recommendTrackDto svcGenre is null.");
+            throw new CommonBusinessException("recommendTrackDto svcGenre is null.");
         }
         return recommendTrackDto;
     }

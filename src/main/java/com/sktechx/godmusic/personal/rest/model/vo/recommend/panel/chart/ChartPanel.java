@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.chart;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
@@ -31,10 +32,10 @@ public class ChartPanel extends Panel {
     @JsonIgnore
     private ChartDto chart;
 
-    public ChartPanel(RecommendPanelType panelType , ChartDto chart, List<ImageDto> bgImgList) throws Exception{
+    public ChartPanel(RecommendPanelType panelType , ChartDto chart, List<ImageDto> bgImgList) throws CommonBusinessException {
         super(panelType);
         this.chart = neverNullChart(chart);
-        this.imgList = neverNullBgImgList(bgImgList);
+        this.imgList = bgImgList;
         this.initialPanel();
     }
 
@@ -52,7 +53,7 @@ public class ChartPanel extends Panel {
 
         content.setId(chart.getChartId());
 
-        content.setContentType(RecommendPanelContentType.CHART);
+        content.setType(RecommendPanelContentType.CHART);
         content.setCreateDtime(chart.getCreateDateTime());
         content.setUpdateDtime(chart.getUpdateDateTime());
         content.setTrackList(chart.getTrackList());
@@ -61,9 +62,9 @@ public class ChartPanel extends Panel {
         return content;
     }
 
-    private static ChartDto neverNullChart(ChartDto chart) throws Exception {
+    private static ChartDto neverNullChart(ChartDto chart) throws CommonBusinessException {
         if(chart == null || StringUtils.isEmpty(chart.getChartNm()))
-            throw new IllegalAccessException("chart is null.");
+            throw new CommonBusinessException("chart is null.");
         return chart;
     }
 }

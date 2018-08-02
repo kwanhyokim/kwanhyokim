@@ -39,9 +39,9 @@ public class RecommendPanelController {
 
     @ApiOperation(value = "추천 홈 패널 조회", httpMethod = "GET", notes = "추천 패널 조회 MockUp API" , response = RecommendPanelResponse.class)
     @GetMapping(value = "/home/panels")
-    public RecommendPanelResponse recommendHomePanels(){
+    public RecommendPanelResponse recommendHomePanels(@ApiIgnore @RequestGMContext GMContext ctx){
         RecommendPanelResponse mockResponse = new RecommendPanelResponse();
-        mockResponse.setPanelList(recommendPanelService.createMockupRecommendPanelList());
+        mockResponse.setList(recommendPanelService.createMockupRecommendPanelList());
         return mockResponse;
     }
 

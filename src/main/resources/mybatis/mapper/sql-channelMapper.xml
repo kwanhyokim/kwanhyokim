@@ -103,6 +103,8 @@
             c.disp_status_yn = 'Y'
     </select>
 
+
+    <!-- TOP100 , KIDS를 제외한 선호 장르의 인기채널을 가져온다 -->
     <select id="selectPreferGenrePopularChannel">
 
     </select>

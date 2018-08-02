@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.artist;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
@@ -30,7 +31,7 @@ public class ArtistPanel extends Panel{
     @JsonIgnore
     private RecommendArtistDto recommendArtistDto;
 
-    public ArtistPanel(RecommendPanelType panelType, RecommendArtistDto recommendArtist)  throws Exception{
+    public ArtistPanel(RecommendPanelType panelType, RecommendArtistDto recommendArtist)  throws CommonBusinessException{
         super(panelType);
         this.recommendArtistDto = recommendArtist;
         this.initialPanel();
@@ -38,7 +39,7 @@ public class ArtistPanel extends Panel{
 
 
     @Override
-    protected void initialPanel() throws Exception{
+    protected void initialPanel() throws CommonBusinessException{
         ArtistDto representationArtist = neverNullArtist(recommendArtistDto);
 
         this.title = "Musician focus";
@@ -55,23 +56,22 @@ public class ArtistPanel extends Panel{
         content.setId(recommendArtistDto.getRcmmdArtistId());
         content.setArtistCount(recommendArtistDto.getArtistList().size());
         content.setArtistList(recommendArtistDto.getArtistList());
-        content.setContentType(RecommendPanelContentType.RC_ATST_TR);
+        content.setType(RecommendPanelContentType.RC_ATST_TR);
         content.setCreateDtime(recommendArtistDto.getCreateDtime());
         content.setUpdateDtime(recommendArtistDto.getUpdateDtime());
 
         return content;
     }
 
-    private static ArtistDto neverNullArtist(RecommendArtistDto recommendArtist) throws Exception {
+    private static ArtistDto neverNullArtist(RecommendArtistDto recommendArtist) throws CommonBusinessException {
         if(recommendArtist == null || CollectionUtils.isEmpty(recommendArtist.getArtistList())){
-            throw new IllegalAccessException("artist is null.");
+            throw new CommonBusinessException("artist is null.");
         }
 
         ArtistDto artist = recommendArtist.getArtistList().get(0);
 
-        if(artist==null ||  CollectionUtils.isEmpty(artist.getImgList())){
-            //대체 이미지 패널
-            throw new IllegalAccessException("artist imageList is null.");
+        if(artist==null){
+            throw new CommonBusinessException("artist is null.");
         }
         return artist;
     }

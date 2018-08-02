@@ -31,7 +31,7 @@ import java.util.List;
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class PanelContentVo {
     private Long id;
-    private CodeEnum contentType;
+    private CodeEnum type;
     private Integer updateCount;
 
     private List<TrackDto> trackList;

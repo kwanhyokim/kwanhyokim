@@ -93,6 +93,9 @@
                     ON a.reprsnt_artist_id = f.artist_id
 		]]>
     </select>
+    <select id="selectKidsChart"  resultMap="liveChartResultMap">
+
+    </select>
 
     <select id="selectChartListByDefaultGenre" resultMap="chartListResultMap">
         <![CDATA[

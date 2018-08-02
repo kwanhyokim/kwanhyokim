@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel;
 
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
@@ -23,7 +24,7 @@ import java.util.List;
  * @date 2018. 07. 19.
  */
 public class ListenMoodPopularChannelPanel extends ChannelPanel{
-    public ListenMoodPopularChannelPanel(RecommendPanelType panelType, ChnlDto channel, List<ImageDto> bgImgList) throws Exception {
+    public ListenMoodPopularChannelPanel(RecommendPanelType panelType, ChnlDto channel, List<ImageDto> bgImgList) throws CommonBusinessException {
         super(panelType, channel , null , bgImgList);
     }
 }

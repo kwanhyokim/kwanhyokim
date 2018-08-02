@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track;
 
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
@@ -26,7 +27,7 @@ import java.util.List;
  * @date 2018. 07. 10.
  */
 public class RcmmdTrackPanel extends TrackPanel {
-    public RcmmdTrackPanel(RecommendPanelType panelType , RecommendTrackDto recommendTrackDto, List<ImageDto> bgImgList )throws Exception {
+    public RcmmdTrackPanel(RecommendPanelType panelType , RecommendTrackDto recommendTrackDto, List<ImageDto> bgImgList )throws CommonBusinessException {
         super(panelType , "Made for U" , neverRecommdnTrackNull(recommendTrackDto).getSvcGenreDto().getSvcGenreNm(),recommendTrackDto ,bgImgList);
     }
 }

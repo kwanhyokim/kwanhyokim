@@ -28,15 +28,11 @@ public class ChartServiceImpl implements ChartService {
     @Autowired
     private ChartMapper chartMapper;
 
-    @Override
-    public ChartDto getKidsChart() {
-        //TODO : 추후 meta api 호출
+    public ChartDto getLiveChart(){
         return chartMapper.selectLiveChart();
     }
-
-    @Override
-    public ChartDto getLiveChart() {
-        //TODO : 추후 meta api 호출
+    public ChartDto getKidsChart(){
         return chartMapper.selectLiveChart();
+
     }
 }

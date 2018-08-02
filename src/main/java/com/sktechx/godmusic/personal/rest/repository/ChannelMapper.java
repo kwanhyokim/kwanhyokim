@@ -28,6 +28,5 @@ public interface ChannelMapper {
     ChnlDto selectChannelById(Long chnlId);
     Integer selectChannelTrackCount(Long chnlId);
 
-    List<PreferGenrePopularChnlDto> selectPreferGenrePopularChannel(Long characterNo);
 
 }

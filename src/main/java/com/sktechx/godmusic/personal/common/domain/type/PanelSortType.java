@@ -8,21 +8,15 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.model.vo.recommend;
-
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
-import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-
-import java.util.List;
+package com.sktechx.godmusic.personal.common.domain.type;
 
 /**
- * 설명 : 추천 패널 API 응답
+ * 설명 : XXXXXXXX
  *
  * @author 오경무/SKTECHX (km.oh@sk.com)
- * @date 2018. 07. 09.
+ * @date 2018. 07. 31.
  */
-@Data
-public class RecommendPanelResponse {
-    List<Panel> list;
+public enum PanelSortType {
+        ASCENDING,
+        DESCENDING;
 }

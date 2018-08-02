@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
@@ -34,10 +35,10 @@ public abstract class ChannelPanel extends Panel{
     @JsonIgnore
     private GenreVo genre;
 
-    public ChannelPanel(RecommendPanelType panelType, ChnlDto channel, GenreVo genre, List<ImageDto> bgImgList) throws Exception {
+    public ChannelPanel(RecommendPanelType panelType, ChnlDto channel, GenreVo genre, List<ImageDto> bgImgList) throws CommonBusinessException {
         super(panelType);
         this.channel = neverNullChannel(channel);
-        this.imgList = neverNullBgImgList(bgImgList);
+        this.imgList = bgImgList;
         this.genre = genre;
         this.initialPanel();
     }
@@ -55,7 +56,7 @@ public abstract class ChannelPanel extends Panel{
         PanelContentVo content = new PanelContentVo();
 
         content.setId(channel.getChnlId());
-        content.setContentType(RecommendPanelContentType.CHNL);
+        content.setType(RecommendPanelContentType.CHNL);
         content.setUpdateCount(channel.getUpdateCount());
         content.setTrackCount(channel.getTrackCount());
         content.setTrackList(channel.getTrackList());
@@ -66,9 +67,9 @@ public abstract class ChannelPanel extends Panel{
         return content;
     }
 
-    private static ChnlDto neverNullChannel(ChnlDto channel) throws Exception {
+    private static ChnlDto neverNullChannel(ChnlDto channel) throws CommonBusinessException {
         if(channel == null || StringUtils.isEmpty(channel.getChnlNm()))
-            throw new IllegalAccessException("channel is null.");
+            throw new CommonBusinessException("channel is null.");
         return channel;
     }
 

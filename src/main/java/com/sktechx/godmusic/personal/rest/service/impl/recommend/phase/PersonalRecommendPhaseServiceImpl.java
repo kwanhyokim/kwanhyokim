@@ -34,20 +34,21 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
     public PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType){
         PersonalPhaseMeta personalPhaseMeta = null;
 
+        if(characterNo == null){
+            return getGuestPhaseMeta(osType);
+        }
         personalPhaseMeta.setCharacterNo(characterNo);
         personalPhaseMeta.setOsType(osType);
 
-        if(characterNo == null){
-            return getGuestPhaseMeta();
-        }
         //TODO : 개인화 정보 조회 및 캐쉬 저장 로직 추가 해야함
 
         return personalPhaseMeta;
     }
 
-    private PersonalPhaseMeta getGuestPhaseMeta(){
+    private PersonalPhaseMeta getGuestPhaseMeta(OsType osType){
         PersonalPhaseMeta guestPhaseMeta = new PersonalPhaseMeta();
         guestPhaseMeta.setPhaseList(Arrays.asList(new PersonalPhase(PersonalPhaseType.GUEST, null)));
+        guestPhaseMeta.setOsType(osType);
         return guestPhaseMeta;
     }
 

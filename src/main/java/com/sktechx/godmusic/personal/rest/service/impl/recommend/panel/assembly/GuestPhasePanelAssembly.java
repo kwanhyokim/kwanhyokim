@@ -8,39 +8,37 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel;
+package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly;
 
-import com.sktechx.godmusic.personal.rest.model.dto.PreferGenreDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ServiceGenreDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
-import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelSignAssembly;
+import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelNonSignAssembly;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
- * 설명 : 청취 단계 ( 2단계 ) 패널 생성기
+ * 설명 : 비로그인 사용자 패널 생성기
+ *       인기 채널 3종 제공
  *
  * @author 오경무/SKTECHX (km.oh@sk.com)
- * @date 2018. 07. 14.
+ * @date 2018. 07. 24.
  */
 @Slf4j
-@Service("listenPhasePanelAssembly")
-public class ListenPhasePanelAssembly extends PanelSignAssembly {
+@Service("guestPhasePanelAssembly")
+public class GuestPhasePanelAssembly extends PanelNonSignAssembly {
+
+    final int popularChannelListSize = 3 ;
 
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
-        List<Panel> panelList = new ArrayList();
+
+        final List<Panel> panelList = new ArrayList<>();
+
+        panelAppender.appendDefaultPopularChannelPanel(personalPhaseMeta , panelList ,popularChannelListSize);
 
         return panelList;
     }
-    @Override
-    protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){
-
-    }
 }
-

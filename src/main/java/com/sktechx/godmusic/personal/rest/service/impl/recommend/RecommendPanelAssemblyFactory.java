@@ -12,10 +12,10 @@ package com.sktechx.godmusic.personal.rest.service.impl.recommend;
 
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.service.ApplicationContextProvider;
-import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.GuestPhasePanelAssembly;
-import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.ListenPhasePanelAssembly;
-import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.RecommendPhasePanelAssembly;
-import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.VisitPhasePanelAssembly;
+import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.GuestPhasePanelAssembly;
+import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.ListenPhasePanelAssembly;
+import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.RecommendPhasePanelAssembly;
+import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.VisitPhasePanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +36,7 @@ public class RecommendPanelAssemblyFactory {
             return applicationContextProvider.getContext().getBean(VisitPhasePanelAssembly.class);
         }else if(PersonalPhaseType.LISTEN.equals(personalPhaseType)){
             return applicationContextProvider.getContext().getBean(ListenPhasePanelAssembly.class);
+
         }else if(PersonalPhaseType.RECOMMEND.equals(personalPhaseType)) {
             return applicationContextProvider.getContext().getBean(RecommendPhasePanelAssembly.class);
         }
