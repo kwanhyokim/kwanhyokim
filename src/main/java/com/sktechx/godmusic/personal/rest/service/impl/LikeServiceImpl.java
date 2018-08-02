@@ -186,12 +186,14 @@ public class LikeServiceImpl implements LikeService {
 		HttpEntity<?> entity = new HttpEntity<>(headers);
 
 		try {
-			String result = restTemplate.exchange(uri, HttpMethod.GET, entity, new ParameterizedTypeReference<CommonApiResponse>() {}).getBody().getCode();
+			CommonApiResponse result = restTemplate.exchange(uri, HttpMethod.GET, entity, new ParameterizedTypeReference<CommonApiResponse>() {}).getBody();
 
-			log.info("chytest result : " + result);
-			log.info("chytest result2 : " + restTemplate.exchange(uri, HttpMethod.GET, entity, new ParameterizedTypeReference<CommonApiResponse>() {}).getBody().getData());
+			log.info("chytest result : " + result.getCode());
+			log.info("chytest result2 : " + result.getData());
+			log.info("chytest result3 : " + result.getMessage());
+			log.info("chytest result4 : " + StringUtils.isEmpty(result.getData()));
 
-			if(StringUtils.isEmpty(result) || !"2000000".equals(result)) throw new NotFoundException(message);
+			if(StringUtils.isEmpty(result.getCode()) || !"2000000".equals(result.getCode()) || StringUtils.isEmpty(result.getData())) throw new NotFoundException(message);
 		} catch (Exception e){
 			log.error(e.getMessage() , e);
 			throw new NotFoundException(message);
