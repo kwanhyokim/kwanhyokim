@@ -6,13 +6,11 @@ import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
 import com.sktechx.godmusic.personal.common.exception.InternalException;
 import com.sktechx.godmusic.personal.common.exception.NotFoundException;
 import com.sktechx.godmusic.personal.common.exception.ValidationException;
-import com.sktechx.godmusic.personal.common.util.CommonUtil;
 import com.sktechx.godmusic.personal.rest.model.vo.like.LikeRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.like.LikeTypeIdListRequest;
 import com.sktechx.godmusic.personal.rest.repository.LikeMapper;
 import com.sktechx.godmusic.personal.rest.service.LikeService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -24,11 +22,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.lang.reflect.Array;
 import java.net.URI;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.IntStream;
 
 /**
@@ -193,13 +189,22 @@ public class LikeServiceImpl implements LikeService {
 			log.info("chytest result2 : " + result.getData());
 			log.info("chytest result3 : " + result.getMessage());
 			log.info("chytest result4 : " + StringUtils.isEmpty(result.getData()));
-			log.info("chytest result5 : " + CommonUtil.empty(result.getData()));
-			log.info("chytest result6 : " + CommonUtil.notEmpty(result.getData()));
+			log.info("chytest result7 : " + empty(result.getData()));
+//			log.info("chytest result5 : " + CommonUtil.empty(result.getData()));
+//			log.info("chytest result6 : " + CommonUtil.notEmpty(result.getData()));
 
 			if(StringUtils.isEmpty(result.getCode()) || !"2000000".equals(result.getCode()) || StringUtils.isEmpty(result.getData())) throw new NotFoundException(message);
 		} catch (Exception e){
 			log.error(e.getMessage() , e);
 			throw new NotFoundException(message);
 		}
+	}
+
+	private Boolean empty(Object obj) {
+		if (obj instanceof String) return obj == null || "".equals(obj.toString().trim());
+		else if (obj instanceof List) return obj == null || ((List) obj).isEmpty();
+		else if (obj instanceof Map) return obj == null || ((Map) obj).isEmpty();
+		else if (obj instanceof Object[]) return obj == null || Array.getLength(obj) == 0;
+		else return obj == null;
 	}
 }
