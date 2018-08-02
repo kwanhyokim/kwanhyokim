@@ -188,7 +188,8 @@ public class LikeServiceImpl implements LikeService {
 		try {
 			String result = restTemplate.exchange(uri, HttpMethod.GET, entity, new ParameterizedTypeReference<CommonApiResponse>() {}).getBody().getCode();
 
-			log.info("result : " + result);
+			log.info("chytest result : " + result);
+			log.info("chytest result2 : " + restTemplate.exchange(uri, HttpMethod.GET, entity, new ParameterizedTypeReference<CommonApiResponse>() {}).getBody().getData());
 
 			if(StringUtils.isEmpty(result) || !"2000000".equals(result)) throw new NotFoundException(message);
 		} catch (Exception e){
