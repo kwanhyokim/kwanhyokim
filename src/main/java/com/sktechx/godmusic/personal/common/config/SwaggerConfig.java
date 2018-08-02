@@ -76,7 +76,7 @@ public class SwaggerConfig {
         );
         operationParameters.add(
                 new ParameterBuilder()
-                        .name(CommonConstant.X_FORWARDED_MNO)
+                        .name(CommonConstant.X_GM_MEMBER_NO)
                         .required(false)
                         .description("회원번호")
                         .parameterType("header")
@@ -87,7 +87,7 @@ public class SwaggerConfig {
 
         operationParameters.add(
                 new ParameterBuilder()
-                .name(CommonConstant.X_FORWARDED_CNO)
+                .name(CommonConstant.X_GM_CHARACTER_NO)
                 .required(false)
                 .description("캐릭터번호")
                 .parameterType("header")
