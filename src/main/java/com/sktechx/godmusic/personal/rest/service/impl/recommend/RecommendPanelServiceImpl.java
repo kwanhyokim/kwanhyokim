@@ -17,6 +17,8 @@ import com.sktechx.godmusic.personal.common.domain.type.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.*;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.MyMostTrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
@@ -40,14 +42,22 @@ import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelServic
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import lombok.extern.slf4j.Slf4j;
+
+import org.aopalliance.intercept.Joinpoint;
+import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.lang.reflect.ParameterizedType;
+import java.sql.Wrapper;
 import java.util.*;
 
 /**
@@ -270,47 +280,78 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
 
     @Override
-    public List<TrackDto> getRecommendPanelPopularTrackList(Long characterNo, Long rcmmdArtistId) {
+    public ListDto<List<MyMostTrackDto>> getRecommendPanelPopularTrackList(Long characterNo, Long rcmmdArtistId) {
 
-        List<Long> trackIdList = trackMapper.selectRecommendPanelPopularTrackList(characterNo, rcmmdArtistId);
-
-        if(CollectionUtils.isEmpty(trackIdList)){
-            return null;
-        }else {
-            return trackMapper.selectTrackList(trackIdList);
+        if(characterNo == null){
+            characterNo = 52L;
         }
 
+        return getTrackList(trackMapper.selectRecommendPanelPopularTrackList(characterNo, rcmmdArtistId));
     }
     @Override
-    public List<TrackDto> getRecommendPanelSimilarTrackList(Long characterNo, Long rcmmdTrackId) {
-        List<Long> trackIdList = trackMapper.selectRecommendPanelSimilarTrackList(characterNo, rcmmdTrackId);
+    public ListDto<List<MyMostTrackDto>> getRecommendPanelSimilarTrackList(Long characterNo, Long rcmmdTrackId) {
 
-        if(CollectionUtils.isEmpty(trackIdList)){
-            return null;
-        }else {
-            return trackMapper.selectTrackList(trackIdList);
+
+        if(characterNo == null){
+            characterNo = 52L;
         }
+
+        return getTrackList(trackMapper.selectRecommendPanelSimilarTrackList(characterNo, rcmmdTrackId));
     }
     @Override
-    public List<TrackDto> getRecommendPanelGenreTrackList(Long characterNo, Long rcmmdGenreId) {
-        List<Long> trackIdList = trackMapper.selectRecommendPanelGenreTrackList(characterNo, rcmmdGenreId);
+    public ListDto<List<MyMostTrackDto>> getRecommendPanelGenreTrackList(Long characterNo, Long rcmmdGenreId) {
 
-        if(CollectionUtils.isEmpty(trackIdList)){
-            return null;
-        }else {
-            return trackMapper.selectTrackList(trackIdList);
+        if(characterNo == null){
+            characterNo = 52L;
         }
+
+
+        return getTrackList(trackMapper.selectRecommendPanelGenreTrackList(characterNo, rcmmdGenreId));
     }
     @Override
-    public List<TrackDto> getRecommendPanelCfTrackList(Long characterNo, Long rcmmdMforuId) {
+    public ListDto<List<MyMostTrackDto>> getRecommendPanelCfTrackList(Long characterNo, Long rcmmdMforuId) {
 
-        List<Long> trackIdList = trackMapper.selectRecommendPanelCfTrackList(characterNo, rcmmdMforuId);
-        if(CollectionUtils.isEmpty(trackIdList)){
-            return null;
-        }else {
-            return trackMapper.selectTrackList(trackIdList);
+
+        if(characterNo == null){
+            characterNo = 52L;
         }
 
+
+        return getTrackList(trackMapper.selectRecommendPanelCfTrackList(characterNo, rcmmdMforuId));
     }
+
+    private ListDto<List<MyMostTrackDto>> getTrackList(List<Long> trackIdList){
+
+        if(CollectionUtils.isEmpty(trackIdList)){
+            return null;
+        }
+
+
+        String host = "https://dev-api.musicmates.co.kr";
+        String uri = UriComponentsBuilder
+                .fromHttpUrl(host)
+                .path("/meta/v1/track/list")
+                .queryParam("trackIdList", trackIdList.toArray(new Long[0]))
+                .toUriString();
+        HttpComponentsClientHttpRequestFactory rf = new HttpComponentsClientHttpRequestFactory();
+
+        rf.setConnectTimeout(1000);
+        rf.setReadTimeout(1000);
+
+        RestTemplate restTemplate = new RestTemplate(rf);
+
+        CommonApiResponse<ListDto<List<MyMostTrackDto>>> response = restTemplate.exchange(
+                uri,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<CommonApiResponse<ListDto<List<MyMostTrackDto>>>>() {}).getBody();
+
+
+        return response.getData();
+
+    }
+
 
 }
+
+
