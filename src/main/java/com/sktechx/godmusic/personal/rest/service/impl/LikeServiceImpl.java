@@ -6,6 +6,7 @@ import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
 import com.sktechx.godmusic.personal.common.exception.InternalException;
 import com.sktechx.godmusic.personal.common.exception.NotFoundException;
 import com.sktechx.godmusic.personal.common.exception.ValidationException;
+import com.sktechx.godmusic.personal.common.util.CommonUtil;
 import com.sktechx.godmusic.personal.rest.model.vo.like.LikeRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.like.LikeTypeIdListRequest;
 import com.sktechx.godmusic.personal.rest.repository.LikeMapper;
@@ -192,6 +193,8 @@ public class LikeServiceImpl implements LikeService {
 			log.info("chytest result2 : " + result.getData());
 			log.info("chytest result3 : " + result.getMessage());
 			log.info("chytest result4 : " + StringUtils.isEmpty(result.getData()));
+			log.info("chytest result5 : " + CommonUtil.empty(result.getData()));
+			log.info("chytest result6 : " + CommonUtil.notEmpty(result.getData()));
 
 			if(StringUtils.isEmpty(result.getCode()) || !"2000000".equals(result.getCode()) || StringUtils.isEmpty(result.getData())) throw new NotFoundException(message);
 		} catch (Exception e){
