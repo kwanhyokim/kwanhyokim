@@ -66,14 +66,35 @@ public class SwaggerConfig {
         List<Parameter> operationParameters = new LinkedList<>();
         operationParameters.add(
                 new ParameterBuilder()
-                        .name(CommonConstant.X_GM_ACCESS_TOKEN)
-                        .required(false)
-                        .description("access token")
+                        .name(TransactionIdInterceptor.XGmTransactionIdKey)
+                        .required(true)
+                        .description("transaction id")
                         .parameterType("header")
+                        .defaultValue("swaggercall")
+                        .modelRef(new ModelRef("string"))
+                        .build()
+        );
+        operationParameters.add(
+                new ParameterBuilder()
+                        .name(CommonConstant.X_GM_MEMBER_NO)
+                        .required(false)
+                        .description("회원번호")
+                        .parameterType("header")
+                        .defaultValue("1")
                         .modelRef(new ModelRef("string"))
                         .build()
         );
 
+        operationParameters.add(
+                new ParameterBuilder()
+                .name(CommonConstant.X_GM_CHARACTER_NO)
+                .required(false)
+                .description("캐릭터번호")
+                .parameterType("header")
+                .defaultValue("12")
+                .modelRef(new ModelRef("string"))
+                .build()
+        );
         return operationParameters;
     }
 }
