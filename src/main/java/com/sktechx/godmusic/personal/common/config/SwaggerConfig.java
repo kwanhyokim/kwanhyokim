@@ -74,24 +74,35 @@ public class SwaggerConfig {
                         .modelRef(new ModelRef("string"))
                         .build()
         );
-        operationParameters.add(
-                new ParameterBuilder()
-                        .name(CommonConstant.X_GM_MEMBER_NO)
-                        .required(false)
-                        .description("회원번호")
-                        .parameterType("header")
-                        .defaultValue("1")
-                        .modelRef(new ModelRef("string"))
-                        .build()
-        );
+//        operationParameters.add(
+//                new ParameterBuilder()
+//                        .name(CommonConstant.X_GM_MEMBER_NO)
+//                        .required(false)
+//                        .description("회원번호")
+//                        .parameterType("header")
+//                        .defaultValue("1")
+//                        .modelRef(new ModelRef("string"))
+//                        .build()
+//        );
+//
+//        operationParameters.add(
+//                new ParameterBuilder()
+//                .name(CommonConstant.X_GM_CHARACTER_NO)
+//                .required(false)
+//                .description("캐릭터번호")
+//                .parameterType("header")
+//                .defaultValue("12")
+//                .modelRef(new ModelRef("string"))
+//                .build()
+//        );
 
         operationParameters.add(
                 new ParameterBuilder()
-                .name(CommonConstant.X_GM_CHARACTER_NO)
+                .name(CommonConstant.X_GM_ACCESS_TOKEN)
                 .required(false)
-                .description("캐릭터번호")
+                .description("Access Token")
                 .parameterType("header")
-                .defaultValue("12")
+                .defaultValue("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiZ2RtIjp7ImNubyI6MTIsIm1ubyI6MX0sImlzcyI6Imh0dHBzOlwvXC9kZXYtYXBpLm11c2ljbWF0ZXMuY28ua3IiLCJleHAiOjE1NDg4MjY0MDQsImp0aSI6IjQ3OGY1NWRmODAyYjRhZjRhMTJjZGUzYzRmMDUzODMzIn0.Z-YvrKIZFPwCg8uhVHE_QrnaZh-ro130Ib0CwxJ4uSM")
                 .modelRef(new ModelRef("string"))
                 .build()
         );
