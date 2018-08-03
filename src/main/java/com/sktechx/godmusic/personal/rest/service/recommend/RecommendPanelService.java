@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.service.recommend;
 
 import com.sktechx.godmusic.personal.common.domain.type.OsType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
@@ -39,5 +40,7 @@ public interface RecommendPanelService {
     ListDto<List<MyMostTrackDto>>getRecommendPanelSimilarTrackList(Long characterNo, Long rcmmdTrackId);
     ListDto<List<MyMostTrackDto>> getRecommendPanelGenreTrackList(Long characterNo, Long rcmmdGenreId);
     ListDto<List<MyMostTrackDto>>getRecommendPanelCfTrackList(Long characterNo, Long rcmmdMforuId);
+
+	ListDto<List<MyMostTrackDto>> getRecommendPanelTrackList(Long characterNo, RecommendPanelContentType recommendPanelType, Long panelContentId);
 
 }

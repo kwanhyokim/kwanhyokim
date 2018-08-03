@@ -12,10 +12,7 @@ package com.sktechx.godmusic.personal.rest.service.impl.recommend;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
-import com.sktechx.godmusic.personal.common.domain.type.ChartType;
-import com.sktechx.godmusic.personal.common.domain.type.OsType;
-import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+import com.sktechx.godmusic.personal.common.domain.type.*;
 import com.sktechx.godmusic.personal.rest.model.dto.*;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MyMostTrackDto;
@@ -57,6 +54,7 @@ import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.lang.reflect.ParameterizedType;
+import java.net.URI;
 import java.sql.Wrapper;
 import java.util.*;
 
@@ -88,6 +86,9 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
     @Autowired
     private RecommendPanelAssemblyFactory recommendPanelAssemblyFactory;
+
+    @Autowired
+    RestTemplate restTemplate;
 
     @Override
     public List<Panel> createRecommendPanelList(Long characterNo , OsType osType) {
@@ -281,64 +282,58 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
     @Override
     public ListDto<List<MyMostTrackDto>> getRecommendPanelPopularTrackList(Long characterNo, Long rcmmdArtistId) {
-
-        if(characterNo == null){
-            characterNo = 52L;
-        }
-
         return getTrackList(trackMapper.selectRecommendPanelPopularTrackList(characterNo, rcmmdArtistId));
     }
     @Override
     public ListDto<List<MyMostTrackDto>> getRecommendPanelSimilarTrackList(Long characterNo, Long rcmmdTrackId) {
-
-
-        if(characterNo == null){
-            characterNo = 52L;
-        }
-
         return getTrackList(trackMapper.selectRecommendPanelSimilarTrackList(characterNo, rcmmdTrackId));
     }
     @Override
     public ListDto<List<MyMostTrackDto>> getRecommendPanelGenreTrackList(Long characterNo, Long rcmmdGenreId) {
-
-        if(characterNo == null){
-            characterNo = 52L;
-        }
-
-
         return getTrackList(trackMapper.selectRecommendPanelGenreTrackList(characterNo, rcmmdGenreId));
     }
     @Override
     public ListDto<List<MyMostTrackDto>> getRecommendPanelCfTrackList(Long characterNo, Long rcmmdMforuId) {
-
-
-        if(characterNo == null){
-            characterNo = 52L;
-        }
-
-
         return getTrackList(trackMapper.selectRecommendPanelCfTrackList(characterNo, rcmmdMforuId));
     }
+
+	@Override
+	public ListDto<List<MyMostTrackDto>> getRecommendPanelTrackList(Long characterNo, RecommendPanelContentType recommendPanelContentType, Long panelContentId) {
+
+		ListDto<List<MyMostTrackDto>> trackList = null;
+
+    	switch (recommendPanelContentType){
+		    // 아티스트
+		    case RC_ATST_TR:
+			    trackList = getRecommendPanelPopularTrackList(characterNo, panelContentId);
+			    break;
+		    // 선호 유사
+		    case RC_SML_TR:
+			    trackList = getRecommendPanelSimilarTrackList(characterNo, panelContentId);
+			    break;
+		    // 유사 장르
+		    case RC_GR_TR:
+			    trackList = getRecommendPanelGenreTrackList(characterNo, panelContentId);
+			    break;
+		    // 추천
+		    case RC_CF_TR:
+			    trackList = getRecommendPanelCfTrackList(characterNo, panelContentId);
+			    break;
+	    }
+
+		return trackList;
+	}
 
     private ListDto<List<MyMostTrackDto>> getTrackList(List<Long> trackIdList){
 
         if(CollectionUtils.isEmpty(trackIdList)){
             return null;
         }
-
-
-        String host = "https://dev-api.musicmates.co.kr";
-        String uri = UriComponentsBuilder
-                .fromHttpUrl(host)
-                .path("/meta/v1/track/list")
+        URI uri = UriComponentsBuilder.newInstance().scheme("http").host("meta-api")
+                .path("meta/v1/track/list")
                 .queryParam("trackIdList", trackIdList.toArray(new Long[0]))
-                .toUriString();
-        HttpComponentsClientHttpRequestFactory rf = new HttpComponentsClientHttpRequestFactory();
+                .build().encode().toUri();
 
-        rf.setConnectTimeout(1000);
-        rf.setReadTimeout(1000);
-
-        RestTemplate restTemplate = new RestTemplate(rf);
 
         CommonApiResponse<ListDto<List<MyMostTrackDto>>> response = restTemplate.exchange(
                 uri,
