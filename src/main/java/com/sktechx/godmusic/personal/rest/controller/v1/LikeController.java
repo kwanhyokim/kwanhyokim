@@ -53,7 +53,7 @@ public class LikeController {
 		return CommonApiResponse.emptySuccess();
 	}
 
-	@ApiOperation(value = "좋아요 삭제 ( 기존 /v2/my/album/like , /v2/my/track/like , /v2/my/channel/like, /v2/my/artist/like PUT )")
+	@ApiOperation(value = "좋아요 정렬 수정 ( 기존 /v2/my/album/like , /v2/my/track/like , /v2/my/channel/like, /v2/my/artist/like PUT )")
 	@PutMapping("")
 	public CommonApiResponse updateLike(
 			@RequestBody LikeTypeIdListRequest request
