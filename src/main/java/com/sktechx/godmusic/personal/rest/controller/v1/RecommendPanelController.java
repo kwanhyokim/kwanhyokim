@@ -24,6 +24,7 @@ import com.sktechx.godmusic.personal.rest.model.dto.recommend.MyMostTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -87,12 +88,13 @@ public class RecommendPanelController {
 
 	// added by bob 2018.08.03
 
-	@ApiOperation(value = "패널 트랙 목록", httpMethod = "GET", notes = "추천 패널 트랙 목록 조회 API" )
+	@ApiOperation(value = "패널 트랙 목록", httpMethod = "GET", notes = "추천 패널 트랙 목록 조회 API - 추천 홈 패널 API 에서 제공하는 RecommendPanelContentType와 id 값으로 트랙 목록 조회"
+			+ "RC_ATST_TR (2-C 선호/유사 아티스트 인기곡), RC_SML_TR (2-A 유사곡), RC_GR_TR (2-A' 선호 장르 유사곡), RC_CF_TR (3-A 추천 CF 곡)" )
 	@RequestMapping(value = "/panel/{panelContentId}/track", method = RequestMethod.GET)
 	public CommonApiResponse<ListDto<List<MyMostTrackDto>>>  recommendPanelTrackList(
 			@ApiIgnore @RequestGMContext GMContext ctx,
-			@PathVariable Long panelContentId,
-			@RequestParam(value = "type") RecommendPanelContentType recommendPanelContentType){
+			@ApiParam(defaultValue = "52") @PathVariable Long panelContentId,
+			@ApiParam(value = "추천 패널 컨텐트 타입", allowableValues = "RC_ATST_TR, RC_SML_TR, RC_GR_TR, RC_CF_TR") @RequestParam(value = "type") RecommendPanelContentType recommendPanelContentType){
 
 		log.info("GMContext : {}", GMContext.getContext());
 
