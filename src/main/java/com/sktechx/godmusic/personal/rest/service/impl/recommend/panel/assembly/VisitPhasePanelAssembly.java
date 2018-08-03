@@ -51,7 +51,7 @@ public class VisitPhasePanelAssembly extends PanelSignAssembly {
     protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){
         panelAppender.appendPreferArtistPopularTrackPanel(personalPhaseMeta,panelList);
         panelAppender.appendPreferenceChartPanel(personalPhaseMeta,panelList);
-        sort(personalPhaseMeta.getFirstPhaseType(), panelList);
+        sort(personalPhaseMeta, panelList);
     }
 
 }

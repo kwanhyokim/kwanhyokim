@@ -149,12 +149,12 @@ public class PanelAppenderServiceImpl implements PanelAppenderService {
     public void appendPreferenceChartPanel(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList) {
         Optional.ofNullable(personalPhaseMeta.getPreferGenreList()).orElse(Collections.emptyList()).stream()
             .forEach(preferGenreDto -> {
-                if("TOP100".equals(preferGenreDto.getPreferGenreType())){
+                if("TOP100".equals(preferGenreDto.getPreferType())){
                     Panel chartPanel = createChartPanel("LIVE_CHART" , personalPhaseMeta.getOsType()) ;
                     if(chartPanel != null){
                         panelList.add(0,chartPanel);
                     }
-                }else if("KIDS".equals(preferGenreDto.getPreferGenreType())){
+                }else if("KIDS".equals(preferGenreDto.getPreferType())){
                     Panel chartPanel = createChartPanel("KIDS_CHART" , personalPhaseMeta.getOsType()) ;
                     panelList.add ( chartPanel );
                 }

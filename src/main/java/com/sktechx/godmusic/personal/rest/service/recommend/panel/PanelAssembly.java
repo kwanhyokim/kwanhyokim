@@ -10,13 +10,8 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend.panel;
 
-import com.sktechx.godmusic.personal.common.domain.type.OsType;
-import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
-import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.PopularChannelPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.repository.ChannelMapper;
 import com.sktechx.godmusic.personal.rest.repository.CharacterPreferGenreMapper;
@@ -27,7 +22,10 @@ import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelServic
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * 설명 : 추천 패널 생성기
@@ -66,16 +64,20 @@ public abstract class PanelAssembly {
         }).count();
 
     }
-    protected void sort(final PersonalPhaseType personalPhaseType,final List<Panel> panelList){
+    protected void sort(final PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList){
         panelList.sort(new Comparator<Panel>() {
             @Override
             public int compare(Panel panel1, Panel panel2) {
-                Integer panel1Sn = panel1.getPanelOrderSn(personalPhaseType);
-                Integer panel2Sn = panel2.getPanelOrderSn(personalPhaseType);
+                Integer panel1Sn = panel1.getPanelOrderSn(personalPhaseMeta.getFirstPhaseType());
+                Integer panel2Sn = panel2.getPanelOrderSn(personalPhaseMeta.getFirstPhaseType());
                 return panel1Sn < panel2Sn
                         ? -1 : panel1Sn == panel2Sn? 0 :1 ;
             }
         });
+
+        //TODO : 선호장르를 KIDS만 선택했을 경우 처음에 노출
+
+
 
     }
 

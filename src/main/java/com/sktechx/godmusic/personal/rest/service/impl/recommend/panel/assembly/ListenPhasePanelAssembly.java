@@ -56,7 +56,8 @@ public class ListenPhasePanelAssembly extends PanelSignAssembly {
         panelAppender.appendPreferArtistPopularTrackPanel(personalPhaseMeta,panelList);
         panelAppender.appendPreferenceChartPanel(personalPhaseMeta,panelList);
 
-        sort(personalPhaseMeta.getFirstPhaseType() , panelList);
+        sort(personalPhaseMeta , panelList);
+
     }
 
 }

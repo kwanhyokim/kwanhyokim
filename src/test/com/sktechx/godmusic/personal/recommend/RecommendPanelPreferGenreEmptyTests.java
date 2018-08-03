@@ -57,10 +57,10 @@ public class RecommendPanelPreferGenreEmptyTests extends RecommendTests{
     private int preferGenrePolularChnlDataSize = 1;
     @BeforeEach
     public void init(){
-        personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_CF_TR, Arrays.asList(1L)));
-        personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_GR_TR, Arrays.asList(1L)));
-        personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_SML_TR, Arrays.asList(1L)));
-        personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_ATST_TR, Arrays.asList(1L)));
+        personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_CF_TR, 1L));
+        personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_GR_TR, 1L));
+        personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_SML_TR, 1L));
+        personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_ATST_TR, 1L));
 
         given(channelService.getHotplayChannelList(anyInt())).willReturn(makeMockHotPlayChannels(3));
         given(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(anyLong() , anyObject())).willReturn(makeMockPersonalPhaseMeta(PersonalPhaseType.RECOMMEND , personalPanelList , null));

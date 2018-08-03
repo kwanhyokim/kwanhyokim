@@ -29,6 +29,6 @@ public class PersonalPanel {
     private Date avaliableDateTime;
     private int dispSn;
     //추천 아이디
-    private List<Long> recommendIdList;
+    private Long recommendId;
 
 }

@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.recommend;
 
 import com.sktechx.godmusic.personal.common.domain.type.*;
+import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.PreferGenreDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.artist.ArtistPanel;
@@ -65,10 +66,10 @@ public class RecommendPanelPreferGenreTests extends RecommendTests{
 
     @BeforeEach
     public void init(){
-        personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_CF_TR, Arrays.asList(1L)));
-        personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_GR_TR, Arrays.asList(1L)));
-        personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_SML_TR, Arrays.asList(1L)));
-        personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_ATST_TR, Arrays.asList(1L)));
+        personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_CF_TR, 1L));
+        personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_GR_TR, 1L));
+        personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_SML_TR, 1L));
+        personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_ATST_TR, 1L));
 
         given(channelService.getHotplayChannelList(anyInt())).willReturn(makeMockHotPlayChannels(3));
 
@@ -200,7 +201,7 @@ public class RecommendPanelPreferGenreTests extends RecommendTests{
 
         // CASE 1 : 3-A 패널데이터 및  1-A' 선호장르 인기채널 1개 존재
         // expected : 3-A, 1-A' , 1-A
-        List<PreferGenreDto> preferGenreList  = Arrays.asList(makeMockPreferGenrePopular(1L,"댄스","댄스"));
+        List<CharacterPreferGenreDto> preferGenreList  = Arrays.asList(makeMockPreferGenrePopular(1L,"댄스","댄스"));
 
         preferGenrePolularChnlDataSize = 1;
         cfTrackDataSize = 1;

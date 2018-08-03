@@ -13,13 +13,19 @@ package com.sktechx.godmusic.personal.rest.service.impl.recommend.phase;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.type.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
+import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
+import com.sktechx.godmusic.personal.rest.repository.CharacterPreferGenreMapper;
+import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 설명 : 사용자 청취 단계 / 패널 메타 관리
@@ -30,6 +36,11 @@ import java.util.Arrays;
 @Service
 public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhaseService {
 
+    @Autowired
+    private CharacterPreferGenreMapper characterPreferGenreMapper;
+
+    @Autowired
+    private RecommendMapper recommendMapper;
     @Override
     public PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType){
         PersonalPhaseMeta personalPhaseMeta = null;
@@ -37,17 +48,25 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
         if(characterNo == null){
             return getGuestPhaseMeta(osType);
         }
+
+        personalPhaseMeta = new PersonalPhaseMeta();
         personalPhaseMeta.setCharacterNo(characterNo);
         personalPhaseMeta.setOsType(osType);
 
-        //TODO : 개인화 정보 조회 및 캐쉬 저장 로직 추가 해야함
+        //선호 장르 리스트
+        List<CharacterPreferGenreDto> characterPreferGenreList = characterPreferGenreMapper.selectCharacterPreferGenreList(characterNo);
+        personalPhaseMeta.setPreferGenreList(characterPreferGenreList);
+
+        //개인화 추천 패널
+        List<PersonalPanel> rcmmdPanelList = recommendMapper.selectPersonalRecommendPanelMeta(characterNo);
+        personalPhaseMeta.setRcmmdPanelList(rcmmdPanelList);
 
         return personalPhaseMeta;
     }
 
     private PersonalPhaseMeta getGuestPhaseMeta(OsType osType){
         PersonalPhaseMeta guestPhaseMeta = new PersonalPhaseMeta();
-        guestPhaseMeta.setPhaseList(Arrays.asList(new PersonalPhase(PersonalPhaseType.GUEST, null)));
+        guestPhaseMeta.setPersonalPhaseList(Arrays.asList(new PersonalPhase(PersonalPhaseType.GUEST ,new Date())));
         guestPhaseMeta.setOsType(osType);
         return guestPhaseMeta;
     }

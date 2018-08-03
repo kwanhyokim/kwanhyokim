@@ -41,25 +41,25 @@ public class PersonalPhaseTests extends CommonTest{
         List<PersonalPhase> personalPhaseList = new ArrayList();
 
         personalPhaseList.add(new PersonalPhase(PersonalPhaseType.LISTEN , new Date()));
-        phaseMeta.setPhaseList(personalPhaseList);
+        phaseMeta.setPersonalPhaseList(personalPhaseList);
 
 
         assertEquals(PersonalPhaseType.LISTEN,phaseMeta.getFirstPhaseType());
         personalPhaseList.add(new PersonalPhase(PersonalPhaseType.VISIT , new Date()));
-        phaseMeta.setPhaseList(personalPhaseList);
+        phaseMeta.setPersonalPhaseList(personalPhaseList);
 
         assertEquals(PersonalPhaseType.LISTEN,phaseMeta.getFirstPhaseType());
 
         personalPhaseList.add(new PersonalPhase(PersonalPhaseType.GUEST , new Date()));
-        phaseMeta.setPhaseList(personalPhaseList);
+        phaseMeta.setPersonalPhaseList(personalPhaseList);
         assertEquals(PersonalPhaseType.LISTEN,phaseMeta.getFirstPhaseType());
 
         personalPhaseList.add(new PersonalPhase(PersonalPhaseType.RECOMMEND , new Date()));
-        phaseMeta.setPhaseList(personalPhaseList);
+        phaseMeta.setPersonalPhaseList(personalPhaseList);
 
         assertEquals(PersonalPhaseType.RECOMMEND,phaseMeta.getFirstPhaseType());
 
-        phaseMeta.setPhaseList(null);
+        phaseMeta.setPersonalPhaseList(null);
         assertEquals(PersonalPhaseType.GUEST,phaseMeta.getFirstPhaseType());
     }
 
@@ -99,7 +99,7 @@ public class PersonalPhaseTests extends CommonTest{
     public PersonalPanel makeRcmmdPersonalPanel (RecommendPanelContentType recommendPanelContentType){
         PersonalPanel panel = new PersonalPanel();
         panel.setRecommendPanelContentType(recommendPanelContentType);
-        panel.setRecommendIdList(Arrays.asList(1L));
+        panel.setRecommendId(1L);
         return panel;
     }
 }

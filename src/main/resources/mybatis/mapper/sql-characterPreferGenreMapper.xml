@@ -21,8 +21,10 @@
         <![CDATA[
             SELECT
               a.character_no,
-              a.prefer_genre_id
-            FROM tb_character_prefer_genre a
+              a.prefer_genre_id,
+              b.prefer_genre_nm,
+              b.prefer_type
+            FROM tb_character_prefer_genre a INNER JOIN tb_prefer_genre b ON a.prefer_genre_id = b.prefer_genre_id
             WHERE a.character_no = #{characterNo}
         ]]>
     </select>

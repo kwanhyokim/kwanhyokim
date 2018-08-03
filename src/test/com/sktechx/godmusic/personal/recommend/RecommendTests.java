@@ -24,6 +24,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase
 import com.sktechx.godmusic.personal.rest.repository.ChannelMapper;
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
+import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.RecommendPanelAssemblyFactory;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
@@ -64,11 +65,11 @@ public class RecommendTests extends CommonTest {
     @MockBean
     protected ChartMapper chartMapper;
 
-    protected PreferGenreDto makeMockPreferGenrePopular(Long id, String name , String genreType){
-        PreferGenreDto preferGenreDto = new PreferGenreDto();
+    protected CharacterPreferGenreDto makeMockPreferGenrePopular(Long id, String name , String genreType){
+        CharacterPreferGenreDto preferGenreDto = new CharacterPreferGenreDto();
         preferGenreDto.setPreferGenreId(id);
         preferGenreDto.setPreferGenreNm(name);
-        preferGenreDto.setPreferGenreType(genreType);
+        preferGenreDto.setPreferType(genreType);
         return preferGenreDto;
     }
     protected List<PreferGenrePopularChnlDto> makeMockPreferGenrePopularChnl(int size){
@@ -127,9 +128,13 @@ public class RecommendTests extends CommonTest {
         artistDto.setArtistList(Arrays.asList(artist,new ArtistDto(),new ArtistDto()));
         return artistDto;
     }
-    protected PersonalPhaseMeta makeMockPersonalPhaseMeta(PersonalPhaseType personalPhaseType , List<PersonalPanel> personalpanelList , List<PreferGenreDto> preferGenreList){
+    protected PersonalPhaseMeta makeMockPersonalPhaseMeta(PersonalPhaseType personalPhaseType , List<PersonalPanel> personalpanelList , List<CharacterPreferGenreDto> preferGenreList){
         PersonalPhaseMeta phaseMeta = new PersonalPhaseMeta();
-        phaseMeta.setPhaseList(Arrays.asList( new PersonalPhase(personalPhaseType,new Date())));
+        PersonalPhase personalPhase = new PersonalPhase();
+        personalPhase.setPhaseType(personalPhaseType);
+        personalPhase.setAvaliableDateTime(new Date());
+
+        phaseMeta.setPersonalPhaseList(Arrays.asList(personalPhase));
         phaseMeta.setRcmmdPanelList(personalpanelList);
         phaseMeta.setPreferGenreList(preferGenreList);
         return phaseMeta;
@@ -174,10 +179,10 @@ public class RecommendTests extends CommonTest {
         return hotplayList;
     }
 
-    protected PersonalPanel makeMockPersonalPanel(RecommendPanelContentType panelContentType , List<Long> rcmmdIdList){
+    protected PersonalPanel makeMockPersonalPanel(RecommendPanelContentType panelContentType , Long rcmmdId){
         PersonalPanel personalPanel = new PersonalPanel();
         personalPanel.setRecommendPanelContentType(panelContentType);
-        personalPanel.setRecommendIdList(rcmmdIdList);
+        personalPanel.setRecommendId(rcmmdId);
 
         return personalPanel;
     }

@@ -28,4 +28,6 @@ import java.util.List;
 public class CharacterPreferGenreDto {
     protected Long characterNo;
     protected Long preferGenreId;
+    protected String preferGenreNm;
+    protected String preferType;
 }
