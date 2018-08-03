@@ -6,6 +6,7 @@ import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
 import com.sktechx.godmusic.personal.common.exception.InternalException;
 import com.sktechx.godmusic.personal.common.exception.NotFoundException;
 import com.sktechx.godmusic.personal.common.exception.ValidationException;
+import com.sktechx.godmusic.personal.common.util.CommonUtils;
 import com.sktechx.godmusic.personal.rest.model.vo.like.LikeRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.like.LikeTypeIdListRequest;
 import com.sktechx.godmusic.personal.rest.repository.LikeMapper;
@@ -185,18 +186,11 @@ public class LikeServiceImpl implements LikeService {
 		try {
 			CommonApiResponse result = restTemplate.exchange(uri, HttpMethod.GET, entity, new ParameterizedTypeReference<CommonApiResponse>() {}).getBody();
 
-			if(StringUtils.isEmpty(result.getCode()) || !"2000000".equals(result.getCode()) || empty(result.getData())) throw new NotFoundException(message);
+			if(StringUtils.isEmpty(result) || StringUtils.isEmpty(result.getCode()) || !"2000000".equals(result.getCode()) || CommonUtils.empty(result.getData())) throw new NotFoundException(message);
 		} catch (Exception e){
 			log.error(e.getMessage() , e);
 			throw new NotFoundException(message);
 		}
 	}
 
-	private Boolean empty(Object obj) {
-		if (obj instanceof String) return obj == null || "".equals(obj.toString().trim());
-		else if (obj instanceof List) return obj == null || ((List) obj).isEmpty();
-		else if (obj instanceof Map) return obj == null || ((Map) obj).isEmpty();
-		else if (obj instanceof Object[]) return obj == null || Array.getLength(obj) == 0;
-		else return obj == null;
-	}
 }
