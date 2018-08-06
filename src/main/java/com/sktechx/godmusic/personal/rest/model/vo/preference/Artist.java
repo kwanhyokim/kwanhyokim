@@ -44,7 +44,7 @@ public class Artist {
     private String artistNm;
 
     @ApiModelProperty(value = "이미지목록(아티스트)")
-    @JsonPropertyOrder("list")
+    @JsonProperty("imgList")
     private List<ArtistImg> albumImgList;
 
     @Data
