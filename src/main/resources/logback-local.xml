@@ -17,28 +17,45 @@
         </encoder>
     </appender>
 
-    <root>
-        <level value="INFO" />
+    <logger name="org.springframework" level="INFO" />
+    <logger name="springfox.documentation" level="OFF" />
+    <logger name="org.springframework.jdbc" level="INFO" />
+
+    <logger name="com.sktechx" level="trace" additivity="false">
+        <appender-ref ref="CONSOLE" />
+    </logger>
+
+    <root level="INFO">
         <appender-ref ref="CONSOLE" />
     </root>
 
-    <logger name="com.sktechx" level="DEBUG" additivity="false">
+    <!-- 	<logger name="org.springframework.beans.factory.support.DefaultListableBeanFactory"> -->
+    <!-- 		<level value="debug" /> -->
+    <!-- 		<appender-ref ref="CONSOLE" /> -->
+    <!-- 	</logger> -->
+
+    <!-- Database Log -->
+    <logger name="com.spring.ibatis">
+        <level value="trace" />
         <appender-ref ref="CONSOLE" />
     </logger>
-    <!--
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%15X{transactionId} - %30.30logger{30}:%4.4line / %5level] : %msg%n</pattern>
-        </encoder>
-    </appender>
 
-    <root>
-        <level value="DEBUG" />
-        <appender-ref ref="SERVICE_API_ROLLINGFILE" />
-    </root>
-
-    <logger name="com.sktechx" level="DEBUG" additivity="false">
-        <appender-ref ref="SERVICE_API_ROLLINGFILE" />
+    <logger name="java.sql" additivity="false">
+        <level value="trace" />
+        <appender-ref ref="CONSOLE" />
     </logger>
-    -->
+
+    <logger name="org.apache.ibatis" additivity="false">
+        <level value="trace" />
+        <appender-ref ref="CONSOLE" />
+    </logger>
+
+    <logger name="org.mybatis.spring" additivity="false">
+        <level value="trace" />
+        <appender-ref ref="CONSOLE" />
+    </logger>
+
+    <logger name="com.netflix.discovery" level="OFF" additivity="false">
+        <appender-ref ref="CONSOLE" />
+    </logger>
 </configuration>

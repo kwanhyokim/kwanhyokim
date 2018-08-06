@@ -10,26 +10,26 @@
 
 package com.sktechx.godmusic.personal.rest.controller.v1;
 
-import java.util.List;
-
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.RequestGMContext;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
-import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MyMostTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
+import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
-import springfox.documentation.annotations.ApiIgnore;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
+
+import java.util.List;
 
 /**
  * 설명 : 추천 컨트롤러
@@ -44,12 +44,19 @@ public class RecommendPanelController {
     @Autowired
     private RecommendPanelService recommendPanelService;
 
-    @ApiOperation(value = "추천 홈 패널 조회", httpMethod = "GET", notes = "추천 패널 조회 MockUp API" , response = RecommendPanelResponse.class)
+	@Autowired
+	private PersonalRecommendPhaseService personalRecommendPhaseService;
+
+	@ApiOperation(value = "추천 개인화 정보 조회", httpMethod = "GET")
+	@GetMapping(value = "/phase/meta")
+    public CommonApiResponse<PersonalPhaseMeta> personalPhaseMeta(@ApiIgnore @RequestGMContext GMContext ctx){
+		return new CommonApiResponse<>(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(ctx.getCharacterNo(),ctx.getOsType()));
+	}
+
+    @ApiOperation(value = "추천 홈 패널 조회 ( 신규 )", httpMethod = "GET", notes = "추천 패널 조회 MockUp API" , response = RecommendPanelResponse.class)
     @GetMapping(value = "/home/panels")
-    public RecommendPanelResponse recommendHomePanels(@ApiIgnore @RequestGMContext GMContext ctx){
-        RecommendPanelResponse mockResponse = new RecommendPanelResponse();
-        mockResponse.setList(recommendPanelService.createMockupRecommendPanelList());
-        return mockResponse;
+    public CommonApiResponse<List<Panel>> recommendHomePanels(@ApiIgnore @RequestGMContext GMContext ctx){
+		return new CommonApiResponse<>(recommendPanelService.createMockupRecommendPanelList());
     }
 
 

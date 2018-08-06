@@ -11,9 +11,14 @@
 package com.sktechx.godmusic.personal.rest.service.impl.recommend;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
-import com.sktechx.godmusic.lib.domain.GMContext;
-import com.sktechx.godmusic.personal.common.domain.type.*;
-import com.sktechx.godmusic.personal.rest.model.dto.*;
+import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.personal.common.domain.type.ChartType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ServiceGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MyMostTrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
@@ -35,28 +40,25 @@ import com.sktechx.godmusic.personal.rest.repository.ArtistMapper;
 import com.sktechx.godmusic.personal.rest.repository.ChannelMapper;
 import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
 import com.sktechx.godmusic.personal.rest.service.ChartService;
+import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.ListenPhasePanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
+import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelSignAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import lombok.extern.slf4j.Slf4j;
-
-import org.aopalliance.intercept.Joinpoint;
-import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.lang.reflect.ParameterizedType;
 import java.net.URI;
-import java.sql.Wrapper;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 설명 : 추천 패널 데이터 생성
@@ -93,7 +95,6 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     @Override
     public List<Panel> createRecommendPanelList(Long characterNo , OsType osType) {
         PersonalPhaseMeta personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType);
-
         PanelAssembly panelAssembly = recommendPanelAssemblyFactory.getRecommendPanelAssembly(personalPhaseMeta.getFirstPhaseType());
 
         return panelAssembly.assembleRecommendPanel(personalPhaseMeta);

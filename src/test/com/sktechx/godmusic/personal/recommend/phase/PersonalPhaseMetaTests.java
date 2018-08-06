@@ -10,28 +10,26 @@
 
 package com.sktechx.godmusic.personal.recommend.phase;
 
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.CommonTest;
-import com.sktechx.godmusic.personal.common.domain.type.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.BDDMockito.given;
 
 /**
@@ -41,6 +39,8 @@ import static org.mockito.BDDMockito.given;
  * @date 2018. 08. 02.
  */
 @Slf4j
+@Tag("dev")
+@Tag("recommendPhase")
 public class PersonalPhaseMetaTests extends CommonTest {
     @MockBean
     private RecommendMapper recommendMapper;

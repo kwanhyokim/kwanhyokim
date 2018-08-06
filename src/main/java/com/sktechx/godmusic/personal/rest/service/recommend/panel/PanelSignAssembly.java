@@ -10,11 +10,30 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend.panel;
 
+import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.artist.ArtistPanel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.ListenMoodPopularChannelPanel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.PreferGenrePopularChannelPanel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.chart.ChartPanel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.GenreVo;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.PreferGenreSimilarTrackPanel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.PreferSimilarTrackPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 설명 : 로그인 사용자 패널 생성기
@@ -33,5 +52,148 @@ public abstract class PanelSignAssembly extends PanelAssembly{
 
         return panelList;
     }
+
+
+    protected void appendSimilarTrackPanelList(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int limitSize) {
+        List<Long> rcmmdIdList = personalPhaseMeta.getRecommendPersonalPanelRcmmdIdList(RecommendPanelContentType.RC_SML_TR);
+
+        if(!CollectionUtils.isEmpty(rcmmdIdList)){
+            List<RecommendTrackDto> recommendSimilarTrackList =  recommendMapper.selectRecommendSimilarTrackListByIdList(rcmmdIdList,limitSize);
+            if(!CollectionUtils.isEmpty(recommendSimilarTrackList)){
+                List<ImageDto> bgImgList = recommendPanelService.getPanelBackgroundImageList(RecommendPanelType.PREFER_SIMILAR_TRACK,personalPhaseMeta.getOsType());
+                recommendSimilarTrackList.stream().forEach(recommendTrack->{
+                    try{
+                        panelList.add(new PreferSimilarTrackPanel(RecommendPanelType.PREFER_SIMILAR_TRACK,recommendTrack,bgImgList));
+                    }catch(Exception e){
+                        log.error("ListenPhasePanelAssembly appendSimilarTrackPanelList error : {}",e.getMessage());
+                        e.printStackTrace();
+                    }
+                });
+            }
+        }
+    }
+
+    protected void appendPreferGenreChannelPanelList(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int limitSize) {
+
+        List<Long> preferGenreIdList = personalPhaseMeta.getPreferGenreIdList(limitSize);
+
+        if(!CollectionUtils.isEmpty(preferGenreIdList)){
+            List<PreferGenrePopularChnlDto> preferGenrePopularChnlList = chartMapper.selectPreferGenrePopularChannel(preferGenreIdList);
+            if(!CollectionUtils.isEmpty(preferGenrePopularChnlList)) {
+                List<ImageDto> bgImgList = recommendPanelService.getPanelBackgroundImageList(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL , personalPhaseMeta.getOsType());
+                preferGenrePopularChnlList
+                        .stream()
+                        .filter(Objects::nonNull)
+                        .forEach(channel -> {
+                            try {
+                                panelList.add(new PreferGenrePopularChannelPanel(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL, channel.getPopularChannel(), new GenreVo(channel), bgImgList));
+                            } catch (Exception e) {
+                                log.error("VisitPhasePanel appendPreferencePanel error : {}", e.getMessage());
+                                e.printStackTrace();
+                            }
+                        });
+            }
+
+        }
+
+    }
+
+    public void appendPreferenceChartPanel(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList) {
+        Optional.ofNullable(personalPhaseMeta.getPreferGenreList()).ifPresent(preferGenreList -> {
+            preferGenreList
+                    .stream()
+                    .filter(Objects::nonNull)
+                    .forEach(characterPreferGenre ->{
+                        if("TOP100".equals(characterPreferGenre.getPreferType())){
+                            Panel chartPanel = createChartPanel("LIVE_CHART" , personalPhaseMeta.getOsType()) ;
+                            if(chartPanel != null){
+                                panelList.add(0,chartPanel);
+                            }
+                        }else if("KIDS".equals(characterPreferGenre.getPreferType())){
+                            Panel chartPanel = createChartPanel("KIDS_CHART" , personalPhaseMeta.getOsType()) ;
+                            panelList.add ( chartPanel );
+                        }
+                    });
+        });
+    }
+
+    protected void appendPreferArtistPopularTrackPanel(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList) {
+        Long rcmmdId =personalPhaseMeta.getRecommendPersonalPanelRcmmdId(RecommendPanelContentType.RC_ATST_TR);
+
+        if(rcmmdId != null){
+            RecommendArtistDto recommendArtistDto = recommendMapper.selectRecommendArtistById(rcmmdId);
+            if(recommendArtistDto != null){
+                try{
+                    panelList.add(new ArtistPanel(RecommendPanelType.ARTIST_POPULAR_TRACK, recommendArtistDto));
+                }catch(Exception e){
+                    log.error("PanelSignAssembly appendPreferArtistPanel artistPanel create error : {}",e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    protected void appendListenMoodPopularChanelPanelList(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int limitSize) {
+        List<Long> rcmmdIdList = personalPhaseMeta.getRecommendPersonalPanelRcmmdIdList(RecommendPanelContentType.RC_MD_CN);
+
+        if(!CollectionUtils.isEmpty(rcmmdIdList)){
+            List<ChnlDto> popularChannelList = recommendMapper.selectRecommendListenMoodChannelListByIdList(rcmmdIdList , limitSize);
+            if(!CollectionUtils.isEmpty(popularChannelList)){
+                List<ImageDto> bgImgList = recommendPanelService.getPanelBackgroundImageList(RecommendPanelType.POPULAR_CHANNEL , personalPhaseMeta.getOsType());
+                popularChannelList
+                        .stream()
+                        .filter(Objects::nonNull)
+                        .forEach(popularChannel ->{
+                            try{
+                                panelList.add(new ListenMoodPopularChannelPanel(RecommendPanelType.LISTEN_MOOD_POPULAR_CHANNEL,popularChannel,bgImgList));
+                            }catch(Exception e){
+                                log.error("VisitPhasePanel appendListenMoodPopularChanelPanelList error : {}",e.getMessage());
+                                e.printStackTrace();
+                            }
+
+                        });
+            }
+        }
+    }
+
+    protected void appendPreferGenreSimilarTrackPanelList(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int limitSize) {
+        List<Long> rcmmdIdList = personalPhaseMeta.getRecommendPersonalPanelRcmmdIdList(RecommendPanelContentType.RC_GR_TR);
+
+        if(!CollectionUtils.isEmpty(rcmmdIdList)){
+            List<RecommendTrackDto> recommendPreferGenreSimilarTrackList =  recommendMapper.selectRecommendPreferGenreSimilarTrackListByIdList(rcmmdIdList , limitSize);
+            if(!CollectionUtils.isEmpty(recommendPreferGenreSimilarTrackList)){
+                List<ImageDto> bgImgList = recommendPanelService.getPanelBackgroundImageList(RecommendPanelType.PREFER_GENRE_SIMILAR_TRACK,personalPhaseMeta.getOsType());
+                recommendPreferGenreSimilarTrackList
+                        .stream()
+                        .filter(Objects::nonNull)
+                        .forEach(preferGenreSimilarTrack->{
+                            try{
+                                panelList.add(new PreferGenreSimilarTrackPanel(RecommendPanelType.PREFER_GENRE_SIMILAR_TRACK,preferGenreSimilarTrack,bgImgList));
+                            }catch(Exception e){
+                                log.error("addPreferGenreSimilarTrackPanelList error : {}",e.getMessage());
+                                e.printStackTrace();
+                            }
+                        });
+            }
+        }
+    }
+
+    private Panel createChartPanel(String chartType, OsType osType){
+        ChartDto chartDto = chartMapper.selectMainPanelChart(chartType);
+        RecommendPanelType chartPanelType = RecommendPanelType.fromCode(chartType);
+
+        List<ImageDto> bgImgList = recommendPanelService.getPanelBackgroundImageList(chartPanelType , osType);
+        if(chartDto != null){
+            try{
+                return new ChartPanel(chartPanelType,chartDto,bgImgList);
+            }catch(Exception e){
+                log.error("PanelSignAssembly createChartPanel create error : {}",e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+
 
 }

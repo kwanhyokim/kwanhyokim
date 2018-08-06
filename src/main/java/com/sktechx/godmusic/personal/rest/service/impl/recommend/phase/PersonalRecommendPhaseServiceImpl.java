@@ -10,8 +10,9 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.phase;
 
+import com.netflix.discovery.converters.Auto;
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
-import com.sktechx.godmusic.personal.common.domain.type.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
@@ -20,12 +21,17 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase
 import com.sktechx.godmusic.personal.rest.repository.CharacterPreferGenreMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import redis.clients.jedis.Jedis;
 
+import java.text.SimpleDateFormat;
+import java.time.*;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * 설명 : 사용자 청취 단계 / 패널 메타 관리
@@ -34,25 +40,38 @@ import java.util.List;
  * @date 2018. 07. 18.
  */
 @Service
+@Slf4j
 public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhaseService {
+
+
+    public static String PERSONAL_RECOMMEND_PHASE_KEY ="godmusic.personalapi.recommend.phase:%s";
 
     @Autowired
     private CharacterPreferGenreMapper characterPreferGenreMapper;
 
     @Autowired
     private RecommendMapper recommendMapper;
+
+    @Autowired
+    private RedisService redisService;
+
     @Override
     public PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType){
-        PersonalPhaseMeta personalPhaseMeta = null;
 
         if(characterNo == null){
             return getGuestPhaseMeta(osType);
         }
 
-        personalPhaseMeta = new PersonalPhaseMeta();
+        String personalRecommendPhaseKey = String.format(PERSONAL_RECOMMEND_PHASE_KEY, characterNo);
+        if (redisService.exists(personalRecommendPhaseKey) ){
+            PersonalPhaseMeta cachePersonalPhaseMeta = redisService.get(personalRecommendPhaseKey, PersonalPhaseMeta.class);
+            cachePersonalPhaseMeta.setOsType(osType);
+            return cachePersonalPhaseMeta;
+        }
+        PersonalPhaseMeta personalPhaseMeta = new PersonalPhaseMeta();
+
         personalPhaseMeta.setCharacterNo(characterNo);
         personalPhaseMeta.setOsType(osType);
-
         //선호 장르 리스트
         List<CharacterPreferGenreDto> characterPreferGenreList = characterPreferGenreMapper.selectCharacterPreferGenreList(characterNo);
         personalPhaseMeta.setPreferGenreList(characterPreferGenreList);
@@ -61,7 +80,35 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
         List<PersonalPanel> rcmmdPanelList = recommendMapper.selectPersonalRecommendPanelMeta(characterNo);
         personalPhaseMeta.setRcmmdPanelList(rcmmdPanelList);
 
+        redisService.setWithPrefix(personalRecommendPhaseKey,personalPhaseMeta,"NX" ,"PX" ,todayRemainMillisecond());
+
         return personalPhaseMeta;
+    }
+
+
+    private long todayRemainMillisecond(){
+        LocalDateTime todayMaxLocalTime = LocalDate.now().atTime(LocalTime.MAX);
+        long epochMilli = todayMaxLocalTime.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
+
+        LocalDateTime nowLocalTime = LocalDate.now().atTime(LocalTime.now());
+        long localEpochMilli = nowLocalTime.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
+
+        if(epochMilli > localEpochMilli)
+            return epochMilli - localEpochMilli;
+        return 0;
+    }
+
+    public static void main(String[] args){
+        LocalDateTime cacheExpireAtDateTime = LocalDate.now().atTime(LocalTime.MAX);
+        long epochMilli = cacheExpireAtDateTime.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
+        System.out.println("epochMilli : "+epochMilli);
+
+        LocalDateTime localateTime = LocalDate.now().atTime(LocalTime.now());
+        long localEpochMilli = localateTime.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
+        System.out.println("localEpochMilli : "+localEpochMilli);
+
+        System.out.println(epochMilli - localEpochMilli);
+
     }
 
     private PersonalPhaseMeta getGuestPhaseMeta(OsType osType){

@@ -17,12 +17,14 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -33,6 +35,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @date 2018. 07. 10.
  */
 @Slf4j
+@Tag("dev")
+@Tag("recommendPhase")
 public class PersonalPhaseTests extends CommonTest{
 
     @Test
@@ -70,23 +74,23 @@ public class PersonalPhaseTests extends CommonTest{
 
         assertEquals(null, phaseMeta.getRecommendPersonalPanelRcmmdId(RecommendPanelContentType.RC_ATST_TR));
 
-        PersonalPanel panel = makeRcmmdPersonalPanel(RecommendPanelContentType.CHART);
-        personalPhaseList.add(panel);
+        List<PersonalPanel> panelList = makeRcmmdPersonalPanelList(RecommendPanelContentType.CHART,1);
+        personalPhaseList.addAll(panelList);
         phaseMeta.setRcmmdPanelList(personalPhaseList);
 
         assertEquals(null, phaseMeta.getRecommendPersonalPanelRcmmdId(RecommendPanelContentType.RC_ATST_TR));
-        panel = makeRcmmdPersonalPanel(RecommendPanelContentType.CHNL);
-        personalPhaseList.add(panel);
+        panelList = makeRcmmdPersonalPanelList(RecommendPanelContentType.CHNL,1);
+        personalPhaseList.addAll(panelList);
 
         assertEquals(null, phaseMeta.getRecommendPersonalPanelRcmmdId(RecommendPanelContentType.RC_ATST_TR));
 
-        panel = makeRcmmdPersonalPanel(RecommendPanelContentType.RC_ATST_TR);
-        personalPhaseList.add(panel);
+        panelList = makeRcmmdPersonalPanelList(RecommendPanelContentType.RC_ATST_TR,1);
+        personalPhaseList.addAll(panelList);
 
         assertEquals(new Long(1L), phaseMeta.getRecommendPersonalPanelRcmmdId(RecommendPanelContentType.RC_ATST_TR));
 
-        panel = makeRcmmdPersonalPanel(RecommendPanelContentType.RC_CF_TR);
-        personalPhaseList.add(panel);
+        panelList = makeRcmmdPersonalPanelList(RecommendPanelContentType.RC_CF_TR,1);
+        personalPhaseList.addAll(panelList);
 
         assertEquals(new Long(1L), phaseMeta.getRecommendPersonalPanelRcmmdId(RecommendPanelContentType.RC_ATST_TR));
 
@@ -95,11 +99,50 @@ public class PersonalPhaseTests extends CommonTest{
 
     }
 
+    @Test
+    public void 개인화메타데이터_유사곡패널_존재여부(){
+        PersonalPhaseMeta phaseMeta = new PersonalPhaseMeta();
+        List<PersonalPanel> personalPhaseList = new ArrayList();
 
-    public PersonalPanel makeRcmmdPersonalPanel (RecommendPanelContentType recommendPanelContentType){
-        PersonalPanel panel = new PersonalPanel();
-        panel.setRecommendPanelContentType(recommendPanelContentType);
-        panel.setRecommendId(1L);
-        return panel;
+        assertEquals(null, phaseMeta.getRecommendPersonalPanelRcmmdId(RecommendPanelContentType.RC_SML_TR));
+
+        List<PersonalPanel> panelList = makeRcmmdPersonalPanelList(RecommendPanelContentType.CHART,1);
+        personalPhaseList.addAll(panelList);
+        phaseMeta.setRcmmdPanelList(personalPhaseList);
+        assertEquals(null, phaseMeta.getRecommendPersonalPanelRcmmdId(RecommendPanelContentType.RC_SML_TR));
+
+
+        panelList = makeRcmmdPersonalPanelList(RecommendPanelContentType.CHNL,1);
+        personalPhaseList.addAll(panelList);
+        assertEquals(null, phaseMeta.getRecommendPersonalPanelRcmmdId(RecommendPanelContentType.RC_SML_TR));
+
+        panelList = makeRcmmdPersonalPanelList(RecommendPanelContentType.RC_SML_TR,2);
+        personalPhaseList.addAll(panelList);
+
+        assertEquals(new Long(1L), phaseMeta.getRecommendPersonalPanelRcmmdId(RecommendPanelContentType.RC_SML_TR));
+
+        panelList = makeRcmmdPersonalPanelList(RecommendPanelContentType.RC_CF_TR,1);
+        personalPhaseList.addAll(panelList);
+
+        assertEquals(new Long(1L), phaseMeta.getRecommendPersonalPanelRcmmdId(RecommendPanelContentType.RC_SML_TR));
+
+        personalPhaseList.clear();
+        assertEquals(null, phaseMeta.getRecommendPersonalPanelRcmmdId(RecommendPanelContentType.RC_SML_TR));
+
+    }
+
+
+    public List<PersonalPanel> makeRcmmdPersonalPanelList (RecommendPanelContentType recommendPanelContentType , int size){
+
+        List<PersonalPanel> panelList = new ArrayList<>();
+        IntStream.range(1, size+1).forEach(index ->{
+            PersonalPanel panel = new PersonalPanel();
+            panel.setRecommendPanelContentType(recommendPanelContentType);
+            panel.setRecommendId(new Long(index));
+            panel.setDispSn(index);
+            panelList.add(panel);
+        });
+
+        return panelList;
     }
 }

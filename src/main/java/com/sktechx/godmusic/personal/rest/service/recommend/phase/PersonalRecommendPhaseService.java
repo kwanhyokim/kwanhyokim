@@ -10,7 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend.phase;
 
-import com.sktechx.godmusic.personal.common.domain.type.OsType;
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 
 /**

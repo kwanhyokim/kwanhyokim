@@ -30,7 +30,7 @@ import java.util.List;
 public class ChannelServiceImpl implements ChannelService {
 
     //TODO : 인기채널 GET
-    public List<ChnlDto> getHotplayChannelList(Integer size){
+    public List<ChnlDto> getEditorsPickChannelList(Integer size){
         return null;
     }
 

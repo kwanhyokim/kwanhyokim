@@ -10,15 +10,21 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly;
 
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.RcmmdTrackPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelSignAssembly;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 설명 : 추천 단계 ( 3단계 ) 패널
@@ -35,43 +41,44 @@ public class RecommendPhasePanelAssembly extends PanelSignAssembly {
 
     int preferGenreSimilarTrackPanelSize = 2;
 
+    private RecommendPhasePanelAssembly(){}
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
         final List<Panel> panelList = new ArrayList();
 
-        panelAppender.appendRecommendCfTrackPanelList(personalPhaseMeta, panelList, rcmmdCfTrackPanelSize);
+        appendRecommendCfTrackPanelList(personalPhaseMeta, panelList, rcmmdCfTrackPanelSize);
 
         boolean isFillRecommendPanel = false;
         if(rcmmdCfTrackPanelSize > panelList.size()){
             isFillRecommendPanel = true;
         }
-        panelAppender.appendPreferGenreSimilarTrackPanelList(personalPhaseMeta, panelList, preferGenreSimilarTrackPanelSize);
+        appendPreferGenreSimilarTrackPanelList(personalPhaseMeta, panelList, preferGenreSimilarTrackPanelSize);
 
 
         int panelDefaultSize = rcmmdCfTrackPanelSize+similarTrackPanelSize;
 
         if( panelDefaultSize > panelList.size()){
-            panelAppender.appendSimilarTrackPanelList(personalPhaseMeta , panelList ,panelDefaultSize  - panelList.size() );
+            appendSimilarTrackPanelList(personalPhaseMeta , panelList ,panelDefaultSize  - panelList.size() );
             if(panelDefaultSize > panelList.size()){
-                panelAppender.appendPreferGenreChannelPanelList(personalPhaseMeta, panelList, panelDefaultSize - panelList.size() );
+                appendPreferGenreChannelPanelList(personalPhaseMeta, panelList, panelDefaultSize - panelList.size() );
             }
         }else{
             if(isFillRecommendPanel){
                 int recommendPanelCount = panelCount(RecommendPanelType.RCMMD_TRACK,panelList);
                 int recommendPanelAppendCount = rcmmdCfTrackPanelSize - recommendPanelCount;
                 if(recommendPanelAppendCount > 0){
-                    panelAppender.appendSimilarTrackPanelList(personalPhaseMeta,panelList,recommendPanelAppendCount);
+                    appendSimilarTrackPanelList(personalPhaseMeta,panelList,recommendPanelAppendCount);
                     if(panelDefaultSize >= panelList.size()){
-                        panelAppender.appendPreferGenreChannelPanelList(personalPhaseMeta, panelList, recommendPanelAppendCount );
+                        appendPreferGenreChannelPanelList(personalPhaseMeta, panelList, recommendPanelAppendCount );
                         if(panelDefaultSize >= panelList.size()){
-                            panelAppender.appendDefaultPopularChannelPanel(personalPhaseMeta , panelList ,recommendPanelAppendCount);
+                            appendDefaultPopularChannelPanel(personalPhaseMeta , panelList ,recommendPanelAppendCount);
                         }
                     }
                 }
             }
         }
         if(panelDefaultSize > panelList.size()){
-            panelAppender.appendDefaultPopularChannelPanel(personalPhaseMeta , panelList ,panelDefaultSize - panelList.size());
+            appendDefaultPopularChannelPanel(personalPhaseMeta , panelList ,panelDefaultSize - panelList.size());
         }
 
         return panelList;
@@ -79,10 +86,33 @@ public class RecommendPhasePanelAssembly extends PanelSignAssembly {
 
     @Override
     protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList) {
-        panelAppender.appendPreferArtistPopularTrackPanel(personalPhaseMeta,panelList);
-        panelAppender.appendPreferenceChartPanel(personalPhaseMeta,panelList);
+        appendPreferArtistPopularTrackPanel(personalPhaseMeta,panelList);
+        appendPreferenceChartPanel(personalPhaseMeta,panelList);
 
         sort(personalPhaseMeta, panelList);
+    }
+
+    private void appendRecommendCfTrackPanelList(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int limitSize) {
+        List<Long> rcmmdIdList = personalPhaseMeta.getRecommendPersonalPanelRcmmdIdList(RecommendPanelContentType.RC_CF_TR);
+
+        if(!CollectionUtils.isEmpty(rcmmdIdList)){
+            List<RecommendTrackDto> recommendCfTrackList =  recommendMapper.selectRecommendCfTrackListByIdList(rcmmdIdList , limitSize);
+
+            if(!CollectionUtils.isEmpty(recommendCfTrackList)){
+                List<ImageDto> bgImgList = recommendPanelService.getPanelBackgroundImageList(RecommendPanelType.RCMMD_TRACK,personalPhaseMeta.getOsType());
+                recommendCfTrackList
+                        .stream()
+                        .filter(Objects::nonNull)
+                        .forEach(recommendCfTrack->{
+                            try{
+                                panelList.add(new RcmmdTrackPanel(RecommendPanelType.RCMMD_TRACK , recommendCfTrack, bgImgList));
+                            }catch(Exception e){
+                                log.error("appendRecommendCfTrackPanelList error : {}",e.getMessage());
+                                e.printStackTrace();
+                            }
+                        });
+            }
+        }
     }
 
 

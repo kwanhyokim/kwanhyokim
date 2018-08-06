@@ -10,9 +10,12 @@
 
 package com.sktechx.godmusic.personal.recommend;
 
-import com.sktechx.godmusic.personal.common.domain.type.*;
+import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.personal.common.domain.type.ChartType;
+import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
-import com.sktechx.godmusic.personal.rest.model.dto.PreferGenreDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.artist.ArtistPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.PopularChannelPanel;
@@ -21,6 +24,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.chart.ChartPa
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -41,12 +45,14 @@ import static org.mockito.BDDMockito.given;
  * @date 2018. 07. 10.
  */
 @Slf4j
-public class VisitPanelTests extends RecommendTests{
+@Tag("dev")
+@Tag("recommendPanel")
+public class VisitPanelTests extends RecommendMockData {
 
 
     @BeforeEach
     public void init(){
-        given(channelService.getHotplayChannelList(anyInt())).willReturn(makeMockHotPlayChannels(3));
+        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(3));
     }
 
     @Test
@@ -69,7 +75,7 @@ public class VisitPanelTests extends RecommendTests{
         int preferGenrePopularChnlTotalSize = 3;
         int preferGenrePolularChnlSize = 0;
 
-        given(channelService.getHotplayChannelList(anyInt())).willReturn(makeMockHotPlayChannels(preferGenrePopularChnlTotalSize - preferGenrePolularChnlSize));
+        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(preferGenrePopularChnlTotalSize - preferGenrePolularChnlSize));
 
         // CASE :  2-C ,1-A' 패널이 없다면 1-A,1-A,1-A
         given(channelService.selectPreferGenrePopularChannel(anyLong())).willReturn(makeMockPreferGenrePopularChnl(0));
@@ -91,7 +97,7 @@ public class VisitPanelTests extends RecommendTests{
         given(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(anyLong() , anyObject())).willReturn(makeMockPersonalPhaseMeta(PersonalPhaseType.VISIT, null, preferGenreList));
         given(chartMapper.selectPreferGenrePopularChannel(anyObject())).willReturn(makeMockPreferGenrePopularChnl(preferGenrePolularChnlSize));
 
-        given(channelService.getHotplayChannelList(anyInt())).willReturn(makeMockHotPlayChannels(preferGenrePopularChnlTotalSize - preferGenrePolularChnlSize));
+        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(preferGenrePopularChnlTotalSize - preferGenrePolularChnlSize));
 
         List<Panel> panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
         assertNotNull(panelList);
@@ -105,7 +111,7 @@ public class VisitPanelTests extends RecommendTests{
 
         preferGenrePolularChnlSize = 2 ;
         given(chartMapper.selectPreferGenrePopularChannel(anyObject())).willReturn(makeMockPreferGenrePopularChnl(preferGenrePolularChnlSize));
-        given(channelService.getHotplayChannelList(anyInt())).willReturn(makeMockHotPlayChannels(preferGenrePopularChnlTotalSize - preferGenrePolularChnlSize));
+        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(preferGenrePopularChnlTotalSize - preferGenrePolularChnlSize));
 
         panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
         assertNotNull(panelList);
@@ -119,7 +125,7 @@ public class VisitPanelTests extends RecommendTests{
 
         preferGenrePolularChnlSize = 3 ;
         given(chartMapper.selectPreferGenrePopularChannel(anyObject())).willReturn(makeMockPreferGenrePopularChnl(preferGenrePolularChnlSize));
-        given(channelService.getHotplayChannelList(anyInt())).willReturn(makeMockHotPlayChannels(preferGenrePopularChnlTotalSize - preferGenrePolularChnlSize));
+        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(preferGenrePopularChnlTotalSize - preferGenrePolularChnlSize));
 
         panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
         assertNotNull(panelList);

@@ -23,6 +23,6 @@ import java.util.List;
  */
 public interface ChannelService {
 
-    List<ChnlDto> getHotplayChannelList(Integer size);
+    List<ChnlDto> getEditorsPickChannelList(Integer size);
     List<PreferGenrePopularChnlDto> selectPreferGenrePopularChannel(Long characterNo);
 }

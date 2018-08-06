@@ -10,11 +10,17 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.phase;
 
-import com.sktechx.godmusic.personal.common.domain.type.OsType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
+import com.sktechx.godmusic.personal.rest.model.dto.PreferGenreDto;
+import com.sktechx.godmusic.personal.rest.model.vo.preference.Chart;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
@@ -27,9 +33,11 @@ import java.util.stream.Collectors;
  * @date 2018. 07. 18.
  */
 @Data
+@Slf4j
 public class PersonalPhaseMeta {
-    protected OsType osType;
+
     protected Long characterNo;
+    protected OsType osType;
 
     //선호 장르
     private List<CharacterPreferGenreDto> preferGenreList;
@@ -57,63 +65,74 @@ public class PersonalPhaseMeta {
         }
     }
 
+    @ApiModelProperty(value = "개인화 단계")
     public PersonalPhaseType getFirstPhaseType(){
+
         if(!CollectionUtils.isEmpty(personalPhaseList)){
-            PersonalPhase firstPhase =  personalPhaseList.stream()
+            PersonalPhase firstPhase = personalPhaseList
+                    .stream()
+                    .filter(Objects::nonNull)
                     .sorted(Comparator.comparing( PersonalPhase::getPhaseType , (phase1,phase2)->{
                         return phase2.compareTo(phase1);
                     }))
                     .findFirst()
                     .orElse(null);
-            if(firstPhase != null)
+            if(firstPhase != null){
                 return firstPhase.getPhaseType();
+            }
         }
         return PersonalPhaseType.GUEST;
     }
 
 
-
     public List<Long> getPreferGenreIdList(int limitSize){
-        if(!CollectionUtils.isEmpty(preferGenreList)){
-            return preferGenreList.stream()
-//                    .filter(preferGenre -> preferGenre.getPreferGenreType() )
+        if(CollectionUtils.isEmpty(preferGenreList))
+            return null;
+
+        return preferGenreList
+                    .stream()
+                    .filter(Objects::nonNull)
                     .map(preferGenre->{
                         return preferGenre.getPreferGenreId();
-                    }).limit(limitSize)
+                    })
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .limit(limitSize)
                     .collect(Collectors.toList());
-        }
-        return null;
     }
+
     public List<Long> getRecommendPersonalPanelRcmmdIdList(RecommendPanelContentType recommendPanelContentType) {
-        if (!CollectionUtils.isEmpty(rcmmdPanelList)) {
-            return rcmmdPanelList.stream()
-                    .filter(personalPanel -> recommendPanelContentType.equals(personalPanel.getRecommendPanelContentType()))
-                    .sorted(Comparator.comparing( PersonalPanel::getDispSn , (dispSn1,dispSn2)->{
-                        return dispSn1.compareTo(dispSn2);
-                    }))
-                    .map(personalPanel -> {
+        if(CollectionUtils.isEmpty(rcmmdPanelList))
+            return null;
+
+        return rcmmdPanelList.stream()
+            .filter(personalPanel->{return Objects.nonNull(personalPanel) && recommendPanelContentType.equals(personalPanel.getRecommendPanelContentType()) ;})
+            .sorted(Comparator.comparing( PersonalPanel::getDispSn , (dispSn1,dispSn2)->{
+                return dispSn1.compareTo(dispSn2);
+            })).map(personalPanel -> {
                 return personalPanel.getRecommendId();
-            }).collect(Collectors.toList());
-        }
-        return null;
+            })
+            .filter(Objects::nonNull)
+            .distinct()
+            .collect(Collectors.toList());
     }
+
     public Long getRecommendPersonalPanelRcmmdId(RecommendPanelContentType recommendPanelContentType){
-        if(!CollectionUtils.isEmpty(rcmmdPanelList)){
-            PersonalPanel personalPanel = getRecommendPersonalPanel(recommendPanelContentType);
-            if(personalPanel != null && personalPanel.getRecommendId() != null){
-                return personalPanel.getRecommendId();
-            }
+        PersonalPanel personalPanel = getRecommendPersonalPanel(recommendPanelContentType);
+        if(personalPanel != null && personalPanel.getRecommendId() != null){
+            return personalPanel.getRecommendId();
         }
         return null;
     }
 
     private PersonalPanel getRecommendPersonalPanel(RecommendPanelContentType recommendPanelContentType){
-        if(!CollectionUtils.isEmpty(rcmmdPanelList)){
-            return rcmmdPanelList.stream()
-                    .filter(personalPanel -> recommendPanelContentType.equals(personalPanel.getRecommendPanelContentType()))
-                    .findFirst().orElse(null);
-        }
-        return null;
-    }
+        if(CollectionUtils.isEmpty(rcmmdPanelList))
+            return null;
 
+        return rcmmdPanelList
+                .stream()
+                .filter(personalPanel -> Objects.nonNull(personalPanel) && recommendPanelContentType.equals(personalPanel.getRecommendPanelContentType()))
+                .findFirst()
+                .orElse(null);
+    }
 }

@@ -11,7 +11,10 @@
 package com.sktechx.godmusic.personal.rest.service.recommend.panel;
 
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.PopularChannelPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.repository.ChannelMapper;
 import com.sktechx.godmusic.personal.rest.repository.CharacterPreferGenreMapper;
@@ -40,9 +43,6 @@ public abstract class PanelAssembly {
     protected ChannelService channelService;
     @Autowired
     protected RecommendPanelService recommendPanelService;
-    @Autowired
-    protected PanelAppenderService panelAppender;
-
     @Autowired
     protected ChannelMapper channelMapper;
     @Autowired
@@ -76,9 +76,20 @@ public abstract class PanelAssembly {
         });
 
         //TODO : 선호장르를 KIDS만 선택했을 경우 처음에 노출
-
-
-
     }
 
+
+    protected void appendDefaultPopularChannelPanel(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int limitSize) {
+        List<ImageDto> bgImgList = recommendPanelService.getPanelBackgroundImageList(RecommendPanelType.POPULAR_CHANNEL , personalPhaseMeta.getOsType());
+        List<ChnlDto> editorsPickChannelList = channelService.getEditorsPickChannelList(limitSize);
+
+        editorsPickChannelList.stream().forEach(channel -> {
+            try{
+                panelList.add(new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL,channel,bgImgList));
+            }catch(Exception e){
+                log.error("GuestPhasePanel defaultPanelSetting Exception : {}",e.getMessage());
+            }
+        });
+
+    }
 }

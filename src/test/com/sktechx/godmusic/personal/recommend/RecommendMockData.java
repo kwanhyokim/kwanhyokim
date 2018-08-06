@@ -29,6 +29,7 @@ import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.RecommendPanelAssemblyFactory;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
@@ -43,7 +44,8 @@ import java.util.List;
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 27.
  */
-public class RecommendTests extends CommonTest {
+@Slf4j
+public class RecommendMockData extends CommonTest {
     @Autowired
     protected RecommendPanelService recommendPanelService;
 
@@ -134,9 +136,11 @@ public class RecommendTests extends CommonTest {
         personalPhase.setPhaseType(personalPhaseType);
         personalPhase.setAvaliableDateTime(new Date());
 
-        phaseMeta.setPersonalPhaseList(Arrays.asList(personalPhase));
         phaseMeta.setRcmmdPanelList(personalpanelList);
+        phaseMeta.setPersonalPhaseList(Arrays.asList(personalPhase));
         phaseMeta.setPreferGenreList(preferGenreList);
+
+        log.info("phaseMeta : {}",phaseMeta);
         return phaseMeta;
     }
 
