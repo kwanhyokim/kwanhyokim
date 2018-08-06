@@ -47,7 +47,7 @@ public class RecommendPanelController {
 	@Autowired
 	private PersonalRecommendPhaseService personalRecommendPhaseService;
 
-	@ApiOperation(value = "추천 개인화 정보 조회", httpMethod = "GET")
+	@ApiOperation(value = "추천 개인화 정보 조회 ( 신규 )", httpMethod = "GET" , hidden = true)
 	@GetMapping(value = "/phase/meta")
     public CommonApiResponse<PersonalPhaseMeta> personalPhaseMeta(@ApiIgnore @RequestGMContext GMContext ctx){
 		return new CommonApiResponse<>(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(ctx.getCharacterNo(),ctx.getOsType()));
@@ -55,8 +55,10 @@ public class RecommendPanelController {
 
     @ApiOperation(value = "추천 홈 패널 조회 ( 신규 )", httpMethod = "GET", notes = "추천 패널 조회 MockUp API" , response = RecommendPanelResponse.class)
     @GetMapping(value = "/home/panels")
-    public CommonApiResponse<List<Panel>> recommendHomePanels(@ApiIgnore @RequestGMContext GMContext ctx){
-		return new CommonApiResponse<>(recommendPanelService.createMockupRecommendPanelList());
+    public CommonApiResponse<RecommendPanelResponse> recommendHomePanels(@ApiIgnore @RequestGMContext GMContext ctx){
+		RecommendPanelResponse recommendPanelResponse = new RecommendPanelResponse();
+		recommendPanelResponse.setList(recommendPanelService.createMockupRecommendPanelList());
+		return new CommonApiResponse<RecommendPanelResponse>(recommendPanelResponse);
     }
 
 
