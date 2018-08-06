@@ -103,6 +103,72 @@
             c.disp_status_yn = 'Y'
     </select>
 
+    <select id="selectEditorsPickChannelList" resultMap="channelResultMap">
+		SELECT
+			c.chnl_id,
+			c.chnl_nm,
+			e.track_id,
+			e.track_nm,
+			j.artist_id reqArtistId,
+			j.artist_nm reqArtistNm,
+			e.agency_id,
+			e.album_id,
+			h.artist_id,
+			h.artist_nm,
+			f.album_img_size size,
+			CONCAT(f.album_img_url,'?updateDate=',UNIX_TIMESTAMP(f.update_dtime)) url,
+			c.create_dtime,
+			c.update_dtime
+		FROM
+			(
+				SELECT
+					a.theme_id, b.chnl_id, b.disp_sn
+				FROM
+					(
+						SELECT
+							theme_id
+						FROM
+							tb_theme
+						WHERE
+							theme_type = 'HOT'
+							AND disp_status_type = 'Y'
+							<if test="isToday">
+								AND disp_start_dtime <![CDATA[<=]]> NOW()
+								AND disp_end_dtime <![CDATA[>=]]> NOW()
+							</if>
+							<if test="!isToday">
+								AND disp_end_dtime <![CDATA[<]]> NOW()
+							</if>
+
+						ORDER BY disp_end_dtime DESC
+						LIMIT 1
+				  ) a
+				INNER JOIN tb_map_theme_chnl b ON a.theme_id = b.theme_id
+				ORDER BY disp_sn ASC
+				LIMIT #{limitSize}
+			) b
+		INNER JOIN
+			tb_chnl c ON c.chnl_id = b.chnl_id
+		INNER JOIN
+			tb_map_chnl_track d ON c.chnl_id = d.chnl_id
+		INNER JOIN
+			tb_track e ON d.track_id = e.track_id
+		LEFT OUTER JOIN
+			tb_album_img f ON e.album_id = f.album_id
+		LEFT OUTER JOIN
+			ted_trackartist g ON e.track_id = g.track_id
+		LEFT OUTER JOIN
+			ted_artist h ON g.artist_id = h.artist_id
+		LEFT OUTER JOIN
+			ted_album i ON e.album_id = i.album_id
+		LEFT OUTER JOIN
+			ted_artist j ON e.reprsnt_artist_id = j.artist_id
+		WHERE
+			c.disp_status_type = 'Y'
+		AND
+			e.disp_status_yn = 'Y'
+		ORDER BY b.disp_sn ASC
+    </select>
 
     <!-- TOP100 , KIDS를 제외한 선호 장르의 인기채널을 가져온다 -->
     <select id="selectPreferGenrePopularChannel">

@@ -80,10 +80,11 @@ public abstract class PanelAssembly {
 
 
     protected void appendDefaultPopularChannelPanel(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int limitSize) {
+        //TODO : 배경 이미지 작업
         List<ImageDto> bgImgList = recommendPanelService.getPanelBackgroundImageList(RecommendPanelType.POPULAR_CHANNEL , personalPhaseMeta.getOsType());
-        List<ChnlDto> editorsPickChannelList = channelService.getEditorsPickChannelList(limitSize);
+        List<ChnlDto> popularChannelList = channelService.getEditorsPickChannelList(limitSize);
 
-        editorsPickChannelList.stream().forEach(channel -> {
+        popularChannelList.stream().forEach(channel -> {
             try{
                 panelList.add(new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL,channel,bgImgList));
             }catch(Exception e){

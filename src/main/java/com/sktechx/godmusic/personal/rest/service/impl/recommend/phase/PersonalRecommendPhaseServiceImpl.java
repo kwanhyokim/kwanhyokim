@@ -44,7 +44,7 @@ import java.util.Locale;
 public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhaseService {
 
 
-    public static String PERSONAL_RECOMMEND_PHASE_KEY ="godmusic.personalapi.recommend.phase:%s";
+    public static final String PERSONAL_RECOMMEND_PHASE_KEY ="godmusic.personalapi.recommend.phase:%s";
 
     @Autowired
     private CharacterPreferGenreMapper characterPreferGenreMapper;
@@ -63,6 +63,7 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
         }
 
         String personalRecommendPhaseKey = String.format(PERSONAL_RECOMMEND_PHASE_KEY, characterNo);
+
         if (redisService.exists(personalRecommendPhaseKey) ){
             PersonalPhaseMeta cachePersonalPhaseMeta = redisService.get(personalRecommendPhaseKey, PersonalPhaseMeta.class);
             cachePersonalPhaseMeta.setOsType(osType);
@@ -96,19 +97,6 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
         if(epochMilli > localEpochMilli)
             return epochMilli - localEpochMilli;
         return 0;
-    }
-
-    public static void main(String[] args){
-        LocalDateTime cacheExpireAtDateTime = LocalDate.now().atTime(LocalTime.MAX);
-        long epochMilli = cacheExpireAtDateTime.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
-        System.out.println("epochMilli : "+epochMilli);
-
-        LocalDateTime localateTime = LocalDate.now().atTime(LocalTime.now());
-        long localEpochMilli = localateTime.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
-        System.out.println("localEpochMilli : "+localEpochMilli);
-
-        System.out.println(epochMilli - localEpochMilli);
-
     }
 
     private PersonalPhaseMeta getGuestPhaseMeta(OsType osType){

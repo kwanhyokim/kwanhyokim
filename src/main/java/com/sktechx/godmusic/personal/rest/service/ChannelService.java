@@ -23,6 +23,6 @@ import java.util.List;
  */
 public interface ChannelService {
 
-    List<ChnlDto> getEditorsPickChannelList(Integer size);
+    List<ChnlDto> getEditorsPickChannelList(int limitSize);
     List<PreferGenrePopularChnlDto> selectPreferGenrePopularChannel(Long characterNo);
 }

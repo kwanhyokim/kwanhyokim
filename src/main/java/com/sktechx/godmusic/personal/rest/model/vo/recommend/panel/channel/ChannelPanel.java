@@ -42,7 +42,6 @@ public abstract class ChannelPanel extends Panel{
         super(panelType);
         this.channel = neverNullChannel(channel);
         this.imgList = bgImgList;
-        this.genre = genre;
         this.initialPanel();
     }
 
@@ -63,7 +62,6 @@ public abstract class ChannelPanel extends Panel{
         content.setUpdateCount(channel.getUpdateCount());
         content.setTrackCount(channel.getTrackCount());
         content.setTrackList(channel.getTrackList());
-        content.setGenre(genre);
         content.setCreateDtime(channel.getCreateDtime());
         content.setUpdateDtime(channel.getUpdateDtime());
 

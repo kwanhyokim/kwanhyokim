@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.phase;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
  */
 @Data
 @Slf4j
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class PersonalPhaseMeta {
 
     protected Long characterNo;
