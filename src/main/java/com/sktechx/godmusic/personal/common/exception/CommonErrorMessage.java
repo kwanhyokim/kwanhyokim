@@ -33,6 +33,10 @@ public enum CommonErrorMessage implements ErrorDomain {
 	, ALBUM_OVER_ADD_LIKE(4000308, HttpStatus.BAD_REQUEST, "좋아요 한 앨범을 더 이상 추가할 수 없습니다. 최대 1000개까지 담을 수 있습니다." ,"좋아하는 앨범 최대값 초과")
 	, CHART_DUPLICATED_LIKE(4000309, HttpStatus.BAD_REQUEST, "이미 추가된 차트 입니다." ,"이미 추가된 차트")
 	, CHART_OVER_ADD_LIKE(4000310, HttpStatus.BAD_REQUEST, "좋아요 한 차트을 더 이상 추가할 수 없습니다. 최대 1000개까지 담을 수 있습니다." ,"좋아하는 차트 최대값 초과")
+	, MY_CHANNEL_OVER_CREATE(4000311, HttpStatus.BAD_REQUEST,"my플레이리스트를 더 이상 추가할 수 없습니다.\n최대 1000개의 my플레이리스트를 만들 수 있습니다.","My 플레이 리스트 생성 최대값 초과")
+	, MY_CHANNEL_TRACK_OVER_ADD(4000312, HttpStatus.BAD_REQUEST, "my플레이리스트에는 최대 1000곡까지 담을 수 있습니다.\n새로운 플레이리스트를 만들어 주세요.","My 플레이 리스트 곡 추가 최대값 초과")
+	, MY_CHANNEL_DUPLICATED_NAME(4000313, HttpStatus.BAD_REQUEST, "동일한 my플레이리스트 명이 이미 존재합니다" ,"채널명 중복")
+	, MY_CHANNEL_NOT_FOUND(4040314, HttpStatus.BAD_REQUEST, "요청하신 채널이 존재하지 않습니다.", "요청 채널 에러")
 	/*
 	 * 401 Default Error
 	 */
