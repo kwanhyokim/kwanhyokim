@@ -105,7 +105,7 @@ public class RecommendPanelController {
 			@ApiParam(defaultValue = "52") @PathVariable Long panelContentId,
 			@ApiParam(value = "추천 패널 컨텐트 타입", allowableValues = "RC_ATST_TR, RC_SML_TR, RC_GR_TR, RC_CF_TR") @RequestParam(value = "type") RecommendPanelContentType recommendPanelContentType){
 
-		ListDto<List<RecommendPanelTrackDto>> response = recommendPanelService.getRecommendPanelTrackList(52L, recommendPanelContentType, panelContentId);
+		ListDto<List<RecommendPanelTrackDto>> response = recommendPanelService.getRecommendPanelTrackList(ctx.getCharacterNo(), recommendPanelContentType, panelContentId);
 		return new CommonApiResponse(response);
 	}
 
