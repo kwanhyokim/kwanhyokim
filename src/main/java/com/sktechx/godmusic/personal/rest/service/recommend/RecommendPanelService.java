@@ -15,7 +15,7 @@ import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentTyp
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.MyMostTrackDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 
 import java.util.List;
@@ -34,11 +34,11 @@ public interface RecommendPanelService {
 
     // added by bob 2018.08.01
     // edited by bob 2018.08.02
-    ListDto<List<MyMostTrackDto>>getRecommendPanelPopularTrackList(Long characterNo, Long rcmmdArtistId);
-    ListDto<List<MyMostTrackDto>>getRecommendPanelSimilarTrackList(Long characterNo, Long rcmmdTrackId);
-    ListDto<List<MyMostTrackDto>> getRecommendPanelGenreTrackList(Long characterNo, Long rcmmdGenreId);
-    ListDto<List<MyMostTrackDto>>getRecommendPanelCfTrackList(Long characterNo, Long rcmmdMforuId);
+    ListDto<List<RecommendPanelTrackDto>>getRecommendPanelPopularTrackList(Long characterNo, Long rcmmdArtistId);
+    ListDto<List<RecommendPanelTrackDto>>getRecommendPanelSimilarTrackList(Long characterNo, Long rcmmdTrackId);
+    ListDto<List<RecommendPanelTrackDto>> getRecommendPanelGenreTrackList(Long characterNo, Long rcmmdGenreId);
+    ListDto<List<RecommendPanelTrackDto>>getRecommendPanelCfTrackList(Long characterNo, Long rcmmdMforuId);
 
-	ListDto<List<MyMostTrackDto>> getRecommendPanelTrackList(Long characterNo, RecommendPanelContentType recommendPanelType, Long panelContentId);
+	ListDto<List<RecommendPanelTrackDto>> getRecommendPanelTrackList(Long characterNo, RecommendPanelContentType recommendPanelType, Long panelContentId);
 
 }

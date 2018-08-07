@@ -10,6 +10,20 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend;
 
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
@@ -20,8 +34,8 @@ import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ServiceGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.MyMostTrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.artist.ArtistPanel;
@@ -40,25 +54,10 @@ import com.sktechx.godmusic.personal.rest.repository.ArtistMapper;
 import com.sktechx.godmusic.personal.rest.repository.ChannelMapper;
 import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
 import com.sktechx.godmusic.personal.rest.service.ChartService;
-import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.ListenPhasePanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
-import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelSignAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 
 /**
  * 설명 : 추천 패널 데이터 생성
@@ -282,26 +281,26 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
 
     @Override
-    public ListDto<List<MyMostTrackDto>> getRecommendPanelPopularTrackList(Long characterNo, Long rcmmdArtistId) {
+    public ListDto<List<RecommendPanelTrackDto>> getRecommendPanelPopularTrackList(Long characterNo, Long rcmmdArtistId) {
         return getTrackList(trackMapper.selectRecommendPanelPopularTrackList(characterNo, rcmmdArtistId));
     }
     @Override
-    public ListDto<List<MyMostTrackDto>> getRecommendPanelSimilarTrackList(Long characterNo, Long rcmmdTrackId) {
+    public ListDto<List<RecommendPanelTrackDto>> getRecommendPanelSimilarTrackList(Long characterNo, Long rcmmdTrackId) {
         return getTrackList(trackMapper.selectRecommendPanelSimilarTrackList(characterNo, rcmmdTrackId));
     }
     @Override
-    public ListDto<List<MyMostTrackDto>> getRecommendPanelGenreTrackList(Long characterNo, Long rcmmdGenreId) {
+    public ListDto<List<RecommendPanelTrackDto>> getRecommendPanelGenreTrackList(Long characterNo, Long rcmmdGenreId) {
         return getTrackList(trackMapper.selectRecommendPanelGenreTrackList(characterNo, rcmmdGenreId));
     }
     @Override
-    public ListDto<List<MyMostTrackDto>> getRecommendPanelCfTrackList(Long characterNo, Long rcmmdMforuId) {
+    public ListDto<List<RecommendPanelTrackDto>> getRecommendPanelCfTrackList(Long characterNo, Long rcmmdMforuId) {
         return getTrackList(trackMapper.selectRecommendPanelCfTrackList(characterNo, rcmmdMforuId));
     }
 
 	@Override
-	public ListDto<List<MyMostTrackDto>> getRecommendPanelTrackList(Long characterNo, RecommendPanelContentType recommendPanelContentType, Long panelContentId) {
+	public ListDto<List<RecommendPanelTrackDto>> getRecommendPanelTrackList(Long characterNo, RecommendPanelContentType recommendPanelContentType, Long panelContentId) {
 
-		ListDto<List<MyMostTrackDto>> trackList = null;
+		ListDto<List<RecommendPanelTrackDto>> trackList = null;
 
     	switch (recommendPanelContentType){
 		    // 아티스트
@@ -325,7 +324,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 		return trackList;
 	}
 
-    private ListDto<List<MyMostTrackDto>> getTrackList(List<Long> trackIdList){
+    private ListDto<List<RecommendPanelTrackDto>> getTrackList(List<Long> trackIdList){
 
         if(CollectionUtils.isEmpty(trackIdList)){
             return null;
@@ -336,11 +335,11 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 .build().encode().toUri();
 
 
-        CommonApiResponse<ListDto<List<MyMostTrackDto>>> response = restTemplate.exchange(
+        CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>> response = restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<CommonApiResponse<ListDto<List<MyMostTrackDto>>>>() {}).getBody();
+                new ParameterizedTypeReference<CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>>>() {}).getBody();
 
 
         return response.getData();

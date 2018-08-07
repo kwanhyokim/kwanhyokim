@@ -31,7 +31,17 @@ import lombok.Data;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder(value = {"id","name"}, alphabetic = true)
-public class TrackDto {
+public class RecommendPanelTrackDto {
+    private Long memberNo;
+
+    private Integer listenCount;
+
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
+    private Date lastListenDateTime;
+
+    private YnType likeYn;
+
+
     @JsonProperty("id")
     private Long trackId;
     @JsonProperty("name")
@@ -67,12 +77,8 @@ public class TrackDto {
 
     private AlbumDto album;
 
-    @JsonIgnore
-    private LyricsType lyricsType;
-    private String lyrics;
-
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private List<TrackArtistDto> trackArtistList;
+    private List<RecommendPanelTrackArtistDto> trackArtistList;
 
     public ArtistDto getArtist(){
         if(this.artist != null){

@@ -10,12 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto.recommend;
 
-import java.util.Date;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.sktechx.godmusic.lib.domain.code.YnType;
-import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import lombok.Data;
 
 /**
@@ -27,13 +22,8 @@ import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class MyMostTrackDto extends TrackDto {
-    private Long memberNo;
-
-    private Integer listenCount;
-
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
-    private Date lastListenDateTime;
-
-    private YnType likeYn;
+public class RecommendPanelTrackArtistDto {
+    private String name;
+    private String roleName;
+    private String roleCd;
 }
