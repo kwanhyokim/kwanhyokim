@@ -10,7 +10,9 @@
 
 package com.sktechx.godmusic.personal.rest.service;
 
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
+import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
 
 import java.util.List;
@@ -23,6 +25,6 @@ import java.util.List;
  */
 public interface ChannelService {
 
-    List<ChnlDto> getEditorsPickChannelList(int limitSize);
-    List<PreferGenrePopularChnlDto> selectPreferGenrePopularChannel(Long characterNo);
+    List<ChnlDto> getPopularChannelList(int limitSize,OsType osType);
+    List<PreferGenrePopularChnlDto> getPreferGenrePopularChannel(List<Long> preferGenreIdList);
 }

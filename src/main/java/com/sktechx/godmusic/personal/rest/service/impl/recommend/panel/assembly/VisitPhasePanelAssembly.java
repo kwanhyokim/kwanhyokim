@@ -33,7 +33,7 @@ public class VisitPhasePanelAssembly extends PanelSignAssembly {
 
     private VisitPhasePanelAssembly(){}
     @Override
-    protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
+    protected List<Panel> defaultPanelSetting(final PersonalPhaseMeta personalPhaseMeta) {
         final List<Panel> panelList = new ArrayList<>();
 
         if(!CollectionUtils.isEmpty(personalPhaseMeta.getPreferGenreList())){

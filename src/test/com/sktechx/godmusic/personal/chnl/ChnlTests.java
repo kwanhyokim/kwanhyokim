@@ -89,7 +89,7 @@ public class ChnlTests extends CommonTest {
     @Test
     public void 인기채널_GET_테스트(){
         int limitSize = 3;
-        List<ChnlDto> chnlList = channelService.getEditorsPickChannelList(limitSize);
+        List<ChnlDto> chnlList = channelService.getPopularChannelList(limitSize,OsType.AOS);
 
         assertNotNull(chnlList);
         assertEquals(chnlList.size(), limitSize);

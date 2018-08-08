@@ -10,8 +10,10 @@
 
 package com.sktechx.godmusic.personal.rest.repository;
 
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
+import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
 import org.apache.ibatis.annotations.Param;
 
@@ -29,8 +31,7 @@ public interface ChannelMapper {
     ChnlDto selectChannelById(Long chnlId);
     Integer selectChannelTrackCount(Long chnlId);
 
-    List<ChnlDto> selectEditorsPickChannelList(@Param("limitSize") int limitSize , @Param("isToday")boolean isToday);
-
-
+    List<Long> selectPopularChannelIdList();
+    List<ChnlDto> selectPopularChannelList(@Param("channelIdList") List<Long> channelIdList, @Param("trackLimitSize") int trackLimitSize ,@Param("osType") OsType osType);
 
 }
