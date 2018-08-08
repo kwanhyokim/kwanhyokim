@@ -13,10 +13,10 @@ import lombok.Data;
 @Data
 public class LikeListResponse<T> extends LikeVo {
 	@ApiModelProperty("좋아요 타입별 항목")
-	private T likeList;
+	private T likeInfo;
 
-	public LikeListResponse(T likeList, LikeVo likeVo) {
-		this.likeList = likeList;
+	public LikeListResponse(T likeInfo, LikeVo likeVo) {
+		this.likeInfo = likeInfo;
 		this.setCharacterNo(likeVo.getCharacterNo());
 		this.setLikeType(likeVo.getLikeType());
 		this.setLikeTypeId(likeVo.getLikeTypeId());

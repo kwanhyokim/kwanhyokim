@@ -76,12 +76,13 @@ public class LikeServiceImpl implements LikeService {
 				likeListResponses.add(new LikeListResponse(new LikePlaylistDto().builder()
 						.playListId(new Long(18583))
 						.playListName("남들 몰래 듣고 싶은 인디")
-						.imgList(imageDtos), new LikeVo().builder()
-				.characterNo(new Long(12))
-				.likeType("CHNL")
-				.likeTypeId(new Long(18583))
-				.dispSn(0)
-				.build()));
+						.imgList(imageDtos)
+						.build(), new LikeVo().builder()
+						.characterNo(new Long(12))
+						.likeType("CHNL")
+						.likeTypeId(new Long(18583))
+						.dispSn(0)
+						.build()));
 
 				imageDtos = new ArrayList<>();
 				imageDtos.add(new ImageDto().builder().size(75).url("http://asp-image.bugsm.co.kr/album/images/75/6691/669152.jpg?updateDate=1509737410").build());
@@ -93,7 +94,8 @@ public class LikeServiceImpl implements LikeService {
 				likeListResponses.add(new LikeListResponse(new LikePlaylistDto().builder()
 						.playListId(new Long(18584))
 						.playListName("감성이 몽글몽글 귀르가즘 제대로인 감성팝")
-						.imgList(imageDtos), new LikeVo().builder()
+						.imgList(imageDtos)
+						.build(), new LikeVo().builder()
 						.characterNo(new Long(12))
 						.likeType("CHART")
 						.likeTypeId(new Long(18584))
