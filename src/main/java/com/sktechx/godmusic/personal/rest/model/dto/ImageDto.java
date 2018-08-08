@@ -11,7 +11,10 @@
 package com.sktechx.godmusic.personal.rest.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 설명 : 이미지 DTO
@@ -20,7 +23,10 @@ import lombok.Data;
  * @date 2018. 07. 09.
  */
 @Data
+@Builder
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
+@NoArgsConstructor
+@AllArgsConstructor
 public class ImageDto {
     private int size;
     private String url;
