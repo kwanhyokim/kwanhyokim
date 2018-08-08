@@ -20,6 +20,7 @@ import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.Chart;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.ChartResponse;
 import com.sktechx.godmusic.personal.rest.service.PreferenceService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +40,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @Slf4j
 @RestController
 @RequestMapping(Naming.serviceCode + "/v1/preferences")
+@Api(value = "선호 장르/아티스트", description = "선호 장르/아티스트 API - Lake")
 public class PreferenceController {
 
     @Autowired
