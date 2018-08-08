@@ -76,7 +76,12 @@ public class LikeServiceImpl implements LikeService {
 				likeListResponses.add(new LikeListResponse(new LikePlaylistDto().builder()
 						.playListId(new Long(18583))
 						.playListName("남들 몰래 듣고 싶은 인디")
-						.imgList(imageDtos), new LikeVo()));
+						.imgList(imageDtos), new LikeVo().builder()
+				.characterNo(new Long(12))
+				.likeType("CHNL")
+				.likeTypeId(new Long(18583))
+				.dispSn(0)
+				.build()));
 
 				imageDtos = new ArrayList<>();
 				imageDtos.add(new ImageDto().builder().size(75).url("http://asp-image.bugsm.co.kr/album/images/75/6691/669152.jpg?updateDate=1509737410").build());
@@ -88,7 +93,12 @@ public class LikeServiceImpl implements LikeService {
 				likeListResponses.add(new LikeListResponse(new LikePlaylistDto().builder()
 						.playListId(new Long(18584))
 						.playListName("감성이 몽글몽글 귀르가즘 제대로인 감성팝")
-						.imgList(imageDtos), new LikeVo()));
+						.imgList(imageDtos), new LikeVo().builder()
+						.characterNo(new Long(12))
+						.likeType("CHART")
+						.likeTypeId(new Long(18584))
+						.dispSn(1)
+						.build()));
 				break;
 			case ALBUM :
 				imageDtos.add(new ImageDto().builder().size(75).url("http://asp-image.bugsm.co.kr/album/images/75/7035/703573.jpg?updateDate=1516303811").build());
@@ -104,7 +114,12 @@ public class LikeServiceImpl implements LikeService {
 						.artistId(new Long(80143014))
 						.artistName("The Chainsmokers(체인스모커스)")
 						.imgList(imageDtos)
-						.build(), new LikeVo()));
+						.build(), new LikeVo().builder()
+						.characterNo(new Long(12))
+						.likeType("ALBUM")
+						.likeTypeId(new Long(703573))
+						.dispSn(0)
+						.build()));
 
 				imageDtos = new ArrayList<>();
 				imageDtos.add(new ImageDto().builder().size(75).url("http://asp-image.bugsm.co.kr/album/images/75/7154/715456.jpg?updateDate=1519414210").build());
@@ -120,7 +135,12 @@ public class LikeServiceImpl implements LikeService {
 						.artistId(new Long(80168480))
 						.artistName("Max Frost(맥스 프로스트)")
 						.imgList(imageDtos)
-						.build(), new LikeVo()));
+						.build(), new LikeVo().builder()
+						.characterNo(new Long(12))
+						.likeType("ALBUM")
+						.likeTypeId(new Long(715456))
+						.dispSn(1)
+						.build()));
 				break;
 			case ARTIST :
 				imageDtos.add(new ImageDto().builder().size(70).url("http://asp-image.bugsm.co.kr/artist/images/70/6/600.jpg?updateDate=1520323393").build());
@@ -135,7 +155,12 @@ public class LikeServiceImpl implements LikeService {
 						.artistGroupTypeStr("그룹")
 						.genderCdStr("남성")
 						.imgList(imageDtos)
-						.build(), new LikeVo()));
+						.build(), new LikeVo().builder()
+						.characterNo(new Long(12))
+						.likeType("ARTIST")
+						.likeTypeId(new Long(600))
+						.dispSn(0)
+						.build()));
 
 				imageDtos = new ArrayList<>();
 				imageDtos.add(new ImageDto().builder().size(70).url("http://asp-image.bugsm.co.kr/artist/images/70/26/2600.jpg?updateDate=1520323393").build());
@@ -150,7 +175,12 @@ public class LikeServiceImpl implements LikeService {
 						.artistGroupTypeStr("솔로")
 						.genderCdStr("여성")
 						.imgList(imageDtos)
-						.build(), new LikeVo()));
+						.build(), new LikeVo().builder()
+						.characterNo(new Long(12))
+						.likeType("ARTIST")
+						.likeTypeId(new Long(2600))
+						.dispSn(1)
+						.build()));
 				break;
 			case TRACK :
 				imageDtos.add(new ImageDto().builder().size(75).url("http://asp-image.bugsm.co.kr/album/images/75/3/311.jpg?updateDate=1498474016").build());
@@ -165,7 +195,12 @@ public class LikeServiceImpl implements LikeService {
 						.artistId(Long.parseLong("600"))
 						.artistName("98 Degrees(98 디그리스)")
 						.imgList(imageDtos)
-						.build(), new LikeVo()));
+						.build(), new LikeVo().builder()
+						.characterNo(new Long(12))
+						.likeType("TRACK")
+						.likeTypeId(new Long(511))
+						.dispSn(0)
+						.build()));
 
 				imageDtos = new ArrayList<>();
 
@@ -181,7 +216,12 @@ public class LikeServiceImpl implements LikeService {
 						.artistId(Long.parseLong("2600"))
 						.artistName("Mya(마야)")
 						.imgList(imageDtos)
-						.build(), new LikeVo()));
+						.build(), new LikeVo().builder()
+						.characterNo(new Long(12))
+						.likeType("TRACK")
+						.likeTypeId(new Long(2088))
+						.dispSn(1)
+						.build()));
 				break;
 			default :
 				throw new CommonBusinessException(CommonErrorMessage.BAD_REQUEST);
