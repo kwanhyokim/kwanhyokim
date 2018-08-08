@@ -44,8 +44,6 @@ public class ChnlDto {
     @JsonIgnore
     private AlbumDto album;
 
-    private Integer updateCount;
-
     @JsonProperty("createDateTime")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
     private Date createDtime;
@@ -56,4 +54,13 @@ public class ChnlDto {
 
     private List<TrackDto> trackList;
     private Integer trackCount;
+
+    @JsonProperty("renewDateTime")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
+    private Date renewDtime;
+
+    @JsonProperty("renewTrackCount")
+    private Integer renewTrackCnt;
+    //채널 용 별도 이미지
+    private List<ImageDto> imgList;
 }

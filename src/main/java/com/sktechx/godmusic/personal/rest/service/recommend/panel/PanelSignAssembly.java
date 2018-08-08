@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.service.recommend.panel;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.personal.common.domain.type.PreferGenreType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
@@ -31,6 +32,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -45,7 +47,7 @@ import java.util.Optional;
 public abstract class PanelSignAssembly extends PanelAssembly{
     protected abstract void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList);
 
-    public List<Panel> assembleRecommendPanel(PersonalPhaseMeta personalPhaseMeta){
+    public List<Panel> assembleRecommendPanel(final PersonalPhaseMeta personalPhaseMeta){
         final List<Panel> panelList = defaultPanelSetting(personalPhaseMeta);
 
         appendPreferencePanel(personalPhaseMeta,panelList);
@@ -54,7 +56,7 @@ public abstract class PanelSignAssembly extends PanelAssembly{
     }
 
 
-    protected void appendSimilarTrackPanelList(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int limitSize) {
+    protected void appendSimilarTrackPanelList(final PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int limitSize) {
         List<Long> rcmmdIdList = personalPhaseMeta.getRecommendPersonalPanelRcmmdIdList(RecommendPanelContentType.RC_SML_TR);
 
         if(!CollectionUtils.isEmpty(rcmmdIdList)){
@@ -73,9 +75,9 @@ public abstract class PanelSignAssembly extends PanelAssembly{
         }
     }
 
-    protected void appendPreferGenreChannelPanelList(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int limitSize) {
+    protected void appendPreferGenreChannelPanelList(final PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int limitSize) {
 
-        List<Long> preferGenreIdList = personalPhaseMeta.getPreferGenreIdList(limitSize);
+        List<Long> preferGenreIdList = personalPhaseMeta.getPreferGenreIdList(limitSize, Arrays.asList(PreferGenreType.GENRE));
 
         if(!CollectionUtils.isEmpty(preferGenreIdList)){
             List<PreferGenrePopularChnlDto> preferGenrePopularChnlList = chartMapper.selectPreferGenrePopularChannel(preferGenreIdList);
@@ -104,12 +106,12 @@ public abstract class PanelSignAssembly extends PanelAssembly{
                     .stream()
                     .filter(Objects::nonNull)
                     .forEach(characterPreferGenre ->{
-                        if("TOP100".equals(characterPreferGenre.getPreferType())){
+                        if(PreferGenreType.TOP100.equals(characterPreferGenre.getPreferType())){
                             Panel chartPanel = createChartPanel("LIVE_CHART" , personalPhaseMeta.getOsType()) ;
                             if(chartPanel != null){
                                 panelList.add(0,chartPanel);
                             }
-                        }else if("KIDS".equals(characterPreferGenre.getPreferType())){
+                        }else if(PreferGenreType.KIDS.equals(characterPreferGenre.getPreferType())){
                             Panel chartPanel = createChartPanel("KIDS_CHART" , personalPhaseMeta.getOsType()) ;
                             panelList.add ( chartPanel );
                         }

@@ -25,10 +25,7 @@ import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelServic
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * 설명 : 추천 패널 생성기
@@ -80,12 +77,11 @@ public abstract class PanelAssembly {
 
 
     protected void appendDefaultPopularChannelPanel(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int limitSize) {
-        List<ImageDto> bgImgList = recommendPanelService.getPanelBackgroundImageList(RecommendPanelType.POPULAR_CHANNEL , personalPhaseMeta.getOsType());
-        List<ChnlDto> editorsPickChannelList = channelService.getEditorsPickChannelList(limitSize);
+        List<ChnlDto> popularChannelList = channelService.getPopularChannelList(limitSize,personalPhaseMeta.getOsType());
 
-        editorsPickChannelList.stream().forEach(channel -> {
+        popularChannelList.stream().filter(Objects::nonNull).forEach(channel -> {
             try{
-                panelList.add(new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL,channel,bgImgList));
+                panelList.add(new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL,channel, channel.getImgList()));
             }catch(Exception e){
                 log.error("GuestPhasePanel defaultPanelSetting Exception : {}",e.getMessage());
             }

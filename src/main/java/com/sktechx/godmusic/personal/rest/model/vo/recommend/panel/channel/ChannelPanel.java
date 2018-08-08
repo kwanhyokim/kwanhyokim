@@ -19,11 +19,14 @@ import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
 import com.sktechx.godmusic.personal.common.exception.InternalException;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
+import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.GenreVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import javax.sound.midi.Track;
 import java.util.List;
 
 /**
@@ -42,7 +45,6 @@ public abstract class ChannelPanel extends Panel{
         super(panelType);
         this.channel = neverNullChannel(channel);
         this.imgList = bgImgList;
-        this.genre = genre;
         this.initialPanel();
     }
 
@@ -60,13 +62,12 @@ public abstract class ChannelPanel extends Panel{
 
         content.setId(channel.getChnlId());
         content.setType(RecommendPanelContentType.CHNL);
-        content.setUpdateCount(channel.getUpdateCount());
         content.setTrackCount(channel.getTrackCount());
         content.setTrackList(channel.getTrackList());
-        content.setGenre(genre);
         content.setCreateDtime(channel.getCreateDtime());
         content.setUpdateDtime(channel.getUpdateDtime());
-
+        content.setRenewDtime(channel.getRenewDtime());
+        content.setRenewTrackCount(channel.getRenewTrackCnt());
         return content;
     }
 
@@ -75,5 +76,4 @@ public abstract class ChannelPanel extends Panel{
             throw new CommonBusinessException(CommonErrorMessage.INTERNAL_SERVER_ERROR);
         return channel;
     }
-
 }
