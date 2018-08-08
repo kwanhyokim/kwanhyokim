@@ -33,30 +33,33 @@ public class ListenPhasePanelAssembly extends PanelSignAssembly {
 
     final int listenMoodPopularChannelPanelSize = 1;
 
+    private ListenPhasePanelAssembly(){}
+
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
         final List<Panel> panelList = new ArrayList<>();
 
-        panelAppender.appendPreferGenreSimilarTrackPanelList(personalPhaseMeta, panelList , preferGenreSimilarTrackPanelSize);
+        appendPreferGenreSimilarTrackPanelList(personalPhaseMeta, panelList , preferGenreSimilarTrackPanelSize);
         if(preferGenreSimilarTrackPanelSize > panelList.size()){
-            panelAppender.appendSimilarTrackPanelList(personalPhaseMeta , panelList ,preferGenreSimilarTrackPanelSize - panelList.size() );
+            appendSimilarTrackPanelList(personalPhaseMeta , panelList ,preferGenreSimilarTrackPanelSize - panelList.size() );
             if(similarTrackPanelSize > panelList.size()){
-                panelAppender.appendPreferGenreChannelPanelList(personalPhaseMeta, panelList, similarTrackPanelSize - panelList.size() );
+                appendPreferGenreChannelPanelList(personalPhaseMeta, panelList, similarTrackPanelSize - panelList.size() );
             }
         }
-        panelAppender.appendListenMoodPopularChanelPanelList(personalPhaseMeta, panelList,listenMoodPopularChannelPanelSize);
+        appendListenMoodPopularChanelPanelList(personalPhaseMeta, panelList,listenMoodPopularChannelPanelSize);
 
         if(( similarTrackPanelSize+listenMoodPopularChannelPanelSize )  > panelList.size()){
-            panelAppender.appendDefaultPopularChannelPanel(personalPhaseMeta, panelList,( similarTrackPanelSize+listenMoodPopularChannelPanelSize ) - panelList.size() );
+            appendDefaultPopularChannelPanel(personalPhaseMeta, panelList,( similarTrackPanelSize+listenMoodPopularChannelPanelSize ) - panelList.size() );
         }
         return panelList;
     }
     @Override
     protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){
-        panelAppender.appendPreferArtistPopularTrackPanel(personalPhaseMeta,panelList);
-        panelAppender.appendPreferenceChartPanel(personalPhaseMeta,panelList);
+        appendPreferArtistPopularTrackPanel(personalPhaseMeta,panelList);
+        appendPreferenceChartPanel(personalPhaseMeta,panelList);
 
-        sort(personalPhaseMeta.getFirstPhaseType() , panelList);
+        sort(personalPhaseMeta , panelList);
+
     }
 
 }

@@ -15,15 +15,83 @@
 
 <mapper namespace="com.sktechx.godmusic.personal.rest.repository.RecommendMapper" >
 
-    <resultMap id="personalPanelResultMap" type="com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel">
 
+    <resultMap id="personalPanelResultMap" type="com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel" autoMapping="true"/>
 
-    </resultMap>
-
-    <select id="selectPersonalRecommendPhaseMeta">
-
-
+    <select id="selectPersonalRecommendPanelMeta" resultMap="personalPanelResultMap" parameterType="Long">
+        <![CDATA[
+            SELECT
+                'RC_CF_TR' as recommendPanelContentType,
+                rcmmd_mforu_id as recommendId,
+                disp_std_end_dt as avaliableDateTime,
+                disp_sn as dispSn
+            FROM
+                tb_rcmmd_mforu
+            WHERE
+                character_no = #{characterNo}
+            AND
+                disp_std_start_dt <= NOW()
+            AND
+                disp_std_end_dt >= NOW()
+            UNION ALL
+            SELECT
+                'RC_SML_TR' as recommendPanelContentType,
+                rcmmd_similar_track_id as recommendId,
+                disp_std_end_dt as avaliableDateTime,
+                disp_sn as dispSn
+            FROM
+                tb_rcmmd_similar_track
+            WHERE
+                character_no =#{characterNo}
+            AND
+                disp_std_start_dt <= NOW()
+            AND
+                disp_std_end_dt >= NOW()
+            UNION ALL
+            SELECT
+                'RC_GR_TR' as recommendPanelContentType,
+                rcmmd_prefer_genre_similar_track_id as recommendId,
+                disp_std_end_dt as avaliableDateTime,
+                disp_sn as dispSn
+            FROM
+                tb_rcmmd_prefer_genre_similar_track
+            WHERE
+                character_no = #{characterNo}
+            AND
+                disp_std_start_dt <= NOW()
+            AND
+                disp_std_end_dt >= NOW()
+            UNION ALL
+            SELECT
+                'RC_ATST_TR' as recommendPanelContentType,
+                rcmmd_artist_id as recommendId,
+                disp_std_end_dt as avaliableDateTime,
+                disp_sn as dispSn
+            FROM
+                tb_rcmmd_artist
+            WHERE
+                character_no = #{characterNo}
+            AND
+                disp_std_start_dt <= NOW()
+            AND
+                disp_std_end_dt >= NOW()
+            UNION ALL
+            SELECT
+                'RC_MD_CN' as recommendPanelContentType,
+                rcmmd_listen_mood_id as recommendId,
+                disp_std_end_dt as avaliableDateTime,
+                disp_sn as dispSn
+            FROM
+                tb_rcmmd_listen_mood
+            WHERE
+                character_no = #{characterNo}
+            AND
+                disp_std_start_dt <= NOW()
+            AND
+                disp_std_end_dt >= NOW()
+         ]]>
     </select>
+
     <select id="selectRecommendArtistByDispDate">
 
 

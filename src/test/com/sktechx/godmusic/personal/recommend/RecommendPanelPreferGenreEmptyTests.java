@@ -10,7 +10,7 @@
 
 package com.sktechx.godmusic.personal.recommend;
 
-import com.sktechx.godmusic.personal.common.domain.type.OsType;
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
@@ -20,10 +20,10 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.PreferS
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.RcmmdTrackPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -32,7 +32,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
 
 /**
@@ -41,7 +40,9 @@ import static org.mockito.BDDMockito.given;
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 08. 02.
  */
-public class RecommendPanelPreferGenreEmptyTests extends RecommendTests{
+@Tag("dev")
+@Tag("recommendPanel")
+public class RecommendPanelPreferGenreEmptyTests extends RecommendMockData {
     private List<PersonalPanel> personalPanelList = new ArrayList<>();
 
     //추천 단계 기본 패널 개수
@@ -57,12 +58,12 @@ public class RecommendPanelPreferGenreEmptyTests extends RecommendTests{
     private int preferGenrePolularChnlDataSize = 1;
     @BeforeEach
     public void init(){
-        personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_CF_TR, Arrays.asList(1L)));
-        personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_GR_TR, Arrays.asList(1L)));
-        personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_SML_TR, Arrays.asList(1L)));
-        personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_ATST_TR, Arrays.asList(1L)));
+        personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_CF_TR, 1L));
+        personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_GR_TR, 1L));
+        personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_SML_TR, 1L));
+        personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_ATST_TR, 1L));
 
-        given(channelService.getHotplayChannelList(anyInt())).willReturn(makeMockHotPlayChannels(3));
+        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(3));
         given(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(anyLong() , anyObject())).willReturn(makeMockPersonalPhaseMeta(PersonalPhaseType.RECOMMEND , personalPanelList , null));
     }
 
@@ -76,7 +77,7 @@ public class RecommendPanelPreferGenreEmptyTests extends RecommendTests{
         preferGenrePolularChnlDataSize = 0;
         given(recommendMapper.selectRecommendCfTrackListByIdList(anyList(), anyInt())).willReturn(makeMockRecommendTrackDto(cfTrackDataSize));
         given(recommendMapper.selectRecommendSimilarTrackListByIdList(anyList(), anyInt())).willReturn(makeMockRecommendTrackDto(similarTrackDataSize));
-        given(channelService.getHotplayChannelList(anyInt())).willReturn(makeMockHotPlayChannels(defaultPanelTotalSize - (cfTrackDataSize +similarTrackDataSize)));
+        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(defaultPanelTotalSize - (cfTrackDataSize +similarTrackDataSize)));
 
         List<Panel> panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
         assertNotNull(panelList);
@@ -99,7 +100,7 @@ public class RecommendPanelPreferGenreEmptyTests extends RecommendTests{
         preferGenrePolularChnlDataSize = 0;
         given(recommendMapper.selectRecommendCfTrackListByIdList(anyList(), anyInt())).willReturn(makeMockRecommendTrackDto(cfTrackDataSize));
         given(recommendMapper.selectRecommendSimilarTrackListByIdList(anyList(), anyInt())).willReturn(makeMockRecommendTrackDto(similarTrackDataSize));
-        given(channelService.getHotplayChannelList(anyInt())).willReturn(makeMockHotPlayChannels(defaultPanelTotalSize - (cfTrackDataSize +similarTrackDataSize)));
+        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(defaultPanelTotalSize - (cfTrackDataSize +similarTrackDataSize)));
 
         List<Panel> panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
         assertNotNull(panelList);
@@ -146,7 +147,7 @@ public class RecommendPanelPreferGenreEmptyTests extends RecommendTests{
         similarTrackDataSize = 0;
         preferGenreSimilarTrackDataSize = 0;
         preferGenrePolularChnlDataSize = 0;
-        given(channelService.getHotplayChannelList(anyInt())).willReturn(makeMockHotPlayChannels(defaultPanelTotalSize - cfTrackDataSize));
+        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(defaultPanelTotalSize - cfTrackDataSize));
         given(recommendMapper.selectRecommendCfTrackListByIdList(anyList(), anyInt())).willReturn(makeMockRecommendTrackDto(cfTrackDataSize));
 
         List<Panel> panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);

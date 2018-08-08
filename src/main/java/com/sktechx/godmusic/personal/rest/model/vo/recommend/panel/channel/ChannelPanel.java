@@ -12,8 +12,11 @@ package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
+import com.sktechx.godmusic.lib.domain.exception.RuntimeExceptionErrorDomain;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
+import com.sktechx.godmusic.personal.common.exception.InternalException;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
@@ -69,7 +72,7 @@ public abstract class ChannelPanel extends Panel{
 
     private static ChnlDto neverNullChannel(ChnlDto channel) throws CommonBusinessException {
         if(channel == null || StringUtils.isEmpty(channel.getChnlNm()))
-            throw new CommonBusinessException("channel is null.");
+            throw new CommonBusinessException(CommonErrorMessage.INTERNAL_SERVER_ERROR);
         return channel;
     }
 

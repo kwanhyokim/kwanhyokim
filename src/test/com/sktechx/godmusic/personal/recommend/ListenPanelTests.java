@@ -10,8 +10,12 @@
 
 package com.sktechx.godmusic.personal.recommend;
 
-import com.sktechx.godmusic.personal.common.domain.type.*;
-import com.sktechx.godmusic.personal.rest.model.dto.PreferGenreDto;
+import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.personal.common.domain.type.ChartType;
+import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.artist.ArtistPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.ListenMoodPopularChannelPanel;
@@ -22,6 +26,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.PreferS
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -46,7 +51,9 @@ import static org.mockito.Mockito.verify;
  * @date 2018. 07. 10.
  */
 @Slf4j
-public class ListenPanelTests extends RecommendTests{
+@Tag("dev")
+@Tag("recommendPanel")
+public class ListenPanelTests extends RecommendMockData {
 
 
     @Captor
@@ -54,12 +61,14 @@ public class ListenPanelTests extends RecommendTests{
 
     @BeforeEach
     public void init(){
-        given(channelService.getHotplayChannelList(anyInt())).willReturn(makeMockHotPlayChannels(3));
+        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(3));
     }
 
     @Test
     public void 전체_패널_대체_테스트(){
-        //2-A , 2-B 패널이 아무것도 없을 경우 1-A패널로 대체 되는지 테스트
+
+        // CASE : 추천 데이터가 없을 경우
+        // expected : 1-A, 1-A, 1-A
         given(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(anyLong() , anyObject())).willReturn(makeMockPersonalPhaseMeta(PersonalPhaseType.LISTEN , null , null));
         List<Panel> panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
 
@@ -73,20 +82,22 @@ public class ListenPanelTests extends RecommendTests{
 
     @Test
     public void 유사곡_패널_대체_테스트_1(){
-        PersonalPanel personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_SML_TR, Arrays.asList(1L));
+        // CASE : 2-A 데이터 하나
+        // expected : 2-A , 1-A , 1-A
+
+        PersonalPanel personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_SML_TR, 1L);
         given(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(anyLong() , anyObject())).willReturn(makeMockPersonalPhaseMeta(PersonalPhaseType.LISTEN , Arrays.asList(personalPanel) , null));
 
-        //유사곡 2-A 패널이 하나 있을 경우 , 2-A , 1-A , 1-A
         int recommendTrackSize = 1;
         int preferGenreSimilarTrackPanelSize = 2;
         int listenMoodPopularChannelPanelSize = 1;
 
-        given(channelService.getHotplayChannelList(anyInt())).willReturn(makeMockHotPlayChannels(( preferGenreSimilarTrackPanelSize+listenMoodPopularChannelPanelSize ) - recommendTrackSize));
+        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(( preferGenreSimilarTrackPanelSize+listenMoodPopularChannelPanelSize ) - recommendTrackSize));
         given(recommendMapper.selectRecommendSimilarTrackListByIdList(anyList(), anyInt())).willReturn(makeMockRecommendTrackDto(recommendTrackSize));
 
         //유사곡 패널 1개 대체
         List<Panel> panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
-        verify(channelService).getHotplayChannelList(captor.capture());
+        verify(channelService).getEditorsPickChannelList(captor.capture());
         assertEquals(new Integer(2),captor.getValue());
 
         assertNotNull(panelList);
@@ -98,19 +109,20 @@ public class ListenPanelTests extends RecommendTests{
     }
     @Test
     public void 유사곡_패널_대체_테스트_2(){
-        PersonalPanel personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_SML_TR, Arrays.asList(1L));
+        // CASE : 2-A 데이터 두개
+        // expected : 2-A , 2-A , 1-A
 
+        PersonalPanel personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_SML_TR, 1L);
         given(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(anyLong() , anyObject())).willReturn(makeMockPersonalPhaseMeta(PersonalPhaseType.LISTEN , Arrays.asList(personalPanel) , null));
 
-        //유사곡 2-A 패널이 두개 있을 경우 , 2-A , 2-A , 1-A
         int recommendTrackSize = 2;
         int preferGenreSimilarTrackPanelSize = 2;
         int listenMoodPopularChannelPanelSize = 1;
 
         given(recommendMapper.selectRecommendSimilarTrackListByIdList(anyList(),anyInt())).willReturn(makeMockRecommendTrackDto(recommendTrackSize));
-        given(channelService.getHotplayChannelList(anyInt())).willReturn(makeMockHotPlayChannels(( preferGenreSimilarTrackPanelSize+listenMoodPopularChannelPanelSize ) - recommendTrackSize));
+        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(( preferGenreSimilarTrackPanelSize+listenMoodPopularChannelPanelSize ) - recommendTrackSize));
         List<Panel> panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
-        verify(channelService).getHotplayChannelList(captor.capture());
+        verify(channelService).getEditorsPickChannelList(captor.capture());
         assertEquals(new Integer(1),captor.getValue());
 
 
@@ -126,15 +138,17 @@ public class ListenPanelTests extends RecommendTests{
     @Test
     public void 청취무드_인기채널_패널_대체_테스트(){
 
-        PersonalPanel personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_SML_TR, Arrays.asList(1L));
+        // CASE : 2-A 데이터 하나, 2-B 데이터 하나
+        // expected : 2-A , 2-B , 1-A
+
+        PersonalPanel personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_SML_TR, 1L);
 
         List<PersonalPanel> rcmmdPanelList = new ArrayList();
         rcmmdPanelList.add(personalPanel);
 
-        personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_MD_CN, Arrays.asList(1L));
+        personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_MD_CN, 1L);
         rcmmdPanelList.add(personalPanel);
 
-        //유사곡 2-A 패널이 한개 있을 경우, 청취무드 인기채널 2-B 하나 있을 경우  , 2-A , 2-B , 1-A
         int recommendTrackSize = 1;
         int listenMoodChnlSize = 1;
         int preferGenreSimilarTrackPanelSize = 2;
@@ -144,7 +158,7 @@ public class ListenPanelTests extends RecommendTests{
         given(recommendMapper.selectRecommendSimilarTrackListByIdList(anyList(),anyInt())).willReturn(makeMockRecommendTrackDto(recommendTrackSize));
         given(recommendMapper.selectRecommendListenMoodChannelListByIdList(anyList(),anyInt())).willReturn(makeMockHotPlayChannels(1));
 
-        given(channelService.getHotplayChannelList(anyInt())).willReturn(makeMockHotPlayChannels(( listenMoodPopularChannelPanelSize+preferGenreSimilarTrackPanelSize ) - ( recommendTrackSize + listenMoodChnlSize )));
+        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(( listenMoodPopularChannelPanelSize+preferGenreSimilarTrackPanelSize ) - ( recommendTrackSize + listenMoodChnlSize )));
 
         List<Panel> panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
         assertNotNull(panelList);
@@ -161,17 +175,19 @@ public class ListenPanelTests extends RecommendTests{
     @Test
     public void 선호장르_유사곡_패널_테스트(){
 
-        // 2-A' , 2-A , 2-B
-        PersonalPanel personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_SML_TR, Arrays.asList(1L));
+        // CASE : 2-A 데이터 하나, 2-B 데이터 하나 , 2-A' 데이터 하나
+        // expected : 2-A' , 2-A , 2-B
+
+        PersonalPanel personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_SML_TR, 1L);
 
         List<PersonalPanel> rcmmdPanelList = new ArrayList();
         rcmmdPanelList.add(personalPanel);
 
-        personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_MD_CN, Arrays.asList(1L));
+        personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_MD_CN, 1L);
         rcmmdPanelList.add(personalPanel);
 
 
-        personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_GR_TR, Arrays.asList(1L));
+        personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_GR_TR, 1L);
         rcmmdPanelList.add(personalPanel);
 
 
@@ -201,13 +217,16 @@ public class ListenPanelTests extends RecommendTests{
 
     @Test
     public void 선호장르_유사곡_패널_테스트2(){
-        // 2-A' , 2-A' , 2-B
-        PersonalPanel personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_MD_CN, Arrays.asList(1L));
+
+        // CASE : 2-B 데이터 하나 , 2-A' 데이터 두개
+        // expected : 2-A' , 2-A' , 2-B
+
+        PersonalPanel personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_MD_CN, 1L);
 
         List<PersonalPanel> rcmmdPanelList = new ArrayList();
         rcmmdPanelList.add(personalPanel);
 
-        personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_GR_TR, Arrays.asList(1L));
+        personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_GR_TR, 1L);
         rcmmdPanelList.add(personalPanel);
 
         int listenMoodChnlSize = 1;
@@ -234,8 +253,10 @@ public class ListenPanelTests extends RecommendTests{
 
     @Test
     public void 선호장르_유사곡_패널_테스트3(){
-        // 2-A' , 2-A' , 1-A
-        PersonalPanel personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_GR_TR, Arrays.asList(1L));
+        // CASE :  2-A' 데이터 두개
+        // expected : 2-A' , 2-A' , 1-A
+
+        PersonalPanel personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_GR_TR, 1L);
 
         List<PersonalPanel> rcmmdPanelList = new ArrayList();
         rcmmdPanelList.add(personalPanel);
@@ -246,7 +267,7 @@ public class ListenPanelTests extends RecommendTests{
 
         given(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(anyLong() , anyObject())).willReturn(makeMockPersonalPhaseMeta(PersonalPhaseType.LISTEN , rcmmdPanelList , null));
         given(recommendMapper.selectRecommendPreferGenreSimilarTrackListByIdList(anyList(), anyInt())).willReturn(makeMockRecommendTrackDto(preferGenreTrackSize));
-        given(channelService.getHotplayChannelList(anyInt())).willReturn(makeMockHotPlayChannels(( preferGenreSimilarTrackPanelSize+listenMoodPopularChannelPanelSize ) - preferGenreTrackSize));
+        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(( preferGenreSimilarTrackPanelSize+listenMoodPopularChannelPanelSize ) - preferGenreTrackSize));
 
         List<Panel> panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
 
@@ -264,11 +285,13 @@ public class ListenPanelTests extends RecommendTests{
     @Test
     public void 아티스트_인기곡_추가_테스트(){
 
-        // 2-A' , 2-A', 2-C , 1-A
-        PersonalPanel personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_GR_TR, Arrays.asList(1L));
+        // CASE :  2-A' 데이터 두개 , 2-C 하나
+        // expected : 2-A' , 2-A' , 1-A
+
+        PersonalPanel personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_GR_TR, 1L);
         List<PersonalPanel> rcmmdPanelList = new ArrayList();
         rcmmdPanelList.add(personalPanel);
-        personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_ATST_TR, Arrays.asList(1L));
+        personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_ATST_TR, 1L);
         rcmmdPanelList.add(personalPanel);
         given(recommendMapper.selectRecommendArtistById(anyLong())).willReturn(makeMockRecommendArtistDto());
 
@@ -278,7 +301,7 @@ public class ListenPanelTests extends RecommendTests{
 
         given(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(anyLong() , anyObject())).willReturn(makeMockPersonalPhaseMeta(PersonalPhaseType.LISTEN , rcmmdPanelList , null));
         given(recommendMapper.selectRecommendPreferGenreSimilarTrackListByIdList(anyList(), anyInt())).willReturn(makeMockRecommendTrackDto(preferGenreTrackSize));
-        given(channelService.getHotplayChannelList(anyInt())).willReturn(makeMockHotPlayChannels(( preferGenreSimilarTrackPanelSize+listenMoodPopularChannelPanelSize ) - preferGenreTrackSize));
+        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(( preferGenreSimilarTrackPanelSize+listenMoodPopularChannelPanelSize ) - preferGenreTrackSize));
 
         List<Panel> panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
 
@@ -302,18 +325,20 @@ public class ListenPanelTests extends RecommendTests{
     @Test
     public void 차트_추가_테스트(){
 
-        //TOP100, 2-A' , 2-A', 2-C , 2-B , KIDS
-        PersonalPanel personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_GR_TR, Arrays.asList(1L));
+        // CASE :  2-A' 데이터 두개 , 2-C 하나 , 2-B하나 , KIDS, TOP100 차트 선호
+        // expected : TOP100, 2-A' , 2-A', 2-C , 2-B , KIDS
+
+        PersonalPanel personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_GR_TR, 1L);
         List<PersonalPanel> rcmmdPanelList = new ArrayList();
         rcmmdPanelList.add(personalPanel);
-        personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_ATST_TR, Arrays.asList(1L));
+        personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_ATST_TR, 1L);
         rcmmdPanelList.add(personalPanel);
 
-        personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_MD_CN, Arrays.asList(1L));
+        personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_MD_CN, 1L);
         rcmmdPanelList.add(personalPanel);
         given(recommendMapper.selectRecommendListenMoodChannelListByIdList(anyList(), anyInt())).willReturn(makeMockHotPlayChannels(1));
         given(recommendMapper.selectRecommendArtistById(anyLong())).willReturn(makeMockRecommendArtistDto());
-        List<PreferGenreDto> preferGenreList  = Arrays.asList(makeMockPreferGenrePopular(1L,"TOP100","TOP100"),makeMockPreferGenrePopular(2L,"KIDS","KIDS"));
+        List<CharacterPreferGenreDto> preferGenreList  = Arrays.asList(makeMockPreferGenrePopular(1L,"TOP100","TOP100"),makeMockPreferGenrePopular(2L,"KIDS","KIDS"));
 
         given(chartMapper.selectMainPanelChart("LIVE_CHART")).willReturn(makeMockChart(1L,ChartType.DAILY,"실시간 차트"));
         given(chartMapper.selectMainPanelChart("KIDS_CHART")).willReturn(makeMockChart(2L,ChartType.DAILY,"KIDS 차트"));
@@ -324,7 +349,7 @@ public class ListenPanelTests extends RecommendTests{
 
         given(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(anyLong() , anyObject())).willReturn(makeMockPersonalPhaseMeta(PersonalPhaseType.LISTEN , rcmmdPanelList , preferGenreList));
         given(recommendMapper.selectRecommendPreferGenreSimilarTrackListByIdList(anyList(), anyInt())).willReturn(makeMockRecommendTrackDto(preferGenreTrackSize));
-        given(channelService.getHotplayChannelList(anyInt())).willReturn(makeMockHotPlayChannels(( preferGenreSimilarTrackPanelSize+listenMoodPopularChannelPanelSize ) - preferGenreTrackSize));
+        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(( preferGenreSimilarTrackPanelSize+listenMoodPopularChannelPanelSize ) - preferGenreTrackSize));
 
         List<Panel> panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
 

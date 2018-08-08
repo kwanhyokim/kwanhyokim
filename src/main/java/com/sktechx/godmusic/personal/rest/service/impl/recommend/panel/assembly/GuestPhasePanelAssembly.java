@@ -32,12 +32,13 @@ public class GuestPhasePanelAssembly extends PanelNonSignAssembly {
 
     final int popularChannelListSize = 3 ;
 
+    private GuestPhasePanelAssembly(){}
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
 
         final List<Panel> panelList = new ArrayList<>();
 
-        panelAppender.appendDefaultPopularChannelPanel(personalPhaseMeta , panelList ,popularChannelListSize);
+        appendDefaultPopularChannelPanel(personalPhaseMeta , panelList ,popularChannelListSize);
 
         return panelList;
     }

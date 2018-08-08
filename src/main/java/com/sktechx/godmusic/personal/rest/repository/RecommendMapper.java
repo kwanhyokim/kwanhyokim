@@ -15,6 +15,8 @@ import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
@@ -27,7 +29,7 @@ import java.util.List;
  */
 @BaseMapper
 public interface RecommendMapper {
-    List<PersonalPanel> selectPersonalRecommendPhaseMeta(Long charactorNo, Date standardDate);
+    List<PersonalPanel> selectPersonalRecommendPanelMeta(@Param("characterNo") Long characterNo);
 
     // 2-C 선호/아티스트 유사곡 패널
     RecommendArtistDto selectRecommendArtistById(Long recommendArtistId);

@@ -31,17 +31,18 @@ import java.util.List;
 public class VisitPhasePanelAssembly extends PanelSignAssembly {
     final int preferGenrePopularChannelListSize = 3;
 
+    private VisitPhasePanelAssembly(){}
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
         final List<Panel> panelList = new ArrayList<>();
 
         if(!CollectionUtils.isEmpty(personalPhaseMeta.getPreferGenreList())){
-            panelAppender.appendPreferGenreChannelPanelList(personalPhaseMeta,panelList,preferGenrePopularChannelListSize);
+            appendPreferGenreChannelPanelList(personalPhaseMeta,panelList,preferGenrePopularChannelListSize);
             if(preferGenrePopularChannelListSize > panelList.size()){
-                panelAppender.appendDefaultPopularChannelPanel(personalPhaseMeta, panelList, preferGenrePopularChannelListSize - panelList.size());
+                appendDefaultPopularChannelPanel(personalPhaseMeta, panelList, preferGenrePopularChannelListSize - panelList.size());
             }
         }else{
-            panelAppender.appendDefaultPopularChannelPanel(personalPhaseMeta, panelList, preferGenrePopularChannelListSize);
+            appendDefaultPopularChannelPanel(personalPhaseMeta, panelList, preferGenrePopularChannelListSize);
         }
 
         return panelList;
@@ -49,9 +50,9 @@ public class VisitPhasePanelAssembly extends PanelSignAssembly {
 
     @Override
     protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){
-        panelAppender.appendPreferArtistPopularTrackPanel(personalPhaseMeta,panelList);
-        panelAppender.appendPreferenceChartPanel(personalPhaseMeta,panelList);
-        sort(personalPhaseMeta.getFirstPhaseType(), panelList);
+        appendPreferArtistPopularTrackPanel(personalPhaseMeta,panelList);
+        appendPreferenceChartPanel(personalPhaseMeta,panelList);
+        sort(personalPhaseMeta, panelList);
     }
 
 }
