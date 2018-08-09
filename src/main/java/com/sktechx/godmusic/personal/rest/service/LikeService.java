@@ -1,10 +1,7 @@
 package com.sktechx.godmusic.personal.rest.service;
 
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
-import com.sktechx.godmusic.personal.rest.model.vo.like.LikeListRequest;
-import com.sktechx.godmusic.personal.rest.model.vo.like.LikeListResponse;
-import com.sktechx.godmusic.personal.rest.model.vo.like.LikeRequest;
-import com.sktechx.godmusic.personal.rest.model.vo.like.LikeTypeIdListRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.like.*;
 
 import java.util.List;
 
@@ -23,4 +20,6 @@ public interface LikeService {
 	void deleteLike(LikeListRequest request, Long characterNo);
 
 	void updateLike(LikeTypeIdListRequest request, Long characterNo);
+
+	LikeYnResponse getLikeYn(String likeType, Long likeTypeId, Long characterNo);
 }

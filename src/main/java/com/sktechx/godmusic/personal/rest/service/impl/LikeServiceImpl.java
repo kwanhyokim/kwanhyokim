@@ -288,6 +288,12 @@ public class LikeServiceImpl implements LikeService {
 		}
 	}
 
+	@Override
+	public LikeYnResponse getLikeYn(String likeType, Long likeTypeId, Long characterNo) {
+		if (likeMapper.getLikeCountByLikeTypeAndLikeTypeId(likeType, likeTypeId, characterNo) > 0) return new LikeYnResponse("Y");
+		return new LikeYnResponse("N");
+	}
+
 	private void validCheckAddLike(LikeRequest request, Long characterNo){
 		validMeta(getLikeTypePath(request.getLikeType()), request.getLikeTypeId(), getLikeTypeNotFoundMessage(request.getLikeType()));
 
