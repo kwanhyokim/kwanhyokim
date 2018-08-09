@@ -12,7 +12,7 @@ import lombok.Data;
  */
 @Data
 public class LikeListResponse<T> extends LikeVo {
-	@ApiModelProperty("좋아요 타입별 항목")
+	@ApiModelProperty(value = "좋아요 타입별 항목")
 	private T likeInfo;
 
 	public LikeListResponse(T likeInfo, LikeVo likeVo) {

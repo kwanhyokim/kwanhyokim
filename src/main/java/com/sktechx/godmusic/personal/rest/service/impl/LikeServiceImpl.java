@@ -7,7 +7,6 @@ import com.sktechx.godmusic.personal.common.exception.InternalException;
 import com.sktechx.godmusic.personal.common.exception.NotFoundException;
 import com.sktechx.godmusic.personal.common.exception.ValidationException;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
-import com.sktechx.godmusic.personal.rest.model.dto.AlbumDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.dto.like.LikeAlbumDto;
 import com.sktechx.godmusic.personal.rest.model.dto.like.LikeArtistDto;
@@ -23,13 +22,15 @@ import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.lang.reflect.Array;
 import java.net.URI;
 import java.util.*;
 import java.util.stream.IntStream;
@@ -286,6 +287,12 @@ public class LikeServiceImpl implements LikeService {
 			log.error("Like :: like update :: Error Message", e.getMessage());
 			throw new InternalException(CommonErrorMessage.INTERNAL_SERVER_ERROR);
 		}
+	}
+
+	@Override
+	public LikeYnResponse getLikeYn(String likeType, Long likeTypeId, Long characterNo) {
+		if (likeMapper.getLikeCountByLikeTypeAndLikeTypeId(likeType, likeTypeId, characterNo) > 0) return new LikeYnResponse("Y");
+		return new LikeYnResponse("N");
 	}
 
 	private void validCheckAddLike(LikeRequest request, Long characterNo){

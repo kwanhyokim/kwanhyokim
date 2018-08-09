@@ -12,8 +12,10 @@ package com.sktechx.godmusic.personal.rest.repository;
 
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
+import com.sktechx.godmusic.personal.rest.model.dto.MostListenedTrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -33,5 +35,9 @@ public interface TrackMapper {
     List<Long> selectRecommendPanelSimilarTrackList(@Param("characterNo") Long characterNo, @Param("rcmmdTrackId")Long rcmmdTrackId);
     List<Long> selectRecommendPanelGenreTrackList(@Param("characterNo") Long characterNo, @Param("rcmmdGenreId")Long rcmmdGenreId);
     List<Long> selectRecommendPanelCfTrackList(@Param("characterNo") Long characterNo, @Param("rcmmdMforuId")Long rcmmdMforuId);
+
+    List<MostListenedTrackDto> selectMostListenedTrackList(@Param("characterNo") Long characterNo, @Param("pageable") Pageable pageable);
+    long selectMostListenedTrackTotalCount(@Param("characterNo") Long characterNo);
+
 
 }

@@ -51,6 +51,8 @@ public enum CommonErrorMessage implements ErrorDomain {
 	, ARTIST_NOT_FOUND(4040304,HttpStatus.NOT_FOUND ,"존재 하지 않은 아티스트 정보 입니다.","아티스트 정보 없음"  )
 	, TRACK_NOT_FOUND(4040305,HttpStatus.NOT_FOUND ,"존재 하지 않은 아티스트 정보 입니다.","아티스트 정보 없음"  )
 
+	, USER_PSSRL_NOT_FOUND(4040402, HttpStatus.NOT_FOUND, "회원의 PSSRL이 존재하지 않아 정산 요청을 할 수 없습니다.", "회원 PSSRL 코드 없음")
+
 	// Common 	0000
 	, INTERNAL_SERVER_ERROR(5000001,HttpStatus.INTERNAL_SERVER_ERROR,"일시적으로 접속이 원활하지 않습니다.\n잠시 후 다시 이용해\n 주시기 바랍니다.","알수 없는 시스템 에러")
 	, DATABASE_ERROR(5000002, HttpStatus.INTERNAL_SERVER_ERROR, "DB장애" ,"DB장애")
