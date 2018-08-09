@@ -75,17 +75,27 @@ public class RecommendMockData extends CommonTest {
         preferGenreDto.setPreferType(genreType);
         return preferGenreDto;
     }
-    protected List<PreferGenrePopularChnlDto> makeMockPreferGenrePopularChnl(int size){
-        List<PreferGenrePopularChnlDto> chnlList = new ArrayList();
+
+    protected List<ChnlDto> makeMockPreferGenrePopularChnlList(int size){
+        List<ChnlDto> chnlList = new ArrayList();
         for(int i = 0 ; i < size ; i++){
-            PreferGenrePopularChnlDto chnlDto=  new PreferGenrePopularChnlDto();
 
             ChnlDto chnl = new ChnlDto();
             chnl.setChnlId(new Long(i+1));
             chnl.setChnlNm("인기채널 "+(i+1));
             chnl.setChnlDispNm("인기\n채널 "+(i+1));
 
-            chnlDto.setPopularChannel(chnl);
+            chnlList.add(chnl);
+
+        }
+        return chnlList;
+    }
+    protected List<PreferGenrePopularChnlDto> makeMockPreferGenrePopularChnl(int size){
+        List<PreferGenrePopularChnlDto> chnlList = new ArrayList();
+        for(int i = 0 ; i < size ; i++){
+            PreferGenrePopularChnlDto chnlDto=  new PreferGenrePopularChnlDto();
+
+            chnlDto.setChnlId(new Long(i+1));
             chnlDto.setCharacterNo(new Long(i+1));
             chnlDto.setPreferGenreId(new Long(i+1));
             chnlList.add(chnlDto);

@@ -81,7 +81,7 @@ public abstract class PanelAssembly {
 
         popularChannelList.stream().filter(Objects::nonNull).forEach(channel -> {
             try{
-                panelList.add(new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL,channel, channel.getImgList()));
+                panelList.add(new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL,channel));
             }catch(Exception e){
                 log.error("GuestPhasePanel defaultPanelSetting Exception : {}",e.getMessage());
             }

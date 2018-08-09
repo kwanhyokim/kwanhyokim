@@ -38,8 +38,12 @@ public class GenreVo {
 
     public GenreVo(PreferGenrePopularChnlDto characterPreferGenrePopularChnlDto){
         if(characterPreferGenrePopularChnlDto != null){
-            this.id = characterPreferGenrePopularChnlDto.getPreferGenreId();
+            this.id = characterPreferGenrePopularChnlDto.getPreferGenreId()==null? 0L : characterPreferGenrePopularChnlDto.getPreferGenreId();
             this.name = null;
         }
+    }
+    public GenreVo(Long genreId){
+        this.id = genreId;
+        this.name = null;
     }
 }

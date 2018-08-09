@@ -22,7 +22,7 @@ import org.apache.ibatis.type.MappedTypes;
  * @date 2018. 07. 09.
  */
 public enum PreferGenreType implements CodeEnum {
-    GENRE("GENRE", "장르"),
+    PREFER("PREFER", "선호 장르"),
     TOP100("TOP100", "실시간 인기 TOP100"),
     KIDS("KIDS" ,"키즈 인기 차트");
 

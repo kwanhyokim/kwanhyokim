@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2018 SK TECHX.
+  ~ All right reserved.
+  ~
+  ~ This software is the confidential and proprietary information of SK TECHX.
+  ~ You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with SK TECHX.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.ServiceGenreMapper">
+
+    <select id="selectCharacterPreferGenreList" resultType="Long">
+        <![CDATA[
+            SELECT
+                svc_genre_id
+            FROM
+                tb_map_prefer_genre_svc_genre
+            WHERE
+                prefer_genre_id IN
+                <foreach item="preferGenreId" index="index" collection="channelIdList" open="(" separator="," close=")">
+                        #{preferGenreId}
+                </foreach>
+            GROUP BY prefer_genre_id
+            ORDER BY FIELD(prefer_genre_id, 1,2,3,13), disp_sn ;
+        ]]>
+    </select>
+
+</mapper>

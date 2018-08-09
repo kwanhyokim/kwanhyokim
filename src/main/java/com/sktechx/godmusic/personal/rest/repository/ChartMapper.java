@@ -32,8 +32,8 @@ public interface ChartMapper {
     //TODO : 추후 meta api 호출
     ChartDto selectLiveChart();
     ChartDto selectKidsChart();
-    //TODO : 선호 장르 인기채널
-    List<PreferGenrePopularChnlDto> selectPreferGenrePopularChannel(List<Long> preferGenreIdList);
+    //TODO : 서비스 장르 인기채널
+//    List<PreferGenrePopularChnlDto> selectPreferGenrePopularChannel(List<Long> svcGenreIdList);
 
     ChartDto selectMainPanelChart(String chartType);
 

@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 설명 : 로그인 사용자 패널 생성기
@@ -46,6 +47,8 @@ import java.util.Optional;
 @Slf4j
 public abstract class PanelSignAssembly extends PanelAssembly{
     protected abstract void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList);
+
+    private final int popularChnlTrackLimitSize = 10;
 
     public List<Panel> assembleRecommendPanel(final PersonalPhaseMeta personalPhaseMeta){
         final List<Panel> panelList = defaultPanelSetting(personalPhaseMeta);
@@ -75,25 +78,45 @@ public abstract class PanelSignAssembly extends PanelAssembly{
         }
     }
 
+
+
     protected void appendPreferGenreChannelPanelList(final PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int limitSize) {
 
-        List<Long> preferGenreIdList = personalPhaseMeta.getPreferGenreIdList(limitSize, Arrays.asList(PreferGenreType.GENRE));
+        List<Long> preferGenreIdList = personalPhaseMeta.getPreferGenreIdList(limitSize, Arrays.asList(PreferGenreType.PREFER));
 
         if(!CollectionUtils.isEmpty(preferGenreIdList)){
-            List<PreferGenrePopularChnlDto> preferGenrePopularChnlList = chartMapper.selectPreferGenrePopularChannel(preferGenreIdList);
-            if(!CollectionUtils.isEmpty(preferGenrePopularChnlList)) {
-                List<ImageDto> bgImgList = recommendPanelService.getPanelBackgroundImageList(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL , personalPhaseMeta.getOsType());
-                preferGenrePopularChnlList
-                        .stream()
-                        .filter(Objects::nonNull)
-                        .forEach(channel -> {
-                            try {
-                                panelList.add(new PreferGenrePopularChannelPanel(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL, channel.getPopularChannel(), new GenreVo(channel), bgImgList));
-                            } catch (Exception e) {
-                                log.error("VisitPhasePanel appendPreferencePanel error : {}", e.getMessage());
-                                e.printStackTrace();
-                            }
-                        });
+
+            log.info("preferGenreIdList : {}",preferGenreIdList);
+            List<PreferGenrePopularChnlDto> preferGenrePopularChnlList = channelMapper.selectPreferGenrePopularChannelIdList(preferGenreIdList,personalPhaseMeta.getOsType());
+
+            log.info("preferGenrePopularChnlList : {}",preferGenrePopularChnlList);
+            if( !CollectionUtils.isEmpty( preferGenrePopularChnlList)){
+
+                List<Long> chnlIdList = preferGenrePopularChnlList.stream().map(preferGenrePopularChnl -> {
+                    return preferGenrePopularChnl.getChnlId();
+                }).collect(Collectors.toList());
+                log.info("chnlIdList : {}",chnlIdList);
+                List<ChnlDto> popularChannelList = channelMapper.selectPopularChannelList(chnlIdList,popularChnlTrackLimitSize,personalPhaseMeta.getOsType());
+
+                log.info("popularChannelList : {}",popularChannelList);
+                if(!CollectionUtils.isEmpty(popularChannelList)){
+                    popularChannelList
+                            .stream()
+                            .filter(Objects::nonNull)
+                            .forEach(channel->{
+                                try {
+                                    PreferGenrePopularChnlDto findPreferGenrePopularChnlDto = preferGenrePopularChnlList.stream()
+                                                .filter(dto -> dto.getChnlId().equals(channel.getChnlId()))
+                                                .findFirst().orElse(new PreferGenrePopularChnlDto());
+
+                                    panelList.add(new PreferGenrePopularChannelPanel(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL, channel, new GenreVo(findPreferGenrePopularChnlDto)));
+                                } catch (Exception e) {
+                                    log.error("VisitPhasePanel appendPreferencePanel error : {}", e.getMessage());
+                                    e.printStackTrace();
+                                }
+                            });
+                }
+
             }
 
         }
@@ -147,7 +170,7 @@ public abstract class PanelSignAssembly extends PanelAssembly{
                         .filter(Objects::nonNull)
                         .forEach(popularChannel ->{
                             try{
-                                panelList.add(new ListenMoodPopularChannelPanel(RecommendPanelType.LISTEN_MOOD_POPULAR_CHANNEL,popularChannel,bgImgList));
+                                panelList.add(new ListenMoodPopularChannelPanel(RecommendPanelType.LISTEN_MOOD_POPULAR_CHANNEL,popularChannel));
                             }catch(Exception e){
                                 log.error("VisitPhasePanel appendListenMoodPopularChanelPanelList error : {}",e.getMessage());
                                 e.printStackTrace();

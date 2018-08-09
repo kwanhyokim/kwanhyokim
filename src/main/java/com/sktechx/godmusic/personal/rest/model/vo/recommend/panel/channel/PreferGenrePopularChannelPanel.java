@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class PreferGenrePopularChannelPanel extends ChannelPanel {
 
-    public PreferGenrePopularChannelPanel(RecommendPanelType panelType, ChnlDto channel, GenreVo genre, List<ImageDto> bgImgList) throws CommonBusinessException {
-        super(panelType, channel , genre , bgImgList);
+    public PreferGenrePopularChannelPanel(RecommendPanelType panelType, ChnlDto channel, GenreVo genre) throws CommonBusinessException {
+        super(panelType, channel , genre);
     }
 }

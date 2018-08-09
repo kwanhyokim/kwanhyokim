@@ -27,4 +27,5 @@ import java.util.List;
  */
 @BaseMapper
 public interface ServiceGenreMapper {
+    List<Long> selectPreferGenreToSvcGenre(@Param("") List<Long> preferGenreIdList);
 }

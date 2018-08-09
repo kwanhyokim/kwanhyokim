@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -83,125 +84,6 @@ public class VisitPanelTests extends RecommendMockData {
             assertThat(panel, instanceOf(PopularChannelPanel.class));
             assertThat(panel.getType(), is(RecommendPanelType.POPULAR_CHANNEL) );
         });
-
-    }
-    @Test
-    public void VISIT_패널_선호장르_테스트(){
-
-        int preferGenrePopularChnlTotalSize = 3;
-        int preferGenrePolularChnlSize = 1;
-        List<CharacterPreferGenreDto> preferGenreList  = Arrays.asList(makeMockPreferGenrePopular(3L,"댄스",PreferGenreType.GENRE));
-        given(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(anyLong() , anyObject())).willReturn(makeMockPersonalPhaseMeta(PersonalPhaseType.VISIT, null, preferGenreList));
-        given(chartMapper.selectPreferGenrePopularChannel(anyObject())).willReturn(makeMockPreferGenrePopularChnl(preferGenrePolularChnlSize));
-
-        given(channelService.getPopularChannelList(anyInt(),anyObject())).willReturn(makeMockHotPlayChannels(preferGenrePopularChnlTotalSize - preferGenrePolularChnlSize));
-
-        List<Panel> panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
-        assertNotNull(panelList);
-        assertEquals(3, panelList.size());
-        assertThat(panelList.get(0), instanceOf(PreferGenrePopularChannelPanel.class));
-        assertThat(panelList.get(0).getType(), is(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL) );
-        assertThat(panelList.get(1), instanceOf(PopularChannelPanel.class));
-        assertThat(panelList.get(1).getType(), is(RecommendPanelType.POPULAR_CHANNEL) );
-        assertThat(panelList.get(2), instanceOf(PopularChannelPanel.class));
-        assertThat(panelList.get(2).getType(), is(RecommendPanelType.POPULAR_CHANNEL) );
-
-        preferGenrePolularChnlSize = 2 ;
-        given(chartMapper.selectPreferGenrePopularChannel(anyObject())).willReturn(makeMockPreferGenrePopularChnl(preferGenrePolularChnlSize));
-        given(channelService.getPopularChannelList(anyInt(),anyObject())).willReturn(makeMockHotPlayChannels(preferGenrePopularChnlTotalSize - preferGenrePolularChnlSize));
-
-        panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
-        assertNotNull(panelList);
-        assertEquals(3, panelList.size());
-        assertThat(panelList.get(0), instanceOf(PreferGenrePopularChannelPanel.class));
-        assertThat(panelList.get(0).getType(), is(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL) );
-        assertThat(panelList.get(1), instanceOf(PreferGenrePopularChannelPanel.class));
-        assertThat(panelList.get(1).getType(), is(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL) );
-        assertThat(panelList.get(2), instanceOf(PopularChannelPanel.class));
-        assertThat(panelList.get(2).getType(), is(RecommendPanelType.POPULAR_CHANNEL) );
-
-        preferGenrePolularChnlSize = 3 ;
-        given(chartMapper.selectPreferGenrePopularChannel(anyObject())).willReturn(makeMockPreferGenrePopularChnl(preferGenrePolularChnlSize));
-        given(channelService.getPopularChannelList(anyInt(),anyObject())).willReturn(makeMockHotPlayChannels(preferGenrePopularChnlTotalSize - preferGenrePolularChnlSize));
-
-        panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
-        assertNotNull(panelList);
-        assertEquals(3, panelList.size());
-        assertThat(panelList.get(0), instanceOf(PreferGenrePopularChannelPanel.class));
-        assertThat(panelList.get(0).getType(), is(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL) );
-        assertThat(panelList.get(1), instanceOf(PreferGenrePopularChannelPanel.class));
-        assertThat(panelList.get(1).getType(), is(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL) );
-        assertThat(panelList.get(2), instanceOf(PreferGenrePopularChannelPanel.class));
-        assertThat(panelList.get(2).getType(), is(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL) );
-
-    }
-
-    @Test
-    public void VISIT_패널_아티스트_인기곡_추가_테스트(){
-        List<CharacterPreferGenreDto> preferGenreList  = Arrays.asList(makeMockPreferGenrePopular(3L,"댄스",PreferGenreType.GENRE));
-        PersonalPanel artistPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_ATST_TR, 1L);
-        given(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(anyLong() , anyObject())).willReturn(makeMockPersonalPhaseMeta(PersonalPhaseType.VISIT, Arrays.asList(artistPanel), preferGenreList));
-        given(chartMapper.selectPreferGenrePopularChannel(anyObject())).willReturn(makeMockPreferGenrePopularChnl(3));
-        given(recommendMapper.selectRecommendArtistById(anyLong())).willReturn(makeMockRecommendArtistDto());
-
-        List<Panel> panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
-        assertNotNull(panelList);
-        assertEquals(4, panelList.size());
-        assertThat(panelList.get(0), instanceOf(ArtistPanel.class));
-        assertThat(panelList.get(0).getType(), is(RecommendPanelType.ARTIST_POPULAR_TRACK) );
-        assertThat(panelList.get(1), instanceOf(PreferGenrePopularChannelPanel.class));
-        assertThat(panelList.get(1).getType(), is(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL) );
-        assertThat(panelList.get(2), instanceOf(PreferGenrePopularChannelPanel.class));
-        assertThat(panelList.get(2).getType(), is(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL) );
-        assertThat(panelList.get(3), instanceOf(PreferGenrePopularChannelPanel.class));
-        assertThat(panelList.get(3).getType(), is(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL) );
-    }
-
-
-    @Test
-    public void VISIT_패널_차트_테스트(){
-        PersonalPanel artistPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_ATST_TR, 1L);
-        List<CharacterPreferGenreDto> preferGenreList  = Arrays.asList(makeMockPreferGenrePopular(1L,"TOP100",PreferGenreType.TOP100),makeMockPreferGenrePopular(2L,"댄스",PreferGenreType.GENRE));
-        given(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(anyLong() , anyObject())).willReturn(makeMockPersonalPhaseMeta(PersonalPhaseType.VISIT, Arrays.asList(artistPanel),preferGenreList));
-        given(chartMapper.selectPreferGenrePopularChannel(anyObject())).willReturn(makeMockPreferGenrePopularChnl(3));
-        given(recommendMapper.selectRecommendArtistById(anyLong())).willReturn(makeMockRecommendArtistDto());
-
-        given(chartMapper.selectMainPanelChart("LIVE_CHART")).willReturn(makeMockChart(1L,ChartType.DAILY,"실시간 차트"));
-        given(chartMapper.selectMainPanelChart("KIDS_CHART")).willReturn(makeMockChart(2L,ChartType.DAILY,"KIDS 차트"));
-
-        List<Panel> panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
-        log.info("panelList : {}",panelList);
-        assertNotNull(panelList);
-        assertEquals(5, panelList.size());
-        assertThat(panelList.get(0), instanceOf(ChartPanel.class));
-        assertThat(panelList.get(0).getType(), is(RecommendPanelType.LIVE_CHART) );
-        assertThat(panelList.get(1), instanceOf(ArtistPanel.class));
-        assertThat(panelList.get(1).getType(), is(RecommendPanelType.ARTIST_POPULAR_TRACK) );
-        assertThat(panelList.get(2), instanceOf(PreferGenrePopularChannelPanel.class));
-        assertThat(panelList.get(2).getType(), is(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL) );
-        assertThat(panelList.get(3), instanceOf(PreferGenrePopularChannelPanel.class));
-        assertThat(panelList.get(3).getType(), is(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL) );
-        assertThat(panelList.get(4), instanceOf(PreferGenrePopularChannelPanel.class));
-        assertThat(panelList.get(4).getType(), is(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL) );
-
-
-        preferGenreList  = Arrays.asList(makeMockPreferGenrePopular(1L,"TOP100",PreferGenreType.TOP100) ,makeMockPreferGenrePopular(2L,"KIDS",PreferGenreType.KIDS),makeMockPreferGenrePopular(3L,"댄스",PreferGenreType.GENRE));
-        given(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(anyLong() , anyObject())).willReturn(makeMockPersonalPhaseMeta(PersonalPhaseType.VISIT, Arrays.asList(artistPanel),preferGenreList));
-
-        panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
-        assertNotNull(panelList);
-        assertEquals(6, panelList.size());
-        assertThat(panelList.get(0), instanceOf(ChartPanel.class));
-        assertThat(panelList.get(0).getType(), is(RecommendPanelType.LIVE_CHART) );
-        assertThat(panelList.get(1), instanceOf(ArtistPanel.class));
-        assertThat(panelList.get(2), instanceOf(PreferGenrePopularChannelPanel.class));
-        assertThat(panelList.get(2).getType(), is(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL) );
-        assertThat(panelList.get(3), instanceOf(PreferGenrePopularChannelPanel.class));
-        assertThat(panelList.get(3).getType(), is(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL) );
-        assertThat(panelList.get(4), instanceOf(PreferGenrePopularChannelPanel.class));
-        assertThat(panelList.get(4).getType(), is(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL) );
-        assertThat(panelList.get(5), instanceOf(ChartPanel.class));
-        assertThat(panelList.get(5).getType(), is(RecommendPanelType.KIDS_CHART) );
     }
 
 }

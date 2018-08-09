@@ -41,10 +41,9 @@ public abstract class ChannelPanel extends Panel{
     @JsonIgnore
     private GenreVo genre;
 
-    public ChannelPanel(RecommendPanelType panelType, ChnlDto channel, GenreVo genre, List<ImageDto> bgImgList) throws CommonBusinessException {
+    public ChannelPanel(RecommendPanelType panelType, ChnlDto channel, GenreVo genre) throws CommonBusinessException {
         super(panelType);
         this.channel = neverNullChannel(channel);
-        this.imgList = bgImgList;
         this.initialPanel();
     }
 

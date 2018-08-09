@@ -94,6 +94,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     @Override
     public List<Panel> createRecommendPanelList(Long characterNo , OsType osType) {
         PersonalPhaseMeta personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType);
+        log.info("personalPhaseMeta : {}" ,personalPhaseMeta);
         PanelAssembly panelAssembly = recommendPanelAssemblyFactory.getRecommendPanelAssembly(personalPhaseMeta.getFirstPhaseType());
 
         return panelAssembly.assembleRecommendPanel(personalPhaseMeta);
@@ -125,7 +126,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             popularChannel.setChnlNm("들으면 힘을 주는 CCM BEST ");
             popularChannel.setChnlDispNm("들으면 힘을 주는 \nCCM BEST ");
             popularChannel.setTrackCount(channelMapper.selectChannelTrackCount(983L));
-            ChannelPanel popularChannelPanel = new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL, popularChannel , makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/1_a_2_b_2_line.png"));
+            popularChannel.setImgList(makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/1_a_2_b_2_line.png"));
+            ChannelPanel popularChannelPanel = new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL, popularChannel);
             mockPanelList.add(popularChannelPanel);
 
 
@@ -133,14 +135,16 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             popularChannel.setChnlNm("꽃보다 할배 리턴즈 BGM #4");
             popularChannel.setChnlDispNm("꽃보다 할배 리턴즈 \nBGM #4");
             popularChannel.setTrackCount(channelMapper.selectChannelTrackCount(18401L));
-            popularChannelPanel = new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL, popularChannel , makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/1_a_2_b_2_line.png"));
+            popularChannel.setImgList(makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/1_a_2_b_2_line.png"));
+            popularChannelPanel = new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL, popularChannel);
             mockPanelList.add(popularChannelPanel);
 
             popularChannel =channelMapper.selectChannelById(18400L);
             popularChannel.setChnlNm("한적한 시골길 드라이브를 위한 재즈");
             popularChannel.setChnlDispNm("한적한 시골길 드라이브를\n 위한 재즈");
             popularChannel.setTrackCount(channelMapper.selectChannelTrackCount(18400L));
-            popularChannelPanel = new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL, popularChannel , makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/1_a_2_b_2_line.png"));
+            popularChannel.setImgList(makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/1_a_2_b_2_line.png"));
+            popularChannelPanel = new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL, popularChannel);
             mockPanelList.add(popularChannelPanel);
 
             ChnlDto preferPopularGenreChannel = channelMapper.selectChannelById(18399L);
@@ -148,7 +152,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             preferPopularGenreChannel.setChnlDispNm("팝의 여제, 비욘세 \n필청 트랙 모음");
             preferPopularGenreChannel.setTrackCount(channelMapper.selectChannelTrackCount(18399L));
             GenreVo danceGenre = makeGenre(1L, "POP");
-            ChannelPanel preferPopularGenreChannelPanel = new PreferGenrePopularChannelPanel(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL, preferPopularGenreChannel,danceGenre , makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/1_a_2_b_3_line.png") );
+            preferPopularGenreChannel.setImgList(makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/1_a_2_b_3_line.png"));
+            ChannelPanel preferPopularGenreChannelPanel = new PreferGenrePopularChannelPanel(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL, preferPopularGenreChannel,danceGenre );
             mockPanelList.add(preferPopularGenreChannelPanel);
 
             preferPopularGenreChannel = channelMapper.selectChannelById(18398L);
@@ -156,7 +161,9 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             preferPopularGenreChannel.setChnlDispNm("쿨한 느낌이 매력적인\n드라이빙 트렌디");
             preferPopularGenreChannel.setTrackCount(channelMapper.selectChannelTrackCount(18398L));
             GenreVo traditionalGenre = makeGenre(2L, "국악");
-            preferPopularGenreChannelPanel = new PreferGenrePopularChannelPanel(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL, preferPopularGenreChannel,traditionalGenre , makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/1_a_2_b_3_line.png") );
+
+            preferPopularGenreChannel.setImgList(makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/1_a_2_b_3_line.png"));
+            preferPopularGenreChannelPanel = new PreferGenrePopularChannelPanel(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL, preferPopularGenreChannel,traditionalGenre );
 
             mockPanelList.add(preferPopularGenreChannelPanel);
 
@@ -165,7 +172,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             listenMoodPolularChannel.setChnlDispNm("커피 한 잔과 함께\n낮잠이 고플 때");
             listenMoodPolularChannel.setTrackCount(channelMapper.selectChannelTrackCount(18397L));
 
-            ChannelPanel listenMoodPopularChannelPanel = new ListenMoodPopularChannelPanel(RecommendPanelType.LISTEN_MOOD_POPULAR_CHANNEL, listenMoodPolularChannel, makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/1_a_2_b_3_line.png") );
+            listenMoodPolularChannel.setImgList(makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/1_a_2_b_3_line.png"));
+            ChannelPanel listenMoodPopularChannelPanel = new ListenMoodPopularChannelPanel(RecommendPanelType.LISTEN_MOOD_POPULAR_CHANNEL, listenMoodPolularChannel );
             mockPanelList.add(listenMoodPopularChannelPanel);
 
 

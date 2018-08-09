@@ -35,6 +35,7 @@
         <result property="renewDtime" column="trackRenewDtime" />
     </resultMap>
 
+    <resultMap id="preferGenrePopularChnlResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto" autoMapping="true"/>
 
     <!-- 임시 사용 -->
     <select id="selectChannelById"  resultMap="channelResultMap">
@@ -165,8 +166,8 @@
                 a.trackCreateDtime trackCreateDtime,
                 a.trackUpdateDtime trackUpdateDtime,
                 a.trackRenewDtime trackRenewDtime,
-                @curRank:=IF(@prevChnlId = a.chnl_id,@curRank + 1,1) AS rank,
-                @prevChnlId:=a.chnl_id
+                @prevChnlId:=a.chnl_id,
+                @curRank:=IF(@prevChnlId = a.chnl_id,@curRank + 1,1) AS rank
             FROM
             (
                 SELECT
@@ -214,7 +215,7 @@
         LEFT OUTER JOIN ted_trackartist d ON a.track_id =d.track_id
         LEFT OUTER JOIN ted_artist e ON d.artist_id = e.artist_id
         LEFT OUTER JOIN ted_artist f ON f.artist_id = a.reprsnt_artist_id
-        ,(SELECT @curRank:=0, @prevChnlId:=0) r
+        , (SELECT @curRank:=0, @prevChnlId:=0) r
         WHERE
           a.rank  <![CDATA[<=]]> #{trackLimitSize}
     </select>
@@ -242,8 +243,8 @@
                 INNER JOIN tb_img_mang c ON b.music_content_id = c.img_content_id
                 WHERE
                     a.chart_type = 'WEEKLY'
-                AND a.svc_content_type = 'TOTAL'
-                AND a.music_content_type = 'CHANNEL'
+                AND a.svc_content_type = 'ALL'
+                AND a.music_content_type = 'CHNL'
                 AND c.dfk_type = 'EVERY'
                 AND c.img_content_type='CHNL') b ON a.chnl_id = b.music_content_id
             INNER JOIN
@@ -260,75 +261,69 @@
         ORDER BY disp_sn
 	</select>
 
-	<!--
-    <select id="selectEditorsPickChannelList" resultMap="channelResultMap">
-		SELECT
-			c.chnl_id,
-			c.chnl_nm,
-			e.track_id,
-			e.track_nm,
-			j.artist_id reqArtistId,
-			j.artist_nm reqArtistNm,
-			e.agency_id,
-			e.album_id,
-			h.artist_id,
-			h.artist_nm,
-			f.album_img_size size,
-			CONCAT(f.album_img_url,'?updateDate=',UNIX_TIMESTAMP(f.update_dtime)) url,
-			c.create_dtime,
-			c.update_dtime
-		FROM
-			(
-				SELECT
-					a.theme_id, b.chnl_id, b.disp_sn
-				FROM
-					(
-						SELECT
-							theme_id
-						FROM
-							tb_theme
-						WHERE
-							theme_type = 'HOT'
-							AND disp_status_type = 'Y'
-							<if test="isToday">
-								AND disp_start_dtime <![CDATA[<=]]> NOW()
-								AND disp_end_dtime <![CDATA[>=]]> NOW()
-							</if>
-							<if test="!isToday">
-								AND disp_end_dtime <![CDATA[<]]> NOW()
-							</if>
-
-						ORDER BY disp_end_dtime DESC
-						LIMIT 1
-				  ) a
-				INNER JOIN tb_map_theme_chnl b ON a.theme_id = b.theme_id
-				ORDER BY disp_sn ASC
-				LIMIT #{limitSize}
-			) b
-		INNER JOIN
-			tb_chnl c ON c.chnl_id = b.chnl_id
-		INNER JOIN
-			tb_map_chnl_track d ON c.chnl_id = d.chnl_id
-		INNER JOIN
-			tb_track e ON d.track_id = e.track_id
-		LEFT OUTER JOIN
-			tb_album_img f ON e.album_id = f.album_id
-		LEFT OUTER JOIN
-			ted_trackartist g ON e.track_id = g.track_id
-		LEFT OUTER JOIN
-			ted_artist h ON g.artist_id = h.artist_id
-		LEFT OUTER JOIN
-			ted_album i ON e.album_id = i.album_id
-		LEFT OUTER JOIN
-			ted_artist j ON e.reprsnt_artist_id = j.artist_id
-		WHERE
-			c.disp_status_type = 'Y'
-		AND
-			e.disp_status_yn = 'Y'
-		ORDER BY b.disp_sn ASC
+    <select id="selectPreferGenrePopularChannelIdList" resultMap="preferGenrePopularChnlResultMap">
+        SELECT
+            chnl_id,
+            prefer_genre_id,
+            rank
+        FROM
+        (
+            SELECT
+                a.chnl_id,
+                a.prefer_genre_id,
+                @prevChartId:=a.chart_id,
+                @curRank:=IF(@prevChartId = a.chart_id, @curRank + 1, 1) AS rank
+            FROM
+            (
+                SELECT
+                    a.svc_genre_id,
+                    a.prefer_genre_id,
+                    b.chart_id,
+                    b.music_content_type,
+                    b.chart_nm,
+                    b.music_content_cnt,
+                    c.music_content_id chnl_id,
+                    c.disp_sn
+                FROM
+                (
+                    SELECT DISTINCT
+                        svc_genre_id,
+                        prefer_genre_id
+                    FROM
+                      tb_map_prefer_genre_svc_genre
+                    WHERE
+                      prefer_genre_id IN
+                        <foreach item="preferGenreId" index="index" collection="preferGenreIdList" open="(" separator="," close=")">
+                            #{preferGenreId}
+                        </foreach>
+                    GROUP BY prefer_genre_id
+                    ORDER BY FIELD(prefer_genre_id,
+                        <foreach item="preferGenreId" index="index" collection="preferGenreIdList" open="" separator="," close="">
+                            #{preferGenreId}
+                        </foreach>
+                  ) , disp_sn
+                ) a INNER JOIN tb_chart b ON a.svc_genre_id = b.svc_content_id
+                INNER JOIN tb_chart_music_content c ON b.chart_id = c.chart_id
+                INNER JOIN tb_img_mang d ON c.music_content_id = d.img_content_id
+                INNER JOIN tb_chnl e ON d.img_content_id = e.chnl_id
+                WHERE
+                    b.chart_type = 'WEEKLY'
+                    AND b.svc_content_type = 'GENRE'
+                    AND b.music_content_type = 'CHNL'
+                    AND d.img_content_type = 'CHNL'
+                    AND d.dfk_type = 'EVERY'
+                    AND d.os_type = #{osType}
+                    AND d.img_disp_type = 'DEFAULT'
+                    AND e.disp_status_type = 'Y'
+                GROUP BY chnl_id
+                ORDER BY b.chart_id , c.disp_sn
+            ) a,(SELECT @curRank:=0, @prevChartId:=0) r
+        ) a
+        WHERE
+          rank <![CDATA[<=]]>  1
     </select>
-	-->
-    <!-- TOP100 , KIDS를 제외한 선호 장르의 인기채널을 가져온다 -->
+
+
     <select id="selectPreferGenrePopularChannel">
 
     </select>

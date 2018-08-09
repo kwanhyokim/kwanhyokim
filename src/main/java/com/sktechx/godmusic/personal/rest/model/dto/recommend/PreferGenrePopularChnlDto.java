@@ -10,7 +10,6 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto.recommend;
 
-import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import lombok.Data;
 
@@ -25,6 +24,6 @@ public class PreferGenrePopularChnlDto {
 
     private Long characterNo;
     private Long preferGenreId;
-    private ChnlDto popularChannel;
+    private Long chnlId;
 
 }
