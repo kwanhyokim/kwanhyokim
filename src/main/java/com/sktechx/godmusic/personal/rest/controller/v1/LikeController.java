@@ -56,10 +56,9 @@ public class LikeController {
 	) {
 		GMContext currentContext = GMContext.getContext();
 
-//		Validator.loginValidate(currentContext);
+		Validator.loginValidate(currentContext);
 
-//		return new CommonApiResponse(likeService.getLikeYn(likeType, likeTypeId, currentContext.getCharacterNo()));
-		return new CommonApiResponse(likeService.getLikeYn(likeType, likeTypeId, new Long(12)));
+		return new CommonApiResponse(likeService.getLikeYn(likeType, likeTypeId, currentContext.getCharacterNo()));
 	}
 
 	@ApiOperation(value = "좋아요 추가 by Kobe ( 기존 /v2/my/album/like , /v2/my/track/like , /v2/my/channel/like, /v2/my/artist/like POST )")
