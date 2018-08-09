@@ -58,7 +58,7 @@
                    b.album_img_size size,
                    CONCAT(b.album_img_url, '?updateDate=', unix_timestamp(b.update_dtime)) url,
                    a.trackCreateDtime,
-                   a.trackUpdateDtime,
+                   a.trackUpdateDtime
                 FROM (
                     SELECT
                         a.chnl_id,
