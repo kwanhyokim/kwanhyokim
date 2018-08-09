@@ -58,4 +58,8 @@ public class TrackDto {
     @JsonProperty("updateDateTime")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
     private Date updateDtime;
+
+    @JsonProperty("renewDateTime")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
+    private Date renewDtime;
 }

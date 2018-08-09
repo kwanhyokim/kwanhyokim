@@ -59,7 +59,7 @@ import javax.validation.Valid;
 @Slf4j
 @RestController
 @RequestMapping(Naming.serviceCode + "/v1/myplaylist")
-@Api(value = "My Playlist", description = "My Playlist API")
+@Api(value = "My Playlist", description = "My Playlist API - Lake")
 public class MyPlaylistController {
 
     @Autowired
@@ -86,7 +86,7 @@ public class MyPlaylistController {
     @GetMapping
     @ApiOperation(value = "My Playlist 목록 조회", httpMethod = "GET", notes = "My Playlist 목록 조회 API(/v2/my/channel/list)", response = MyPlaylistRetriveAllResponse.class)
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", required = false, dataType = "int", paramType = "query", value = "페이지", defaultValue = "0"),
+            @ApiImplicitParam(name = "page", required = false, dataType = "int", paramType = "query", value = "페이지", defaultValue = "1"),
             @ApiImplicitParam(name = "size", required = false, dataType = "int", paramType = "query", value = "사이즈", defaultValue = "20")
     })
     public CommonApiResponse<MyPlaylistRetriveAllResponse> retrieveAllMyPlaylist(@ApiIgnore @PageableDefault(size=20, page= 0) Pageable pageable) {
@@ -146,7 +146,7 @@ public class MyPlaylistController {
     @GetMapping("/{memberChannelId}/tracks")
     @ApiOperation(value = "My Playlist 트랙(곡) 목록 조회", httpMethod = "GET", notes = "My Playlist 트랙(곡) 목록 조회(/v2/my/channel/{channelId}/track/list)", response = MyPlaylistTrackRetrieveAllResponse.class)
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", required = false, dataType = "int", paramType = "query", value = "페이지", defaultValue = "0"),
+            @ApiImplicitParam(name = "page", required = false, dataType = "int", paramType = "query", value = "페이지", defaultValue = "1"),
             @ApiImplicitParam(name = "size", required = false, dataType = "int", paramType = "query", value = "사이즈", defaultValue = "20")
     })
     public CommonApiResponse<MyPlaylistTrackRetrieveAllResponse> retrieveAllMyPlaylistTrack(

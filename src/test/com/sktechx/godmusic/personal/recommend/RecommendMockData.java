@@ -13,6 +13,7 @@ package com.sktechx.godmusic.personal.recommend;
 import com.sktechx.godmusic.personal.CommonTest;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
+import com.sktechx.godmusic.personal.common.domain.type.PreferGenreType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.*;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
@@ -67,7 +68,7 @@ public class RecommendMockData extends CommonTest {
     @MockBean
     protected ChartMapper chartMapper;
 
-    protected CharacterPreferGenreDto makeMockPreferGenrePopular(Long id, String name , String genreType){
+    protected CharacterPreferGenreDto makeMockPreferGenrePopular(Long id, String name , PreferGenreType genreType){
         CharacterPreferGenreDto preferGenreDto = new CharacterPreferGenreDto();
         preferGenreDto.setPreferGenreId(id);
         preferGenreDto.setPreferGenreNm(name);

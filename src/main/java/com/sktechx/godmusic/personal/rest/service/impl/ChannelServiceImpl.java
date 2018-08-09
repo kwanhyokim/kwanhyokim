@@ -10,12 +10,21 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl;
 
+import com.netflix.discovery.converters.Auto;
+import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.lib.redis.service.RedisService;
+import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
+import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
+import com.sktechx.godmusic.personal.rest.repository.ChannelMapper;
+import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -29,13 +38,44 @@ import java.util.List;
 @Slf4j
 public class ChannelServiceImpl implements ChannelService {
 
-    //TODO : 인기채널 GET
-    public List<ChnlDto> getEditorsPickChannelList(Integer size){
-        return null;
+    public static final String HOME_PANEL_POPULAR_CHNL_KEY ="godmusic.personalapi.recommend.home.popular.chnllist";
+
+    private final int popularChnlTrackLimitSize = 10;
+    private final int popularChnlExpiredSeconds = 86400;
+
+    @Autowired
+    private ChannelMapper channelMapper;
+
+    @Autowired
+    private ChartMapper chartMapper;
+
+    @Autowired
+    private RedisService redisService;
+
+    public List<ChnlDto> getPopularChannelList(int limitSize, OsType osType){
+        List<Long> popularChnlIdList = null;
+        try{
+            popularChnlIdList = redisService.getListWithPrefix(HOME_PANEL_POPULAR_CHNL_KEY,Long.class);
+        }catch( Exception e){
+            log.error("getEditorsPickChannelList error : {}",e.getMessage());
+        }finally {
+            if(CollectionUtils.isEmpty(popularChnlIdList)){
+                popularChnlIdList = channelMapper.selectPopularChannelIdList();
+                if(!CollectionUtils.isEmpty(popularChnlIdList)){
+                    redisService.setWithPrefix(HOME_PANEL_POPULAR_CHNL_KEY,popularChnlIdList,popularChnlExpiredSeconds);
+                }
+            }
+        }
+
+        if(!CollectionUtils.isEmpty(popularChnlIdList) && popularChnlIdList.size() > limitSize){
+            popularChnlIdList = popularChnlIdList.subList(0,limitSize);
+        }
+
+        return channelMapper.selectPopularChannelList(popularChnlIdList,popularChnlTrackLimitSize, osType);
     }
 
-    public List<PreferGenrePopularChnlDto> selectPreferGenrePopularChannel(Long characterNo){
+    @Override
+    public List<PreferGenrePopularChnlDto> getPreferGenrePopularChannel(List<Long> preferGenreIdList) {
         return null;
     }
-
 }

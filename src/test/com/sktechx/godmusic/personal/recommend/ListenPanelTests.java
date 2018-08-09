@@ -11,10 +11,7 @@
 package com.sktechx.godmusic.personal.recommend;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
-import com.sktechx.godmusic.personal.common.domain.type.ChartType;
-import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+import com.sktechx.godmusic.personal.common.domain.type.*;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.artist.ArtistPanel;
@@ -61,7 +58,7 @@ public class ListenPanelTests extends RecommendMockData {
 
     @BeforeEach
     public void init(){
-        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(3));
+        given(channelService.getPopularChannelList(anyInt(),anyObject())).willReturn(makeMockHotPlayChannels(3));
     }
 
     @Test
@@ -92,12 +89,12 @@ public class ListenPanelTests extends RecommendMockData {
         int preferGenreSimilarTrackPanelSize = 2;
         int listenMoodPopularChannelPanelSize = 1;
 
-        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(( preferGenreSimilarTrackPanelSize+listenMoodPopularChannelPanelSize ) - recommendTrackSize));
+        given(channelService.getPopularChannelList(anyInt(),anyObject())).willReturn(makeMockHotPlayChannels(( preferGenreSimilarTrackPanelSize+listenMoodPopularChannelPanelSize ) - recommendTrackSize));
         given(recommendMapper.selectRecommendSimilarTrackListByIdList(anyList(), anyInt())).willReturn(makeMockRecommendTrackDto(recommendTrackSize));
 
         //유사곡 패널 1개 대체
         List<Panel> panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
-        verify(channelService).getEditorsPickChannelList(captor.capture());
+        verify(channelService).getPopularChannelList(captor.capture(),anyObject());
         assertEquals(new Integer(2),captor.getValue());
 
         assertNotNull(panelList);
@@ -120,9 +117,9 @@ public class ListenPanelTests extends RecommendMockData {
         int listenMoodPopularChannelPanelSize = 1;
 
         given(recommendMapper.selectRecommendSimilarTrackListByIdList(anyList(),anyInt())).willReturn(makeMockRecommendTrackDto(recommendTrackSize));
-        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(( preferGenreSimilarTrackPanelSize+listenMoodPopularChannelPanelSize ) - recommendTrackSize));
+        given(channelService.getPopularChannelList(anyInt(),anyObject())).willReturn(makeMockHotPlayChannels(( preferGenreSimilarTrackPanelSize+listenMoodPopularChannelPanelSize ) - recommendTrackSize));
         List<Panel> panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
-        verify(channelService).getEditorsPickChannelList(captor.capture());
+        verify(channelService).getPopularChannelList(captor.capture(),anyObject());
         assertEquals(new Integer(1),captor.getValue());
 
 
@@ -158,7 +155,7 @@ public class ListenPanelTests extends RecommendMockData {
         given(recommendMapper.selectRecommendSimilarTrackListByIdList(anyList(),anyInt())).willReturn(makeMockRecommendTrackDto(recommendTrackSize));
         given(recommendMapper.selectRecommendListenMoodChannelListByIdList(anyList(),anyInt())).willReturn(makeMockHotPlayChannels(1));
 
-        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(( listenMoodPopularChannelPanelSize+preferGenreSimilarTrackPanelSize ) - ( recommendTrackSize + listenMoodChnlSize )));
+        given(channelService.getPopularChannelList(anyInt(),anyObject())).willReturn(makeMockHotPlayChannels(( listenMoodPopularChannelPanelSize+preferGenreSimilarTrackPanelSize ) - ( recommendTrackSize + listenMoodChnlSize )));
 
         List<Panel> panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
         assertNotNull(panelList);
@@ -267,7 +264,7 @@ public class ListenPanelTests extends RecommendMockData {
 
         given(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(anyLong() , anyObject())).willReturn(makeMockPersonalPhaseMeta(PersonalPhaseType.LISTEN , rcmmdPanelList , null));
         given(recommendMapper.selectRecommendPreferGenreSimilarTrackListByIdList(anyList(), anyInt())).willReturn(makeMockRecommendTrackDto(preferGenreTrackSize));
-        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(( preferGenreSimilarTrackPanelSize+listenMoodPopularChannelPanelSize ) - preferGenreTrackSize));
+        given(channelService.getPopularChannelList(anyInt(),anyObject())).willReturn(makeMockHotPlayChannels(( preferGenreSimilarTrackPanelSize+listenMoodPopularChannelPanelSize ) - preferGenreTrackSize));
 
         List<Panel> panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
 
@@ -301,7 +298,7 @@ public class ListenPanelTests extends RecommendMockData {
 
         given(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(anyLong() , anyObject())).willReturn(makeMockPersonalPhaseMeta(PersonalPhaseType.LISTEN , rcmmdPanelList , null));
         given(recommendMapper.selectRecommendPreferGenreSimilarTrackListByIdList(anyList(), anyInt())).willReturn(makeMockRecommendTrackDto(preferGenreTrackSize));
-        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(( preferGenreSimilarTrackPanelSize+listenMoodPopularChannelPanelSize ) - preferGenreTrackSize));
+        given(channelService.getPopularChannelList(anyInt(),anyObject())).willReturn(makeMockHotPlayChannels(( preferGenreSimilarTrackPanelSize+listenMoodPopularChannelPanelSize ) - preferGenreTrackSize));
 
         List<Panel> panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
 
@@ -338,7 +335,7 @@ public class ListenPanelTests extends RecommendMockData {
         rcmmdPanelList.add(personalPanel);
         given(recommendMapper.selectRecommendListenMoodChannelListByIdList(anyList(), anyInt())).willReturn(makeMockHotPlayChannels(1));
         given(recommendMapper.selectRecommendArtistById(anyLong())).willReturn(makeMockRecommendArtistDto());
-        List<CharacterPreferGenreDto> preferGenreList  = Arrays.asList(makeMockPreferGenrePopular(1L,"TOP100","TOP100"),makeMockPreferGenrePopular(2L,"KIDS","KIDS"));
+        List<CharacterPreferGenreDto> preferGenreList  = Arrays.asList(makeMockPreferGenrePopular(1L,"TOP100",PreferGenreType.TOP100),makeMockPreferGenrePopular(2L,"KIDS",PreferGenreType.KIDS));
 
         given(chartMapper.selectMainPanelChart("LIVE_CHART")).willReturn(makeMockChart(1L,ChartType.DAILY,"실시간 차트"));
         given(chartMapper.selectMainPanelChart("KIDS_CHART")).willReturn(makeMockChart(2L,ChartType.DAILY,"KIDS 차트"));
@@ -349,7 +346,7 @@ public class ListenPanelTests extends RecommendMockData {
 
         given(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(anyLong() , anyObject())).willReturn(makeMockPersonalPhaseMeta(PersonalPhaseType.LISTEN , rcmmdPanelList , preferGenreList));
         given(recommendMapper.selectRecommendPreferGenreSimilarTrackListByIdList(anyList(), anyInt())).willReturn(makeMockRecommendTrackDto(preferGenreTrackSize));
-        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(( preferGenreSimilarTrackPanelSize+listenMoodPopularChannelPanelSize ) - preferGenreTrackSize));
+        given(channelService.getPopularChannelList(anyInt(),anyObject())).willReturn(makeMockHotPlayChannels(( preferGenreSimilarTrackPanelSize+listenMoodPopularChannelPanelSize ) - preferGenreTrackSize));
 
         List<Panel> panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
 

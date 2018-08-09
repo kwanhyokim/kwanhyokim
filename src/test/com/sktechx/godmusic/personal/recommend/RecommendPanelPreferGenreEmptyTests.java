@@ -63,7 +63,7 @@ public class RecommendPanelPreferGenreEmptyTests extends RecommendMockData {
         personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_SML_TR, 1L));
         personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_ATST_TR, 1L));
 
-        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(3));
+        given(channelService.getPopularChannelList(anyInt(),anyObject())).willReturn(makeMockHotPlayChannels(3));
         given(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(anyLong() , anyObject())).willReturn(makeMockPersonalPhaseMeta(PersonalPhaseType.RECOMMEND , personalPanelList , null));
     }
 
@@ -77,7 +77,7 @@ public class RecommendPanelPreferGenreEmptyTests extends RecommendMockData {
         preferGenrePolularChnlDataSize = 0;
         given(recommendMapper.selectRecommendCfTrackListByIdList(anyList(), anyInt())).willReturn(makeMockRecommendTrackDto(cfTrackDataSize));
         given(recommendMapper.selectRecommendSimilarTrackListByIdList(anyList(), anyInt())).willReturn(makeMockRecommendTrackDto(similarTrackDataSize));
-        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(defaultPanelTotalSize - (cfTrackDataSize +similarTrackDataSize)));
+        given(channelService.getPopularChannelList(anyInt(),anyObject())).willReturn(makeMockHotPlayChannels(defaultPanelTotalSize - (cfTrackDataSize +similarTrackDataSize)));
 
         List<Panel> panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
         assertNotNull(panelList);
@@ -100,7 +100,7 @@ public class RecommendPanelPreferGenreEmptyTests extends RecommendMockData {
         preferGenrePolularChnlDataSize = 0;
         given(recommendMapper.selectRecommendCfTrackListByIdList(anyList(), anyInt())).willReturn(makeMockRecommendTrackDto(cfTrackDataSize));
         given(recommendMapper.selectRecommendSimilarTrackListByIdList(anyList(), anyInt())).willReturn(makeMockRecommendTrackDto(similarTrackDataSize));
-        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(defaultPanelTotalSize - (cfTrackDataSize +similarTrackDataSize)));
+        given(channelService.getPopularChannelList(anyInt(),anyObject())).willReturn(makeMockHotPlayChannels(defaultPanelTotalSize - (cfTrackDataSize +similarTrackDataSize)));
 
         List<Panel> panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
         assertNotNull(panelList);
@@ -147,7 +147,7 @@ public class RecommendPanelPreferGenreEmptyTests extends RecommendMockData {
         similarTrackDataSize = 0;
         preferGenreSimilarTrackDataSize = 0;
         preferGenrePolularChnlDataSize = 0;
-        given(channelService.getEditorsPickChannelList(anyInt())).willReturn(makeMockHotPlayChannels(defaultPanelTotalSize - cfTrackDataSize));
+        given(channelService.getPopularChannelList(anyInt(),anyObject())).willReturn(makeMockHotPlayChannels(defaultPanelTotalSize - cfTrackDataSize));
         given(recommendMapper.selectRecommendCfTrackListByIdList(anyList(), anyInt())).willReturn(makeMockRecommendTrackDto(cfTrackDataSize));
 
         List<Panel> panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
