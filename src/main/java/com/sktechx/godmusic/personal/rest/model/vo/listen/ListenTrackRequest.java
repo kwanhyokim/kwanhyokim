@@ -35,8 +35,8 @@ public class ListenTrackRequest {
 	private TrackLogType trackLogType;
 
 	@NotNull
-	@ApiModelProperty(name = "bitrate", value = "재생할 비트레이트(acc, 192k, 320k)",
-			allowableValues = "acc, 192k, 320k")
+	@ApiModelProperty(name = "bitrate", value = "재생할 비트레이트(aac, 192k, 320k)",
+			allowableValues = "aac, 192k, 320k")
 	private BitrateType bitrate;
 
 	@NotNull

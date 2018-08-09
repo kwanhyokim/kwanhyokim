@@ -15,6 +15,39 @@
 
 <mapper namespace="com.sktechx.godmusic.personal.rest.repository.PurchaseMapper" >
 
+    <select id="selectPssrlCd" resultType="string">
+        SELECT CASE
+               WHEN B.ALLI_DC_YN = 'Y'
+                   THEN
+                       CASE
+                       WHEN A.TMBRSHIP_APPLY_YN = 'Y'
+                           THEN B.PSSRL_CD
+                       ELSE B.POINT_FAIL_PSSRL_CD
+                       END
+               ELSE B.PSSRL_CD
+               END AS PSSRL_CD
+        FROM TB_PRCHS_PASS A
+            JOIN TB_GOODS B
+                ON A.GOODS_ID = B.GOODS_ID
+        WHERE
+            A.MEMBER_NO = #{memberNo}
+            AND A.GOODS_STATUS = 'INUSE'
+    </select>
 
+    <select id="selectInUsePurchaseIdByMemberNo" resultType="com.sktechx.godmusic.personal.rest.model.dto.listen.PurchasePassDto">
+        SELECT
+            A.PRCHS_ID
+            , A.GOODS_ID
+        FROM
+            TB_PRCHS_PASS A INNER JOIN TB_GOODS B
+                ON A.GOODS_ID = B.GOODS_ID
+        WHERE
+            A.MEMBER_NO = #{memberNo}
+            AND
+            A.GOODS_STATUS = 'INUSE'
+        ORDER BY
+            A.USE_END_DTIME ASC
+        LIMIT 1
+    </select>
 
 </mapper>

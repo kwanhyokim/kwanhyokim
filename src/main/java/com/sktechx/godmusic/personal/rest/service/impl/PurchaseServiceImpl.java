@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 /**
  * Created by Kobe.
  *
+ * 실제론 Purchase 에서 처리해야하지만 청취로그 특성상 빈번한 호출이 예상되어 일단 필요한부분 구현
+ *
  * @author Kobe/최훈영/SKTECHX (hunyoung.choi@sk.com)
  * @date 2018. 8. 9.
  * @time PM 2:43

@@ -15,6 +15,30 @@
 
 <mapper namespace="com.sktechx.godmusic.personal.rest.repository.ListenMapper" >
 
-
+    <update id="addListenHistByChannel">
+        INSERT INTO
+            TB_MEMBER_LAST_LISTEN_HIST (
+                MEMBER_NO,
+                CHARACTER_NO,
+                LISTEN_TYPE,
+                LISTEN_TYPE_ID,
+                LAST_LISTEN_DTIME,
+                CREATE_DTIME,
+                UPDATE_DTIME
+            )
+        VALUES (
+            #{memberNo},
+            #{characterNo},
+            #{listenType},
+            #{listenTypeId},
+            now(),
+            now(),
+            now()
+        )
+        ON DUPLICATE KEY
+        UPDATE
+            LAST_LISTEN_DTIME = NOW(),
+            UPDATE_DTIME      = NOW()
+    </update>
 
 </mapper>
