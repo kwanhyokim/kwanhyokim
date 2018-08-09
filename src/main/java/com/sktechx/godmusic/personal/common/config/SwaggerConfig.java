@@ -64,16 +64,6 @@ public class SwaggerConfig {
 
     private List<Parameter> operationParameters()   {
         List<Parameter> operationParameters = new LinkedList<>();
-        operationParameters.add(
-                new ParameterBuilder()
-                        .name(TransactionIdInterceptor.XGmTransactionIdKey)
-                        .required(true)
-                        .description("transaction id")
-                        .parameterType("header")
-                        .defaultValue("swaggercall")
-                        .modelRef(new ModelRef("string"))
-                        .build()
-        );
 //        operationParameters.add(
 //                new ParameterBuilder()
 //                        .name(CommonConstant.X_GM_MEMBER_NO)
