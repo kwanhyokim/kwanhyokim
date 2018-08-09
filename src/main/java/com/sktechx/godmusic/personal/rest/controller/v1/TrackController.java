@@ -1,0 +1,40 @@
+/*
+ * Copyright (c) 2018 SK TECHX.
+ * All right reserved.
+ *
+ * This software is the confidential and proprietary information of SK TECHX.
+ * You shall not disclose such Confidential Information and
+ * shall use it only in accordance with the terms of the license agreement
+ * you entered into with SK TECHX.
+ */
+
+package com.sktechx.godmusic.personal.rest.controller.v1;
+
+import com.sktechx.godmusic.lib.domain.GMContext;
+import com.sktechx.godmusic.personal.common.domain.CommonListResponse;
+import com.sktechx.godmusic.personal.common.domain.domain.Naming;
+import com.sktechx.godmusic.personal.rest.service.TrackService;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@Slf4j
+@RestController
+@RequestMapping(Naming.serviceCode+"/v1/tracks")
+public class TrackController {
+
+    @Autowired
+    private TrackService trackService;
+
+    @ApiOperation(value = "많이 들은  ( 기존 /v2/my/track/most/list GET )")
+    @GetMapping("/mostlistened")
+    public CommonListResponse mostTrackList(@PageableDefault(size=300, page=0) Pageable pageable) {
+
+        return new CommonListResponse(trackService.mostTrackList(GMContext.getContext().getCharacterNo(), pageable));
+    }
+}

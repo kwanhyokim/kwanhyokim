@@ -30,6 +30,15 @@
         </collection>
     </resultMap>
 
+    <resultMap id="mostListenedTrackResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.MostListenedTrackDto" extends="trackResultMap" autoMapping="true">
+        <result property="memberNo" column="memberNo" />
+        <result property="characterNo" column="characterNo" />
+        <result property="listenCount" column="listenCount" />
+        <result property="lastListenDateTime" column="lastListenDateTime" />
+        <result property="likeYn" column="likeYn" />
+    </resultMap>
+
+
     <select id="selectTrackList" resultMap="trackResultMap">
         SELECT
             a.track_id,
@@ -128,4 +137,80 @@
         ORDER BY disp_sn ASC
 
     </select>
+
+    <select id="selectMostListenedTrackList" resultMap="mostListenedTrackResultMap">
+		<![CDATA[
+			SELECT
+				a.member_no memberNo,
+				a.character_no characterNo,
+				a.last_listen_dtime lastListenDateTime,
+				a.listen_cnt listenCount,
+				a.create_dtime createDateTime,
+			    a.update_dtime updateDateTime,
+				b.track_id trackId,
+			    b.track_nm trackName,
+                IF(f.like_type_id is null, 'N', 'Y') likeYn,
+			    b.track_play_tm playTime,
+			    b.adult_auth_need_track_yn adultAuthYn,
+			    b.track_subtrct_qty subtractQty,
+			    IF(b.title_yn = 'Y' , 'Y', 'N') titleYn,
+			    IF(b.streaming_premium_yn = 'Y' OR b.pps_yn = 'Y', 'Y', 'N') holdbackYn,
+			    b.agency_id agencyId,
+			    c.album_id albumId,
+			    c.album_img_size size,
+			    CONCAT(c.album_img_url, '?updateDate=', unix_timestamp(c.update_dtime)) AS url,
+			    c.update_dtime albumImgUpdateDateTime,
+			    e.artist_id artistId,
+			    e.artist_nm artistName,
+			    b.disp_status_yn displayYn,
+			    g.title albumTitle,
+			    h.artist_id repArtistId,
+				h.artist_nm repArtistName
+			FROM
+				(
+				    SELECT
+				    	member_no member_no,
+				    	character_no character_no,
+						track_id track_id,
+						last_listen_dtime last_listen_dtime,
+						listen_cnt listen_cnt,
+						create_dtime,
+						update_dtime
+					FROM
+						tb_most_listen_track
+					WHERE
+						character_no = #{characterNo}
+                    ORDER BY listen_cnt DESC, last_listen_dtime DESC
+					LIMIT
+						#{pageable.offset} ,
+						#{pageable.pageSize}
+				) a
+			INNER JOIN	tb_track b
+				ON a.track_id = b.track_id
+			LEFT OUTER JOIN tb_character_like f
+				ON a.track_id = f.like_type_id AND a.character_no = f.character_no AND like_type = 'TRACK'
+			LEFT OUTER JOIN	tb_album_img c
+				ON b.album_id = c.album_id
+			LEFT OUTER JOIN	ted_trackartist as d
+				ON b.track_id = d.track_id AND d.rp_yn = 'Y' and d.db_sts = 'A'
+			LEFT OUTER JOIN	ted_artist e
+				ON d.artist_id = e.artist_id
+			LEFT OUTER JOIN ted_album g
+				ON b.album_id = g.album_id
+			LEFT OUTER JOIN ted_artist h
+				ON b.reprsnt_artist_id = h.artist_id
+			WHERE
+				b.disp_status_yn ='Y'
+			ORDER BY listenCount DESC, lastListenDateTime DESC, d.listorder
+		]]>
+	</select>
+
+    <select id="selectMostListenedTrackTotalCount" resultType="long">
+		 SELECT
+		 	count(*)
+		 FROM
+		 	tb_most_listen_track
+		 WHERE
+			character_no = #{characterNo}
+	</select>
 </mapper>
