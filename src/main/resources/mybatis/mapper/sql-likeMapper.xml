@@ -15,7 +15,7 @@
 
 <mapper namespace="com.sktechx.godmusic.personal.rest.repository.LikeMapper" >
 
-    <select id="getLikeByLikeType" resultMap="com.sktechx.godmusic.personal.rest.model.vo.like.LikeVo">
+    <select id="getLikeByLikeType" resultType="com.sktechx.godmusic.personal.rest.model.vo.like.LikeVo">
         SELECT
             CHARACTER_NO
             , LIKE_TYPE
