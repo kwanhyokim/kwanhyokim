@@ -10,7 +10,7 @@
 
 spring.application.name: personal-api
 server.port: 80
-spring.profiles.active: dev
+
 
 spring.cloud.config.name: personal-api,lib-module
 
@@ -35,8 +35,8 @@ spring.cloud.config.label: develop
 
 ---
 spring.profiles: qa
-spring.cloud.config.url: http://TBD
-spring.cloud.config.label: master
+spring.cloud.config.url: http://172.21.100.178:8888
+spring.cloud.config.label: qa
 
 ---
 spring.profiles: prod
