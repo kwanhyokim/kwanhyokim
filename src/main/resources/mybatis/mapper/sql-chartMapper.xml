@@ -221,7 +221,7 @@
                      JOIN (
                             SELECT
                               b.character_no,
-                              b.prefer_genre_id,
+                              b.genre_id as prefer_genre_id,
                               b.artist_id AS prefer_artist_id,
                               CASE C.nation_cd
                               WHEN 'KOR'
