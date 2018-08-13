@@ -21,12 +21,12 @@
 
         <collection property="artistList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" column="artist_id">
             <result property="artistId" column="artist_id"></result>
-            <result property="artistNm" column="artist_nm"></result>
+            <result property="artistName" column="artist_nm"></result>
         </collection>
 
         <collection property="artist" ofType="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" column="repArtistId">
             <result property="artistId" column="repArtistId"></result>
-            <result property="artistNm" column="repArtistNm"></result>
+            <result property="artistName" column="repArtistNm"></result>
         </collection>
     </resultMap>
 

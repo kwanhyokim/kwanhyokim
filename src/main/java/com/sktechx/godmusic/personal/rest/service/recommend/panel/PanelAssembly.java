@@ -78,13 +78,16 @@ public abstract class PanelAssembly {
     protected void appendDefaultPopularChannelPanel(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int limitSize) {
         List<ChnlDto> popularChannelList = channelService.getPopularChannelList(limitSize,personalPhaseMeta.getOsType());
 
-        popularChannelList.stream().filter(Objects::nonNull).forEach(channel -> {
-            try{
-                panelList.add(new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL,channel));
-            }catch(Exception e){
-                log.error("GuestPhasePanel defaultPanelSetting Exception : {}",e.getMessage());
-            }
-        });
+        popularChannelList
+                .stream()
+                .filter(Objects::nonNull)
+                .forEach(channel -> {
+                    try{
+                        panelList.add(new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL,channel));
+                    }catch(Exception e){
+                        log.error("GuestPhasePanel defaultPanelSetting Exception : {}",e.getMessage());
+                    }
+                });
 
     }
 }

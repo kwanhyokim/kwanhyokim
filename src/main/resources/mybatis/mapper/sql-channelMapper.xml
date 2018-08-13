@@ -19,9 +19,16 @@
         <id property="chnlId" column="chnl_id" />
         <id property="chnlNm" column="chnl_nm"/>
         <collection property="trackList" resultMap="popularChannelTrackResultMap">
+
             <result property="createDtime" column="trackCreateDtime"  />
             <result property="updateDtime" column="trackUpdateDtime" />
             <result property="renewDtime" column="trackRenewDtime" />
+            <!--
+            <result property="rcmmdCreateDtime" column="trackCreateDtime"  />
+            <result property="rcmmdUpdateDtime" column="trackUpdateDtime" />
+            <result property="renewDtime" column="trackRenewDtime" />
+
+            -->
         </collection>
         <collection property="imgList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" autoMapping="true">
             <id property="size" column="img_size"/>
@@ -30,12 +37,26 @@
     </resultMap>
 
     <resultMap id="popularChannelTrackResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.TrackDto" extends="com.sktechx.godmusic.personal.rest.repository.TrackMapper.trackResultMap" autoMapping="true">
-        <result property="createDtime" column="trackCreateDtime"  />
-        <result property="updateDtime" column="trackUpdateDtime" />
+        <!--
+        <result property="rcmmdCreateDtime" column="trackCreateDtime"   />
+        <result property="rcmmdUpdateDtime" column="trackUpdateDtime" />
         <result property="renewDtime" column="trackRenewDtime" />
+        -->
     </resultMap>
 
-    <resultMap id="preferGenrePopularChnlResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto" autoMapping="true"/>
+    <resultMap id="preferGenrePopularChnlResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlListDto" autoMapping="true">
+        <id property="svcGenreId" column="svc_genre_id"/>
+        <collection property="chnlIdList" ofType="Long">
+            <result column="chnl_id"/>
+        </collection>
+    </resultMap>
+    <resultMap id="moodPopularChnlResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlListDto" autoMapping="true">
+        <id property="categoryId" column="category_id"/>
+        <collection property="chnlIdList" ofType="Long">
+            <result column="chnl_id"/>
+        </collection>
+
+    </resultMap>
 
     <!-- 임시 사용 -->
     <select id="selectChannelById"  resultMap="channelResultMap">
@@ -166,8 +187,8 @@
                 a.trackCreateDtime trackCreateDtime,
                 a.trackUpdateDtime trackUpdateDtime,
                 a.trackRenewDtime trackRenewDtime,
-                @prevChnlId:=a.chnl_id,
-                @curRank:=IF(@prevChnlId = a.chnl_id,@curRank + 1,1) AS rank
+                @curRank:=IF(@prevChnlId = a.chnl_id,@curRank + 1,1) AS rank,
+                @prevChnlId:=a.chnl_id
             FROM
             (
                 SELECT
@@ -261,74 +282,78 @@
         ORDER BY disp_sn
 	</select>
 
-    <select id="selectPreferGenrePopularChannelIdList" resultMap="preferGenrePopularChnlResultMap">
+    <select id="selectAllPreferGenrePopularChannelIdList" resultMap="preferGenrePopularChnlResultMap">
         SELECT
-            chnl_id,
-            prefer_genre_id,
-            rank
+            a.svc_genre_id,
+            a.prefer_genre_id,
+            b.chart_id,
+            c.music_content_id chnl_id,
+            c.disp_sn
         FROM
-        (
-            SELECT
-                a.chnl_id,
-                a.prefer_genre_id,
-                @prevChartId:=a.chart_id,
-                @curRank:=IF(@prevChartId = a.chart_id, @curRank + 1, 1) AS rank
-            FROM
             (
                 SELECT
-                    a.svc_genre_id,
-                    a.prefer_genre_id,
-                    b.chart_id,
-                    b.music_content_type,
-                    b.chart_nm,
-                    b.music_content_cnt,
-                    c.music_content_id chnl_id,
-                    c.disp_sn
+                    prefer_genre_id,
+                    svc_genre_id,
+                    @curRank:=IF(@prevChnlId = prefer_genre_id, @curRank + 1, 1) AS rank,
+                    @prevChnlId:=prefer_genre_id
                 FROM
-                (
-                    SELECT DISTINCT
-                        svc_genre_id,
-                        prefer_genre_id
-                    FROM
-                      tb_map_prefer_genre_svc_genre
-                    WHERE
-                      prefer_genre_id IN
-                        <foreach item="preferGenreId" index="index" collection="preferGenreIdList" open="(" separator="," close=")">
-                            #{preferGenreId}
-                        </foreach>
-                    GROUP BY prefer_genre_id
-                    ORDER BY FIELD(prefer_genre_id,
-                        <foreach item="preferGenreId" index="index" collection="preferGenreIdList" open="" separator="," close="">
-                            #{preferGenreId}
-                        </foreach>
-                  ) , disp_sn
-                ) a INNER JOIN tb_chart b ON a.svc_genre_id = b.svc_content_id
-                INNER JOIN tb_chart_music_content c ON b.chart_id = c.chart_id
-                INNER JOIN tb_img_mang d ON c.music_content_id = d.img_content_id
-                INNER JOIN tb_chnl e ON d.img_content_id = e.chnl_id
-                WHERE
-                    b.chart_type = 'WEEKLY'
-                    AND b.svc_content_type = 'GENRE'
-                    AND b.music_content_type = 'CHNL'
-                    AND d.img_content_type = 'CHNL'
-                    AND d.dfk_type = 'EVERY'
-                    AND d.os_type = #{osType}
-                    AND d.img_disp_type = 'DEFAULT'
-                    AND e.disp_status_type = 'Y'
-                GROUP BY chnl_id
-                ORDER BY b.chart_id , c.disp_sn
-            ) a,(SELECT @curRank:=0, @prevChartId:=0) r
-        ) a
+                  tb_map_prefer_genre_svc_genre, (SELECT @curRank:=0, @prevChnlId:=0) r
+                ORDER BY prefer_genre_id , disp_sn
+            ) a
+            INNER JOIN
+              tb_chart b ON a.svc_genre_id = b.svc_content_id
+            INNER JOIN
+              tb_chart_music_content c ON b.chart_id = c.chart_id
+            INNER JOIN
+              tb_img_mang d ON c.music_content_id = d.img_content_id
+            INNER JOIN
+              tb_chnl e ON d.img_content_id = e.chnl_id
         WHERE
-          rank <![CDATA[<=]]>  1
+                b.chart_type = 'WEEKLY'
+            AND b.svc_content_type = 'GENRE'
+            AND b.music_content_type = 'CHNL'
+            AND d.img_content_type = 'CHNL'
+            AND d.dfk_type = 'EVERY'
+            AND d.img_disp_type = 'DEFAULT'
+            AND e.disp_status_type = 'Y'
+            AND a.rank <![CDATA[<=]]> 1
+        GROUP BY a.svc_genre_id , a.prefer_genre_id , b.chart_id , c.disp_sn
+        ORDER BY b.chart_id , c.disp_sn
     </select>
 
-
-    <select id="selectPreferGenrePopularChannel">
-
+    <select id="selectAllMoodPopularChannelIdList" resultMap="moodPopularChnlResultMap">
+      SELECT
+            category.category_id,
+            b.music_content_id chnl_id,
+            b.disp_sn
+      FROM (
+                SELECT
+                    category_id
+                FROM
+                    tb_category
+                WHERE
+                    category_type = 'MOOD'
+                AND disp_status_type = 'Y'
+          ) category
+          INNER JOIN  tb_chart a ON category.category_id = a.svc_content_id
+          INNER JOIN tb_chart_music_content b ON a.chart_id = b.chart_id
+          INNER JOIN tb_chnl c ON b.music_content_id = c.chnl_id
+          INNER JOIN tb_img_mang d ON c.chnl_id = d.img_content_id
+        WHERE
+            a.chart_type = 'WEEKLY'
+        AND
+            a.svc_content_type = 'MOOD'
+        AND
+            a.music_content_type = 'CHNL'
+        AND
+            c.disp_status_type = 'Y'
+        AND
+            d.img_content_type = 'CHNL'
+        AND
+            d.dfk_type = 'EVERY'
+        AND
+            d.img_disp_type = 'DEFAULT'
+        GROUP BY category.category_id , a.chart_id, b.disp_sn
+        ORDER BY a.chart_id , b.disp_sn
     </select>
-
-
-
-
 </mapper>

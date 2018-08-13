@@ -12,6 +12,7 @@ package com.sktechx.godmusic.personal.rest.model.dto.recommend;
 
 import com.sktechx.godmusic.personal.rest.model.dto.ServiceGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import lombok.Data;
 
 import java.util.Date;
@@ -31,10 +32,14 @@ public class RecommendTrackDto {
     private Long svcGenreId;
     private Long rcmmdId;
     private Integer dispSn;
-    private Date createDtime;
-    private Date updateDtime;
+    private Date rcmmdCreateDtime;
+    private Date rcmmdUpdateDtime;
 
     private List<TrackDto> trackList;
+    private Integer trackCount;
+
     private ServiceGenreDto svcGenreDto;
+
+    private List<ImageInfo> imgList;
 
 }

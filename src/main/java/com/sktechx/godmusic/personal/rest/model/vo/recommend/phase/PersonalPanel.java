@@ -11,11 +11,9 @@
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.phase;
 
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import lombok.Data;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * 설명 : 개인화 패널 정보
@@ -28,7 +26,14 @@ public class PersonalPanel {
     private RecommendPanelContentType recommendPanelContentType;
     private Date avaliableDateTime;
     private int dispSn;
-    //추천 아이디
+    //패널 별 추천 아이디
     private Long recommendId;
+
+    //노출 총 트랙수
+    private int trackCount;
+
+
+
+
 
 }

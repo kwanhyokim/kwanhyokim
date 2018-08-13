@@ -13,8 +13,8 @@ package com.sktechx.godmusic.personal.rest.repository;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
-import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlListDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlListDto;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -34,7 +34,10 @@ public interface ChannelMapper {
     List<Long> selectPopularChannelIdList();
     List<ChnlDto> selectPopularChannelList(@Param("channelIdList") List<Long> channelIdList, @Param("trackLimitSize") int trackLimitSize ,@Param("osType") OsType osType);
 
-    List<PreferGenrePopularChnlDto> selectPreferGenrePopularChannelIdList(@Param("preferGenreIdList") List<Long> preferGenreIdList,@Param("osType") OsType osType);
+    List<PreferGenrePopularChnlListDto> selectAllPreferGenrePopularChannelIdList();
+    List<MoodPopularChnlListDto> selectAllMoodPopularChannelIdList();
+
+//    List<PreferGenrePopularChnlDto> selectPreferGenrePopularChannelIdList(@Param("preferGenreIdList") List<Long> preferGenreIdList,@Param("osType") OsType osType);
 //    List<PreferGenrePopularChnlDto> selectPreferGenrePopularChannel(@Param("preferGenrePopularChnlList") List<PreferGenrePopularChnlDto> preferGenrePopularChnlList,@Param("osType") OsType osType);
 
 }

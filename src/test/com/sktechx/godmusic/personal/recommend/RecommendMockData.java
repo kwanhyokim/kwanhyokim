@@ -19,12 +19,12 @@ import com.sktechx.godmusic.personal.rest.model.dto.*;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.repository.ChannelMapper;
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
-import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.RecommendPanelAssemblyFactory;
@@ -121,7 +121,7 @@ public class RecommendMockData extends CommonTest {
             trackDto.setRcmmdId(new Long(i+1));
             trackDto.setTrackList(makeMockTrackList());
             trackDto.setSvcGenreDto(new ServiceGenreDto(new Long(i+1),"장르"));
-            trackDto.setCreateDtime(new Date());
+            trackDto.setRcmmdCreateDtime(new Date());
 
             recommendTrackList.add(trackDto);
         }
@@ -135,8 +135,8 @@ public class RecommendMockData extends CommonTest {
         ArtistDto artist = new ArtistDto();
 
         artist.setArtistId(1L);
-        artist.setArtistNm("name");
-        artist.setImgList(Arrays.asList(new ImageDto()));
+        artist.setArtistName("name");
+        artist.setImgList(Arrays.asList(new ImageInfo()));
 
         artistDto.setArtistList(Arrays.asList(artist,new ArtistDto(),new ArtistDto()));
         return artistDto;

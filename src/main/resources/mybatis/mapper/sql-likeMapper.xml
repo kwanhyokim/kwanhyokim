@@ -20,11 +20,11 @@
         <collection property="album" resultMap="com.sktechx.godmusic.personal.rest.repository.AlbumMapper.albumResultMap"/>
         <collection property="artistList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" column="artistId">
             <result property="artistId" column="artistId"></result>
-            <result property="artistNm" column="artistNm"></result>
+            <result property="artistName" column="artistNm"></result>
         </collection>
         <collection property="artist" ofType="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" column="repArtistId">
             <result property="artistId" column="repArtistId"></result>
-            <result property="artistNm" column="repArtistNm"></result>
+            <result property="artistName" column="repArtistNm"></result>
         </collection>
     </resultMap>
 

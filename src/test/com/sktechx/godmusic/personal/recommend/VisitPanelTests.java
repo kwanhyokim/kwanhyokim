@@ -66,24 +66,4 @@ public class VisitPanelTests extends RecommendMockData {
         });
     }
 
-    @Test
-    public void VISIT_패널_기본_테스트(){
-        given(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(anyLong() , anyObject())).willReturn(makeMockPersonalPhaseMeta(PersonalPhaseType.VISIT , null , null));
-
-        int preferGenrePopularChnlTotalSize = 3;
-        int preferGenrePolularChnlSize = 0;
-
-        given(channelService.getPopularChannelList(anyInt(),anyObject())).willReturn(makeMockHotPlayChannels(preferGenrePopularChnlTotalSize - preferGenrePolularChnlSize));
-
-        // CASE :  2-C ,1-A' 패널이 없다면 1-A,1-A,1-A
-        given(channelService.getPreferGenrePopularChannel( anyList())).willReturn(makeMockPreferGenrePopularChnl(0));
-        List<Panel> panelList = recommendPanelService.createRecommendPanelList(1L , OsType.AOS);
-        assertNotNull(panelList);
-        assertEquals(3, panelList.size());
-        panelList.stream().forEach(panel -> {
-            assertThat(panel, instanceOf(PopularChannelPanel.class));
-            assertThat(panel.getType(), is(RecommendPanelType.POPULAR_CHANNEL) );
-        });
-    }
-
 }

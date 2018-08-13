@@ -106,6 +106,7 @@ public class PersonalPhaseMeta {
                     .collect(Collectors.toList());
     }
 
+
     public List<Long> getRecommendPersonalPanelRcmmdIdList(RecommendPanelContentType recommendPanelContentType) {
         if(CollectionUtils.isEmpty(rcmmdPanelList))
             return null;
@@ -130,6 +131,15 @@ public class PersonalPhaseMeta {
         return null;
     }
 
+    public List<PersonalPanel> getRecommendPersonalPanelList(RecommendPanelContentType recommendPanelContentType){
+        if(CollectionUtils.isEmpty(rcmmdPanelList))
+            return null;
+
+        return rcmmdPanelList
+                .stream()
+                .filter(personalPanel -> Objects.nonNull(personalPanel) && recommendPanelContentType.equals(personalPanel.getRecommendPanelContentType()))
+                .collect(Collectors.toList());
+    }
     private PersonalPanel getRecommendPersonalPanel(RecommendPanelContentType recommendPanelContentType){
         if(CollectionUtils.isEmpty(rcmmdPanelList))
             return null;
