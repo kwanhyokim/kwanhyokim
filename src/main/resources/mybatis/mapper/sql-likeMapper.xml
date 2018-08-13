@@ -191,7 +191,7 @@
                     , DISP_SN
                     , UPDATE_DTIME
                 FROM TB_CHARACTER_LIKE
-                WHERE CHARACTER_NO = 12
+                WHERE CHARACTER_NO = #{characterNo}
                       AND LIKE_TYPE = 'ARTIST'
             <!--<if test="pageable != null">-->
                 <!--ORDER BY DISP_SN ASC,-->
@@ -226,7 +226,7 @@
             , updateDateTime
             , registDateTime
             , playTime
-            , likeType
+            , playListType
             , dispSn
             , likeUpdateDtime
         FROM (
@@ -242,7 +242,7 @@
                      , CL.UPDATE_DTIME                                               AS updateDateTime
                      , ''                                                            AS registDateTime
                      , ''                                                            AS playTime
-                     , 'CHART'                                                       AS likeType
+                     , CL.LIKE_TYPE                                                  AS playListType
                      , CL.DISP_SN                                                    AS dispSn
                      , CL.UPDATE_DTIME                                               AS likeUpdateDtime
                  FROM
@@ -255,17 +255,19 @@
                              , A.MUSIC_CONTENT_CNT
                              , A.CREATE_DTIME
                              , A.UPDATE_DTIME
+                             , L.LIKE_TYPE
                              , L.DISP_SN
                              , L.UPDATE_DTIME AS LIKE_UPDATE_DTIME
                          FROM
                              (
                                  SELECT
                                      LIKE_TYPE_ID
+                                     , LIKE_TYPE
                                      , DISP_SN
                                      , UPDATE_DTIME
                                  FROM TB_CHARACTER_LIKE
-                                 WHERE CHARACTER_NO = 12
-                                       AND LIKE_TYPE = 'CHART') L INNER JOIN TB_CHART A
+                                 WHERE CHARACTER_NO = #{characterNo}
+                                       AND LIKE_TYPE IN ('CHART', 'RANK_CHART')) L INNER JOIN TB_CHART A
                                  ON L.LIKE_TYPE_ID = A.CHART_ID
                              LEFT OUTER JOIN TB_CHART_MUSIC_CONTENT B
                                  ON A.CHART_ID = B.CHART_ID
@@ -289,17 +291,18 @@
                      , A.UPDATE_DTIME                                                          AS updateDateTime
                      , A.ES_ALBUM_APPLY_DTIME                                                  AS registDateTime
                      , A.CHNL_PLAY_TM                                                          AS playTime
-                     , 'CHNL'                                                                  AS likeType
+                     , L.LIKE_TYPE                                                             AS playListType
                      , L.DISP_SN                                                               AS dispSn
                      , L.UPDATE_DTIME                                                          AS likeUpdateDtime
                  FROM
                      (
                          SELECT
                              LIKE_TYPE_ID
+                             , LIKE_TYPE
                              , DISP_SN
                              , UPDATE_DTIME
                          FROM TB_CHARACTER_LIKE
-                         WHERE CHARACTER_NO = 12
+                         WHERE CHARACTER_NO = #{characterNo}
                                AND LIKE_TYPE = 'CHNL') L
                      INNER JOIN TB_CHNL A
                          ON L.LIKE_TYPE_ID = A.CHNL_ID
