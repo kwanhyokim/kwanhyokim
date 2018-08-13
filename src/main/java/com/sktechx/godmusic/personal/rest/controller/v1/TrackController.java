@@ -13,10 +13,13 @@ package com.sktechx.godmusic.personal.rest.controller.v1;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.personal.common.domain.CommonListResponse;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
+import com.sktechx.godmusic.personal.rest.model.dto.MostListenedTrackDto;
 import com.sktechx.godmusic.personal.rest.service.TrackService;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,5 +39,12 @@ public class TrackController {
     public CommonListResponse mostTrackList(@PageableDefault(size=300, page=0) Pageable pageable) {
 
         return new CommonListResponse(trackService.mostTrackList(GMContext.getContext().getCharacterNo(), pageable));
+    }
+
+    @ApiOperation(value = "최근 들은 by Peter ( 기존 /v2/my/track/recent/list GET )")
+    @GetMapping("/recent")
+    public CommonListResponse recentListenedTrackList(@PageableDefault(size=300, page=0) Pageable pageable) {
+
+        return new CommonListResponse(trackService.getMyRecentTrackList(GMContext.getContext().getCharacterNo(), pageable));
     }
 }

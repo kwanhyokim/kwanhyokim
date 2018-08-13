@@ -20,13 +20,13 @@
         <collection property="album" resultMap="com.sktechx.godmusic.personal.rest.repository.AlbumMapper.albumResultMap"/>
 
         <collection property="artistList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" column="artist_id">
-            <result property="artistId" column="artist_id"></result>
-            <result property="artistNm" column="artist_nm"></result>
+            <result property="artistId" column="artistId"></result>
+            <result property="artistName" column="artistName"></result>
         </collection>
 
         <collection property="artist" ofType="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" column="repArtistId">
             <result property="artistId" column="repArtistId"></result>
-            <result property="artistNm" column="repArtistNm"></result>
+            <result property="artistName" column="repArtistName"></result>
         </collection>
     </resultMap>
 
@@ -213,4 +213,59 @@
 		 WHERE
 			character_no = #{characterNo}
 	</select>
+
+    <select id="selectMyRecentTrackList" resultMap="mostListenedTrackResultMap">
+        SELECT a.member_no memberNo,
+               b.track_id trackId,
+               b.track_nm trackName,
+               b.track_play_tm playTime,
+               IF(b.title_yn = 'Y' , 'Y', 'N') titleYn,
+               b.adult_auth_need_track_yn adultAuthYn,
+               b.track_subtrct_qty subtractQty,
+               IF(b.streaming_premium_yn = 'Y' OR b.pps_yn = 'Y', 'Y', 'N') holdbackYn,
+               b.agency_id agencyId,
+               b.create_dtime createDateTime,
+               b.update_dtime updateDateTime,
+               c.album_id albumId,
+               c.album_img_size size,
+               CONCAT(c.album_img_url, '?updateDate=', unix_timestamp(c.update_dtime)) AS url,
+               c.update_dtime albumImgUpdateDateTime,
+               a.last_listen_dtime lastListenDateTime,
+               e.artist_id artistId,
+               e.artist_nm artistName,
+               b.disp_status_yn displayYn,
+               IF(f.track_id is null, 'N', 'Y') likeYn,
+               g.title albumTitle,
+               h.artist_id repArtistId,
+               h.artist_nm repArtistName
+          FROM ( SELECT member_no,
+                        character_no,
+                        track_id,
+                        last_listen_dtime
+                   FROM tb_member_track_listen_hist
+                  WHERE character_no = #{characterNo}
+                  ORDER BY last_listen_dtime DESC
+                  LIMIT #{pageable.offset}, #{pageable.pageSize} ) a
+          JOIN tb_track b
+            ON a.track_id = b.track_id
+          LEFT JOIN	tb_album_img c
+            ON b.album_id = c.album_id
+          LEFT JOIN	ted_trackartist as d
+            ON b.track_id = d.track_id AND d.rp_yn = 'Y' and d.db_sts = 'A'
+          LEFT JOIN	ted_artist e
+            ON d.artist_id = e.artist_id
+          LEFT JOIN tb_map_track_like f
+            ON a.track_id = f.track_id AND a.member_no = f.member_no
+          LEFT JOIN ted_album g
+            ON b.album_id = g.album_id
+          LEFT JOIN ted_artist h
+            ON b.reprsnt_artist_id = h.artist_id
+         WHERE b.disp_status_yn ='Y'
+         ORDER BY lastListenDateTime DESC, d.listorder ASC
+    </select>
+    <select id="selectMyRecentTrackTotalCount" resultType="long">
+        SELECT COUNT(*)
+          FROM tb_member_track_listen_hist
+         WHERE character_no = #{characterNo}
+    </select>
 </mapper>

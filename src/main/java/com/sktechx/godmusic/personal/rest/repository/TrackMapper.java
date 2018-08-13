@@ -39,5 +39,6 @@ public interface TrackMapper {
     List<MostListenedTrackDto> selectMostListenedTrackList(@Param("characterNo") Long characterNo, @Param("pageable") Pageable pageable);
     long selectMostListenedTrackTotalCount(@Param("characterNo") Long characterNo);
 
-
+    List<MostListenedTrackDto> selectMyRecentTrackList(@Param("characterNo") Long characterNo, @Param("pageable") Pageable pageable);
+    long selectMyRecentTrackTotalCount(@Param("characterNo") Long characterNo);
 }
