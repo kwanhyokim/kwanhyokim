@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -31,7 +32,6 @@ import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentTyp
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ServiceGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
@@ -101,9 +101,9 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     }
 
     @Override
-    public List<ImageDto> getPanelBackgroundImageList(RecommendPanelType recommendPanelType , OsType osType){
+    public List<ImageInfo> getPanelBackgroundImageList(RecommendPanelType recommendPanelType , OsType osType){
         //TODO : 패널 별 기본 배경이미지 GET ( 캐시 관리 필요 )
-        return Arrays.asList(new ImageDto(),new ImageDto());
+        return Arrays.asList(new ImageInfo(),new ImageInfo());
     }
 
 
@@ -117,7 +117,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             //TODO : mockup 데이터 생성
             ChartDto liveChart = chartService.getLiveChart();
 
-            liveChart.setChartType(ChartType.RTIME);
+            liveChart.setChartType(ChartType.HOURLY);
             ChartPanel liveChartPanel = new ChartPanel(RecommendPanelType.LIVE_CHART, liveChart, makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_top_100_1.png"));
             mockPanelList.add(liveChartPanel);
 
@@ -204,7 +204,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             ChartDto kidsChart = chartService.getKidsChart();
             kidsChart.setChartId(2L);
             kidsChart.setChartNm("Kids");
-            liveChart.setChartType(ChartType.RTIME);
+            liveChart.setChartType(ChartType.HOURLY);
             ChartPanel kidsChartPanel = new ChartPanel(RecommendPanelType.KIDS_CHART, kidsChart, makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_kids_1.png"));
             mockPanelList.add(kidsChartPanel);
 
@@ -251,36 +251,36 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         return genre;
     }
 
-    private List<ImageDto> makePanelBackGroundImageList(String url){
-        List<ImageDto> artistImgList = new ArrayList<>();
-        ImageDto image = new ImageDto();
-        image.setSize(75);
+    private List<ImageInfo> makePanelBackGroundImageList(String url){
+        List<ImageInfo> artistImgList = new ArrayList<>();
+        ImageInfo image = new ImageInfo();
+        image.setSize(new Long(75));
         image.setUrl(url);
 
         artistImgList.add(image);
-        image = new ImageDto();
-        image.setSize(140);
+        image = new ImageInfo();
+        image.setSize(new Long(140));
         image.setUrl(url);
         artistImgList.add(image);
 
-        image = new ImageDto();
-        image.setSize(200);
+        image = new ImageInfo();
+        image.setSize(new Long(200));
         image.setUrl(url);
         artistImgList.add(image);
 
 
-        image = new ImageDto();
-        image.setSize(350);
+        image = new ImageInfo();
+        image.setSize(new Long(350));
         image.setUrl(url);
         artistImgList.add(image);
 
-        image = new ImageDto();
-        image.setSize(500);
+        image = new ImageInfo();
+        image.setSize(new Long(500));
         image.setUrl(url);
         artistImgList.add(image);
 
-        image = new ImageDto();
-        image.setSize(1000);
+        image = new ImageInfo();
+        image.setSize(new Long(1000));
         image.setUrl(url);
         artistImgList.add(image);
 

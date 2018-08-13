@@ -16,10 +16,10 @@ import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentTyp
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.artist.ArtistPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.ListenMoodPopularChannelPanel;
@@ -65,7 +65,7 @@ public abstract class PanelSignAssembly extends PanelAssembly{
         if(!CollectionUtils.isEmpty(rcmmdIdList)){
             List<RecommendTrackDto> recommendSimilarTrackList =  recommendMapper.selectRecommendSimilarTrackListByIdList(rcmmdIdList,limitSize);
             if(!CollectionUtils.isEmpty(recommendSimilarTrackList)){
-                List<ImageDto> bgImgList = recommendPanelService.getPanelBackgroundImageList(RecommendPanelType.PREFER_SIMILAR_TRACK,personalPhaseMeta.getOsType());
+                List<ImageInfo> bgImgList = recommendPanelService.getPanelBackgroundImageList(RecommendPanelType.PREFER_SIMILAR_TRACK,personalPhaseMeta.getOsType());
                 recommendSimilarTrackList.stream().forEach(recommendTrack->{
                     try{
                         panelList.add(new PreferSimilarTrackPanel(RecommendPanelType.PREFER_SIMILAR_TRACK,recommendTrack,bgImgList));
@@ -164,7 +164,7 @@ public abstract class PanelSignAssembly extends PanelAssembly{
         if(!CollectionUtils.isEmpty(rcmmdIdList)){
             List<ChnlDto> popularChannelList = recommendMapper.selectRecommendListenMoodChannelListByIdList(rcmmdIdList , limitSize);
             if(!CollectionUtils.isEmpty(popularChannelList)){
-                List<ImageDto> bgImgList = recommendPanelService.getPanelBackgroundImageList(RecommendPanelType.POPULAR_CHANNEL , personalPhaseMeta.getOsType());
+                List<ImageInfo> bgImgList = recommendPanelService.getPanelBackgroundImageList(RecommendPanelType.POPULAR_CHANNEL , personalPhaseMeta.getOsType());
                 popularChannelList
                         .stream()
                         .filter(Objects::nonNull)
@@ -187,7 +187,7 @@ public abstract class PanelSignAssembly extends PanelAssembly{
         if(!CollectionUtils.isEmpty(rcmmdIdList)){
             List<RecommendTrackDto> recommendPreferGenreSimilarTrackList =  recommendMapper.selectRecommendPreferGenreSimilarTrackListByIdList(rcmmdIdList , limitSize);
             if(!CollectionUtils.isEmpty(recommendPreferGenreSimilarTrackList)){
-                List<ImageDto> bgImgList = recommendPanelService.getPanelBackgroundImageList(RecommendPanelType.PREFER_GENRE_SIMILAR_TRACK,personalPhaseMeta.getOsType());
+                List<ImageInfo> bgImgList = recommendPanelService.getPanelBackgroundImageList(RecommendPanelType.PREFER_GENRE_SIMILAR_TRACK,personalPhaseMeta.getOsType());
                 recommendPreferGenreSimilarTrackList
                         .stream()
                         .filter(Objects::nonNull)
@@ -207,7 +207,7 @@ public abstract class PanelSignAssembly extends PanelAssembly{
         ChartDto chartDto = chartMapper.selectMainPanelChart(chartType);
         RecommendPanelType chartPanelType = RecommendPanelType.fromCode(chartType);
 
-        List<ImageDto> bgImgList = recommendPanelService.getPanelBackgroundImageList(chartPanelType , osType);
+        List<ImageInfo> bgImgList = recommendPanelService.getPanelBackgroundImageList(chartPanelType , osType);
         if(chartDto != null){
             try{
                 return new ChartPanel(chartPanelType,chartDto,bgImgList);

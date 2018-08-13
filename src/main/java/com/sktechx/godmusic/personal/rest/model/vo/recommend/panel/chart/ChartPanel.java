@@ -15,7 +15,7 @@ import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
 import org.springframework.util.StringUtils;
@@ -32,7 +32,7 @@ public class ChartPanel extends Panel {
     @JsonIgnore
     private ChartDto chart;
 
-    public ChartPanel(RecommendPanelType panelType , ChartDto chart, List<ImageDto> bgImgList) throws CommonBusinessException {
+    public ChartPanel(RecommendPanelType panelType , ChartDto chart, List<ImageInfo> bgImgList) throws CommonBusinessException {
         super(panelType);
         this.chart = neverNullChart(chart);
         this.imgList = bgImgList;

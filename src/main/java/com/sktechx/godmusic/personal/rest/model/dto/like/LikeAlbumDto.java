@@ -1,6 +1,7 @@
 package com.sktechx.godmusic.personal.rest.model.dto.like;
 
-import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,8 +22,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LikeAlbumDto {
+	@JsonProperty("id")
 	@ApiModelProperty(required = true, example = "2834", value = "아이디")
 	private Long albumId;
+	@JsonProperty("title")
 	@ApiModelProperty(required = true, example = "김경호 6집 (The Life)", value = "제목")
 	private String albumTitle;
 	@ApiModelProperty(value = "아티스트 ID")
@@ -34,5 +37,5 @@ public class LikeAlbumDto {
 	@ApiModelProperty(required = true, example = "정규", value = "앨범 타입")
 	private String albumTypeStr;
 	@ApiModelProperty(value = "앨범 이미지")
-	private List<ImageDto> imgList;
+	private List<ImageInfo> imgList;
 }

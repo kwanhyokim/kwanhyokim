@@ -23,7 +23,7 @@
             <result property="updateDtime" column="trackUpdateDtime" />
             <result property="renewDtime" column="trackRenewDtime" />
         </collection>
-        <collection property="imgList" ofType="com.sktechx.godmusic.personal.rest.model.dto.ImageDto" autoMapping="true">
+        <collection property="imgList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" autoMapping="true">
             <id property="size" column="img_size"/>
             <id property="url" column="img_url"/>
         </collection>

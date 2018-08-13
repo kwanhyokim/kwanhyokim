@@ -15,6 +15,304 @@
 
 <mapper namespace="com.sktechx.godmusic.personal.rest.repository.LikeMapper" >
 
+    <resultMap type="com.sktechx.godmusic.personal.rest.model.dto.TrackDto" id="trackResultMap" autoMapping="true">
+        <id property="trackId" column="trackId" />
+        <collection property="album" resultMap="com.sktechx.godmusic.personal.rest.repository.AlbumMapper.albumResultMap"/>
+        <collection property="artistList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" column="artistId">
+            <result property="artistId" column="artistId"></result>
+            <result property="artistNm" column="artistNm"></result>
+        </collection>
+        <collection property="artist" ofType="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" column="repArtistId">
+            <result property="artistId" column="repArtistId"></result>
+            <result property="artistNm" column="repArtistNm"></result>
+        </collection>
+    </resultMap>
+
+    <resultMap id="albumResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.AlbumDto" autoMapping="true">
+        <id property="albumId" column="albumId"/>
+        <collection property="imgList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" column="albumId" autoMapping="true">
+            <result property="size" column="size" />
+            <result property="url" column="url" />
+            <result property="updateDateTime" column="albumImgUpdateDateTime" />
+        </collection>
+
+        <collection property="artistList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" column="albumArtistId">
+            <result property="artistId" column="albumArtistId"></result>
+            <result property="artistName" column="albumArtistName"></result>
+        </collection>
+
+        <collection property="artist" ofType="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" column="albumRepArtistId">
+            <result property="artistId" column="albumRepArtistId"></result>
+            <result property="artistName" column="albumRepArtistName"></result>
+        </collection>
+    </resultMap>
+
+    <resultMap id="artistResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" autoMapping="true">
+        <id property="artistId" column="artistId"/>
+        <collection property="imgList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" column="artistId" autoMapping="true">
+            <result property="size" column="size" />
+            <result property="url" column="url" />
+            <result property="updateDateTime" column="artistImgUpdateDateTime" />
+        </collection>
+    </resultMap>
+
+    <resultMap id="playlistResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.PlayListDto" autoMapping="true">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+
+        <collection property="imgList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" autoMapping="true">
+            <id property="size" column="size"/>
+            <id property="url" column="url"/>
+        </collection>
+    </resultMap>
+
+    <select id="getLikeTrackByLikeType" resultMap="trackResultMap">
+        SELECT
+              B.TRACK_ID                                                                 AS trackId
+            , A.DISP_SN                                                                  AS trackSn
+            , B.TRACK_NM                                                                 AS trackName
+            , B.ALBUM_ID                                                                 AS albumId
+            , B.DISP_STATUS_YN                                                           AS displayYn
+            , B.AGENCY_ID                                                                AS agencyId
+            , IF(B.TITLE_YN = 'Y', 'Y', 'N')                                             AS titleYn
+            , B.CREATE_DTIME                                                             AS createDateTime
+            , B.UPDATE_DTIME                                                             AS updateDateTime
+            , E.ALBUM_IMG_SIZE                                                           AS size
+            , CONCAT(E.ALBUM_IMG_URL, '?updateDate=', unix_timestamp(E.UPDATE_DTIME))    AS url
+            , 'Y'                                                                        AS likeYn
+            , IF(B.STREAMING_PREMIUM_YN = 'Y' OR B.PPS_YN = 'Y', 'Y', 'N')               AS holdbackYn
+            , IF(B.ADULT_AUTH_NEED_TRACK_YN = 'Y', 'Y', 'N')                             AS adultAuthYn
+            , D.ARTIST_ID                                                                AS artistId
+            , D.ARTIST_NM                                                                AS artistName
+            , F.TITLE                                                                    AS albumTitle
+            , G.ARTIST_ID                                                                AS repArtistId
+            , G.ARTIST_NM                                                                AS repArtistName
+        FROM
+            (
+                SELECT
+                    LIKE_TYPE_ID
+                    , DISP_SN
+                    , UPDATE_DTIME
+                FROM TB_CHARACTER_LIKE
+                WHERE CHARACTER_NO = #{characterNo}
+                      AND LIKE_TYPE = 'TRACK'
+            <!--<if test="pageable != null">-->
+                <!--ORDER BY DISP_SN ASC,-->
+                    <!--UPDATE_DTIME ASC-->
+                    <!--LIMIT-->
+                    <!--#{pageable.offset} ,-->
+                    <!--#{pageable.pageSize}-->
+            <!--</if>-->
+            ) A
+            INNER JOIN TB_TRACK B
+                ON A.LIKE_TYPE_ID = B.TRACK_ID
+            LEFT OUTER JOIN TED_TRACKARTIST C
+                ON B.TRACK_ID = C.TRACK_ID AND C.RP_YN = 'Y' AND C.DB_STS = 'A'
+            LEFT OUTER JOIN TED_ARTIST D
+                ON C.ARTIST_ID = D.ARTIST_ID
+            LEFT OUTER JOIN TB_ALBUM_IMG E
+                ON B.ALBUM_ID = E.ALBUM_ID
+            LEFT OUTER JOIN TED_ALBUM F
+                ON B.ALBUM_ID = F.ALBUM_ID
+            LEFT OUTER JOIN TED_ARTIST G
+                ON B.REPRSNT_ARTIST_ID = G.ARTIST_ID
+        WHERE
+            B.DISP_STATUS_YN = 'Y'
+        ORDER BY A.DISP_SN ASC, A.UPDATE_DTIME ASC, C.LISTORDER ASC
+    </select>
+
+    <select id="getLikeAlbumByLikeType" resultMap="albumResultMap">
+        SELECT
+              A.ALBUM_ID                                                                                              AS  albumId
+            , A.TITLE                                                                                                 AS  albumTitle
+            , A.RELEASE_YMD                                                                                           AS  releaseYmd
+            , IF(A.ALBUM_TP = 'MF', '', A.ALBUM_TP)                                                                   AS  albumType
+            , C.ARTIST_ID                                                                                             AS  albumArtistId
+            , C.ARTIST_NM                                                                                             AS  albumArtistName
+            , IFNULL(GROUP_CONCAT(DISTINCT (F.STYLE_NM) ORDER BY F.STYLE_ID ASC SEPARATOR ','), '앨범 유형 정보가 없습니다.') AS genreStyle
+            , D.ALBUM_IMG_SIZE                                                                                        AS  size
+            , CONCAT(D.ALBUM_IMG_URL, '?updateDate=', unix_timestamp(D.UPDATE_DTIME))                                 AS  url
+            , G.ARTIST_ID                                                                                             AS  albumRepArtistId
+            , G.ARTIST_NM                                                                                             AS  albumRepArtistName
+            , 'Y'                                                                                                     AS  likeYn
+        FROM
+            (
+                SELECT
+                    LIKE_TYPE_ID
+                    , DISP_SN
+                    , UPDATE_DTIME
+                FROM TB_CHARACTER_LIKE
+                WHERE CHARACTER_NO = #{characterNo}
+                      AND LIKE_TYPE = 'ALBUM'
+            <!--<if test="pageable != null">-->
+                <!--ORDER BY DISP_SN ASC,-->
+                    <!--UPDATE_DTIME ASC-->
+                    <!--LIMIT-->
+                    <!--#{pageable.offset} ,-->
+                    <!--#{pageable.pageSize}-->
+            <!--</if>-->
+            ) L
+            INNER JOIN TED_ALBUM A
+                ON L.LIKE_TYPE_ID = A.ALBUM_ID
+            LEFT OUTER JOIN TED_ALBUMARTIST B
+                ON A.ALBUM_ID = B.ALBUM_ID
+            LEFT OUTER JOIN TED_ARTIST C
+                ON B.ARTIST_ID = C.ARTIST_ID
+            LEFT OUTER JOIN TB_ALBUM_IMG D
+                ON A.ALBUM_ID = D.ALBUM_ID
+            LEFT OUTER JOIN TED_ALBUMSTYLE E
+                ON A.ALBUM_ID = E.ALBUM_ID
+            LEFT OUTER JOIN TED_STYLE F
+                ON E.STYLE_ID = F.STYLE_ID
+            LEFT OUTER JOIN TED_ARTIST G
+                ON G.ARTIST_ID = A.ARTIST_ID
+        WHERE
+            A.DISP_STATUS_YN = 'Y'
+        GROUP BY ALBUMID, ALBUMARTISTID, SIZE, ALBUMTITLE, RELEASEYMD, ALBUMTYPE, ALBUMARTISTNAME, URL, LIKEYN,
+            ALBUMREPARTISTID, ALBUMREPARTISTNAME
+        ORDER BY L.DISP_SN ASC, L.UPDATE_DTIME ASC
+    </select>
+
+    <select id="getLikeArtistByLikeType" resultMap="artistResultMap">
+        SELECT
+              A.ARTIST_ID                                                                             AS artistId
+            , A.ARTIST_NM                                                                             AS artistName
+            , A.SEX_CD                                                                                AS genderCd
+            , A.GRP_CD                                                                                AS artistGroupType
+            , B.SIZE                                                                                  AS size
+            , CONCAT(B.URL, '?updateDate=', unix_timestamp(B.UPDATE_DTIME))                           AS url
+            , IFNULL(SUBSTR(A.ACT_START_YMD, 1, 4), NULL)                                             AS actStartYmd
+            , IFNULL(GROUP_CONCAT(DISTINCT (D.STYLE_NM) ORDER BY D.STYLE_ID ASC SEPARATOR ','), NULL) AS artistStyle
+            , 'Y'                                                                                     AS likeYn
+        FROM
+            (
+                SELECT
+                    LIKE_TYPE_ID
+                    , DISP_SN
+                    , UPDATE_DTIME
+                FROM TB_CHARACTER_LIKE
+                WHERE CHARACTER_NO = 12
+                      AND LIKE_TYPE = 'ARTIST'
+            <!--<if test="pageable != null">-->
+                <!--ORDER BY DISP_SN ASC,-->
+                    <!--UPDATE_DTIME ASC-->
+                    <!--LIMIT-->
+                    <!--#{pageable.offset} ,-->
+                    <!--#{pageable.pageSize}-->
+            <!--</if>-->
+            ) L
+            INNER JOIN TED_ARTIST A
+                ON L.LIKE_TYPE_ID = A.ARTIST_ID
+            LEFT OUTER JOIN TED_ARTISTIMAGE B
+                ON A.ARTIST_ID = B.ARTIST_ID
+            LEFT OUTER JOIN TED_ARTISTSTYLE C
+                ON A.ARTIST_ID = C.ARTIST_ID
+            LEFT OUTER JOIN TED_STYLE D
+                ON C.STYLE_ID = D.STYLE_ID
+        GROUP BY ARTISTID, ARTISTNAME, GENDERCD, ARTISTGROUPTYPE, SIZE, URL, ACTSTARTYMD, LIKEYN
+        ORDER BY L.DISP_SN ASC, L.UPDATE_DTIME ASC
+    </select>
+
+    <select id="getLikePlaylistByLikeType" resultMap="playlistResultMap">
+        SELECT
+            id
+            , name
+            , chartType
+            , albumId
+            , url
+            , size
+            , trackCount
+            , createDateTime
+            , updateDateTime
+            , registDateTime
+            , playTime
+            , likeType
+            , dispSn
+            , likeUpdateDtime
+        FROM (
+                 SELECT
+                       CL.CHART_ID                                                   AS id
+                     , CL.CHART_NM                                                   AS name
+                     , CL.CHART_TYPE                                                 AS chartType
+                     , CL.ALBUM_ID                                                   AS albumId
+                     , CONCAT(I.URL, '?updateDate=', unix_timestamp(I.UPDATE_DTIME)) AS url
+                     , I.SIZE                                                        AS size
+                     , CL.MUSIC_CONTENT_CNT                                          AS trackCount
+                     , CL.CREATE_DTIME                                               AS createDateTime
+                     , CL.UPDATE_DTIME                                               AS updateDateTime
+                     , ''                                                            AS registDateTime
+                     , ''                                                            AS playTime
+                     , 'CHART'                                                       AS likeType
+                     , CL.DISP_SN                                                    AS dispSn
+                     , CL.UPDATE_DTIME                                               AS likeUpdateDtime
+                 FROM
+                     (
+                         SELECT
+                             A.CHART_ID
+                             , A.CHART_NM
+                             , A.CHART_TYPE
+                             , C.ALBUM_ID
+                             , A.MUSIC_CONTENT_CNT
+                             , A.CREATE_DTIME
+                             , A.UPDATE_DTIME
+                             , L.DISP_SN
+                             , L.UPDATE_DTIME AS LIKE_UPDATE_DTIME
+                         FROM
+                             (
+                                 SELECT
+                                     LIKE_TYPE_ID
+                                     , DISP_SN
+                                     , UPDATE_DTIME
+                                 FROM TB_CHARACTER_LIKE
+                                 WHERE CHARACTER_NO = 12
+                                       AND LIKE_TYPE = 'CHART') L INNER JOIN TB_CHART A
+                                 ON L.LIKE_TYPE_ID = A.CHART_ID
+                             LEFT OUTER JOIN TB_CHART_MUSIC_CONTENT B
+                                 ON A.CHART_ID = B.CHART_ID
+                             LEFT OUTER JOIN TB_TRACK C
+                                 ON B.MUSIC_CONTENT_ID = C.TRACK_ID AND B.DISP_SN = 1
+                         WHERE
+                             MUSIC_CONTENT_TYPE = 'TRACK'
+                     ) CL
+                     INNER JOIN TED_ALBUMIMAGE I
+                         ON CL.ALBUM_ID = I.ALBUM_ID
+                 UNION ALL
+                 SELECT
+                       A.CHNL_ID                                                               AS id
+                     , A.CHNL_NM                                                               AS name
+                     , ''                                                                      AS chartType
+                     , ''                                                                      AS albumId
+                     , CONCAT(I.ALBUM_IMG_URL, '?updateDate=', unix_timestamp(I.UPDATE_DTIME)) AS url
+                     , I.ALBUM_IMG_SIZE                                                        AS size
+                     , A.TRACK_CNT                                                             AS trackCount
+                     , A.CREATE_DTIME                                                          AS createDateTime
+                     , A.UPDATE_DTIME                                                          AS updateDateTime
+                     , A.ES_ALBUM_APPLY_DTIME                                                  AS registDateTime
+                     , A.CHNL_PLAY_TM                                                          AS playTime
+                     , 'CHNL'                                                                  AS likeType
+                     , L.DISP_SN                                                               AS dispSn
+                     , L.UPDATE_DTIME                                                          AS likeUpdateDtime
+                 FROM
+                     (
+                         SELECT
+                             LIKE_TYPE_ID
+                             , DISP_SN
+                             , UPDATE_DTIME
+                         FROM TB_CHARACTER_LIKE
+                         WHERE CHARACTER_NO = 12
+                               AND LIKE_TYPE = 'CHNL') L
+                     INNER JOIN TB_CHNL A
+                         ON L.LIKE_TYPE_ID = A.CHNL_ID
+                     INNER JOIN TB_ALBUM_IMG I
+                         ON A.ALBUM_ID = I.ALBUM_ID
+                 WHERE
+                     A.DISP_STATUS_TYPE = 'Y') AA
+        ORDER BY AA.DISPSN ASC, AA.LIKEUPDATEDTIME ASC
+        <!--LIMIT-->
+        <!--#{pageable.offset} ,-->
+        <!--#{pageable.pageSize}-->
+    </select>
+
     <select id="getLikeByLikeType" resultType="com.sktechx.godmusic.personal.rest.model.vo.like.LikeVo">
         SELECT
             CHARACTER_NO

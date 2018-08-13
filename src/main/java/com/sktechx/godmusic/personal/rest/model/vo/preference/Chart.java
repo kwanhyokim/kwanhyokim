@@ -62,7 +62,7 @@ public class Chart {
         @ApiModelProperty(value = "이미지URL")
         private String url;
         @ApiModelProperty(value = "이미지사이즈")
-        private Integer size;
+        private Long size;
     }
 
     @Data

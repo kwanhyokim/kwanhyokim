@@ -12,8 +12,8 @@ package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track;
 
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
-import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class PreferGenreSimilarTrackPanel extends TrackPanel {
 
-    public PreferGenreSimilarTrackPanel(RecommendPanelType panelType, RecommendTrackDto recommendTrackDto, List<ImageDto> bgImgList) throws CommonBusinessException {
+    public PreferGenreSimilarTrackPanel(RecommendPanelType panelType, RecommendTrackDto recommendTrackDto, List<ImageInfo> bgImgList) throws CommonBusinessException {
         super(panelType , "Mix Tape" , neverRecommdnTrackNull(recommendTrackDto).getSvcGenreDto().getSvcGenreNm(),recommendTrackDto ,bgImgList);
     }
 

@@ -43,7 +43,7 @@ public class ArtistPanel extends Panel{
         ArtistDto representationArtist = neverNullArtist(recommendArtistDto);
 
         this.title = "Musician focus";
-        this.subTitle = representationArtist.getArtistNm();
+        this.subTitle = representationArtist.getArtistName();
         this.imgList = representationArtist.getImgList();
         this.content = createPanelContent();
 

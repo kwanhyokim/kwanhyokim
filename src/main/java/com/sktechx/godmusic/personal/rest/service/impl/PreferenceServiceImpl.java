@@ -107,11 +107,11 @@ public class PreferenceServiceImpl implements PreferenceService {
                     .flatMap(trackList -> Optional.ofNullable(trackList.get(0)))
                     .flatMap(track -> Optional.ofNullable(track.getAlbum()))
                     .flatMap(album -> Optional.ofNullable(album.getImgList()))
-                    .ifPresent(imageDtoList -> {
-                        albumImgList.addAll(imageDtoList.stream()
-                                .map(imageDto -> Chart.AlbumImg.builder()
-                                        .size(imageDto.getSize())
-                                        .url(imageDto.getUrl())
+                    .ifPresent(imageInfos -> {
+                        albumImgList.addAll(imageInfos.stream()
+                                .map(imageInfo -> Chart.AlbumImg.builder()
+                                        .size(imageInfo.getSize())
+                                        .url(imageInfo.getUrl())
                                         .build())
                                 .collect(Collectors.toList()));
                     });
@@ -135,19 +135,19 @@ public class PreferenceServiceImpl implements PreferenceService {
             List<Artist.ArtistImg> artistImgList = new ArrayList<>();
 
             Optional.ofNullable(artistDto.getImgList())
-                    .ifPresent(imageDtoList -> {
+                    .ifPresent(imageInfos -> {
                         artistImgList.addAll(
-                                imageDtoList.stream()
-                                        .map(imageDto -> Artist.ArtistImg.builder()
-                                                .size(imageDto.getSize())
-                                                .url(imageDto.getUrl())
+                                imageInfos.stream()
+                                        .map(imageInfo -> Artist.ArtistImg.builder()
+                                                .size(imageInfo.getSize())
+                                                .url(imageInfo.getUrl())
                                                 .build())
                                         .collect(Collectors.toList()));
                     });
 
             Artist artist = Artist.builder()
                     .artistId(artistDto.getArtistId())
-                    .artistNm(artistDto.getArtistNm())
+                    .artistNm(artistDto.getArtistName())
                     .albumImgList(artistImgList)
                     .build();
 

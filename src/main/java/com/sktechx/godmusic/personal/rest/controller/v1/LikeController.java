@@ -7,11 +7,12 @@ import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.vo.like.*;
 import com.sktechx.godmusic.personal.rest.service.LikeService;
 import com.sktechx.godmusic.personal.rest.validate.Validator;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 
@@ -31,19 +32,22 @@ public class LikeController {
 	private LikeService likeService;
 
 	@ApiOperation(value = "좋아요 타입별 목록 by Kobe ( 기존 /v2/my/album/like/list , /v2/my/track/like/list , /v2/my/channel/like/list, /v2/my/artist/like/list GET )")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "page", required = false, dataType = "int", paramType = "query", value = "페이지", defaultValue = "1"),
+			@ApiImplicitParam(name = "size", required = false, dataType = "int", paramType = "query", value = "사이즈", defaultValue = "1000")
+	})
 	@GetMapping("/type/{likeType}/list")
-	public CommonApiResponse<ListDto<List<LikeListResponse>>> getLikeListByLikeType(
+	public CommonApiResponse getLikeListByLikeType(
 			@ApiParam(defaultValue = "ALBUM",
 					value = "좋아하는 타입(PLAYLIST: 플레이 리스트 (채널+차트), ALBUM: 앨범, ARTIST: 아티스트, TRACK: 곡)",
-					allowableValues = "PLAYLIST, ALBUM, ARTIST, TRACK") @PathVariable String likeType
+					allowableValues = "PLAYLIST, ALBUM, ARTIST, TRACK") @PathVariable String likeType,
+			@ApiIgnore @PageableDefault(size=1000, page=0) Pageable pageable
 	) {
 		GMContext currentContext = GMContext.getContext();
 
-//		Validator.loginValidate(currentContext);
+		Validator.loginValidate(currentContext);
 
-//		return new CommonApiResponse(likeService.getLikeListByLikeType(likeType, currentContext.getCharacterNo()));
-		ListDto<List<LikeListResponse>> response = likeService.getLikeListByLikeType(likeType, Long.parseLong("123"));
-		return new CommonApiResponse(response);
+		return new CommonApiResponse(likeService.getLikeListByLikeType(likeType, currentContext.getCharacterNo(), pageable));
 	}
 
 	@ApiOperation(value = "좋아요 여부 확인 by Kobe")

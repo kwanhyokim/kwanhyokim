@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
-import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.PanelOrderSnService;
 import io.swagger.annotations.ApiModel;
@@ -46,7 +46,7 @@ public abstract class Panel {
 
     @Getter
     @ApiModelProperty(required = true, value = "패널 배경 이미지 리스트")
-    protected List<ImageDto> imgList;
+    protected List<ImageInfo> imgList;
 
     @Getter
     @ApiModelProperty(required = true, value = "패널 컨텐츠")

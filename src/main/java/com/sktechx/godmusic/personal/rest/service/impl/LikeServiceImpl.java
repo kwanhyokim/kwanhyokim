@@ -7,12 +7,10 @@ import com.sktechx.godmusic.personal.common.exception.InternalException;
 import com.sktechx.godmusic.personal.common.exception.NotFoundException;
 import com.sktechx.godmusic.personal.common.exception.ValidationException;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
-import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
-import com.sktechx.godmusic.personal.rest.model.dto.like.LikeAlbumDto;
-import com.sktechx.godmusic.personal.rest.model.dto.like.LikeArtistDto;
-import com.sktechx.godmusic.personal.rest.model.dto.like.LikePlaylistDto;
-import com.sktechx.godmusic.personal.rest.model.dto.like.LikeTrackDto;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
+import com.sktechx.godmusic.personal.rest.model.dto.AlbumDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
+import com.sktechx.godmusic.personal.rest.model.dto.PlayListDto;
+import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.like.*;
 import com.sktechx.godmusic.personal.rest.repository.LikeMapper;
 import com.sktechx.godmusic.personal.rest.service.LikeService;
@@ -22,11 +20,14 @@ import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -63,174 +64,46 @@ public class LikeServiceImpl implements LikeService {
 	private LikeMapper likeMapper;
 
 	@Override
-	public ListDto<List<LikeListResponse>> getLikeListByLikeType(String likeType, Long characterNo) {
-		List<LikeListResponse> likeListResponses = new ArrayList<>();
-		List<ImageDto> imageDtos = new ArrayList<>();
+	public PageImpl<?> getLikeListByLikeType(String likeType, Long characterNo, Pageable pageable) {
+		int totalCount = 0;
+
 		switch (likeType) {
-			case PLAYLIST :
-				imageDtos.add(new ImageDto().builder().size(75).url("http://asp-image.bugsm.co.kr/album/images/75/201178/20117815.jpg?updateDate=1504812601").build());
-				imageDtos.add(new ImageDto().builder().size(140).url("http://asp-image.bugsm.co.kr/album/images/140/201178/20117815.jpg?updateDate=1504812601").build());
-				imageDtos.add(new ImageDto().builder().size(200).url("http://asp-image.bugsm.co.kr/album/images/200/201178/20117815.jpg?updateDate=1504812601").build());
-				imageDtos.add(new ImageDto().builder().size(350).url("http://asp-image.bugsm.co.kr/album/images/350/201178/20117815.jpg?updateDate=1504812601").build());
-				imageDtos.add(new ImageDto().builder().size(500).url("http://asp-image.bugsm.co.kr/album/images/500/201178/20117815.jpg?updateDate=1504812601").build());
-				imageDtos.add(new ImageDto().builder().size(1000).url("http://asp-image.bugsm.co.kr/album/images/1000/201178/20117815.jpg?updateDate=1504812601").build());
-				likeListResponses.add(new LikeListResponse(new LikePlaylistDto().builder()
-						.playListId(new Long(18583))
-						.playListName("남들 몰래 듣고 싶은 인디")
-						.imgList(imageDtos)
-						.build(), new LikeVo().builder()
-						.characterNo(new Long(12))
-						.likeType("CHNL")
-						.likeTypeId(new Long(18583))
-						.dispSn(0)
-						.build()));
+			case TRACK:
+				List<TrackDto> trackDtos = likeMapper.getLikeTrackByLikeType(characterNo, pageable);
 
-				imageDtos = new ArrayList<>();
-				imageDtos.add(new ImageDto().builder().size(75).url("http://asp-image.bugsm.co.kr/album/images/75/6691/669152.jpg?updateDate=1509737410").build());
-				imageDtos.add(new ImageDto().builder().size(140).url("http://asp-image.bugsm.co.kr/album/images/140/6691/669152.jpg?updateDate=1509737410").build());
-				imageDtos.add(new ImageDto().builder().size(200).url("http://asp-image.bugsm.co.kr/album/images/200/6691/669152.jpg?updateDate=1509737410").build());
-				imageDtos.add(new ImageDto().builder().size(350).url("http://asp-image.bugsm.co.kr/album/images/350/6691/669152.jpg?updateDate=1509737410").build());
-				imageDtos.add(new ImageDto().builder().size(500).url("http://asp-image.bugsm.co.kr/album/images/500/6691/669152.jpg?updateDate=1509737410").build());
-				imageDtos.add(new ImageDto().builder().size(1000).url("http://asp-image.bugsm.co.kr/album/images/1000/6691/669152.jpg?updateDate=1509737410").build());
-				likeListResponses.add(new LikeListResponse(new LikePlaylistDto().builder()
-						.playListId(new Long(18584))
-						.playListName("감성이 몽글몽글 귀르가즘 제대로인 감성팝")
-						.imgList(imageDtos)
-						.build(), new LikeVo().builder()
-						.characterNo(new Long(12))
-						.likeType("CHART")
-						.likeTypeId(new Long(18584))
-						.dispSn(1)
-						.build()));
-				break;
-			case ALBUM :
-				imageDtos.add(new ImageDto().builder().size(75).url("http://asp-image.bugsm.co.kr/album/images/75/7035/703573.jpg?updateDate=1516303811").build());
-				imageDtos.add(new ImageDto().builder().size(140).url("http://asp-image.bugsm.co.kr/album/images/140/7035/703573.jpg?updateDate=1516303811").build());
-				imageDtos.add(new ImageDto().builder().size(200).url("http://asp-image.bugsm.co.kr/album/images/200/7035/703573.jpg?updateDate=1516303811").build());
-				imageDtos.add(new ImageDto().builder().size(350).url("http://asp-image.bugsm.co.kr/album/images/350/7035/703573.jpg?updateDate=1516303811").build());
-				imageDtos.add(new ImageDto().builder().size(500).url("http://asp-image.bugsm.co.kr/album/images/500/7035/703573.jpg?updateDate=1516303811").build());
-				imageDtos.add(new ImageDto().builder().size(1000).url("http://asp-image.bugsm.co.kr/album/images/1000/7035/703573.jpg?updateDate=1516303811").build());
-				likeListResponses.add(new LikeListResponse(new LikeAlbumDto().builder()
-						.albumId(new Long(703573))
-						.albumTitle("Sick Boy")
-						.albumTypeStr("정규")
-						.artistId(new Long(80143014))
-						.artistName("The Chainsmokers(체인스모커스)")
-						.imgList(imageDtos)
-						.build(), new LikeVo().builder()
-						.characterNo(new Long(12))
-						.likeType("ALBUM")
-						.likeTypeId(new Long(703573))
-						.dispSn(0)
-						.build()));
+				if (CollectionUtils.isEmpty(trackDtos)) throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
 
-				imageDtos = new ArrayList<>();
-				imageDtos.add(new ImageDto().builder().size(75).url("http://asp-image.bugsm.co.kr/album/images/75/7154/715456.jpg?updateDate=1519414210").build());
-				imageDtos.add(new ImageDto().builder().size(140).url("http://asp-image.bugsm.co.kr/album/images/140/7154/715456.jpg?updateDate=1519414210").build());
-				imageDtos.add(new ImageDto().builder().size(200).url("http://asp-image.bugsm.co.kr/album/images/200/7154/715456.jpg?updateDate=1519414210").build());
-				imageDtos.add(new ImageDto().builder().size(350).url("http://asp-image.bugsm.co.kr/album/images/350/7154/715456.jpg?updateDate=1519414210").build());
-				imageDtos.add(new ImageDto().builder().size(500).url("http://asp-image.bugsm.co.kr/album/images/500/7154/715456.jpg?updateDate=1519414210").build());
-				imageDtos.add(new ImageDto().builder().size(1000).url("http://asp-image.bugsm.co.kr/album/images/1000/7154/715456.jpg?updateDate=1519414210").build());
-				likeListResponses.add(new LikeListResponse(new LikeAlbumDto().builder()
-						.albumId(new Long(715456))
-						.albumTitle("Good Morning")
-						.albumTypeStr("싱글")
-						.artistId(new Long(80168480))
-						.artistName("Max Frost(맥스 프로스트)")
-						.imgList(imageDtos)
-						.build(), new LikeVo().builder()
-						.characterNo(new Long(12))
-						.likeType("ALBUM")
-						.likeTypeId(new Long(715456))
-						.dispSn(1)
-						.build()));
-				break;
-			case ARTIST :
-				imageDtos.add(new ImageDto().builder().size(70).url("http://asp-image.bugsm.co.kr/artist/images/70/6/600.jpg?updateDate=1520323393").build());
-				imageDtos.add(new ImageDto().builder().size(75).url("http://asp-image.bugsm.co.kr/artist/images/75/6/600.jpg?updateDate=1520323393").build());
-				imageDtos.add(new ImageDto().builder().size(140).url("http://asp-image.bugsm.co.kr/artist/images/140/6/600.jpg?updateDate=1520323393").build());
-				imageDtos.add(new ImageDto().builder().size(200).url("http://asp-image.bugsm.co.kr/artist/images/200/6/600.jpg?updateDate=1520323393").build());
-				imageDtos.add(new ImageDto().builder().size(350).url("http://asp-image.bugsm.co.kr/artist/images/350/6/600.jpg?updateDate=1520323393").build());
-				imageDtos.add(new ImageDto().builder().size(500).url("http://asp-image.bugsm.co.kr/artist/images/500/6/600.jpg?updateDate=1520323393").build());
-				likeListResponses.add(new LikeListResponse(new LikeArtistDto().builder()
-						.artistId(new Long(600))
-						.artistName("98 Degrees(98 디그리스)")
-						.artistGroupTypeStr("그룹")
-						.genderCdStr("남성")
-						.imgList(imageDtos)
-						.build(), new LikeVo().builder()
-						.characterNo(new Long(12))
-						.likeType("ARTIST")
-						.likeTypeId(new Long(600))
-						.dispSn(0)
-						.build()));
+				totalCount = likeMapper.getLikeCountByLikeType(likeType, characterNo);
 
-				imageDtos = new ArrayList<>();
-				imageDtos.add(new ImageDto().builder().size(70).url("http://asp-image.bugsm.co.kr/artist/images/70/26/2600.jpg?updateDate=1520323393").build());
-				imageDtos.add(new ImageDto().builder().size(75).url("http://asp-image.bugsm.co.kr/artist/images/75/26/2600.jpg?updateDate=1520323393").build());
-				imageDtos.add(new ImageDto().builder().size(140).url("http://asp-image.bugsm.co.kr/artist/images/140/26/2600.jpg?updateDate=1520323393").build());
-				imageDtos.add(new ImageDto().builder().size(200).url("http://asp-image.bugsm.co.kr/artist/images/200/26/2600.jpg?updateDate=1520323393").build());
-				imageDtos.add(new ImageDto().builder().size(350).url("http://asp-image.bugsm.co.kr/artist/images/350/26/2600.jpg?updateDate=1520323393").build());
-				imageDtos.add(new ImageDto().builder().size(500).url("http://asp-image.bugsm.co.kr/artist/images/500/26/2600.jpg?updateDate=1520323393").build());
-				likeListResponses.add(new LikeListResponse(new LikeArtistDto().builder()
-						.artistId(new Long(2600))
-						.artistName("Mya(마야)")
-						.artistGroupTypeStr("솔로")
-						.genderCdStr("여성")
-						.imgList(imageDtos)
-						.build(), new LikeVo().builder()
-						.characterNo(new Long(12))
-						.likeType("ARTIST")
-						.likeTypeId(new Long(2600))
-						.dispSn(1)
-						.build()));
-				break;
-			case TRACK :
-				imageDtos.add(new ImageDto().builder().size(75).url("http://asp-image.bugsm.co.kr/album/images/75/3/311.jpg?updateDate=1498474016").build());
-				imageDtos.add(new ImageDto().builder().size(140).url("http://asp-image.bugsm.co.kr/album/images/140/3/311.jpg?updateDate=1498474016").build());
-				imageDtos.add(new ImageDto().builder().size(200).url("http://asp-image.bugsm.co.kr/album/images/200/3/311.jpg?updateDate=1498474016").build());
-				imageDtos.add(new ImageDto().builder().size(350).url("http://asp-image.bugsm.co.kr/album/images/350/3/311.jpg?updateDate=1498474016").build());
-				imageDtos.add(new ImageDto().builder().size(500).url("http://asp-image.bugsm.co.kr/album/images/500/3/311.jpg?updateDate=1498474016").build());
-				imageDtos.add(new ImageDto().builder().size(1000).url("http://asp-image.bugsm.co.kr/album/images/1000/3/311.jpg?updateDate=1498474016").build());
-				likeListResponses.add(new LikeListResponse(new LikeTrackDto().builder()
-						.trackId(Long.parseLong("511"))
-						.trackName("Give Me Just One Night (Una Noche)")
-						.artistId(Long.parseLong("600"))
-						.artistName("98 Degrees(98 디그리스)")
-						.imgList(imageDtos)
-						.build(), new LikeVo().builder()
-						.characterNo(new Long(12))
-						.likeType("TRACK")
-						.likeTypeId(new Long(511))
-						.dispSn(0)
-						.build()));
+				return new PageImpl<>(trackDtos, pageable, totalCount);
+			case ALBUM:
+				List<AlbumDto> albumDtos = likeMapper.getLikeAlbumByLikeType(characterNo, pageable);
 
-				imageDtos = new ArrayList<>();
+				if (CollectionUtils.isEmpty(albumDtos)) throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
 
-				imageDtos.add(new ImageDto().builder().size(75).url("http://asp-image.bugsm.co.kr/album/images/75/18/1886.jpg?updateDate=1498474016").build());
-				imageDtos.add(new ImageDto().builder().size(140).url("http://asp-image.bugsm.co.kr/album/images/140/18/1886.jpg?updateDate=1498474016").build());
-				imageDtos.add(new ImageDto().builder().size(200).url("http://asp-image.bugsm.co.kr/album/images/200/18/1886.jpg?updateDate=1498474016").build());
-				imageDtos.add(new ImageDto().builder().size(350).url("http://asp-image.bugsm.co.kr/album/images/350/18/1886.jpg?updateDate=1498474016").build());
-				imageDtos.add(new ImageDto().builder().size(500).url("http://asp-image.bugsm.co.kr/album/images/500/18/1886.jpg?updateDate=1498474016").build());
-				imageDtos.add(new ImageDto().builder().size(1000).url("http://asp-image.bugsm.co.kr/album/images/1000/18/1886.jpg?updateDate=1498474016").build());
-				likeListResponses.add(new LikeListResponse(new LikeTrackDto().builder()
-						.trackId(Long.parseLong("2088"))
-						.trackName("Turn It Up (Intro)")
-						.artistId(Long.parseLong("2600"))
-						.artistName("Mya(마야)")
-						.imgList(imageDtos)
-						.build(), new LikeVo().builder()
-						.characterNo(new Long(12))
-						.likeType("TRACK")
-						.likeTypeId(new Long(2088))
-						.dispSn(1)
-						.build()));
-				break;
-			default :
+				totalCount = likeMapper.getLikeCountByLikeType(likeType, characterNo);
+
+				return new PageImpl<>(albumDtos, pageable, totalCount);
+			case ARTIST:
+				List<ArtistDto> artistDtos = likeMapper.getLikeArtistByLikeType(characterNo, pageable);
+
+				if (CollectionUtils.isEmpty(artistDtos)) throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
+
+				totalCount = likeMapper.getLikeCountByLikeType(likeType, characterNo);
+
+				return new PageImpl<>(artistDtos, pageable, totalCount);
+			case  PLAYLIST:
+				List<PlayListDto> playListDtos = likeMapper.getLikePlaylistByLikeType(characterNo, pageable);
+
+				if (CollectionUtils.isEmpty(playListDtos)) throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
+
+				totalCount = likeMapper.getLikeCountByLikeType(CHANNEL, characterNo);
+				totalCount += likeMapper.getLikeCountByLikeType(CHART, characterNo);
+
+				return new PageImpl<>(playListDtos, pageable, totalCount);
+			default:
 				throw new CommonBusinessException(CommonErrorMessage.BAD_REQUEST);
 		}
-
-		return new ListDto<>(likeListResponses);
 	}
 
 	@Override
@@ -407,5 +280,4 @@ public class LikeServiceImpl implements LikeService {
 			throw new NotFoundException(message);
 		}
 	}
-
 }
