@@ -56,11 +56,6 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
     private RedisService redisService;
 
 
-    public static void main(String[] args){
-        String personalRecommendPhaseKey = String.format(PERSONAL_RECOMMEND_PHASE_KEY, 170L);
-
-        log.info(personalRecommendPhaseKey);
-    }
     @Override
     public PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType){
 

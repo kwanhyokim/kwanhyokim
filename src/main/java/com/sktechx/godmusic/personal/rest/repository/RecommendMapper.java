@@ -10,12 +10,12 @@
 
 package com.sktechx.godmusic.personal.rest.repository;
 
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -31,18 +31,28 @@ import java.util.List;
 public interface RecommendMapper {
     List<PersonalPanel> selectPersonalRecommendPanelMeta(@Param("characterNo") Long characterNo);
 
-    // 2-C 선호/아티스트 유사곡 패널
-    RecommendArtistDto selectRecommendArtistById(Long recommendArtistId);
-    RecommendArtistDto selectRecommendArtistByDispDate(Long charactorNo, Date standardDate);
+    // 2-A' 선호장르 유사곡 패널
+    List<RecommendTrackDto> selectRecommendPreferGenreSimilarTrackListByIdList(@Param("recommendIdList") List<Long> recommendIdList ,
+                                                                               @Param("recommendLimitSize") int recommendLimitSize,
+                                                                               @Param("trackLimitSize") int trackLimitSize,
+                                                                               @Param("osType") OsType osType);
 
     // 2-A 유사곡 패널
-    List<RecommendTrackDto> selectRecommendSimilarTrackListByIdList(List<Long> recommendIdList , int limitSize);
+    List<RecommendTrackDto> selectRecommendSimilarTrackListByIdList(@Param("recommendIdList") List<Long> recommendIdList ,
+                                                                    @Param("recommendLimitSize") int recommendLimitSize,
+                                                                    @Param("trackLimitSize") int trackLimitSiz,
+                                                                    @Param("osType") OsType osType);
+
 
     // 2-B 청취 무드 인기 채널
     List<ChnlDto> selectRecommendListenMoodChannelListByIdList(List<Long> recommendIdList , int limitSize);
 
-    // 2-A' 선호장르 유사곡 패널
-    List<RecommendTrackDto> selectRecommendPreferGenreSimilarTrackListByIdList(List<Long> recommendIdList , int limitSize);
+    // 2-C 선호/아티스트 유사곡 패널
+    RecommendArtistDto selectRecommendArtistByDispDate(Long charactorNo, Date standardDate);
+
+
+    RecommendArtistDto selectRecommendArtistById(Long recommendArtistId);
+
 
     // 3-A 청취 CF 패널
     List<RecommendTrackDto> selectRecommendCfTrackListByIdList(List<Long> recommendIdList, int limitSize);

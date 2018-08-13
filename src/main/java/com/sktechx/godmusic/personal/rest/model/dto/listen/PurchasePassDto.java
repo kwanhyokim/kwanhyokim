@@ -40,8 +40,8 @@ public class PurchasePassDto {
 //	private Long pgLinkHistId;        // PG연동이력아이디
 //	private Long r2kLinkId;            // R2K연동아이디
 //	private Integer promotionId;    // 프로모션아이디
-//	private Date createDtime;        // 생성일시
-//	private Date updateDtime;        // 수정일시
+//	private Date rcmmdCreateDtime;        // 생성일시
+//	private Date rcmmdUpdateDtime;        // 수정일시
 //	private Date repaymentValidDtime; //재결제 가능 일시
 //	private YnType autoPaymentGoodsInYn;
 //	private String inappPaymentAmount;

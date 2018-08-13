@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
@@ -19,6 +20,7 @@ import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.GenreVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
+import lombok.Getter;
 import org.springframework.util.StringUtils;
 
 /**
@@ -27,15 +29,19 @@ import org.springframework.util.StringUtils;
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 09.
  */
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class ChannelPanel extends Panel{
     @JsonIgnore
     private ChnlDto channel;
-    @JsonIgnore
+
+    @Getter
     private GenreVo genre;
 
     public ChannelPanel(RecommendPanelType panelType, ChnlDto channel, GenreVo genre) throws CommonBusinessException {
         super(panelType);
         this.channel = neverNullChannel(channel);
+        this.genre = genre;
         this.initialPanel();
     }
 

@@ -94,7 +94,6 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     @Override
     public List<Panel> createRecommendPanelList(Long characterNo , OsType osType) {
         PersonalPhaseMeta personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType);
-        log.info("personalPhaseMeta : {}" ,personalPhaseMeta);
         PanelAssembly panelAssembly = recommendPanelAssemblyFactory.getRecommendPanelAssembly(personalPhaseMeta.getFirstPhaseType());
 
         return panelAssembly.assembleRecommendPanel(personalPhaseMeta);
@@ -221,7 +220,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
         recommendTrackDto.setRcmmdId(rcmmdId);
         recommendTrackDto.setSvcGenreDto(svcGenre);
-        recommendTrackDto.setCreateDtime(new Date());
+        recommendTrackDto.setRcmmdCreateDtime(new Date());
         recommendTrackDto.setTrackList(trackMapper.selectTrackList(trackIdList));
 
         return recommendTrackDto;

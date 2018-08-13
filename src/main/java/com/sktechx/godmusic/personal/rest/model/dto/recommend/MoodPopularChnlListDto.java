@@ -10,29 +10,27 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto.recommend;
 
-import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import lombok.Data;
 
+import java.util.List;
+
 /**
- * 설명 : 선호 장르 인기채널
+ * 설명 : 분위기 인기 채널 아이디 리스트
  *
  * @author 오경무/SKTECHX (km.oh@sk.com)
- * @date 2018. 07. 27.
+ * @date 2018. 08. 11.
  */
 @Data
-public class PreferGenrePopularChnlDto {
+public class MoodPopularChnlListDto {
+    private Long categoryId;
+    private List<Long> chnlIdList;
 
-    private Long characterNo;
-    private Long preferGenreId;
-    private Long chnlId;
-
-    public PreferGenrePopularChnlDto(){
+    public MoodPopularChnlListDto(){
 
     }
 
-    public PreferGenrePopularChnlDto(Long preferGenreId,Long chnlId){
-        this.preferGenreId = preferGenreId;
-        this.chnlId = chnlId;
+    public MoodPopularChnlListDto(Long categoryId, List<Long> chnlIdList){
+        this.categoryId = categoryId;
+        this.chnlIdList = chnlIdList;
     }
-
 }
