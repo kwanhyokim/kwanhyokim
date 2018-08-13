@@ -18,8 +18,8 @@ public class LikeRequest {
 
 	@Length(max = 10)
 	@NotNull
-	@ApiModelProperty(name = "likeType", value = "좋아하는 타입(CHNL: 채널, ALBUM: 앨범, CHART: 차트, RANK_CHART: 랭크차트, ARTIST: 아티스트, TRACK: 곡)",
-			allowableValues = "CHNL, ALBUM, CHART, RANK_CHART, ARTIST, TRACK")
+	@ApiModelProperty(name = "likeType", value = "좋아하는 타입(CHNL: 채널, ALBUM: 앨범, CHART: 차트, ARTIST: 아티스트, TRACK: 곡)",
+			allowableValues = "CHNL, ALBUM, CHART, ARTIST, TRACK")
 	private String likeType;
 
 	@Length(max = 20)

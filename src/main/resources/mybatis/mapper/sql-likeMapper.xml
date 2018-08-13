@@ -267,7 +267,7 @@
                                      , UPDATE_DTIME
                                  FROM TB_CHARACTER_LIKE
                                  WHERE CHARACTER_NO = #{characterNo}
-                                       AND LIKE_TYPE IN ('CHART', 'RANK_CHART')) L INNER JOIN TB_CHART A
+                                       AND LIKE_TYPE = 'CHART') L INNER JOIN TB_CHART A
                                  ON L.LIKE_TYPE_ID = A.CHART_ID
                              LEFT OUTER JOIN TB_CHART_MUSIC_CONTENT B
                                  ON A.CHART_ID = B.CHART_ID
