@@ -35,10 +35,10 @@ spring.cloud.config.label: develop
 
 ---
 spring.profiles: qa
-spring.cloud.config.url: http://172.21.100.178:8888
+spring.cloud.config.uri: http://172.21.100.178:8888
 spring.cloud.config.label: develop
 
 ---
 spring.profiles: prod
-spring.cloud.config.url: http://TBD
+spring.cloud.config.uri: http://TBD
 spring.cloud.config.label: master
