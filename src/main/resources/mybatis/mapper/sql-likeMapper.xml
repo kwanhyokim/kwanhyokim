@@ -255,7 +255,8 @@
                              , A.MUSIC_CONTENT_CNT
                              , A.CREATE_DTIME
                              , A.UPDATE_DTIME
-                             , L.LIKE_TYPE
+                             , CASE WHEN A.CHART_TYPE = 'NEW' THEN 'CHART'
+                               ELSE 'RANK_CHART' END AS LIKE_TYPE
                              , L.DISP_SN
                              , L.UPDATE_DTIME AS LIKE_UPDATE_DTIME
                          FROM

@@ -43,5 +43,6 @@ public class PlayListDto {
 
 	private ChartType chartType;
 
+	@JsonProperty("type")
 	private PlayListType playListType;
 }
