@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sktechx.godmusic.personal.common.domain.type.ChannelType;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import lombok.Data;
 
 import java.util.Date;
@@ -62,5 +63,5 @@ public class ChnlDto {
     @JsonProperty("renewTrackCount")
     private Integer renewTrackCnt;
     //채널 용 별도 이미지
-    private List<ImageDto> imgList;
+    private List<ImageInfo> imgList;
 }

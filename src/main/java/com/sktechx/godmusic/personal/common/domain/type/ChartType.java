@@ -22,17 +22,19 @@ import org.apache.ibatis.type.MappedTypes;
  * @date 2018. 07. 09.
  */
 public enum ChartType implements CodeEnum {
-    RTIME("RTIME", "실시간"),
-    DAILY("DAILY" , "일간"),
-    MONTHLY("MONTHLY" , "월간"),
-    WEEKLY("WEEKLY" , "주간");
-
+    NEW("NEW" , "최신")
+    , HOURLY("HOURLY" , "시간")
+    , DAILY("DAILY" , "일간")
+    , WEEKLY("WEEKLY", "주간")
+    , MONTHLY("MONTHLY" , "월간")
+    ;
     private final String code;
     private final String value;
 
-    ChartType(String code, String value) {
+    ChartType(String code , String value){
         this.code = code;
         this.value = value;
+
     }
 
     @MappedTypes(ChartType.class)
@@ -48,12 +50,12 @@ public enum ChartType implements CodeEnum {
         return code;
     }
 
-    public String getValue() {
-        return value;
-    }
-
     @Override
     public CodeEnum getDefault() {
         return null;
+    }
+
+    public String getValue() {
+        return value;
     }
 }

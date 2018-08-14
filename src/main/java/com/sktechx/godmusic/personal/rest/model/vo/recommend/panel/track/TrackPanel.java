@@ -13,9 +13,9 @@ package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
-import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.GenreVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
@@ -34,7 +34,7 @@ public abstract class TrackPanel extends Panel {
     @JsonIgnore
     private RecommendTrackDto recommendTrackDto;
 
-    public TrackPanel(RecommendPanelType panelType ,String title, String subTitle, RecommendTrackDto recommendTrackDto, List<ImageDto> bgImgList) throws CommonBusinessException {
+    public TrackPanel(RecommendPanelType panelType ,String title, String subTitle, RecommendTrackDto recommendTrackDto, List<ImageInfo> bgImgList) throws CommonBusinessException {
         super(panelType);
         this.recommendTrackDto = recommendTrackDto;
         this.imgList = bgImgList;
@@ -55,9 +55,9 @@ public abstract class TrackPanel extends Panel {
         content.setId(recommendTrackDto.getRcmmdId());
         content.setType(RecommendPanelContentType.getRecommendPanelContentByPanelType(type));
         content.setTrackList(recommendTrackDto.getTrackList());
-        content.setTrackCount(recommendTrackDto.getTrackList().size());
+        content.setTrackCount(recommendTrackDto.getTrackCount());
         content.setGenre(new GenreVo(recommendTrackDto.getSvcGenreDto()));
-        content.setCreateDtime(recommendTrackDto.getCreateDtime());
+        content.setCreateDtime(recommendTrackDto.getRcmmdCreateDtime());
 
         return content;
     }

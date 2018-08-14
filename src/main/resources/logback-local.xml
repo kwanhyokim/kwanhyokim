@@ -36,22 +36,22 @@
 
     <!-- Database Log -->
     <logger name="com.spring.ibatis">
-        <level value="trace" />
+        <level value="off" />
         <appender-ref ref="CONSOLE" />
     </logger>
 
     <logger name="java.sql" additivity="false">
-        <level value="trace" />
+        <level value="off" />
         <appender-ref ref="CONSOLE" />
     </logger>
 
     <logger name="org.apache.ibatis" additivity="false">
-        <level value="trace" />
+        <level value="off" />
         <appender-ref ref="CONSOLE" />
     </logger>
 
     <logger name="org.mybatis.spring" additivity="false">
-        <level value="trace" />
+        <level value="off" />
         <appender-ref ref="CONSOLE" />
     </logger>
 

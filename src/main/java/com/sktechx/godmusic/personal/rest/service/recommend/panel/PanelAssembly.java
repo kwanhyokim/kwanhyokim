@@ -12,7 +12,6 @@ package com.sktechx.godmusic.personal.rest.service.recommend.panel;
 
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.PopularChannelPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
@@ -79,13 +78,16 @@ public abstract class PanelAssembly {
     protected void appendDefaultPopularChannelPanel(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int limitSize) {
         List<ChnlDto> popularChannelList = channelService.getPopularChannelList(limitSize,personalPhaseMeta.getOsType());
 
-        popularChannelList.stream().filter(Objects::nonNull).forEach(channel -> {
-            try{
-                panelList.add(new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL,channel));
-            }catch(Exception e){
-                log.error("GuestPhasePanel defaultPanelSetting Exception : {}",e.getMessage());
-            }
-        });
+        popularChannelList
+                .stream()
+                .filter(Objects::nonNull)
+                .forEach(channel -> {
+                    try{
+                        panelList.add(new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL,channel));
+                    }catch(Exception e){
+                        log.error("GuestPhasePanel defaultPanelSetting Exception : {}",e.getMessage());
+                    }
+                });
 
     }
 }

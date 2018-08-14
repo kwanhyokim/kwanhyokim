@@ -61,7 +61,6 @@ public class ListenServiceImpl implements ListenService {
 		String logType = request.getTrackLogType() != null ? request.getTrackLogType().getCode() : "";
 		String bitrate = request.getBitrate() != null ? request.getBitrate().getCode() : "";
 		String osType = request.getOsType() != null ? request.getOsType().getCode() : "";
-		Date logCreateDate = new Date();
 
 		TrackListen trackListen = TrackListen.builder()
 				.playChnl(playChannel)
@@ -78,7 +77,7 @@ public class ListenServiceImpl implements ListenService {
 				.chnlId(request.getChannelId())
 				.memberRcmdId(request.getRecommendTrackId())
 				.addTm(request.getAddDateTime())
-				.sessionToken(characterNo + DateUtil.dateToString(logCreateDate, "yyyyMM"))
+				.sessionToken("")
 				.build();
 
 		TrackListen.TrackListenBuilder trackListenBuilder = trackListen.toBuilder();

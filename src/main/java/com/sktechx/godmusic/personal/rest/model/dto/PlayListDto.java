@@ -1,0 +1,47 @@
+package com.sktechx.godmusic.personal.rest.model.dto;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sktechx.godmusic.personal.common.domain.type.ChartType;
+import com.sktechx.godmusic.personal.common.domain.type.PlayListType;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
+import lombok.Data;
+
+import java.util.Date;
+import java.util.List;
+
+/**
+ * Created by Kobe.
+ *
+ * @author Kobe/최훈영/SKTECHX (hunyoung.choi@sk.com)
+ * @date 2018. 8. 10.
+ * @time PM 4:53
+ */
+@Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class PlayListDto {
+	@JsonProperty("id")
+	private Long id;
+
+	@JsonProperty("name")
+	private String name;
+
+	private String playTime;
+	private Integer trackCount;
+
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
+	private Date createDateTime;
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
+	private Date updateDateTime;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
+	private Date registDateTime;
+
+	private List<ImageInfo> imgList;
+
+	private List<TrackDto> trackList;
+
+	private ChartType chartType;
+
+	private PlayListType playListType;
+}

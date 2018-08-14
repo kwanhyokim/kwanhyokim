@@ -1,6 +1,6 @@
 package com.sktechx.godmusic.personal.rest.model.dto.like;
 
-import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,5 +26,5 @@ public class LikePlaylistDto {
 	@ApiModelProperty(value = "전체 곡수")
 	private Long totalCount;
 	@ApiModelProperty(value = "플레이리스트 이미지")
-	private List<ImageDto> imgList;
+	private List<ImageInfo> imgList;
 }

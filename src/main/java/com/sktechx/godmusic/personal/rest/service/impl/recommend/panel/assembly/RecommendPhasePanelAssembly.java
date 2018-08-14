@@ -12,8 +12,8 @@ package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly
 
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
-import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.RcmmdTrackPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
@@ -99,7 +99,7 @@ public class RecommendPhasePanelAssembly extends PanelSignAssembly {
             List<RecommendTrackDto> recommendCfTrackList =  recommendMapper.selectRecommendCfTrackListByIdList(rcmmdIdList , limitSize);
 
             if(!CollectionUtils.isEmpty(recommendCfTrackList)){
-                List<ImageDto> bgImgList = recommendPanelService.getPanelBackgroundImageList(RecommendPanelType.RCMMD_TRACK,personalPhaseMeta.getOsType());
+                List<ImageInfo> bgImgList = recommendPanelService.getPanelBackgroundImageList(RecommendPanelType.RCMMD_TRACK,personalPhaseMeta.getOsType());
                 recommendCfTrackList
                         .stream()
                         .filter(Objects::nonNull)

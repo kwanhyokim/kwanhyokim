@@ -13,9 +13,9 @@ package com.sktechx.godmusic.personal.rest.service.recommend;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
-import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 
 import java.util.List;
@@ -30,7 +30,7 @@ public interface RecommendPanelService {
     List<Panel> createMockupRecommendPanelList();
     List<Panel> createRecommendPanelList(Long characterNo, OsType osType);
 
-    List<ImageDto> getPanelBackgroundImageList(RecommendPanelType recommendPanelType,OsType osType);
+    List<ImageInfo> getPanelBackgroundImageList(RecommendPanelType recommendPanelType, OsType osType);
 
     // added by bob 2018.08.01
     // edited by bob 2018.08.02

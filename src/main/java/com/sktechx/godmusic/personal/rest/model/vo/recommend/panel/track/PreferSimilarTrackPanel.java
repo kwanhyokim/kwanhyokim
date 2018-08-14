@@ -11,10 +11,9 @@
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track;
 
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
-import com.sktechx.godmusic.personal.rest.model.dto.ImageDto;
-import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 
 import java.util.List;
 
@@ -26,7 +25,7 @@ import java.util.List;
  */
 public class PreferSimilarTrackPanel extends TrackPanel {
 
-    public PreferSimilarTrackPanel(RecommendPanelType panelType, RecommendTrackDto recommendTrackDto,List<ImageDto> bgImgList) throws CommonBusinessException {
+    public PreferSimilarTrackPanel(RecommendPanelType panelType, RecommendTrackDto recommendTrackDto,List<ImageInfo> bgImgList) throws CommonBusinessException {
         //TODO : 부제목
         super(panelType , "Like U" , "많이 들었던 노래와\n 유사한 선곡", neverRecommdnTrackNull(recommendTrackDto) ,bgImgList);
     }
