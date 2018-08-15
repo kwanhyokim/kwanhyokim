@@ -42,19 +42,18 @@ public interface RecommendMapper {
                                                                     @Param("recommendLimitSize") int recommendLimitSize,
                                                                     @Param("trackLimitSize") int trackLimitSiz,
                                                                     @Param("osType") OsType osType);
-
-
-    // 2-B 청취 무드 인기 채널
-    List<ChnlDto> selectRecommendListenMoodChannelListByIdList(List<Long> recommendIdList , int limitSize);
-
-    // 2-C 선호/아티스트 유사곡 패널
-    RecommendArtistDto selectRecommendArtistByDispDate(Long charactorNo, Date standardDate);
-
-
-    RecommendArtistDto selectRecommendArtistById(Long recommendArtistId);
-
-
     // 3-A 청취 CF 패널
+    List<RecommendTrackDto> selectRecommendCfTrackListByIdList(@Param("recommendIdList") List<Long> recommendIdList ,
+                                                               @Param("recommendLimitSize") int recommendLimitSize,
+                                                               @Param("trackLimitSize") int trackLimitSiz,
+                                                               @Param("osType") OsType osType);
+
+
+    // 2-C 선호 아티스트 인기곡
+    RecommendArtistDto selectRecommendArtistById(@Param("recommendArtistId") Long recommendArtistId);
+
+
+
     List<RecommendTrackDto> selectRecommendCfTrackListByIdList(List<Long> recommendIdList, int limitSize);
 
 

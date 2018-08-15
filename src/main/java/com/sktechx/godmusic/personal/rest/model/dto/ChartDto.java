@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import lombok.Data;
 
 import java.util.Date;
@@ -43,5 +44,8 @@ public class ChartDto {
     private Date updateDateTime;
 
     private Integer trackCount;
+
+
+    private List<ImageInfo> imgList;
 
 }

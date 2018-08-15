@@ -142,6 +142,7 @@ public class ChannelServiceImpl implements ChannelService {
                         }
                     });
 
+            log.info("filterChnlList : {}",filterChnlList);
             return filterChnlList;
         }
 

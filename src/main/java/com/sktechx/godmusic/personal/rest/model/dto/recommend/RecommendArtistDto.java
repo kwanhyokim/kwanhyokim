@@ -29,12 +29,10 @@ public class RecommendArtistDto {
     private Date dispStdStartDt;
     private Date dispStdEndDt;
     private Long rcmmdArtistId;
-    private String artistType;
     private Integer dispSn;
     private Date createDtime;
     private Date updateDtime;
 
     private List<ArtistDto> artistList;
-    private List<TrackDto> trackList;
 
 }

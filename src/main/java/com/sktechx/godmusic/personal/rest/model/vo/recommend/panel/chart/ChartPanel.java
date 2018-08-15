@@ -53,7 +53,7 @@ public class ChartPanel extends Panel {
 
         content.setId(chart.getChartId());
 
-        content.setType(RecommendPanelContentType.CHART);
+        content.setType(RecommendPanelContentType.CHART_RANK);
         content.setCreateDtime(chart.getCreateDateTime());
         content.setUpdateDtime(chart.getUpdateDateTime());
         content.setTrackList(chart.getTrackList());

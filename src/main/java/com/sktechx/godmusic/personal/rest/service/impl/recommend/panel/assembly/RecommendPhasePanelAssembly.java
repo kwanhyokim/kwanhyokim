@@ -15,7 +15,9 @@ import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.PreferSimilarTrackPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.RcmmdTrackPanel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelSignAssembly;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +27,8 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 설명 : 추천 단계 ( 3단계 ) 패널
@@ -41,6 +45,7 @@ public class RecommendPhasePanelAssembly extends PanelSignAssembly {
 
     int preferGenreSimilarTrackPanelSize = 2;
 
+    int rcmmdCfTrackLimitSize = 15;
     private RecommendPhasePanelAssembly(){}
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
@@ -53,7 +58,6 @@ public class RecommendPhasePanelAssembly extends PanelSignAssembly {
             isFillRecommendPanel = true;
         }
         appendPreferGenreSimilarTrackPanelList(personalPhaseMeta, panelList, preferGenreSimilarTrackPanelSize);
-
 
         int panelDefaultSize = rcmmdCfTrackPanelSize+similarTrackPanelSize;
 
@@ -93,26 +97,37 @@ public class RecommendPhasePanelAssembly extends PanelSignAssembly {
     }
 
     private void appendRecommendCfTrackPanelList(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int limitSize) {
-        List<Long> rcmmdIdList = personalPhaseMeta.getRecommendPersonalPanelRcmmdIdList(RecommendPanelContentType.RC_CF_TR);
+        List<PersonalPanel> rcmmdPanelList = personalPhaseMeta.getRecommendPersonalPanelList(RecommendPanelContentType.RC_CF_TR);
 
-        if(!CollectionUtils.isEmpty(rcmmdIdList)){
-            List<RecommendTrackDto> recommendCfTrackList =  recommendMapper.selectRecommendCfTrackListByIdList(rcmmdIdList , limitSize);
+        if (!CollectionUtils.isEmpty(rcmmdPanelList)) {
+            List<Long> rcmmdIdList = rcmmdPanelList.stream().map(personalPanel -> personalPanel.getRecommendId()).collect(Collectors.toList());
 
-            if(!CollectionUtils.isEmpty(recommendCfTrackList)){
-                List<ImageInfo> bgImgList = recommendPanelService.getPanelBackgroundImageList(RecommendPanelType.RCMMD_TRACK,personalPhaseMeta.getOsType());
+            List<RecommendTrackDto> recommendCfTrackList =
+                    recommendMapper.selectRecommendCfTrackListByIdList(rcmmdIdList, rcmmdCfTrackPanelSize, rcmmdCfTrackLimitSize, personalPhaseMeta.getOsType());
+            if (!CollectionUtils.isEmpty(recommendCfTrackList)) {
                 recommendCfTrackList
                         .stream()
                         .filter(Objects::nonNull)
-                        .forEach(recommendCfTrack->{
-                            try{
-                                panelList.add(new RcmmdTrackPanel(RecommendPanelType.RCMMD_TRACK , recommendCfTrack, bgImgList));
-                            }catch(Exception e){
-                                log.error("appendRecommendCfTrackPanelList error : {}",e.getMessage());
+                        .forEach(cfTrack -> {
+
+                            Optional<PersonalPanel> personalPanel = rcmmdPanelList.stream()
+                                    .filter(panel -> panel.getRecommendId().equals(cfTrack.getRcmmdId()))
+                                    .findFirst();
+                            if (personalPanel.isPresent()) {
+                                cfTrack.setTrackCount(personalPanel.get().getTrackCount());
+                            }
+                            try {
+                                panelList.add(new RcmmdTrackPanel(RecommendPanelType.RCMMD_TRACK, cfTrack, cfTrack.getImgList()));
+                            } catch (Exception e) {
+                                log.error("RecommendPhasePanelAssembly appendRecommendCfTrackPanelList error : {}", e.getMessage());
                                 e.printStackTrace();
                             }
                         });
             }
+
+
         }
+
     }
 
 
