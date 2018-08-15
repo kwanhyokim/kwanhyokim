@@ -57,8 +57,8 @@ public class RecommendPanelController {
     @GetMapping(value = "/home/panels")
     public CommonApiResponse<RecommendPanelResponse> recommendHomePanels(@ApiIgnore @RequestGMContext GMContext ctx){
 		RecommendPanelResponse recommendPanelResponse = new RecommendPanelResponse();
-		recommendPanelResponse.setList(recommendPanelService.createMockupRecommendPanelList());
-//		recommendPanelResponse.setList(recommendPanelService.createRecommendPanelList(ctx.getCharacterNo(),ctx.getOsType()));
+//		recommendPanelResponse.setList(recommendPanelService.createMockupRecommendPanelList());
+		recommendPanelResponse.setList(recommendPanelService.createRecommendPanelList(ctx.getCharacterNo(),ctx.getOsType()));
 		return new CommonApiResponse<RecommendPanelResponse>(recommendPanelResponse);
 
     }

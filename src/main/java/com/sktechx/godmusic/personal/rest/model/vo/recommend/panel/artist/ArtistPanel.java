@@ -68,7 +68,10 @@ public class ArtistPanel extends Panel{
             throw new CommonBusinessException("artist is null.");
         }
 
-        ArtistDto artist = recommendArtist.getArtistList().get(0);
+
+        ArtistDto artist = recommendArtist.getArtistList().stream().filter(artistDto->{
+            return !CollectionUtils.isEmpty(artistDto.getImgList());
+        }).findFirst().orElse(recommendArtist.getArtistList().get(0));
 
         if(artist==null){
             throw new CommonBusinessException("artist is null.");

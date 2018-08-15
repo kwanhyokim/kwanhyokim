@@ -24,6 +24,7 @@ import org.apache.ibatis.type.MappedTypes;
 public enum RecommendPanelContentType implements CodeEnum{
     CHNL("CHNL" , "채널"),
     CHART("CHART" , "차트"),
+    CHART_RANK("CHART_RANK" , "랭크 차트"),
 
     RC_MD_CN("RC_MD_CN" , "청취 무드 인기채널"),
     RC_ATST_TR("RC_ATST_TR" , "아티스트 인기곡"),

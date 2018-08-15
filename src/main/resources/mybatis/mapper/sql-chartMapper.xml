@@ -28,6 +28,89 @@
         <collection property="trackList" resultMap="com.sktechx.godmusic.personal.rest.repository.TrackMapper.trackResultMap" />
     </resultMap>
 
+    <resultMap id="chartResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.ChartDto" autoMapping="true">
+        <id property="chartId" column="chart_id" />
+        <result property="chartNm" column="chart_disp_nm" />
+        <result property="trackCount" column="music_content_cnt" />
+        <collection property="trackList" resultMap="com.sktechx.godmusic.personal.rest.repository.TrackMapper.trackResultMap">
+        </collection>
+        <collection property="imgList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" autoMapping="true">
+            <result property="size" column="size" />
+            <result property="url" column="url" />
+        </collection>
+    </resultMap>
+    <select id="selectPreferGenreChart" resultMap="chartResultMap">
+        SELECT
+            chart_track_table.chart_id,
+            chart_track_table.music_content_cnt,
+            chart_track_table.chart_disp_nm,
+            chart_track_table.create_dtime,
+            chart_track_table.update_dtime,
+            chart_track_table.img_size,
+            chart_track_table.img_url,
+            c.track_id,
+            a.album_id,
+            d.artist_id,
+            d.artist_nm,
+            b.album_img_size size,
+            CONCAT(b.album_img_url,'?updateDate=',UNIX_TIMESTAMP(b.update_dtime)) url,
+            e.artist_id reqArtistId,
+            e.artist_nm reqArtistNm
+        FROM (
+            SELECT
+                chart_img_table.chart_id,
+                chart_img_table.music_content_cnt,
+                chart_img_table.chart_disp_nm,
+                chart_img_table.create_dtime,
+                chart_img_table.update_dtime,
+                chart_img_table.img_size,
+                chart_img_table.img_url,
+                b.music_content_id,
+                b.disp_sn,
+                c.track_id,
+                c.album_id,
+                c.reprsnt_artist_id
+            FROM
+                (
+                  SELECT
+                        a.chart_id,
+                        a.music_content_cnt,
+                        a.chart_disp_nm,
+                        a.create_dtime,
+                        a.update_dtime,
+                        b.img_size,
+                        b.img_url
+                  FROM
+                        tb_chart a
+                  LEFT OUTER JOIN tb_img_mang b ON a.chart_id = b.img_content_id
+                  WHERE
+                        a.svc_content_type = #{svcContentType}
+                            AND a.chart_type = #{chartType}
+                            AND a.music_content_type = 'TRACK'
+                            AND b.img_content_type = 'CHART'
+                            AND b.dfk_type = 'EVERY'
+                            AND b.img_disp_type = 'DEFAULT'
+                            AND b.os_type = #{osType}
+                ) chart_img_table
+                INNER JOIN
+                  tb_chart_music_content b ON chart_img_table.chart_id = b.chart_id
+                INNER JOIN
+                  tb_track c ON b.music_content_id = c.track_id
+                WHERE c.disp_status_yn = 'Y'
+                ORDER BY b.disp_sn
+            LIMIT #{trackLimitSize} ) chart_track_table
+        LEFT OUTER JOIN ted_album a ON chart_track_table.album_id = a.album_id
+            LEFT OUTER JOIN tb_album_img b ON a.album_id = b.album_id
+            LEFT OUTER JOIN ted_trackartist c ON chart_track_table.track_id =c.track_id
+            LEFT OUTER JOIN ted_artist d ON c.artist_id = d.artist_id
+            LEFT OUTER JOIN ted_artist e ON e.artist_id = chart_track_table.reprsnt_artist_id
+        WHERE a.disp_status_yn = 'Y'
+
+    </select>
+    <select id="selectKidsChart">
+
+
+    </select>
     <!-- 임시 사용 -->
     <select id="selectLiveChart"  resultMap="liveChartResultMap">
         <![CDATA[
@@ -93,10 +176,6 @@
                     ON a.reprsnt_artist_id = f.artist_id
 		]]>
     </select>
-    <select id="selectKidsChart"  resultMap="liveChartResultMap">
-
-    </select>
-
     <select id="selectChartListByDefaultGenre" resultMap="chartListResultMap">
         <![CDATA[
             SELECT
@@ -267,6 +346,5 @@
         ORDER BY b.disp_sn
     ]]>
     </select>
-
 
 </mapper>

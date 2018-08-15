@@ -32,8 +32,7 @@ public class PersonalPanel {
     //노출 총 트랙수
     private int trackCount;
 
-
-
-
+    //청취 무드 무드 아이디
+    private Long moodId;
 
 }

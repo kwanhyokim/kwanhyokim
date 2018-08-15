@@ -100,13 +100,6 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     }
 
     @Override
-    public List<ImageInfo> getPanelBackgroundImageList(RecommendPanelType recommendPanelType , OsType osType){
-        //TODO : 패널 별 기본 배경이미지 GET ( 캐시 관리 필요 )
-        return Arrays.asList(new ImageInfo(),new ImageInfo());
-    }
-
-
-    @Override
     public List<Panel> createMockupRecommendPanelList() {
 
         List<Panel> mockPanelList = new ArrayList<>();

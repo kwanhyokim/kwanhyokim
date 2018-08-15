@@ -30,7 +30,6 @@ public interface RecommendPanelService {
     List<Panel> createMockupRecommendPanelList();
     List<Panel> createRecommendPanelList(Long characterNo, OsType osType);
 
-    List<ImageInfo> getPanelBackgroundImageList(RecommendPanelType recommendPanelType, OsType osType);
 
     // added by bob 2018.08.01
     // edited by bob 2018.08.02
