@@ -48,6 +48,8 @@
             chart_track_table.update_dtime,
             chart_track_table.img_size,
             chart_track_table.img_url,
+            chart_track_table.disp_sn trackSn,
+            chart_track_table.bf_disp_sn trackBfSn,
             c.track_id,
             a.album_id,
             d.artist_id,
@@ -67,6 +69,7 @@
                 chart_img_table.img_url,
                 b.music_content_id,
                 b.disp_sn,
+                b.bf_disp_sn,
                 c.track_id,
                 c.album_id,
                 c.reprsnt_artist_id
