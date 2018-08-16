@@ -30,7 +30,8 @@ public enum HomeContentType implements CodeEnum {
     ARTIST("ARTIST", "아티스트 추천"),
     EDITOR("EDITOR", "Editor's Pick"),
     DISCOVERY("DISCOVERY", "디스커버리"),
-    BANNER("BANNER", "배너");
+    BANNER("BANNER", "배너"),
+    CHART("CHART" , "차트");
 
     private final String code;
     private final String title;
