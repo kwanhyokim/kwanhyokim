@@ -184,8 +184,8 @@ public class MyPlaylistController {
         GMContext currentContext = GMContext.getContext();
         Validator.loginValidate(currentContext);
 
-//        return currentContext.getMemberNo(); //TODO : characterNo
-        return 1L; // Mockup
+        return currentContext.getMemberNo(); //TODO : characterNo
+//        return 1L; // Mockup
     }
 
 }
