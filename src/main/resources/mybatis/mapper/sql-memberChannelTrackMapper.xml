@@ -32,7 +32,7 @@
 		SELECT
 			b.track_id trackId,
 		    a.track_sn trackSn,
-		    b.track_nm trackName,
+		    b.track_nm trackNm,
 		    b.album_id albumId,
 		    b.disp_status_yn displayYn,
 		    b.agency_id agencyId,
