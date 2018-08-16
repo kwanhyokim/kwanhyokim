@@ -67,7 +67,7 @@ public class PreferenceServiceImpl implements PreferenceService {
             chartDtoList = chartMapper.selectChartListByPreferGenre(characterNo);
         }
 
-        return new ChartResponse<>(preferenceGenreListConvert(chartDtoList), HomeContentType.GENRE);
+        return new ChartResponse<>(preferenceGenreListConvert(chartDtoList), HomeContentType.CHART);
     }
 
     @Override
