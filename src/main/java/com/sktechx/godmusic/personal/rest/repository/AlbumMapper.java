@@ -11,6 +11,10 @@
 package com.sktechx.godmusic.personal.rest.repository;
 
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
+import com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * 설명 :  앨범 Repository
@@ -20,5 +24,5 @@ import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
  */
 @BaseMapper
 public interface AlbumMapper {
-
+    List<LastListenHistoryDto> selectLastListenHistory(@Param("characterNo") long characterNo);
 }

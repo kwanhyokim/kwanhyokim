@@ -12,21 +12,26 @@ package com.sktechx.godmusic.personal.rest.service.impl;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
+import com.sktechx.godmusic.personal.common.domain.type.DayType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
+import com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.ListenMoodPopularChannelPanel;
+import com.sktechx.godmusic.personal.rest.repository.AlbumMapper;
 import com.sktechx.godmusic.personal.rest.repository.ChannelMapper;
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.PropertySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -52,6 +57,9 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Autowired
     private ChartMapper chartMapper;
+
+    @Autowired
+    private AlbumMapper albumMapper;
 
     @Autowired
     private RedisService redisService;
@@ -146,5 +154,17 @@ public class ChannelServiceImpl implements ChannelService {
         }
 
         return null;
+    }
+
+    @Override
+    public List<LastListenHistoryDto> getLastListenHistory(long characterNo, DayType dayType, OsType osType){
+
+        List<LastListenHistoryDto> lastListenHistory = channelMapper.selectLastListenHistory(characterNo, dayType, osType);
+        List<LastListenHistoryDto> lastListenAlbumHistory = albumMapper.selectLastListenHistory(characterNo);
+
+        lastListenHistory.addAll(lastListenAlbumHistory);
+        lastListenHistory.sort((m1, m2) -> m1.getLastListenDtime().after(m2.getLastListenDtime()) ? -1 : 1);
+
+        return lastListenHistory;
     }
 }

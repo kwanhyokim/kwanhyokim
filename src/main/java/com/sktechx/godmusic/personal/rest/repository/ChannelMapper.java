@@ -12,7 +12,9 @@ package com.sktechx.godmusic.personal.rest.repository;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
+import com.sktechx.godmusic.personal.common.domain.type.DayType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
+import com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlListDto;
 import org.apache.ibatis.annotations.Param;
@@ -32,6 +34,8 @@ public interface ChannelMapper {
 
     List<PreferGenrePopularChnlListDto> selectAllPreferGenrePopularChannelIdList();
     List<MoodPopularChnlListDto> selectAllMoodPopularChannelIdList();
+
+    List<LastListenHistoryDto> selectLastListenHistory(@Param("characterNo") long characterNo, @Param("dayType") DayType dayType, @Param("osType") OsType osType);
 
 //    List<PreferGenrePopularChnlDto> selectPreferGenrePopularChannelIdList(@Param("preferGenreIdList") List<Long> preferGenreIdList,@Param("osType") OsType osType);
 //    List<PreferGenrePopularChnlDto> selectPreferGenrePopularChannel(@Param("preferGenrePopularChnlList") List<PreferGenrePopularChnlDto> preferGenrePopularChnlList,@Param("osType") OsType osType);
