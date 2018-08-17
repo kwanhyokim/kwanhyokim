@@ -69,7 +69,7 @@ public class ChannelServiceImpl implements ChannelService {
         try{
             popularChnlIdList = redisService.getListWithPrefix(ALL_POPULAR_CHNL_KEY,Long.class);
         }catch( Exception e){
-            log.error("getEditorsPickChannelList error : {}",e.getMessage());
+            log.error("getPopularChannelList error : {}",e.getMessage());
         }finally {
             if(CollectionUtils.isEmpty(popularChnlIdList)){
                 popularChnlIdList = channelMapper.selectPopularChannelIdList();
@@ -117,7 +117,6 @@ public class ChannelServiceImpl implements ChannelService {
                     });
             return filterChnlList;
         }
-
         return null;
 
     }
@@ -137,6 +136,7 @@ public class ChannelServiceImpl implements ChannelService {
                 }
             }
         }
+
         if(!CollectionUtils.isEmpty(moodIdList) && !CollectionUtils.isEmpty(moodPopularChannelList)){
             List<MoodPopularChnlDto> filterChnlList = new ArrayList<>();
             moodPopularChannelList

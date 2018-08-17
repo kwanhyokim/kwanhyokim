@@ -28,6 +28,12 @@
             <result property="artistId" column="repArtistId"></result>
             <result property="artistName" column="repArtistNm"></result>
         </collection>
+
+        <collection property="rank" javaType="com.sktechx.godmusic.personal.rest.model.dto.RankDto">
+            <result property="rankBadge" column="rankBadge"/>
+            <result property="newYn" column="newYn"/>
+        </collection>
+
     </resultMap>
 
     <resultMap id="mostListenedTrackResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.MostListenedTrackDto" extends="trackResultMap" autoMapping="true">

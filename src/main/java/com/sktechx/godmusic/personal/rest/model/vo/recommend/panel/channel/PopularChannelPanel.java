@@ -13,6 +13,9 @@ package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
+
+import java.util.List;
 
 /**
  * 설명 : 인기 채널 패널
@@ -21,7 +24,7 @@ import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
  * @date 2018. 07. 19.
  */
 public class PopularChannelPanel  extends ChannelPanel{
-    public PopularChannelPanel(RecommendPanelType panelType, ChnlDto channel) throws CommonBusinessException {
-        super(panelType,channel , null );
+    public PopularChannelPanel(RecommendPanelType panelType, ChnlDto channel , List<ImageInfo> imgList) throws CommonBusinessException {
+        super(panelType,channel , null , imgList);
     }
 }

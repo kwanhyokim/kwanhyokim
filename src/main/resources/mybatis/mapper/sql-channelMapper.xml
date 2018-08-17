@@ -19,16 +19,6 @@
         <id property="chnlId" column="chnl_id" />
         <id property="chnlNm" column="chnl_nm"/>
         <collection property="trackList" resultMap="popularChannelTrackResultMap">
-
-            <result property="createDtime" column="trackCreateDtime"  />
-            <result property="updateDtime" column="trackUpdateDtime" />
-            <result property="renewDtime" column="trackRenewDtime" />
-            <!--
-            <result property="rcmmdCreateDtime" column="trackCreateDtime"  />
-            <result property="rcmmdUpdateDtime" column="trackUpdateDtime" />
-            <result property="renewDtime" column="trackRenewDtime" />
-
-            -->
         </collection>
         <collection property="imgList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" autoMapping="true">
             <id property="size" column="img_size"/>
@@ -37,11 +27,10 @@
     </resultMap>
 
     <resultMap id="popularChannelTrackResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.TrackDto" extends="com.sktechx.godmusic.personal.rest.repository.TrackMapper.trackResultMap" autoMapping="true">
-        <!--
-        <result property="rcmmdCreateDtime" column="trackCreateDtime"   />
-        <result property="rcmmdUpdateDtime" column="trackUpdateDtime" />
+
+        <result property="createDtime" column="trackCreateDtime"  />
+        <result property="updateDtime" column="trackUpdateDtime" />
         <result property="renewDtime" column="trackRenewDtime" />
-        -->
     </resultMap>
 
     <resultMap id="preferGenrePopularChnlResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlListDto" autoMapping="true">
@@ -220,7 +209,7 @@
                     c.create_dtime trackRenewDtime,
                     c.track_sn
                 FROM
-                  tb_chnl a INNER JOIN tb_img_mang b ON a.chnl_id = b.img_content_id
+                  tb_chnl a LEFT OUTER JOIN tb_img_mang b ON a.chnl_id = b.img_content_id
                             INNER JOIN tb_map_chnl_track c ON a.chnl_id = c.chnl_id
                             INNER JOIN tb_track d ON c.track_id = d.track_id
                 WHERE
@@ -252,30 +241,27 @@
         SELECT
             chnl_id
         FROM
-            (SELECT
+            (
+            SELECT
                 a.chnl_id,
-                    a.chnl_nm,
-                    a.create_dtime,
-                    a.update_dtime,
-                    c.category_id,
-                    d.category_nm,
-                    d.category_type,
-                    b.disp_sn
+                b.disp_sn,
+                c.category_id
             FROM
                 tb_chnl a
-            INNER JOIN
-              (SELECT
-                    b.music_content_id, b.disp_sn
-                FROM
-                    tb_chart a
-                INNER JOIN tb_chart_music_content b ON a.chart_id = b.chart_id
-                INNER JOIN tb_img_mang c ON b.music_content_id = c.img_content_id
-                WHERE
-                    a.chart_type = 'WEEKLY'
-                AND a.svc_content_type = 'ALL'
-                AND a.music_content_type = 'CHNL'
-                AND c.dfk_type = 'EVERY'
-                AND c.img_content_type='CHNL') b ON a.chnl_id = b.music_content_id
+            INNER JOIN (
+                        SELECT
+                            b.music_content_id, b.disp_sn
+                        FROM
+                            tb_chart a
+                        INNER JOIN tb_chart_music_content b ON a.chart_id = b.chart_id
+                        LEFT OUTER JOIN tb_img_mang c ON b.music_content_id = c.img_content_id
+                        WHERE
+                            a.chart_type = 'WEEKLY'
+                        AND a.svc_content_type = 'ALL'
+                        AND a.music_content_type = 'CHNL'
+                        AND c.dfk_type = 'EVERY'
+                AND c.img_content_type='CHNL'
+            ) b ON a.chnl_id = b.music_content_id
             INNER JOIN
               tb_map_category_chnl c ON b.music_content_id = c.chnl_id
             INNER JOIN
@@ -283,7 +269,8 @@
             WHERE
                 a.disp_status_type = 'Y'
             GROUP BY a.chnl_id
-            ORDER BY b.disp_sn) a
+            ORDER BY b.disp_sn
+            ) a
         WHERE
             category_id IS NOT NULL
         GROUP BY category_id
