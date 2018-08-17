@@ -55,88 +55,7 @@
         </collection>
     </resultMap>
 
-    <!-- 임시 사용 -->
-    <select id="selectChannelById"  resultMap="channelResultMap">
-        <![CDATA[
-             SELECT
-                   a.chnl_id,
-                   a.chnl_nm,
-                   a.track_id,
-                   a.track_nm,
-                   a.album_id,
-                   f.artist_id repArtistId,
-                   f.artist_nm repArtistNm,
-                   a.track_sn,
-                   a.agency_id,
-                   if(a.streaming_premium_yn = 'Y' OR a.pps_yn = 'Y', 'Y', 'N') holdbackYn,
-                   a.create_dtime,
-                   a.update_dtime,
-                   d.artist_id,
-                   d.artist_nm,
-                   b.album_img_size size,
-                   CONCAT(b.album_img_url, '?updateDate=', unix_timestamp(b.update_dtime)) url,
-                   a.trackCreateDtime,
-                   a.trackUpdateDtime
-                FROM (
-                    SELECT
-                        a.chnl_id,
-                        a.chnl_nm,
-                        c.track_id ,
-                        c.track_nm,
-                        c.album_id,
-                        c.reprsnt_artist_id,
-                        b.track_sn,
-                        c.agency_id,
-                        c.streaming_premium_yn,
-                        c.pps_yn,
-                        a.create_dtime,
-                        a.update_dtime,
-                        c.create_dtime trackCreateDtime,
-                        c.update_dtime trackUpdateDtime
-                    FROM
-                        tb_chnl a INNER JOIN tb_map_chnl_track b
-                            ON a.chnl_id = b.chnl_id
-                        INNER JOIN tb_track c
-                            ON b.track_id = c.track_id
-                    WHERE
-                        a.chnl_id = #{chnlId}
-                    AND
-                        a.disp_status_type ='Y'
-                    AND
-                        c.disp_status_yn = 'Y'
-                    ORDER BY b.track_sn
-                    LIMIT 0 , 10 ) a
-                LEFT OUTER JOIN	tb_album_img b
-                    ON a.album_id = b.album_id
-                LEFT OUTER JOIN	ted_trackartist as c
-                    ON a.track_id = c.track_id AND c.rp_yn = 'Y' and c.db_sts = 'A'
-                LEFT OUTER JOIN	ted_artist d
-                    ON c.artist_id = d.artist_id
-                LEFT OUTER JOIN ted_album e
-                    ON a.album_id = e.album_id
-                LEFT OUTER JOIN ted_artist f
-                    ON a.reprsnt_artist_id = f.artist_id
-		]]>
-    </select>
-
-    <!-- 임시 사용 -->
-    <select id="selectChannelTrackCount" resultType="Integer">
-        SELECT
-            count(*)
-        FROM
-            tb_chnl a INNER JOIN tb_map_chnl_track b
-                ON a.chnl_id = b.chnl_id
-            INNER JOIN tb_track c
-                ON b.track_id = c.track_id
-        WHERE
-            a.chnl_id = #{chnlId}
-        AND
-            a.disp_status_type ='Y'
-        AND
-            c.disp_status_yn = 'Y'
-    </select>
-
-    <select id="selectPopularChannelList" resultMap="channelResultMap">
+    <select id="selectChannelListByIdList" resultMap="channelResultMap">
         SELECT
             a.chnl_id,
             a.chnl_nm,
@@ -236,6 +155,8 @@
         , (SELECT @curRank:=0, @prevChnlId:=0) r
         WHERE
           a.rank  <![CDATA[<=]]> #{trackLimitSize}
+        AND
+          b.disp_status_yn = 'Y'
     </select>
 	<select id="selectPopularChannelIdList" resultType="Long">
         SELECT

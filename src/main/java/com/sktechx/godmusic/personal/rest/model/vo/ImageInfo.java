@@ -1,6 +1,7 @@
 package com.sktechx.godmusic.personal.rest.model.vo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import lombok.Data;
 
 /**
@@ -15,6 +16,9 @@ import lombok.Data;
 public class ImageInfo {
 	private Long size;
 	private String url;
+
+	private OsType osType;
+	private Integer dispSn;
 	public ImageInfo() {
 	}
 	public ImageInfo(Long size , String url){

@@ -16,6 +16,7 @@ import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.CommonTest;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.repository.ChannelMapper;
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
@@ -26,6 +27,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 /**
  * 설명 :  테스트
@@ -76,8 +79,11 @@ public class RecommendPanelRealTests extends CommonTest {
 
     @Test
     public void 전체_패널_대체_테스트() {
-        ChartDto chartDto = chartMapper.selectPreferGenreChart("KIDS", ChartType.HOURLY, OsType.AOS , 15);
-        log.info("chartDto : {}",chartDto);
+//        List<ImageInfo> imageInfoList = recommendMapper.selectRecommendPanelDefaultImageList();
+//        log.info("imageInfoList : {}",imageInfoList);
+
+        List<ImageInfo> imgList = recommendPanelService.getRecommendPanelDefaultImageList(OsType.AOS);
+        log.info("imgList : {}",imgList);
     }
 
 

@@ -15,6 +15,7 @@ import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import org.apache.ibatis.annotations.Param;
 
@@ -53,8 +54,7 @@ public interface RecommendMapper {
     RecommendArtistDto selectRecommendArtistById(@Param("recommendArtistId") Long recommendArtistId);
 
 
-
-    List<RecommendTrackDto> selectRecommendCfTrackListByIdList(List<Long> recommendIdList, int limitSize);
-
+    // 추천 패널 기본 이미지
+    List<ImageInfo> selectRecommendPanelDefaultImageList();
 
 }
