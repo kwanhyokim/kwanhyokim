@@ -14,6 +14,7 @@ import com.netflix.discovery.converters.Auto;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
+import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferDispDto;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase;
@@ -77,6 +78,10 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
         //선호 장르 리스트
         List<CharacterPreferGenreDto> characterPreferGenreList = characterPreferGenreMapper.selectCharacterPreferGenreList(characterNo);
         personalPhaseMeta.setPreferGenreList(characterPreferGenreList);
+
+        //선호 노출 리스트
+        List<CharacterPreferDispDto> characterPreferDispList = characterPreferGenreMapper.selectCharacterPreferDispList(characterNo);
+        personalPhaseMeta.setPreferDispList(characterPreferDispList);
 
         //개인화 추천 패널
         List<PersonalPanel> rcmmdPanelList = recommendMapper.selectPersonalRecommendPanelMeta(characterNo);

@@ -78,7 +78,7 @@ public class PersonalPhaseRedisTests extends CommonTest {
 
     @Test
     public void REDIS_SET_테스트(){
-        personalRecommendPhaseService.getPersonalRecommendPhaseMeta(51L, OsType.AOS);
+        personalRecommendPhaseService.getPersonalRecommendPhaseMeta(52L, OsType.AOS);
     }
 
 }

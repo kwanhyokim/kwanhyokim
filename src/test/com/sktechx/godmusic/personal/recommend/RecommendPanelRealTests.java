@@ -79,11 +79,9 @@ public class RecommendPanelRealTests extends CommonTest {
 
     @Test
     public void 전체_패널_대체_테스트() {
-//        List<ImageInfo> imageInfoList = recommendMapper.selectRecommendPanelDefaultImageList();
-//        log.info("imageInfoList : {}",imageInfoList);
+        List<ImageInfo> imageInfoList = recommendMapper.selectRecommendPanelDefaultImageList();
+        log.info("imageInfoList : {}",imageInfoList);
 
-        List<ImageInfo> imgList = recommendPanelService.getRecommendPanelDefaultImageList(OsType.AOS);
-        log.info("imgList : {}",imgList);
     }
 
 

@@ -39,7 +39,7 @@
             <result property="url" column="url" />
         </collection>
     </resultMap>
-    <select id="selectPreferGenreChart" resultMap="chartResultMap">
+    <select id="selectPreferDispChart" resultMap="chartResultMap">
         SELECT
             chart_track_table.chart_id,
             chart_track_table.music_content_cnt,

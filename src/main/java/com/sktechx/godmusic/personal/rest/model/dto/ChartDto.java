@@ -38,10 +38,13 @@ public class ChartDto {
     private ChartType chartType;
 
     private List<TrackDto> trackList;
+    @JsonProperty("createDateTime")
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
-    private Date createDateTime;
+    private Date createDtime;
+
+    @JsonProperty("updateDateTime")
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
-    private Date updateDateTime;
+    private Date updateDtime;
 
     private Integer trackCount;
 

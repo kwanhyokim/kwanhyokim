@@ -13,6 +13,7 @@
 package com.sktechx.godmusic.personal.rest.repository;
 
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
+import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferDispDto;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ServiceGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
@@ -31,4 +32,5 @@ import java.util.List;
 @BaseMapper
 public interface CharacterPreferGenreMapper {
     List<CharacterPreferGenreDto> selectCharacterPreferGenreList(@Param("characterNo") Long characterNo);
+    List<CharacterPreferDispDto> selectCharacterPreferDispList(@Param("characterNo") Long characterNo);
 }

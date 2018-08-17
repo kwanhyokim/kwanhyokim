@@ -115,7 +115,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         try{
 
             //TODO : mockup 데이터 생성
-            ChartDto liveChart = chartMapper.selectPreferGenreChart("ALL", ChartType.HOURLY, OsType.AOS , 15);
+            ChartDto liveChart = chartMapper.selectPreferDispChart("ALL", ChartType.HOURLY, OsType.AOS , 15);
 
             ChartPanel liveChartPanel = new ChartPanel(RecommendPanelType.LIVE_CHART, liveChart, makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_top_100_1.png"));
             mockPanelList.add(liveChartPanel);
@@ -170,7 +170,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             mockPanelList.add(rcmmdTrack);
 
 
-            ChartDto kidsChart = chartMapper.selectPreferGenreChart("KIDS", ChartType.HOURLY, OsType.AOS , 15);
+            ChartDto kidsChart = chartMapper.selectPreferDispChart("KIDS", ChartType.HOURLY, OsType.AOS , 15);
             ChartPanel kidsChartPanel = new ChartPanel(RecommendPanelType.KIDS_CHART, kidsChart, makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_kids_1.png"));
             mockPanelList.add(kidsChartPanel);
 
@@ -379,8 +379,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         if(!CollectionUtils.isEmpty(imgList)){
             Collections.shuffle(imgList);
 
-            ImageInfo info = imgList.stream().filter(imageInfo -> osType.equals(imageInfo.getOsType())).findFirst().orElse(null);
-            return Arrays.asList(info);
+            return Arrays.asList(imgList.stream().filter(imageInfo -> osType.equals(imageInfo.getOsType())).findFirst().orElse(null));
         }
         return null;
     }

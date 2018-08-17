@@ -14,8 +14,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
-import com.sktechx.godmusic.personal.common.domain.type.PreferGenreType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
+import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferDispDto;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.PreferGenreDto;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.Chart;
@@ -44,6 +44,9 @@ public class PersonalPhaseMeta {
 
     //선호 장르
     private List<CharacterPreferGenreDto> preferGenreList;
+    //선호 노출
+    private List<CharacterPreferDispDto> preferDispList;
+
     //추천 단계
     private List<PersonalPhase> personalPhaseList;
     //개인화 추천 패널
@@ -88,15 +91,13 @@ public class PersonalPhaseMeta {
     }
 
 
-    public List<Long> getPreferGenreIdList(int limitSize , List<PreferGenreType> preferGenreTypeList){
+    public List<Long> getPreferGenreIdList(int limitSize){
         if(CollectionUtils.isEmpty(preferGenreList))
             return null;
 
         return preferGenreList
                     .stream()
-                    .filter(  characterPreferGenre -> {
-                        return Objects.nonNull(characterPreferGenre) && preferGenreTypeList.contains(characterPreferGenre.getPreferType());
-                    })
+                    .filter(Objects::nonNull)
                     .map(preferGenre->{
                         return preferGenre.getPreferGenreId();
                     })
