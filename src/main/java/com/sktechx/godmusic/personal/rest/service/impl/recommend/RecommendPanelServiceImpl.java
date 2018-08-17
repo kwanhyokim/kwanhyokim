@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
+
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +61,9 @@ import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import lombok.extern.slf4j.Slf4j;
 
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
+import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
+import com.sktechx.godmusic.personal.rest.service.ChannelService;
 /**
  * 설명 : 추천 패널 데이터 생성
  *
