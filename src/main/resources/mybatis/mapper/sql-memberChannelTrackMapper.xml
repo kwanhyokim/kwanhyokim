@@ -33,7 +33,7 @@
 			b.track_id trackId,
 		    a.track_sn trackSn,
 		    b.track_nm trackNm,
-		    b.album_id albumId,
+		    b.album_id album_id,
 		    b.disp_status_yn displayYn,
 		    b.agency_id agencyId,
 		    IF(b.title_yn = 'Y' , 'Y', 'N') titleYn,
