@@ -21,6 +21,7 @@ import com.sktechx.godmusic.lib.domain.RequestGMContext;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelInfoDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
@@ -63,42 +64,7 @@ public class RecommendPanelController {
 
     }
 
-
-    // added by bob 2018.08.01
-	// edited by bob 2018.08.02
-//	@ApiOperation(value = "선호/유사 아티스트 인기곡 목록", httpMethod = "GET", notes = "2-C 선호/유사 아티스트 인기곡 조회 API" , response = RecommendPanelResponse.class)
-//	@RequestMapping(value = "/panel/{rcmmdArtistId}/popular/track", method = RequestMethod.GET)
-//	public CommonApiResponse<List<TrackDto>> recommendPanelPopularTrackList(@ApiIgnore @RequestGMContext GMContext ctx, @PathVariable Long rcmmdArtistId){
-//		ListDto<List<RecommendPanelTrackDto>> response = recommendPanelService.getRecommendPanelPopularTrackList(ctx.getCharacterNo(), rcmmdArtistId);
-//		return new CommonApiResponse(response);
-//	}
-//
-//
-//	@ApiOperation(value = "유사곡 트랙 목록", httpMethod = "GET", notes = "2-A Like U 패널 트랙 목록 조회 API" , response = RecommendPanelResponse.class)
-//	@RequestMapping(value = "/panel/{rcmmdTrackId}/similar/track", method = RequestMethod.GET)
-//	public CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>>  recommendPanelSimilarTrackList(@ApiIgnore @RequestGMContext GMContext ctx, @PathVariable Long rcmmdTrackId){
-//		ListDto<List<RecommendPanelTrackDto>> response = recommendPanelService.getRecommendPanelSimilarTrackList(ctx.getCharacterNo(), rcmmdTrackId);
-//		return new CommonApiResponse(response);
-//	}
-//
-//
-//	@ApiOperation(value = "선호장르 유사록 패널 트랙 목록", httpMethod = "GET", notes = "2-A' 선호 장르 유사곡 API" , response = RecommendPanelResponse.class)
-//	@RequestMapping(value = "/panel/{rcmmdGenreId}/genre/track", method = RequestMethod.GET)
-//	public CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>>  recommendPanelGenreTrackList(@ApiIgnore @RequestGMContext GMContext ctx, @PathVariable Long rcmmdGenreId){
-//		ListDto<List<RecommendPanelTrackDto>> response = recommendPanelService.getRecommendPanelGenreTrackList(ctx.getCharacterNo(), rcmmdGenreId);
-//		return new CommonApiResponse(response);
-//	}
-//
-//
-//	@ApiOperation(value = "CF 추천 패널 트랙 목록", httpMethod = "GET", notes = "3-A 추천 CF(collaborative filtering)패널 API" , response = RecommendPanelResponse.class)
-//	@RequestMapping(value = "/panel/{rcmmdMforuId}/cf/track", method = RequestMethod.GET)
-//	public CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>>  recommendPanelCfTrackList(@ApiIgnore @RequestGMContext GMContext ctx, @PathVariable Long rcmmdMforuId){
-//		ListDto<List<RecommendPanelTrackDto>> response = recommendPanelService.getRecommendPanelCfTrackList(ctx.getCharacterNo(), rcmmdMforuId);
-//		return new CommonApiResponse(response);
-//	}
-
 	// added by bob 2018.08.03
-
 	@ApiOperation(value = "추천 패널 상세 트랙 목록 조회 API", httpMethod = "GET", notes = "추천 패널 트랙 목록 조회 API - 추천 홈 패널 API 에서 제공하는 RecommendPanelContentType와 id 값으로 트랙 목록 조회 \r\n"
 			+ "RC_ATST_TR (2-C 선호/유사 아티스트 인기곡)\r\n RC_SML_TR (2-A 유사곡)\r\n RC_GR_TR (2-A' 선호 장르 유사곡)\r\n RC_CF_TR (3-A 추천 CF 곡)" )
 	@RequestMapping(value = "/panel/{panelContentId}/track", method = RequestMethod.GET)
@@ -110,6 +76,21 @@ public class RecommendPanelController {
 		ListDto<List<RecommendPanelTrackDto>> response = recommendPanelService.getRecommendPanelTrackList(ctx.getCharacterNo(), recommendPanelContentType, panelContentId);
 		return new CommonApiResponse(response);
 	}
+
+
+	// added by bob 2018.08.16
+	@ApiOperation(value = "추천 패널 상세 헤더 정보 API", httpMethod = "GET", notes = "추천 패널 상세 헤더 정보 API - 추천 홈 패널 API 에서 제공하는 RecommendPanelContentType와 id 값으로 정보 조회 \r\n"
+			+ "RC_ATST_TR (2-C 선호/유사 아티스트 인기곡)\r\n RC_SML_TR (2-A 유사곡)\r\n RC_GR_TR (2-A' 선호 장르 유사곡)\r\n RC_CF_TR (3-A 추천 CF 곡)" )
+	@RequestMapping(value = "/panel/{panelContentId}", method = RequestMethod.GET)
+	public CommonApiResponse<RecommendPanelInfoDto>  recommendPanelInfo(
+			@ApiIgnore @RequestGMContext GMContext ctx,
+			@ApiParam(defaultValue = "52") @PathVariable Long panelContentId,
+			@ApiParam(value = "추천 패널 컨텐트 타입", allowableValues = "RC_ATST_TR, RC_SML_TR, RC_GR_TR, RC_CF_TR") @RequestParam(value = "type") RecommendPanelContentType recommendPanelContentType){
+
+		RecommendPanelInfoDto response = recommendPanelService.getRecommendPanelInfo(recommendPanelContentType, panelContentId);
+		return new CommonApiResponse(response);
+	}
+
 
 
 }

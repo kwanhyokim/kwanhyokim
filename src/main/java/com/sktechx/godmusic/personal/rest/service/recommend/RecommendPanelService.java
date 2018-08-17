@@ -10,15 +10,14 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend;
 
+import java.util.List;
+
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelInfoDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
-import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
-
-import java.util.List;
 
 /**
  * 설명 : XXXXXXXX
@@ -40,4 +39,6 @@ public interface RecommendPanelService {
 
 	ListDto<List<RecommendPanelTrackDto>> getRecommendPanelTrackList(Long characterNo, RecommendPanelContentType recommendPanelType, Long panelContentId);
 
+	// added by bob 2018.08.16
+	RecommendPanelInfoDto getRecommendPanelInfo(RecommendPanelContentType recommendPanelContentType, Long panelContentId);
 }
