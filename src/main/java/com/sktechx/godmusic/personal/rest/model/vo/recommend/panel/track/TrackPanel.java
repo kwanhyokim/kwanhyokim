@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
@@ -58,6 +59,7 @@ public abstract class TrackPanel extends Panel {
         content.setTrackCount(recommendTrackDto.getTrackCount());
         content.setGenre(new GenreVo(recommendTrackDto.getSvcGenreDto()));
         content.setCreateDtime(recommendTrackDto.getRcmmdCreateDtime());
+        content.setRenewYn(YnType.Y);
 
         return content;
     }

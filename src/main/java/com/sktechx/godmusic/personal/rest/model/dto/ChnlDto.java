@@ -16,10 +16,16 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.domain.type.ChannelType;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import lombok.Data;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -64,4 +70,17 @@ public class ChnlDto {
     private Integer renewTrackCnt;
     //채널 용 별도 이미지
     private List<ImageInfo> imgList;
+
+    public YnType getRenewYn(){
+        if(renewDtime!= null){
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(renewDtime);
+            cal.add(Calendar.DATE, 1);
+            if( new Date().getTime() < cal.getTime().getTime() ) {
+                return YnType.Y;
+            }
+        }
+        return YnType.N;
+    }
+
 }

@@ -140,6 +140,15 @@ public class PersonalPhaseMeta {
                 .filter(personalPanel -> Objects.nonNull(personalPanel) && recommendPanelContentType.equals(personalPanel.getRecommendPanelContentType()))
                 .collect(Collectors.toList());
     }
+
+    public List<Long> getListenMoodIdList(RecommendPanelContentType recommendPanelContentType){
+        List<PersonalPanel> personalPanelList = getRecommendPersonalPanelList(recommendPanelContentType);
+        if(!CollectionUtils.isEmpty(personalPanelList)){
+            return rcmmdPanelList.stream().map(personalPanel -> personalPanel.getMoodId()).collect(Collectors.toList());
+        }
+
+        return null;
+    }
     private PersonalPanel getRecommendPersonalPanel(RecommendPanelContentType recommendPanelContentType){
         if(CollectionUtils.isEmpty(rcmmdPanelList))
             return null;

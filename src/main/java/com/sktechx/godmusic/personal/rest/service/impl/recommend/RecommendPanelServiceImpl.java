@@ -17,6 +17,8 @@ import java.util.Date;
 import java.util.List;
 
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
+import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
+import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -75,6 +77,10 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     @Autowired
     private ChannelMapper channelMapper;
 
+    @Autowired
+    private ChannelService channelService;
+    @Autowired
+    private ChartMapper chartMapper;
 
     @Autowired
     private ArtistMapper artistMapper;
@@ -107,66 +113,35 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         try{
 
             //TODO : mockup 데이터 생성
-            ChartDto liveChart = chartService.getLiveChart();
+            ChartDto liveChart = chartMapper.selectPreferGenreChart("ALL", ChartType.HOURLY, OsType.AOS , 15);
 
-            liveChart.setChartType(ChartType.HOURLY);
             ChartPanel liveChartPanel = new ChartPanel(RecommendPanelType.LIVE_CHART, liveChart, makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_top_100_1.png"));
             mockPanelList.add(liveChartPanel);
 
+            List<ChnlDto> popularChannelList = channelService.getPopularChannelList(3, OsType.AOS);
 
-            ChnlDto popularChannel =channelMapper.selectChannelById(983L);
-            popularChannel.setChnlNm("들으면 힘을 주는 CCM BEST ");
-            popularChannel.setChnlDispNm("들으면 힘을 주는 \nCCM BEST ");
-            popularChannel.setTrackCount(channelMapper.selectChannelTrackCount(983L));
-            popularChannel.setImgList(makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/1_a_2_b_2_line.png"));
-            ChannelPanel popularChannelPanel = new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL, popularChannel);
-            mockPanelList.add(popularChannelPanel);
+            if(!CollectionUtils.isEmpty(popularChannelList)){
+                popularChannelList.stream().forEach(chnlDto -> {
+                    ChannelPanel popularChannelPanel = new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL, chnlDto , chnlDto.getImgList());
+                    mockPanelList.add(popularChannelPanel);
+                });
+            }
 
-
-            popularChannel =channelMapper.selectChannelById(18401L);
-            popularChannel.setChnlNm("꽃보다 할배 리턴즈 BGM #4");
-            popularChannel.setChnlDispNm("꽃보다 할배 리턴즈 \nBGM #4");
-            popularChannel.setTrackCount(channelMapper.selectChannelTrackCount(18401L));
-            popularChannel.setImgList(makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/1_a_2_b_2_line.png"));
-            popularChannelPanel = new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL, popularChannel);
-            mockPanelList.add(popularChannelPanel);
-
-            popularChannel =channelMapper.selectChannelById(18400L);
-            popularChannel.setChnlNm("한적한 시골길 드라이브를 위한 재즈");
-            popularChannel.setChnlDispNm("한적한 시골길 드라이브를\n 위한 재즈");
-            popularChannel.setTrackCount(channelMapper.selectChannelTrackCount(18400L));
-            popularChannel.setImgList(makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/1_a_2_b_2_line.png"));
-            popularChannelPanel = new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL, popularChannel);
-            mockPanelList.add(popularChannelPanel);
-
-            ChnlDto preferPopularGenreChannel = channelMapper.selectChannelById(18399L);
-            preferPopularGenreChannel.setChnlNm("팝의 여제, 비욘세 필청 트랙 모음");
-            preferPopularGenreChannel.setChnlDispNm("팝의 여제, 비욘세 \n필청 트랙 모음");
-            preferPopularGenreChannel.setTrackCount(channelMapper.selectChannelTrackCount(18399L));
+            List<ChnlDto> preferPopularGenreChannelList = channelMapper.selectPopularChannelList(Arrays.asList(18399L),12, OsType.AOS);
             GenreVo danceGenre = makeGenre(1L, "POP");
-            preferPopularGenreChannel.setImgList(makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/1_a_2_b_3_line.png"));
-            ChannelPanel preferPopularGenreChannelPanel = new PreferGenrePopularChannelPanel(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL, preferPopularGenreChannel,danceGenre );
+            ChannelPanel preferPopularGenreChannelPanel = new PreferGenrePopularChannelPanel(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL, preferPopularGenreChannelList.get(0),danceGenre , preferPopularGenreChannelList.get(0).getImgList() );
             mockPanelList.add(preferPopularGenreChannelPanel);
 
-            preferPopularGenreChannel = channelMapper.selectChannelById(18398L);
-            preferPopularGenreChannel.setChnlNm("쿨한 느낌이 매력적인 드라이빙 트렌디");
-            preferPopularGenreChannel.setChnlDispNm("쿨한 느낌이 매력적인\n드라이빙 트렌디");
-            preferPopularGenreChannel.setTrackCount(channelMapper.selectChannelTrackCount(18398L));
+
+            preferPopularGenreChannelList = channelMapper.selectPopularChannelList(Arrays.asList(18398L),12, OsType.AOS);
             GenreVo traditionalGenre = makeGenre(2L, "국악");
-
-            preferPopularGenreChannel.setImgList(makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/1_a_2_b_3_line.png"));
-            preferPopularGenreChannelPanel = new PreferGenrePopularChannelPanel(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL, preferPopularGenreChannel,traditionalGenre );
-
+            preferPopularGenreChannelPanel = new PreferGenrePopularChannelPanel(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL, preferPopularGenreChannelList.get(0),traditionalGenre ,preferPopularGenreChannelList.get(0).getImgList());
             mockPanelList.add(preferPopularGenreChannelPanel);
 
-            ChnlDto listenMoodPolularChannel = channelMapper.selectChannelById(18397L);
-            listenMoodPolularChannel.setChnlNm("커피 한 잔과 함께 낮잠이 고플 때");
-            listenMoodPolularChannel.setChnlDispNm("커피 한 잔과 함께\n낮잠이 고플 때");
-            listenMoodPolularChannel.setTrackCount(channelMapper.selectChannelTrackCount(18397L));
-
-            listenMoodPolularChannel.setImgList(makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/1_a_2_b_3_line.png"));
-            ChannelPanel listenMoodPopularChannelPanel = new ListenMoodPopularChannelPanel(RecommendPanelType.LISTEN_MOOD_POPULAR_CHANNEL, listenMoodPolularChannel );
+            List<ChnlDto> listenMoodPolularChannelList = channelMapper.selectPopularChannelList(Arrays.asList(18397L),12, OsType.AOS);
+            ChannelPanel listenMoodPopularChannelPanel = new ListenMoodPopularChannelPanel(RecommendPanelType.LISTEN_MOOD_POPULAR_CHANNEL, listenMoodPolularChannelList.get(0) ,listenMoodPolularChannelList.get(0).getImgList());
             mockPanelList.add(listenMoodPopularChannelPanel);
+
 
 
             Panel artistPanel = new ArtistPanel(RecommendPanelType.ARTIST_POPULAR_TRACK , makeMockRecommendArtistDto());
@@ -193,10 +168,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             mockPanelList.add(rcmmdTrack);
 
 
-            ChartDto kidsChart = chartService.getKidsChart();
-            kidsChart.setChartId(2L);
-            kidsChart.setChartNm("Kids");
-            liveChart.setChartType(ChartType.HOURLY);
+            ChartDto kidsChart = chartMapper.selectPreferGenreChart("KIDS", ChartType.HOURLY, OsType.AOS , 15);
             ChartPanel kidsChartPanel = new ChartPanel(RecommendPanelType.KIDS_CHART, kidsChart, makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_kids_1.png"));
             mockPanelList.add(kidsChartPanel);
 

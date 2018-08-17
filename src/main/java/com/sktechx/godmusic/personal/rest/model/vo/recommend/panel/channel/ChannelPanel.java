@@ -17,11 +17,14 @@ import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentTyp
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.GenreVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
 import lombok.Getter;
 import org.springframework.util.StringUtils;
+
+import java.util.List;
 
 /**
  * 설명 : 채널형 추천 패널
@@ -38,10 +41,11 @@ public abstract class ChannelPanel extends Panel{
     @Getter
     private GenreVo genre;
 
-    public ChannelPanel(RecommendPanelType panelType, ChnlDto channel, GenreVo genre) throws CommonBusinessException {
+    public ChannelPanel(RecommendPanelType panelType, ChnlDto channel, GenreVo genre , List<ImageInfo> imgList) throws CommonBusinessException {
         super(panelType);
         this.channel = neverNullChannel(channel);
         this.genre = genre;
+        this.imgList = imgList;
         this.initialPanel();
     }
 
@@ -63,8 +67,8 @@ public abstract class ChannelPanel extends Panel{
         content.setTrackList(channel.getTrackList());
         content.setCreateDtime(channel.getCreateDtime());
         content.setUpdateDtime(channel.getUpdateDtime());
-        content.setRenewDtime(channel.getRenewDtime());
         content.setRenewTrackCount(channel.getRenewTrackCnt());
+        content.setRenewYn(channel.getRenewYn());
         return content;
     }
 

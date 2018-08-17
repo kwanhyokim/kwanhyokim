@@ -13,8 +13,10 @@ package com.sktechx.godmusic.personal.rest.model.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sktechx.godmusic.lib.domain.code.YnType;
 import lombok.Data;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -62,4 +64,20 @@ public class TrackDto {
     @JsonProperty("renewDateTime")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
     private Date renewDtime;
+
+    private RankDto rank;
+
+    public YnType getRenewYn(){
+        if(renewDtime!= null){
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(renewDtime);
+            cal.add(Calendar.DATE, 1);
+            if( new Date().getTime() < cal.getTime().getTime() ) {
+                return YnType.Y;
+            }
+        }
+        return YnType.N;
+    }
+
 }
+

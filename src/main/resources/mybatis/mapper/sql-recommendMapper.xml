@@ -250,7 +250,7 @@
                         LIMIT #{recommendLimitSize}
                     -- 1. rcmmd_table end
                     ) rcmmd_table
-                    INNER JOIN tb_map_img_rcmmd_img b ON rcmmd_table.svc_genre_id = b.img_content_id
+                    LEFT OUTER JOIN tb_map_img_rcmmd_img b ON rcmmd_table.svc_genre_id = b.img_content_id
                     WHERE
                             b.img_content_type = 'GENRE'
                         AND b.rcmmd_type_id = 'RC_GR_TR'
@@ -386,7 +386,7 @@
                             LIMIT #{recommendLimitSize}
                             -- 1. rcmmd_table end;
                         ) rcmmd_table
-                        INNER JOIN tb_rcmmd_img_mang b ON rcmmd_table.week = b.dfk_type
+                        LEFT OUTER JOIN tb_rcmmd_img_mang b ON rcmmd_table.week = b.dfk_type
                         WHERE
                             b.rcmmd_type_id = 'RC_SML_TR'
                             AND b.os_type = #{osType}
@@ -508,7 +508,7 @@
                         LIMIT #{recommendLimitSize}
                         -- 1. rcmmd_table end;
                     ) rcmmd_table
-                    INNER JOIN tb_map_img_rcmmd_img b ON rcmmd_table.svc_genre_id = b.img_content_id
+                    LEFT OUTER JOIN tb_map_img_rcmmd_img b ON rcmmd_table.svc_genre_id = b.img_content_id
                     WHERE
                         b.rcmmd_type_id = 'RC_CF_TR'
                     AND b.os_type = #{osType}
