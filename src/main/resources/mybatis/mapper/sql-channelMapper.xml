@@ -378,7 +378,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE character_no = #{characterNo}
                     ORDER BY last_listen_dtime DESC
-                    LIMIT 20 ) a
+                    LIMIT 1000 ) a
             JOIN tb_chnl b
               ON a.listen_type_id = b.chnl_id
              AND a.listen_type = 'CHNL'
@@ -401,7 +401,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE character_no = #{characterNo}
                     ORDER BY last_listen_dtime DESC
-                    LIMIT 20 ) a
+                    LIMIT 1000 ) a
             JOIN tb_member_chnl b
               ON a.listen_type_id = b.member_chnl_id
              AND a.member_no = b.member_no
@@ -425,7 +425,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE character_no = #{characterNo}
                     ORDER BY last_listen_dtime DESC
-                    LIMIT 20 ) a
+                    LIMIT 1000 ) a
             JOIN tb_chart b
               ON a.listen_type_id = b.chart_id
              AND a.listen_type = 'CHART'
@@ -453,7 +453,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE character_no = #{characterNo}
                     ORDER BY last_listen_dtime DESC
-                    LIMIT 20 ) a
+                    LIMIT 1000 ) a
             JOIN tb_rcmmd_similar_track b
               ON a.listen_type_id = b.rcmmd_similar_track_id
              AND a.character_no = b.character_no
@@ -481,7 +481,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE character_no = #{characterNo}
                     ORDER BY last_listen_dtime DESC
-                    LIMIT 20 ) a
+                    LIMIT 1000 ) a
             JOIN tb_rcmmd_prefer_genre_similar_track b
               ON a.listen_type_id = b.rcmmd_prefer_genre_similar_track_id
              AND a.character_no = b.character_no
@@ -509,7 +509,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE character_no = #{characterNo}
                     ORDER BY last_listen_dtime DESC
-                    LIMIT 20 ) a
+                    LIMIT 1000 ) a
             JOIN tb_rcmmd_artist b
               ON a.listen_type_id = b.rcmmd_artist_id
              AND a.character_no = b.character_no
@@ -537,7 +537,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE character_no = #{characterNo}
                     ORDER BY last_listen_dtime DESC
-                    LIMIT 20 ) a
+                    LIMIT 1000 ) a
             JOIN tb_rcmmd_mforu b
               ON a.listen_type_id = b.rcmmd_mforu_id
              AND a.character_no = b.character_no

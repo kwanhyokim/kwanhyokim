@@ -3,17 +3,22 @@ package com.sktechx.godmusic.personal.rest.controller.v1;
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.RequestGMContext;
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.CommonListResponse;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.common.domain.type.DayType;
+import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
 import com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,15 +45,20 @@ public class ChannelController {
 
     @ApiOperation(value = "최근 들은 플레이리스트 상세 by Peter ( 기존 /v2/my/channel/recent/list GET )")
     @GetMapping("recentListened")
-    public CommonApiResponse<List<LastListenHistoryDto>> getLastListenHistory(
-            @ApiIgnore @RequestGMContext GMContext ctx, @PageableDefault(size=300, page=0) Pageable pageable){
+    public CommonListResponse getLastListenHistory(
+            @ApiIgnore @RequestGMContext GMContext ctx, @PageableDefault(size=100, page=0) Pageable pageable){
 
         long characterNo = 1000284;
         DayType dayType = DayType.findDayOfWeek(LocalDate.now().getDayOfWeek());
 
         List<LastListenHistoryDto> lastListenHistory = channelService.getLastListenHistory(characterNo, dayType, ctx.getOsType());
+        if(CollectionUtils.isEmpty(lastListenHistory)) throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
 
-        return new CommonApiResponse<>(lastListenHistory);
+        int start = pageable.getPageNumber() * pageable.getPageSize();
+        int end = (pageable.getPageNumber() + 1) * pageable.getPageSize();
+        if(end > lastListenHistory.size()) end = lastListenHistory.size();
+
+        return new CommonListResponse(new PageImpl<>(lastListenHistory.subList(start, end), pageable, lastListenHistory.size()));
 
     }
 

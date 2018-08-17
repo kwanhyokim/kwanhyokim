@@ -61,7 +61,7 @@
                    FROM tb_member_last_listen_hist
                   WHERE character_no = #{characterNo}
                   ORDER BY last_listen_dtime DESC
-                  LIMIT 20 ) a
+                  LIMIT 1000 ) a
           JOIN ted_album b
             ON a.listen_type_id = b.album_id
            AND listen_type = 'ALBUM'
