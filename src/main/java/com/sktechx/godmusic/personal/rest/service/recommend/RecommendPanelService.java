@@ -17,6 +17,7 @@ import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentTyp
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelInfoDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 
 /**
@@ -41,4 +42,8 @@ public interface RecommendPanelService {
 
 	// added by bob 2018.08.16
 	RecommendPanelInfoDto getRecommendPanelInfo(RecommendPanelContentType recommendPanelContentType, Long panelContentId);
+
+
+	// 홈패널 기본 이미지
+	List<ImageInfo> getRecommendPanelDefaultImageList(OsType osType);
 }

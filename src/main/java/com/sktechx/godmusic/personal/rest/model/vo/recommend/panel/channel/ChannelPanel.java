@@ -73,7 +73,7 @@ public abstract class ChannelPanel extends Panel{
     }
 
     private static ChnlDto neverNullChannel(ChnlDto channel) throws CommonBusinessException {
-        if(channel == null || StringUtils.isEmpty(channel.getChnlNm()))
+        if(channel == null || StringUtils.isEmpty(channel.getChnlDispNm()))
             throw new CommonBusinessException(CommonErrorMessage.INTERNAL_SERVER_ERROR);
         return channel;
     }

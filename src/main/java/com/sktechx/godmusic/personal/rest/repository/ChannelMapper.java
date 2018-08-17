@@ -27,12 +27,8 @@ import java.util.List;
  */
 @BaseMapper
 public interface ChannelMapper {
-    //TODO : meta api 호출
-    ChnlDto selectChannelById(Long chnlId);
-    Integer selectChannelTrackCount(Long chnlId);
-
     List<Long> selectPopularChannelIdList();
-    List<ChnlDto> selectPopularChannelList(@Param("channelIdList") List<Long> channelIdList, @Param("trackLimitSize") int trackLimitSize ,@Param("osType") OsType osType);
+    List<ChnlDto> selectChannelListByIdList(@Param("channelIdList") List<Long> channelIdList, @Param("trackLimitSize") int trackLimitSize ,@Param("osType") OsType osType);
 
     List<PreferGenrePopularChnlListDto> selectAllPreferGenrePopularChannelIdList();
     List<MoodPopularChnlListDto> selectAllMoodPopularChannelIdList();

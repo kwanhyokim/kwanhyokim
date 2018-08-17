@@ -79,7 +79,7 @@ public abstract class PanelSignAssembly extends PanelAssembly {
                             return preferGenrePopularChnl.getChnlId();
                         }).collect(Collectors.toList());
 
-                Optional.ofNullable(channelMapper.selectPopularChannelList(chnlIdList, popularChnlTrackLimitSize, personalPhaseMeta.getOsType())).ifPresent(popularChannelList->{
+                Optional.ofNullable(channelMapper.selectChannelListByIdList(chnlIdList, popularChnlTrackLimitSize, personalPhaseMeta.getOsType())).ifPresent(popularChannelList->{
                     popularChannelList
                             .stream()
                             .filter(Objects::nonNull)
@@ -94,7 +94,7 @@ public abstract class PanelSignAssembly extends PanelAssembly {
                                     } else {
                                         genre.setId(0L);
                                     }
-                                    panelList.add(new PreferGenrePopularChannelPanel(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL, channel, genre , channel.getImgList()));
+                                    panelList.add(new PreferGenrePopularChannelPanel(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL, channel, genre , getDefaultBgImageList(  channel.getImgList(),personalPhaseMeta.getOsType() )           ));
                                 } catch (Exception e) {
                                     log.error("appendPreferGenreChannelPanelList error : {}", e.getMessage());
                                     e.printStackTrace();
@@ -147,13 +147,13 @@ public abstract class PanelSignAssembly extends PanelAssembly {
 
             if (!CollectionUtils.isEmpty(moodPopularChnlList)) {
                 List<Long> chnlIdList = moodPopularChnlList.stream().map(moodPopularChnlDto -> moodPopularChnlDto.getChnlId()).collect(Collectors.toList());
-                    Optional.ofNullable(channelMapper.selectPopularChannelList(chnlIdList, popularChnlTrackLimitSize, personalPhaseMeta.getOsType())).ifPresent(popularChannelList->{
+                    Optional.ofNullable(channelMapper.selectChannelListByIdList(chnlIdList, popularChnlTrackLimitSize, personalPhaseMeta.getOsType())).ifPresent(popularChannelList->{
                         popularChannelList
                                 .stream()
                                 .filter(Objects::nonNull)
                                 .forEach(channel -> {
                                     try {
-                                        panelList.add(new ListenMoodPopularChannelPanel(RecommendPanelType.LISTEN_MOOD_POPULAR_CHANNEL, channel , channel.getImgList()));
+                                        panelList.add(new ListenMoodPopularChannelPanel(RecommendPanelType.LISTEN_MOOD_POPULAR_CHANNEL, channel ,getDefaultBgImageList(  channel.getImgList() , personalPhaseMeta.getOsType() )));
                                     } catch (Exception e) {
                                         log.error("appendPreferGenreChannelPanelList error : {}", e.getMessage());
                                         e.printStackTrace();
@@ -182,7 +182,7 @@ public abstract class PanelSignAssembly extends PanelAssembly {
                                    similarTrack.setTrackCount(personalPanel.get().getTrackCount());
                                }
                                try {
-                                   panelList.add(new PreferSimilarTrackPanel(RecommendPanelType.PREFER_SIMILAR_TRACK, similarTrack, similarTrack.getImgList()));
+                                   panelList.add(new PreferSimilarTrackPanel(RecommendPanelType.PREFER_SIMILAR_TRACK, similarTrack, getDefaultBgImageList(  similarTrack.getImgList() , personalPhaseMeta.getOsType() )));
                                } catch (Exception e) {
                                    log.error("ListenPhasePanelAssembly appendSimilarTrackPanelList error : {}", e.getMessage());
                                    e.printStackTrace();
@@ -212,7 +212,10 @@ public abstract class PanelSignAssembly extends PanelAssembly {
                                             if (personalPanel.isPresent()) {
                                                 preferGenreSimilarTrack.setTrackCount(personalPanel.get().getTrackCount());
                                             }
-                                            panelList.add(new PreferGenreSimilarTrackPanel(RecommendPanelType.PREFER_GENRE_SIMILAR_TRACK, preferGenreSimilarTrack, preferGenreSimilarTrack.getImgList()));
+                                            panelList.add(new PreferGenreSimilarTrackPanel(RecommendPanelType.PREFER_GENRE_SIMILAR_TRACK
+                                                             , preferGenreSimilarTrack
+                                                             , getDefaultBgImageList( preferGenreSimilarTrack.getImgList() , personalPhaseMeta.getOsType())
+                                            ));
                                         } catch (Exception e) {
                                             log.error("addPreferGenreSimilarTrackPanelList error : {}", e.getMessage());
                                             e.printStackTrace();
@@ -228,7 +231,7 @@ public abstract class PanelSignAssembly extends PanelAssembly {
         ChartDto chartDto = chartMapper.selectPreferGenreChart(svcContentType , chartType, osType, trackLimitSize);
         if (chartDto != null) {
             try {
-                return new ChartPanel(recommendPanelType, chartDto, chartDto.getImgList());
+                return new ChartPanel(recommendPanelType, chartDto, getDefaultBgImageList( chartDto.getImgList() , osType) );
             } catch (Exception e) {
                 log.error("PanelSignAssembly createChartPanel create error : {}", e.getMessage());
                 e.printStackTrace();

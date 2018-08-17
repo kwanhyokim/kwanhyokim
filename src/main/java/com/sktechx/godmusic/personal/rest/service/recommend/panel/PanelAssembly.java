@@ -10,8 +10,10 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend.panel;
 
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.PopularChannelPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
@@ -23,6 +25,7 @@ import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
@@ -78,16 +81,27 @@ public abstract class PanelAssembly {
     protected void appendDefaultPopularChannelPanel(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int limitSize) {
         List<ChnlDto> popularChannelList = channelService.getPopularChannelList(limitSize,personalPhaseMeta.getOsType());
 
-        popularChannelList
-                .stream()
-                .filter(Objects::nonNull)
-                .forEach(channel -> {
-                    try{
-                        panelList.add(new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL,channel , channel.getImgList()));
-                    }catch(Exception e){
-                        log.error("GuestPhasePanel defaultPanelSetting Exception : {}",e.getMessage());
-                    }
-                });
+        if(!CollectionUtils.isEmpty(popularChannelList)){
+            popularChannelList
+                    .stream()
+                    .filter(Objects::nonNull)
+                    .forEach(channel -> {
+                        try{
+                            panelList.add(new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL,channel , getDefaultBgImageList( channel.getImgList(),personalPhaseMeta.getOsType() ) ));
+                        }catch(Exception e){
+                            log.error("GuestPhasePanel defaultPanelSetting Exception : {}",e.getMessage());
+                        }
+                    });
+
+        }
+    }
+
+    protected List<ImageInfo> getDefaultBgImageList(final List<ImageInfo> imgList , OsType osType){
+        if(CollectionUtils.isEmpty(imgList)){
+            return recommendPanelService.getRecommendPanelDefaultImageList(osType);
+        }else{
+            return imgList;
+        }
 
     }
 }

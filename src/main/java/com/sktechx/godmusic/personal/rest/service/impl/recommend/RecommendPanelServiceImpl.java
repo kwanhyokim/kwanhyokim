@@ -11,12 +11,10 @@
 package com.sktechx.godmusic.personal.rest.service.impl.recommend;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
-import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
+import com.sktechx.godmusic.lib.redis.service.RedisService;
+import com.sktechx.godmusic.personal.rest.repository.*;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -51,9 +49,6 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.PreferS
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.RcmmdTrackPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.TrackPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
-import com.sktechx.godmusic.personal.rest.repository.ArtistMapper;
-import com.sktechx.godmusic.personal.rest.repository.ChannelMapper;
-import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
 import com.sktechx.godmusic.personal.rest.service.ChartService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
@@ -69,6 +64,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class RecommendPanelServiceImpl implements RecommendPanelService {
+
+    public static final String RECOMMEND_PANEL_DEFAULT_IMG_KEY ="godmusic.personalapi.recommend.home.panel.default.imglist";
 
     @Autowired
     private ChartService chartService;
@@ -94,7 +91,13 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     private RecommendPanelAssemblyFactory recommendPanelAssemblyFactory;
 
     @Autowired
+    private RecommendMapper recommendMapper;
+
+    @Autowired
     RestTemplate restTemplate;
+
+    @Autowired
+    private RedisService redisService;
 
     @Override
     public List<Panel> createRecommendPanelList(Long characterNo , OsType osType) {
@@ -126,18 +129,18 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 });
             }
 
-            List<ChnlDto> preferPopularGenreChannelList = channelMapper.selectPopularChannelList(Arrays.asList(18399L),12, OsType.AOS);
+            List<ChnlDto> preferPopularGenreChannelList = channelMapper.selectChannelListByIdList(Arrays.asList(18399L),12, OsType.AOS);
             GenreVo danceGenre = makeGenre(1L, "POP");
             ChannelPanel preferPopularGenreChannelPanel = new PreferGenrePopularChannelPanel(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL, preferPopularGenreChannelList.get(0),danceGenre , preferPopularGenreChannelList.get(0).getImgList() );
             mockPanelList.add(preferPopularGenreChannelPanel);
 
 
-            preferPopularGenreChannelList = channelMapper.selectPopularChannelList(Arrays.asList(18398L),12, OsType.AOS);
+            preferPopularGenreChannelList = channelMapper.selectChannelListByIdList(Arrays.asList(18398L),12, OsType.AOS);
             GenreVo traditionalGenre = makeGenre(2L, "국악");
             preferPopularGenreChannelPanel = new PreferGenrePopularChannelPanel(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL, preferPopularGenreChannelList.get(0),traditionalGenre ,preferPopularGenreChannelList.get(0).getImgList());
             mockPanelList.add(preferPopularGenreChannelPanel);
 
-            List<ChnlDto> listenMoodPolularChannelList = channelMapper.selectPopularChannelList(Arrays.asList(18397L),12, OsType.AOS);
+            List<ChnlDto> listenMoodPolularChannelList = channelMapper.selectChannelListByIdList(Arrays.asList(18397L),12, OsType.AOS);
             ChannelPanel listenMoodPopularChannelPanel = new ListenMoodPopularChannelPanel(RecommendPanelType.LISTEN_MOOD_POPULAR_CHANNEL, listenMoodPolularChannelList.get(0) ,listenMoodPolularChannelList.get(0).getImgList());
             mockPanelList.add(listenMoodPopularChannelPanel);
 
@@ -356,6 +359,31 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         return panel;
     }
 
+    public List<ImageInfo> getRecommendPanelDefaultImageList(OsType osType){
+
+        List<ImageInfo> imgList = null;
+
+        try{
+            imgList = redisService.getListWithPrefix(RECOMMEND_PANEL_DEFAULT_IMG_KEY,ImageInfo.class);
+        }catch(Exception e){
+            log.error("getRecommendPanelDefaultImageList error : {}",e.getMessage());
+        }finally {
+            if(CollectionUtils.isEmpty(imgList)){
+                imgList = recommendMapper.selectRecommendPanelDefaultImageList();
+                if(!CollectionUtils.isEmpty(imgList)){
+                    redisService.setWithPrefix(RECOMMEND_PANEL_DEFAULT_IMG_KEY, imgList);
+                }
+            }
+        }
+
+        if(!CollectionUtils.isEmpty(imgList)){
+            Collections.shuffle(imgList);
+
+            ImageInfo info = imgList.stream().filter(imageInfo -> osType.equals(imageInfo.getOsType())).findFirst().orElse(null);
+            return Arrays.asList(info);
+        }
+        return null;
+    }
     private ListDto<List<RecommendPanelTrackDto>> getTrackList(List<Long> trackIdList){
 
         if(CollectionUtils.isEmpty(trackIdList)){

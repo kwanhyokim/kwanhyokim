@@ -75,7 +75,7 @@ public class ChannelServiceImpl implements ChannelService {
             popularChnlIdList = popularChnlIdList.subList(0,limitSize);
         }
 
-        return channelMapper.selectPopularChannelList(popularChnlIdList,popularChnlTrackLimitSize, osType);
+        return channelMapper.selectChannelListByIdList(popularChnlIdList,popularChnlTrackLimitSize, osType);
     }
 
     @Override

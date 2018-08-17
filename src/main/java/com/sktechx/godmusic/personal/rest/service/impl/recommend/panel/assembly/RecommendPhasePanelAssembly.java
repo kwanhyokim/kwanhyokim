@@ -117,7 +117,7 @@ public class RecommendPhasePanelAssembly extends PanelSignAssembly {
                                 cfTrack.setTrackCount(personalPanel.get().getTrackCount());
                             }
                             try {
-                                panelList.add(new RcmmdTrackPanel(RecommendPanelType.RCMMD_TRACK, cfTrack, cfTrack.getImgList()));
+                                panelList.add(new RcmmdTrackPanel(RecommendPanelType.RCMMD_TRACK, cfTrack, getDefaultBgImageList( cfTrack.getImgList() , personalPhaseMeta.getOsType())));
                             } catch (Exception e) {
                                 log.error("RecommendPhasePanelAssembly appendRecommendCfTrackPanelList error : {}", e.getMessage());
                                 e.printStackTrace();
