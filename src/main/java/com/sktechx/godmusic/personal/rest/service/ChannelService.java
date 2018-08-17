@@ -11,7 +11,9 @@
 package com.sktechx.godmusic.personal.rest.service;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.personal.common.domain.type.DayType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
+import com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlListDto;
@@ -30,4 +32,5 @@ public interface ChannelService {
     List<ChnlDto> getPopularChannelList(int limitSize,OsType osType);
     List<PreferGenrePopularChnlDto> getPreferGenrePopularChannelIdList(List<Long> preferGenreIdList);
     List<MoodPopularChnlDto> getListenMoodPopularChannelIdList(List<Long> moodIdList);
+    List<LastListenHistoryDto> getLastListenHistory(long characterNo, DayType dayType, OsType osType);
 }

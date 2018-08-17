@@ -17,10 +17,67 @@
 
     <resultMap id="albumResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.AlbumDto" autoMapping="true">
         <id property="albumId" column="album_id"/>
-        <collection property="imgList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" column="albumId" autoMapping="true">
+        <collection property="imgList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" column="album_id" autoMapping="true">
             <result property="size" column="size" />
             <result property="url" column="url" />
         </collection>
+
+        <collection property="artistList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" column="albumArtistId">
+            <result property="artistId" column="albumArtistId"></result>
+            <result property="artistName" column="albumArtistName"></result>
+        </collection>
+
+        <collection property="artist" ofType="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" column="albumRepArtistId">
+            <result property="artistId" column="albumRepArtistId"></result>
+            <result property="artistName" column="albumRepArtistName"></result>
+        </collection>
     </resultMap>
+
+    <resultMap id="lastListenHistoryResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto" autoMapping="true">
+        <id property="listenId" column="listen_id"/>
+        <collection property="imgList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" column="listen_id" autoMapping="true">
+            <result property="size" column="size" />
+            <result property="url" column="url" />
+        </collection>
+        <collection property="album" resultMap="albumResultMap"/>
+    </resultMap>
+
+    <select id = "selectLastListenHistory" resultMap="lastListenHistoryResultMap">
+        SELECT CONCAT(a.listen_type, a.listen_type_id) as listen_id,
+               a.listen_type,
+               a.listen_type_id,
+               b.title as content_title,
+               a.last_listen_dtime,
+               e.album_img_size as size,
+               CONCAT(e.album_img_url, '?updateDate=', UNIX_TIMESTAMP(e.update_dtime)) AS url,
+               b.album_id,
+               b.title,
+               b.release_ymd,
+               d.artist_id albumArtistId,
+               d.artist_nm albumArtistName,
+               h.artist_id albumRepArtistId,
+               h.artist_nm albumRepArtistName
+          FROM ( SELECT *
+                   FROM tb_member_last_listen_hist
+                  WHERE character_no = #{characterNo}
+                  ORDER BY last_listen_dtime DESC
+                  LIMIT 20 ) a
+          JOIN ted_album b
+            ON a.listen_type_id = b.album_id
+           AND listen_type = 'ALBUM'
+          LEFT OUTER JOIN ted_albumartist c
+            ON b.album_id = c.album_id
+          LEFT OUTER JOIN ted_artist d
+            ON c.artist_id = d.artist_id
+          LEFT OUTER JOIN tb_album_img e
+            ON b.album_id = e.album_id
+          LEFT OUTER JOIN ted_albumstyle f
+            ON b.album_id = f.album_id
+          LEFT OUTER JOIN ted_style g
+            ON f.style_id = g.style_id
+          LEFT OUTER JOIN ted_artist h
+            ON h.artist_id = b.artist_id
+         ORDER BY last_listen_dtime DESC
+    </select>
 
 </mapper>
