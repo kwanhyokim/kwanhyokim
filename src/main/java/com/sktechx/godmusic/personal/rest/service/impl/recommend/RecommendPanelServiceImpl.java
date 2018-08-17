@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,16 +28,16 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ServiceGenreDto;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.artist.ArtistPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.ChannelPanel;
@@ -61,9 +60,6 @@ import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import lombok.extern.slf4j.Slf4j;
 
-import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
-import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
-import com.sktechx.godmusic.personal.rest.service.ChannelService;
 /**
  * 설명 : 추천 패널 데이터 생성
  *
@@ -299,6 +295,67 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 		return trackList;
 	}
 
+    @Override
+    public RecommendPanelInfoDto getRecommendPanelInfo(RecommendPanelContentType recommendPanelContentType,
+            Long panelContentId) {
+
+        RecommendPanelInfoDto panel = null;
+
+
+        switch (recommendPanelContentType){
+            // 아티스트
+            case RC_ATST_TR:
+
+                // 아티스트의 첫 이미지를 배경 이미지로 사용
+                List<ArtistDto> artistDtoList = artistMapper.getArtistList(Arrays.asList(12L,14L,15L));
+                panel =  new RecommendPanelInfoDto.Builder()
+                        .title("Musician focus")
+                        .subTitle("마이큐 인기곡")
+                        .imgList((artistDtoList == null || artistDtoList.get(0) == null? null : artistDtoList.get(0).getImgList()))
+                        .artistList(artistDtoList)
+                        .artistCount(3)
+                        .newYn(YnType.Y)
+                        .build();
+                break;
+            // 선호 유사
+            case RC_SML_TR:
+                panel = new RecommendPanelInfoDto.Builder()
+                        .title("Like U")
+                        .subTitle("많이 들었던 노래와\n 유사한 선곡")
+                        .imgList(makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_likeu_1.png"))
+                        .trackCount(60)
+                        .newYn(YnType.Y)
+                        .renewDtime(new Date())
+                        .build();
+                break;
+            // 유사 장르
+            case RC_GR_TR:
+                panel = new RecommendPanelInfoDto.Builder()
+                        .title("Like U")
+                        .subTitle("유사 장르")
+                        .imgList(makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_likeu_1.png") )
+                        .trackCount(60)
+                        .newYn(YnType.Y)
+                        .renewDtime(new Date())
+                        .build();
+
+                break;
+            // 추천
+            case RC_CF_TR:
+                panel = new RecommendPanelInfoDto.Builder()
+                        .title("Made For U")
+                        .subTitle("추천")
+                        .imgList(makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_madeforu_1.png"))
+                        .trackCount(60)
+                        .newYn(YnType.Y)
+                        .renewDtime(new Date())
+                        .build();
+                break;
+        }
+
+        return panel;
+    }
+
     private ListDto<List<RecommendPanelTrackDto>> getTrackList(List<Long> trackIdList){
 
         if(CollectionUtils.isEmpty(trackIdList)){
@@ -320,6 +377,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         return response.getData();
 
     }
+
+
 
 
 }
