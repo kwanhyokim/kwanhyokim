@@ -23,7 +23,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.List;
-
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
 /**
  * 설명 : 차트형 추천 패널
  *
@@ -44,7 +44,7 @@ public class ChartPanel extends Panel {
     @Override
     protected void initialPanel() {
         this.title = chart.getChartNm();
-        this.subTitle = getChartUpdateHourly(chart.getUpdateDtime())+"시 기준";
+        this.subTitle = getChartUpdateHourly(chart.getUpdateDtime())+CHART_PANEL_HOURLY_BASIS;
         this.content = createPanelContent();
     }
 

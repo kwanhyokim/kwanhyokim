@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
 
 /**
  * 설명 : 추천 단계 ( 3단계 ) 패널
@@ -40,26 +41,21 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service("recommendPhasePanelAssembly")
 public class RecommendPhasePanelAssembly extends PanelSignAssembly {
-    int rcmmdCfTrackPanelSize = 2;
-    int similarTrackPanelSize = 1;
 
-    int preferGenreSimilarTrackPanelSize = 2;
-
-    int rcmmdCfTrackLimitSize = 15;
     private RecommendPhasePanelAssembly(){}
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
         final List<Panel> panelList = new ArrayList();
 
-        appendRecommendCfTrackPanelList(personalPhaseMeta, panelList, rcmmdCfTrackPanelSize);
+        appendRecommendCfTrackPanelList(personalPhaseMeta, panelList, RCMMD_CF_PANEL_DEFAULT_SIZE);
 
         boolean isFillRecommendPanel = false;
-        if(rcmmdCfTrackPanelSize > panelList.size()){
+        if(RCMMD_CF_PANEL_DEFAULT_SIZE > panelList.size()){
             isFillRecommendPanel = true;
         }
-        appendPreferGenreSimilarTrackPanelList(personalPhaseMeta, panelList, preferGenreSimilarTrackPanelSize);
+        appendPreferGenreSimilarTrackPanelList(personalPhaseMeta, panelList, PREFER_GENRE_SIMILAR_TRACK_PANEL_APPEND_SIZE);
 
-        int panelDefaultSize = rcmmdCfTrackPanelSize+similarTrackPanelSize;
+        int panelDefaultSize = RCMMD_CF_PANEL_DEFAULT_SIZE+SIMILAR_TRACK_PANEL_APPEND_SIZE;
 
         if( panelDefaultSize > panelList.size()){
             appendSimilarTrackPanelList(personalPhaseMeta , panelList ,panelDefaultSize  - panelList.size() );
@@ -69,7 +65,7 @@ public class RecommendPhasePanelAssembly extends PanelSignAssembly {
         }else{
             if(isFillRecommendPanel){
                 int recommendPanelCount = panelCount(RecommendPanelType.RCMMD_TRACK,panelList);
-                int recommendPanelAppendCount = rcmmdCfTrackPanelSize - recommendPanelCount;
+                int recommendPanelAppendCount = RCMMD_CF_PANEL_DEFAULT_SIZE - recommendPanelCount;
                 if(recommendPanelAppendCount > 0){
                     appendSimilarTrackPanelList(personalPhaseMeta,panelList,recommendPanelAppendCount);
                     if(panelDefaultSize >= panelList.size()){
@@ -103,7 +99,7 @@ public class RecommendPhasePanelAssembly extends PanelSignAssembly {
             List<Long> rcmmdIdList = rcmmdPanelList.stream().map(personalPanel -> personalPanel.getRecommendId()).collect(Collectors.toList());
 
             List<RecommendTrackDto> recommendCfTrackList =
-                    recommendMapper.selectRecommendCfTrackListByIdList(rcmmdIdList, rcmmdCfTrackPanelSize, rcmmdCfTrackLimitSize, personalPhaseMeta.getOsType());
+                    recommendMapper.selectRecommendCfTrackListByIdList(rcmmdIdList, RCMMD_CF_PANEL_DEFAULT_SIZE, RCMMD_CF_TRACK_LIMIT_SIZE, personalPhaseMeta.getOsType());
             if (!CollectionUtils.isEmpty(recommendCfTrackList)) {
                 recommendCfTrackList
                         .stream()

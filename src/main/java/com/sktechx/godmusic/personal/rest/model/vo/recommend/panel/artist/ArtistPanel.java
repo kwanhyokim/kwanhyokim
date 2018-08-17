@@ -19,7 +19,7 @@ import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
 import org.springframework.util.CollectionUtils;
-
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
 /**
  * 설명 : 아티스트형 추천 패널
  *
@@ -42,7 +42,7 @@ public class ArtistPanel extends Panel{
     protected void initialPanel() throws CommonBusinessException{
         ArtistDto representationArtist = neverNullArtist(recommendArtistDto);
 
-        this.title = "Musician focus";
+        this.title = ARTIST_PANEL_TITLE;
         this.subTitle = representationArtist.getArtistName();
         this.imgList = representationArtist.getImgList();
         this.content = createPanelContent();

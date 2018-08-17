@@ -14,6 +14,8 @@ import java.net.URI;
 import java.util.*;
 
 import com.sktechx.godmusic.lib.redis.service.RedisService;
+import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
+import com.sktechx.godmusic.personal.common.domain.type.SvcContentType;
 import com.sktechx.godmusic.personal.rest.repository.*;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +67,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RecommendPanelServiceImpl implements RecommendPanelService {
 
-    public static final String RECOMMEND_PANEL_DEFAULT_IMG_KEY ="godmusic.personalapi.recommend.home.panel.default.imglist";
+
 
     @Autowired
     private ChartService chartService;
@@ -115,7 +117,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         try{
 
             //TODO : mockup 데이터 생성
-            ChartDto liveChart = chartMapper.selectPreferDispChart("ALL", ChartType.HOURLY, OsType.AOS , 15);
+            ChartDto liveChart = chartMapper.selectPreferDispChart(SvcContentType.TOTAL, ChartType.HOURLY, OsType.AOS , 15);
 
             ChartPanel liveChartPanel = new ChartPanel(RecommendPanelType.LIVE_CHART, liveChart, makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_top_100_1.png"));
             mockPanelList.add(liveChartPanel);
@@ -170,7 +172,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             mockPanelList.add(rcmmdTrack);
 
 
-            ChartDto kidsChart = chartMapper.selectPreferDispChart("KIDS", ChartType.HOURLY, OsType.AOS , 15);
+            ChartDto kidsChart = chartMapper.selectPreferDispChart(SvcContentType.KIDS, ChartType.HOURLY, OsType.AOS , 15);
             ChartPanel kidsChartPanel = new ChartPanel(RecommendPanelType.KIDS_CHART, kidsChart, makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_kids_1.png"));
             mockPanelList.add(kidsChartPanel);
 
@@ -364,14 +366,14 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         List<ImageInfo> imgList = null;
 
         try{
-            imgList = redisService.getListWithPrefix(RECOMMEND_PANEL_DEFAULT_IMG_KEY,ImageInfo.class);
+            imgList = redisService.getListWithPrefix(RedisKeyConstant.RECOMMEND_PANEL_DEFAULT_IMG_KEY,ImageInfo.class);
         }catch(Exception e){
             log.error("getRecommendPanelDefaultImageList error : {}",e.getMessage());
         }finally {
             if(CollectionUtils.isEmpty(imgList)){
                 imgList = recommendMapper.selectRecommendPanelDefaultImageList();
                 if(!CollectionUtils.isEmpty(imgList)){
-                    redisService.setWithPrefix(RECOMMEND_PANEL_DEFAULT_IMG_KEY, imgList);
+                    redisService.setWithPrefix(RedisKeyConstant.RECOMMEND_PANEL_DEFAULT_IMG_KEY, imgList);
                 }
             }
         }

@@ -16,6 +16,7 @@ import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 
 import java.util.List;
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
 
 /**
  * 설명 : 선호 장르 유사트랙
@@ -26,7 +27,7 @@ import java.util.List;
 public class PreferGenreSimilarTrackPanel extends TrackPanel {
 
     public PreferGenreSimilarTrackPanel(RecommendPanelType panelType, RecommendTrackDto recommendTrackDto, List<ImageInfo> bgImgList) throws CommonBusinessException {
-        super(panelType , "Mix Tape" , neverRecommdnTrackNull(recommendTrackDto).getSvcGenreDto().getSvcGenreNm(),recommendTrackDto ,bgImgList);
+        super(panelType , PREFER_GENRE_SIMILAR_TRACK_PANEL_TITLE , neverRecommdnTrackNull(recommendTrackDto).getSvcGenreDto().getSvcGenreNm(),recommendTrackDto ,bgImgList);
     }
 
 }

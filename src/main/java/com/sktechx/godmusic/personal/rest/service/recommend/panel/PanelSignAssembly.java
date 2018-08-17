@@ -11,16 +11,15 @@
 package com.sktechx.godmusic.personal.rest.service.recommend.panel;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.personal.common.domain.PreferDispType;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+import com.sktechx.godmusic.personal.common.domain.type.SvcContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
-import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.artist.ArtistPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.ListenMoodPopularChannelPanel;
@@ -34,9 +33,12 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
 /**
  * 설명 : 로그인 사용자 패널 생성기
  *
@@ -45,13 +47,6 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public abstract class PanelSignAssembly extends PanelAssembly {
-
-
-    private final int popularChnlTrackLimitSize = 10;
-    private final int preferGenreSimilarTrackLimitSize = 10;
-    private final int similarTrackLimitSize = 10;
-
-    private final int preferGenreChartTrackLimitSize = 12;
 
     protected abstract void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta, final List<Panel> panelList);
 
@@ -83,7 +78,7 @@ public abstract class PanelSignAssembly extends PanelAssembly {
                 Optional.ofNullable(
                         channelMapper.selectChannelListByIdList(
                                 chnlIdList,
-                                popularChnlTrackLimitSize,
+                                POPULAR_CHNL_TRACK_LIMIT_SIZE,
                                 personalPhaseMeta.getOsType()
                 )).ifPresent(popularChannelList -> {
                             popularChannelList
@@ -121,13 +116,13 @@ public abstract class PanelSignAssembly extends PanelAssembly {
                     .stream()
                     .filter(Objects::nonNull)
                     .forEach(characterPreferDisp -> {
-                        if ("TOP100".equals(characterPreferDisp.getPreferDispNm())) {
-                            Panel chartPanel = createChartPanel(RecommendPanelType.LIVE_CHART, "ALL", ChartType
-                                    .HOURLY, personalPhaseMeta.getOsType(), preferGenreChartTrackLimitSize);
+                        if (PreferDispType.TOP100.getCode().equals(characterPreferDisp.getPreferDispNm())) {
+                            Panel chartPanel = createChartPanel(RecommendPanelType.LIVE_CHART, SvcContentType.TOTAL, ChartType
+                                    .HOURLY, personalPhaseMeta.getOsType(), PREFER_DISP_CHART_TRACK_LIMIT_SIZE);
                             panelList.add(chartPanel);
-                        } else if ("KIDS".equals(characterPreferDisp.getPreferDispNm())) {
-                            Panel chartPanel = createChartPanel(RecommendPanelType.KIDS_CHART, "KIDS", ChartType
-                                    .HOURLY, personalPhaseMeta.getOsType(), preferGenreChartTrackLimitSize);
+                        } else if (PreferDispType.KIDS.getCode().equals(characterPreferDisp.getPreferDispNm())) {
+                            Panel chartPanel = createChartPanel(RecommendPanelType.KIDS_CHART, SvcContentType.KIDS, ChartType
+                                    .HOURLY, personalPhaseMeta.getOsType(), PREFER_DISP_CHART_TRACK_LIMIT_SIZE);
                             panelList.add(chartPanel);
                         }
                     });
@@ -162,7 +157,7 @@ public abstract class PanelSignAssembly extends PanelAssembly {
             if (!CollectionUtils.isEmpty(moodPopularChnlList)) {
                 List<Long> chnlIdList = moodPopularChnlList.stream().map(moodPopularChnlDto -> moodPopularChnlDto
                         .getChnlId()).collect(Collectors.toList());
-                Optional.ofNullable(channelMapper.selectChannelListByIdList(chnlIdList, popularChnlTrackLimitSize,
+                Optional.ofNullable(channelMapper.selectChannelListByIdList(chnlIdList, POPULAR_CHNL_TRACK_LIMIT_SIZE,
                         personalPhaseMeta.getOsType())).ifPresent(popularChannelList -> {
                             popularChannelList
                             .stream()
@@ -191,7 +186,7 @@ public abstract class PanelSignAssembly extends PanelAssembly {
             List<Long> rcmmdIdList = rcmmdPanelList.stream().map(personalPanel -> personalPanel.getRecommendId())
                     .collect(Collectors.toList());
             Optional.ofNullable(recommendMapper.selectRecommendSimilarTrackListByIdList(rcmmdIdList, rcmmdLimitSize,
-                    similarTrackLimitSize, personalPhaseMeta.getOsType())).ifPresent(recommendSimilarTrackList -> {
+                    SIMILAR_TRACK_LIMIT_SIZE, personalPhaseMeta.getOsType())).ifPresent(recommendSimilarTrackList -> {
                 recommendSimilarTrackList
                         .stream()
                         .filter(Objects::nonNull)
@@ -228,7 +223,7 @@ public abstract class PanelSignAssembly extends PanelAssembly {
 
             if (!CollectionUtils.isEmpty(rcmmdIdList)) {
                 Optional.ofNullable(recommendMapper.selectRecommendPreferGenreSimilarTrackListByIdList(rcmmdIdList,
-                        rcmmdLimitSize, preferGenreSimilarTrackLimitSize, personalPhaseMeta.getOsType()))
+                        rcmmdLimitSize, PREFER_GENRE_SIMILAR_TRACK_LIMIT_SIZE, personalPhaseMeta.getOsType()))
                         .ifPresent(preferGenreSimilarTrackList -> {
                             preferGenreSimilarTrackList
                                     .stream()
@@ -260,7 +255,7 @@ public abstract class PanelSignAssembly extends PanelAssembly {
         }
     }
 
-    private Panel createChartPanel(RecommendPanelType recommendPanelType, String svcContentType, ChartType chartType,
+    private Panel createChartPanel(RecommendPanelType recommendPanelType, SvcContentType svcContentType, ChartType chartType,
                                    OsType osType, int trackLimitSize) {
         ChartDto chartDto = chartMapper.selectPreferDispChart(svcContentType, chartType, osType, trackLimitSize);
         if (chartDto != null) {

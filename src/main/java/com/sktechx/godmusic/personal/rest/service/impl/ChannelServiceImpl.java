@@ -12,6 +12,7 @@ package com.sktechx.godmusic.personal.rest.service.impl;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
+import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.common.domain.type.DayType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto;
@@ -45,9 +46,6 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class ChannelServiceImpl implements ChannelService {
-    public static final String PREFER_GENRE_POPULAR_CHNL_KEY ="godmusic.personalapi.recommend.prefer.genre.popular.chnllist";
-    public static final String MOOD_POPULAR_CHNL_KEY = "godmusic.personalapi.recommend.mood.popular.chnllist";
-    public static final String ALL_POPULAR_CHNL_KEY ="godmusic.personalapi.recommend.all.popular.chnllist";
 
     private final int popularChnlTrackLimitSize = 10;
     private final int popularChnlExpiredSeconds = 86400;
@@ -67,14 +65,14 @@ public class ChannelServiceImpl implements ChannelService {
     public List<ChnlDto> getPopularChannelList(int limitSize, OsType osType){
         List<Long> popularChnlIdList = null;
         try{
-            popularChnlIdList = redisService.getListWithPrefix(ALL_POPULAR_CHNL_KEY,Long.class);
+            popularChnlIdList = redisService.getListWithPrefix(RedisKeyConstant.ALL_POPULAR_CHNL_KEY,Long.class);
         }catch( Exception e){
             log.error("getPopularChannelList error : {}",e.getMessage());
         }finally {
             if(CollectionUtils.isEmpty(popularChnlIdList)){
                 popularChnlIdList = channelMapper.selectPopularChannelIdList();
                 if(!CollectionUtils.isEmpty(popularChnlIdList)){
-                    redisService.setWithPrefix(ALL_POPULAR_CHNL_KEY,popularChnlIdList,popularChnlExpiredSeconds);
+                    redisService.setWithPrefix(RedisKeyConstant.ALL_POPULAR_CHNL_KEY,popularChnlIdList,popularChnlExpiredSeconds);
                 }
             }
         }
@@ -91,14 +89,14 @@ public class ChannelServiceImpl implements ChannelService {
         List<PreferGenrePopularChnlListDto> preferGenrePopularChannelList = null;
 
         try{
-            preferGenrePopularChannelList = redisService.getListWithPrefix(PREFER_GENRE_POPULAR_CHNL_KEY,PreferGenrePopularChnlListDto.class);
+            preferGenrePopularChannelList = redisService.getListWithPrefix(RedisKeyConstant.PREFER_GENRE_POPULAR_CHNL_KEY,PreferGenrePopularChnlListDto.class);
         }catch(Exception e){
             log.error("getPreferGenrePopularChannelIdList error : {}",e.getMessage());
         }finally {
             if(CollectionUtils.isEmpty(preferGenrePopularChannelList)){
                 preferGenrePopularChannelList = channelMapper.selectAllPreferGenrePopularChannelIdList();
                 if(!CollectionUtils.isEmpty(preferGenrePopularChannelList)){
-                    redisService.setWithPrefix(PREFER_GENRE_POPULAR_CHNL_KEY, preferGenrePopularChannelList , popularChnlExpiredSeconds);
+                    redisService.setWithPrefix(RedisKeyConstant.PREFER_GENRE_POPULAR_CHNL_KEY, preferGenrePopularChannelList , popularChnlExpiredSeconds);
                 }
             }
         }
@@ -125,14 +123,14 @@ public class ChannelServiceImpl implements ChannelService {
         List<MoodPopularChnlListDto> moodPopularChannelList = null;
 
         try{
-            moodPopularChannelList = redisService.getListWithPrefix(MOOD_POPULAR_CHNL_KEY, MoodPopularChnlListDto.class);
+            moodPopularChannelList = redisService.getListWithPrefix(RedisKeyConstant.MOOD_POPULAR_CHNL_KEY, MoodPopularChnlListDto.class);
         }catch(Exception e) {
             log.error("getListenMoodPopularChannelIdList error : {}", e.getMessage());
         }finally{
             if(CollectionUtils.isEmpty(moodPopularChannelList)){
                 moodPopularChannelList = channelMapper.selectAllMoodPopularChannelIdList();
                 if(!CollectionUtils.isEmpty(moodPopularChannelList)){
-                    redisService.setWithPrefix(MOOD_POPULAR_CHNL_KEY, moodPopularChannelList,popularChnlExpiredSeconds);
+                    redisService.setWithPrefix(RedisKeyConstant.MOOD_POPULAR_CHNL_KEY, moodPopularChannelList,popularChnlExpiredSeconds);
                 }
             }
         }

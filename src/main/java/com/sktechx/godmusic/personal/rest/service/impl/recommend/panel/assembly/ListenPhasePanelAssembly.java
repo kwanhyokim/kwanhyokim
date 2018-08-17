@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
 /**
  * 설명 : 청취 단계 ( 2단계 ) 패널 생성기
  *
@@ -28,10 +28,6 @@ import java.util.List;
 @Slf4j
 @Service("listenPhasePanelAssembly")
 public class ListenPhasePanelAssembly extends PanelSignAssembly {
-    final int similarTrackPanelSize = 2;
-    final int preferGenreSimilarTrackPanelSize = 2;
-
-    final int listenMoodPopularChannelPanelSize = 1;
 
     private ListenPhasePanelAssembly(){}
 
@@ -39,17 +35,17 @@ public class ListenPhasePanelAssembly extends PanelSignAssembly {
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
         final List<Panel> panelList = new ArrayList<>();
 
-        appendPreferGenreSimilarTrackPanelList(personalPhaseMeta, panelList , preferGenreSimilarTrackPanelSize);
-        if(preferGenreSimilarTrackPanelSize > panelList.size()){
-            appendSimilarTrackPanelList(personalPhaseMeta , panelList ,preferGenreSimilarTrackPanelSize - panelList.size() );
-            if(similarTrackPanelSize > panelList.size()){
-                appendPreferGenreChannelPanelList(personalPhaseMeta, panelList, similarTrackPanelSize - panelList.size() );
+        appendPreferGenreSimilarTrackPanelList(personalPhaseMeta, panelList , PREFER_GENRE_SIMILAR_TRACK_PANEL_DEFAULT_SIZE  );
+        if(PREFER_GENRE_SIMILAR_TRACK_PANEL_DEFAULT_SIZE  > panelList.size()){
+            appendSimilarTrackPanelList(personalPhaseMeta , panelList ,PREFER_GENRE_SIMILAR_TRACK_PANEL_DEFAULT_SIZE - panelList.size() );
+            if( SIMILAR_TRACK_PANEL_DEFAULT_SIZE > panelList.size()){
+                appendPreferGenreChannelPanelList(personalPhaseMeta, panelList, SIMILAR_TRACK_PANEL_DEFAULT_SIZE - panelList.size() );
             }
         }
-        appendListenMoodPopularChanelPanelList(personalPhaseMeta, panelList,listenMoodPopularChannelPanelSize);
+        appendListenMoodPopularChanelPanelList(personalPhaseMeta, panelList,LISTEN_MOOD_POPULAR_CHNL_DEFAULT_SIZE);
 
-        if(( similarTrackPanelSize+listenMoodPopularChannelPanelSize )  > panelList.size()){
-            appendDefaultPopularChannelPanel(personalPhaseMeta, panelList,( similarTrackPanelSize+listenMoodPopularChannelPanelSize ) - panelList.size() );
+        if(( SIMILAR_TRACK_PANEL_DEFAULT_SIZE+ LISTEN_MOOD_POPULAR_CHNL_DEFAULT_SIZE )  > panelList.size()){
+            appendDefaultPopularChannelPanel(personalPhaseMeta, panelList,( SIMILAR_TRACK_PANEL_DEFAULT_SIZE+LISTEN_MOOD_POPULAR_CHNL_DEFAULT_SIZE ) - panelList.size() );
         }
         return panelList;
     }

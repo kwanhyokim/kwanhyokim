@@ -26,7 +26,6 @@ import java.util.List;
 public class PreferSimilarTrackPanel extends TrackPanel {
 
     public PreferSimilarTrackPanel(RecommendPanelType panelType, RecommendTrackDto recommendTrackDto,List<ImageInfo> bgImgList) throws CommonBusinessException {
-        //TODO : 부제목
         super(panelType , "Like U" , "많이 들었던 노래와\n 유사한 선곡", neverRecommdnTrackNull(recommendTrackDto) ,bgImgList);
     }
 }

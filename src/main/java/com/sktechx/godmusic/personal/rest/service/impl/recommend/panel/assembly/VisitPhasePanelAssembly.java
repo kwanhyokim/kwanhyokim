@@ -19,7 +19,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
 /**
  * 설명 : 방문 단계 패널 생성기
  *
@@ -29,7 +29,6 @@ import java.util.List;
 @Slf4j
 @Service("visitPhasePanelAssembly")
 public class VisitPhasePanelAssembly extends PanelSignAssembly {
-    final int preferGenrePopularChannelListSize = 3;
 
     private VisitPhasePanelAssembly(){}
     @Override
@@ -37,12 +36,12 @@ public class VisitPhasePanelAssembly extends PanelSignAssembly {
         final List<Panel> panelList = new ArrayList<>();
 
         if(!CollectionUtils.isEmpty(personalPhaseMeta.getPreferGenreList())){
-            appendPreferGenreChannelPanelList(personalPhaseMeta,panelList,preferGenrePopularChannelListSize);
-            if(preferGenrePopularChannelListSize > panelList.size()){
-                appendDefaultPopularChannelPanel(personalPhaseMeta, panelList, preferGenrePopularChannelListSize - panelList.size());
+            appendPreferGenreChannelPanelList(personalPhaseMeta,panelList,PREFER_GENRE_POPULAR_CHNL_LIST_DEFAULT_SIZE);
+            if(isPopularChnlPanelAppend(panelList.size())){
+                appendDefaultPopularChannelPanel(personalPhaseMeta, panelList, PREFER_GENRE_POPULAR_CHNL_LIST_DEFAULT_SIZE - panelList.size());
             }
         }else{
-            appendDefaultPopularChannelPanel(personalPhaseMeta, panelList, preferGenrePopularChannelListSize);
+            appendDefaultPopularChannelPanel(personalPhaseMeta, panelList, PREFER_GENRE_POPULAR_CHNL_LIST_DEFAULT_SIZE);
         }
 
         return panelList;
@@ -53,6 +52,10 @@ public class VisitPhasePanelAssembly extends PanelSignAssembly {
         appendPreferArtistPopularTrackPanel(personalPhaseMeta,panelList);
         appendPreferenceChartPanel(personalPhaseMeta,panelList);
         sort(personalPhaseMeta, panelList);
+    }
+
+    private boolean isPopularChnlPanelAppend(int panelSize){
+        return PREFER_GENRE_POPULAR_CHNL_LIST_DEFAULT_SIZE > panelSize ? true : false;
     }
 
 }

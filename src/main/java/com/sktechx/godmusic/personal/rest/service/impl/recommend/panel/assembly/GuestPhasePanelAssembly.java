@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
 /**
  * 설명 : 비로그인 사용자 패널 생성기
  *       인기 채널 3종 제공
@@ -30,15 +31,13 @@ import java.util.List;
 @Service("guestPhasePanelAssembly")
 public class GuestPhasePanelAssembly extends PanelNonSignAssembly {
 
-    final int popularChannelListSize = 3 ;
-
     private GuestPhasePanelAssembly(){}
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
 
         final List<Panel> panelList = new ArrayList<>();
 
-        appendDefaultPopularChannelPanel(personalPhaseMeta , panelList ,popularChannelListSize);
+        appendDefaultPopularChannelPanel(personalPhaseMeta , panelList , POPULAR_CHNL_LIST_DEFAULT_SIZE);
 
         return panelList;
     }
