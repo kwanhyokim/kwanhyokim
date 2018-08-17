@@ -14,12 +14,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+import com.sktechx.godmusic.personal.common.util.DateUtil;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
 import org.springframework.util.StringUtils;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,8 +44,7 @@ public class ChartPanel extends Panel {
     @Override
     protected void initialPanel() {
         this.title = chart.getChartNm();
-        //TODO : 업데이트 시간 계산
-        this.subTitle = "17시 기준";
+        this.subTitle = getChartUpdateHourly(chart.getUpdateDtime())+"시 기준";
         this.content = createPanelContent();
     }
 
@@ -54,8 +55,8 @@ public class ChartPanel extends Panel {
         content.setId(chart.getChartId());
 
         content.setType(RecommendPanelContentType.CHART);
-        content.setCreateDtime(chart.getCreateDateTime());
-        content.setUpdateDtime(chart.getUpdateDateTime());
+        content.setCreateDtime(chart.getCreateDtime());
+        content.setUpdateDtime(chart.getUpdateDtime());
         content.setTrackList(chart.getTrackList());
         content.setTrackCount(chart.getTrackCount());
 
@@ -66,5 +67,9 @@ public class ChartPanel extends Panel {
         if(chart == null || StringUtils.isEmpty(chart.getChartNm()))
             throw new CommonBusinessException("chart is null.");
         return chart;
+    }
+
+    private String getChartUpdateHourly(Date updateDateTime){
+        return DateUtil.dateToString(updateDateTime, "HH");
     }
 }

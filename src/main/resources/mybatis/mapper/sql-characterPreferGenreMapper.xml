@@ -16,17 +16,37 @@
 <mapper namespace="com.sktechx.godmusic.personal.rest.repository.CharacterPreferGenreMapper">
 
     <resultMap id="characterPreferGenreResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto" autoMapping="true" />
+    <resultMap id="characterPreferDispResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferDispDto" autoMapping="true" />
 
     <select id="selectCharacterPreferGenreList" resultMap="characterPreferGenreResultMap" parameterType="Long">
         <![CDATA[
             SELECT
               a.character_no,
               a.prefer_genre_id,
-              b.prefer_genre_nm,
-              b.prefer_type
+              b.prefer_genre_nm
             FROM tb_character_prefer_genre a INNER JOIN tb_prefer_genre b ON a.prefer_genre_id = b.prefer_genre_id
-            WHERE a.character_no = #{characterNo}
+            WHERE
+              b.use_yn = 'Y'
+            AND
+              a.character_no = #{characterNo}
         ]]>
+    </select>
+    <select id="selectCharacterPreferDispList" resultMap="characterPreferDispResultMap" parameterType="Long">
+        <![CDATA[
+            SELECT
+                b.character_no,
+                a.prefer_disp_id,
+                a.prefer_disp_nm,
+                a.prefer_disp_type
+            FROM
+                tb_prefer_disp a
+                    INNER JOIN
+                tb_character_prefer_disp b ON a.prefer_disp_id = b.prefer_disp_id
+            WHERE
+                a.use_yn = 'Y'
+            AND b.character_no = #{characterNo}
+        ]]>
+
     </select>
 
 </mapper>

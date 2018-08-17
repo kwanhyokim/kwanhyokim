@@ -34,7 +34,7 @@ public interface ChartMapper {
     //TODO : 서비스 장르 인기채널
 //    List<PreferGenrePopularChnlDto> selectPreferGenrePopularChannel(List<Long> svcGenreIdList);
 
-    ChartDto selectPreferGenreChart(@Param("svcContentType") String svcContentType, @Param("chartType") ChartType chartType , @Param("osType") OsType osType , @Param("trackLimitSize") int trackLimitSize);
+    ChartDto selectPreferDispChart(@Param("svcContentType") String svcContentType, @Param("chartType") ChartType chartType , @Param("osType") OsType osType , @Param("trackLimitSize") int trackLimitSize);
 
     List<ChartDto> selectChartListByDefaultGenre();
     List<ChartDto> selectChartListByPreferGenre(@Param("characterNo") Long characterNo);

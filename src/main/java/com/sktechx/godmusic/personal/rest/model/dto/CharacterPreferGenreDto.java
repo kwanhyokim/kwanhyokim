@@ -13,10 +13,7 @@
 package com.sktechx.godmusic.personal.rest.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.sktechx.godmusic.personal.common.domain.type.PreferGenreType;
 import lombok.Data;
-
-import java.util.List;
 
 /**
  * 설명 :
@@ -30,5 +27,4 @@ public class CharacterPreferGenreDto {
     protected Long characterNo;
     protected Long preferGenreId;
     protected String preferGenreNm;
-    protected PreferGenreType preferType;
 }
