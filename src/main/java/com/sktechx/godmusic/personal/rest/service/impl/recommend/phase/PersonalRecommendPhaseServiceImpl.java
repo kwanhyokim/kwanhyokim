@@ -13,6 +13,7 @@ package com.sktechx.godmusic.personal.rest.service.impl.recommend.phase;
 import com.netflix.discovery.converters.Auto;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
+import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferDispDto;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
@@ -33,7 +34,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
+import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.*;
 /**
  * 설명 : 사용자 청취 단계 / 패널 메타 관리
  *
@@ -44,8 +45,6 @@ import java.util.Locale;
 @Slf4j
 public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhaseService {
 
-
-    public static final String PERSONAL_RECOMMEND_PHASE_KEY ="godmusic.personalapi.recommend.phase:%s";
 
     @Autowired
     private CharacterPreferGenreMapper characterPreferGenreMapper;
@@ -59,36 +58,44 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
 
     @Override
     public PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType){
+        PersonalPhaseMeta personalPhaseMeta = null;
 
         if(characterNo == null){
             return getGuestPhaseMeta(osType);
         }
 
-        String personalRecommendPhaseKey = String.format(PERSONAL_RECOMMEND_PHASE_KEY, characterNo);
+        try {
 
-        if (redisService.exists(personalRecommendPhaseKey) ){
-            PersonalPhaseMeta cachePersonalPhaseMeta = redisService.get(personalRecommendPhaseKey, PersonalPhaseMeta.class);
-            cachePersonalPhaseMeta.setOsType(osType);
-            return cachePersonalPhaseMeta;
+            String personalRecommendPhaseKey = String.format(PERSONAL_RECOMMEND_PHASE_KEY, characterNo);
+
+            if (redisService.exists(personalRecommendPhaseKey)) {
+                PersonalPhaseMeta cachePersonalPhaseMeta = redisService.get(personalRecommendPhaseKey, PersonalPhaseMeta.class);
+
+                cachePersonalPhaseMeta.setOsType(osType);
+                return cachePersonalPhaseMeta;
+            }
+            personalPhaseMeta = new PersonalPhaseMeta();
+
+            personalPhaseMeta.setCharacterNo(characterNo);
+            personalPhaseMeta.setOsType(osType);
+            //선호 장르 리스트
+            List<CharacterPreferGenreDto> characterPreferGenreList = characterPreferGenreMapper.selectCharacterPreferGenreList(characterNo);
+            personalPhaseMeta.setPreferGenreList(characterPreferGenreList);
+
+            //선호 노출 리스트
+            List<CharacterPreferDispDto> characterPreferDispList = characterPreferGenreMapper.selectCharacterPreferDispList(characterNo);
+            personalPhaseMeta.setPreferDispList(characterPreferDispList);
+
+            //개인화 추천 패널
+            List<PersonalPanel> rcmmdPanelList = recommendMapper.selectPersonalRecommendPanelMeta(characterNo);
+            personalPhaseMeta.setRcmmdPanelList(rcmmdPanelList);
+
+            redisService.setWithPrefix(personalRecommendPhaseKey, personalPhaseMeta, "NX", "PX", todayRemainMillisecond());
+        }catch(Exception ex){
+            log.error("getPersonalRecommendPhaseMeta not catched exception : {}",ex.getMessage());
+            ex.printStackTrace();
+            personalPhaseMeta =  getGuestPhaseMeta(osType);
         }
-        PersonalPhaseMeta personalPhaseMeta = new PersonalPhaseMeta();
-
-        personalPhaseMeta.setCharacterNo(characterNo);
-        personalPhaseMeta.setOsType(osType);
-        //선호 장르 리스트
-        List<CharacterPreferGenreDto> characterPreferGenreList = characterPreferGenreMapper.selectCharacterPreferGenreList(characterNo);
-        personalPhaseMeta.setPreferGenreList(characterPreferGenreList);
-
-        //선호 노출 리스트
-        List<CharacterPreferDispDto> characterPreferDispList = characterPreferGenreMapper.selectCharacterPreferDispList(characterNo);
-        personalPhaseMeta.setPreferDispList(characterPreferDispList);
-
-        //개인화 추천 패널
-        List<PersonalPanel> rcmmdPanelList = recommendMapper.selectPersonalRecommendPanelMeta(characterNo);
-        personalPhaseMeta.setRcmmdPanelList(rcmmdPanelList);
-
-        redisService.setWithPrefix(personalRecommendPhaseKey,personalPhaseMeta,"NX" ,"PX" ,todayRemainMillisecond());
-
         return personalPhaseMeta;
     }
 

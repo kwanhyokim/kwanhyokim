@@ -10,8 +10,6 @@
 
 package com.sktechx.godmusic.personal.rest.service;
 
-import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
-
 /**
  * 설명 : 차트 서비스
  *
@@ -19,6 +17,4 @@ import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
  * @date 2018. 07. 23.
  */
 public interface ChartService {
-    ChartDto getLiveChart();
-    ChartDto getKidsChart();
 }

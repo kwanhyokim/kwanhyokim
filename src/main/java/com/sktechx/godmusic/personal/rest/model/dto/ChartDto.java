@@ -35,6 +35,8 @@ public class ChartDto {
     @JsonProperty("name")
     private String chartNm;
 
+    private String chartDispNm;
+
     private ChartType chartType;
 
     private List<TrackDto> trackList;

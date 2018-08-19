@@ -15,7 +15,7 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * 설명 : 선호 장르 인기채널 아이디 리스트
+ * 설명 : 선호 장르 인기채널 아이디 리스트 캐시
  *
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 08. 10.

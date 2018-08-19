@@ -10,10 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl;
 
-import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
-import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
 import com.sktechx.godmusic.personal.rest.service.ChartService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -25,14 +22,4 @@ import org.springframework.stereotype.Service;
 @Service
 public class ChartServiceImpl implements ChartService {
 
-    @Autowired
-    private ChartMapper chartMapper;
-
-    public ChartDto getLiveChart(){
-        return chartMapper.selectLiveChart();
-    }
-    public ChartDto getKidsChart(){
-        return chartMapper.selectLiveChart();
-
-    }
 }

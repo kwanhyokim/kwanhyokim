@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.service.recommend.panel;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
@@ -28,6 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.POPULAR_CHNL_TRACK_LIMIT_SIZE;
 
 /**
  * 설명 : 추천 패널 생성기
@@ -52,9 +55,7 @@ public abstract class PanelAssembly {
     @Autowired
     protected CharacterPreferGenreMapper characterPreferGenreMapper;
 
-    public abstract List<Panel> assembleRecommendPanel(PersonalPhaseMeta personalPhaseMeta);
-
-
+    public abstract List<Panel> assembleRecommendPanel(PersonalPhaseMeta personalPhaseMeta) throws Exception;
     protected abstract List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta);
 
     protected int panelCount(RecommendPanelType recommendPanelType ,final List<Panel> panelList){
@@ -74,12 +75,12 @@ public abstract class PanelAssembly {
             }
         });
 
-        //TODO : 선호장르를 KIDS만 선택했을 경우 처음에 노출
+        //TODO : 선호장르 및 선호노출중 KIDS만 선택했을 경우 KIDS차트의 경우 가장 처음으로 이동
     }
 
 
-    protected void appendDefaultPopularChannelPanel(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int limitSize) {
-        List<ChnlDto> popularChannelList = channelService.getPopularChannelList(limitSize,personalPhaseMeta.getOsType());
+    protected void appendDefaultPopularChannelPanel(final PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int panelLimitSize) {
+        List<ChnlDto> popularChannelList = channelService.getPopularChannelList(panelLimitSize,POPULAR_CHNL_TRACK_LIMIT_SIZE ,personalPhaseMeta.getOsType());
 
         if(!CollectionUtils.isEmpty(popularChannelList)){
             popularChannelList
@@ -87,7 +88,7 @@ public abstract class PanelAssembly {
                     .filter(Objects::nonNull)
                     .forEach(channel -> {
                         try{
-                            panelList.add(new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL,channel , getDefaultBgImageList( channel.getImgList(),personalPhaseMeta.getOsType() ) ));
+                            panelList.add( createPopularChannelPanel( channel,personalPhaseMeta ) );
                         }catch(Exception e){
                             log.error("GuestPhasePanel defaultPanelSetting Exception : {}",e.getMessage());
                         }
@@ -102,6 +103,13 @@ public abstract class PanelAssembly {
         }else{
             return imgList;
         }
-
     }
+
+    private Panel createPopularChannelPanel(final ChnlDto channel,final PersonalPhaseMeta personalPhaseMeta){
+        return new PopularChannelPanel(
+                channel ,
+                getDefaultBgImageList( channel.getImgList(),personalPhaseMeta.getOsType() )
+        );
+    }
+
 }

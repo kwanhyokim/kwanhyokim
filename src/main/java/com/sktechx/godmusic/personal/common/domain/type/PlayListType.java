@@ -15,7 +15,6 @@ import org.apache.ibatis.type.MappedTypes;
 public enum PlayListType implements CodeEnum {
 	CHNL("CHNL", "체널")
 	, CHART("CHART" , "차트")
-	, RANK_CHART("RANK_CHART" , "랭크 차트")
 	;
 
 	private final String value;

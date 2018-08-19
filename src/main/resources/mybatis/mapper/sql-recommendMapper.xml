@@ -45,14 +45,7 @@
                 rcmmd_mforu_id as recommendId,
                 disp_std_end_dt as avaliableDateTime,
                 disp_sn as dispSn,
-                0 as moodId,
-                ( SELECT
-                        count(*)
-                FROM
-                        tb_rcmmd_mforu_list
-                WHERE
-                        rcmmd_mforu_id =recommendId
-                ) as trackCount
+                0 as moodId
             FROM
                 tb_rcmmd_mforu
             WHERE
@@ -67,14 +60,7 @@
                 rcmmd_similar_track_id as recommendId,
                 disp_std_end_dt as avaliableDateTime,
                 disp_sn as dispSn,
-                0 as moodId,
-                ( SELECT
-                        count(*)
-                FROM
-                        tb_rcmmd_similar_track_list
-                WHERE
-                        rcmmd_similar_track_id =recommendId
-                ) as trackCount
+                0 as moodId
             FROM
                 tb_rcmmd_similar_track
             WHERE
@@ -89,14 +75,7 @@
                 rcmmd_prefer_genre_similar_track_id as recommendId,
                 disp_std_end_dt as avaliableDateTime,
                 disp_sn as dispSn,
-                0 as moodId,
-                ( SELECT
-                        count(*)
-                FROM
-                        tb_rcmmd_prefer_genre_similar_track_list
-                WHERE
-                        rcmmd_prefer_genre_similar_track_id =recommendId
-                ) as trackCount
+                0 as moodId
             FROM
                 tb_rcmmd_prefer_genre_similar_track
             WHERE
@@ -111,14 +90,7 @@
                 rcmmd_artist_id as recommendId,
                 disp_std_end_dt as avaliableDateTime,
                 disp_sn as dispSn,
-                0 as moodId,
-                ( SELECT
-                        count(*)
-                FROM
-                        tb_rcmmd_artist_list
-                WHERE
-                        rcmmd_artist_id =recommendId
-                ) as trackCount
+                0 as moodId
             FROM
                 tb_rcmmd_artist
             WHERE
@@ -161,6 +133,7 @@
             rcmmd_track_rank_table.rcmmdCreateDtime,
             rcmmd_track_rank_table.svc_genre_id,
             rcmmd_track_rank_table.svc_genre_nm,
+            rcmmd_track_rank_table.trackCount,
             d.artist_id,
             d.artist_nm,
             a.album_id,
@@ -188,7 +161,8 @@
                 rcmmd_track_table.img_url,
                 rcmmd_track_table.rcmmdCreateDtime,
                 rcmmd_track_table.svc_genre_id,
-                rcmmd_track_table.svc_genre_nm
+                rcmmd_track_table.svc_genre_nm,
+                rcmmd_track_table.trackCount
             FROM
             (
                 -- 3. rcmmd_track_table start
@@ -200,6 +174,7 @@
                     rcmmd_img_table.img_size,
                     rcmmd_img_table.img_url,
                     rcmmd_img_table.rcmmdCreateDtime,
+                    rcmmd_img_table.trackCount,
                     b.track_id,
                     b.disp_sn,
                     c.album_id,
@@ -216,6 +191,7 @@
                         rcmmd_table.svc_genre_nm,
                         rcmmd_table.disp_sn,
                         rcmmd_table.rcmmdCreateDtime,
+                        rcmmd_table.trackCount,
                         b.img_size,
                         b.img_url
                     FROM
@@ -235,7 +211,15 @@
                                 WHEN '6' THEN 'FRI'
                                 WHEN '7' THEN 'SAT'
                             END AS week,
-                          a.create_dtime rcmmdCreateDtime
+                          a.create_dtime rcmmdCreateDtime,
+                          (
+                            SELECT
+                              COUNT(*)
+                            FROM
+                              tb_rcmmd_prefer_genre_similar_track_list
+                            WHERE
+                              rcmmd_prefer_genre_similar_track_id = a.rcmmd_prefer_genre_similar_track_id
+                          ) trackCount
                         FROM
                           tb_rcmmd_prefer_genre_similar_track a INNER JOIN tb_svc_genre b ON a.svc_genre_id = b.svc_genre_id
                         WHERE
@@ -296,6 +280,7 @@
             rcmmd_track_rank_table.rcmmdCreateDtime,
             rcmmd_track_rank_table.svc_genre_id,
             rcmmd_track_rank_table.svc_genre_nm,
+            rcmmd_track_rank_table.trackCount,
             d.artist_id,
             d.artist_nm,
             a.album_id,
@@ -323,7 +308,8 @@
                 rcmmd_track_table.img_url,
                 rcmmd_track_table.rcmmdCreateDtime,
                 rcmmd_track_table.svc_genre_id,
-                rcmmd_track_table.svc_genre_nm
+                rcmmd_track_table.svc_genre_nm,
+                rcmmd_track_table.trackCount
               FROM
                 (
                     -- 3. rcmmd_track_table start
@@ -335,6 +321,7 @@
                         rcmmd_img_table.img_size,
                         rcmmd_img_table.img_url,
                         rcmmd_img_table.rcmmdCreateDtime,
+                        rcmmd_img_table.trackCount,
                         b.track_id,
                         b.disp_sn,
                         c.album_id,
@@ -351,6 +338,7 @@
                             rcmmd_table.svc_genre_nm,
                             rcmmd_table.disp_sn,
                             rcmmd_table.rcmmdCreateDtime,
+                            rcmmd_table.trackCount,
                             b.img_size,
                             b.img_url
                         FROM
@@ -370,7 +358,15 @@
                                 WHEN '6' THEN 'FRI'
                                 WHEN '7' THEN 'SAT'
                                 END AS week,
-                            a.create_dtime rcmmdCreateDtime
+                            a.create_dtime rcmmdCreateDtime,
+                            (
+                                SELECT
+                                  COUNT(*)
+                                FROM
+                                  tb_rcmmd_similar_track_list
+                                WHERE
+                                  rcmmd_similar_track_id = a.rcmmd_similar_track_id
+                            ) trackCount
                         FROM
                           tb_rcmmd_similar_track a INNER JOIN tb_svc_genre b ON a.svc_genre_id = b.svc_genre_id
                         WHERE
@@ -425,9 +421,9 @@
             rcmmd_track_rank_table.update_dtime,
             rcmmd_track_rank_table.img_size,
             rcmmd_track_rank_table.img_url,
-            -- rcmmd_track_rank_table.rcmmdCreateDtime,
             rcmmd_track_rank_table.svc_genre_id,
             rcmmd_track_rank_table.svc_genre_nm,
+            rcmmd_track_rank_table.trackCount,
             d.artist_id,
             d.artist_nm,
             a.album_id,
@@ -453,9 +449,9 @@
                 rcmmd_track_table.update_dtime,
                 rcmmd_track_table.img_size,
                 rcmmd_track_table.img_url,
-                -- rcmmd_track_table.rcmmdCreateDtime,
                 rcmmd_track_table.svc_genre_id,
-                rcmmd_track_table.svc_genre_nm
+                rcmmd_track_table.svc_genre_nm,
+                rcmmd_track_table.trackCount
             FROM
             (
                 SELECT
@@ -466,7 +462,7 @@
                     rcmmd_img_table.disp_sn rcmmd_disp_sn,
                     rcmmd_img_table.img_size,
                     rcmmd_img_table.img_url,
-                    -- rcmmd_img_table.rcmmdCreateDtime,
+                    rcmmd_img_table.trackCount,
                     b.track_id,
                     b.disp_sn,
                     c.album_id,
@@ -482,7 +478,7 @@
                         rcmmd_table.svc_genre_id,
                         rcmmd_table.svc_genre_nm,
                         rcmmd_table.disp_sn,
-                        -- rcmmd_table.rcmmdCreateDtime,
+                        rcmmd_table.trackCount,
                         b.img_size,
                         b.img_url
                     FROM
@@ -492,7 +488,15 @@
                             rcmmd_mforu_id rcmmd_id,
                             a.svc_genre_id,
                             b.svc_genre_nm,
-                            disp_sn
+                            disp_sn,
+                            (
+                                SELECT
+                                  COUNT(*)
+                                FROM
+                                  tb_rcmmd_mforu_list
+                                WHERE
+                                  rcmmd_mforu_id = a.rcmmd_mforu_id
+                            ) trackCount
                         FROM
                           tb_rcmmd_mforu a INNER JOIN tb_svc_genre b ON a.svc_genre_id = b.svc_genre_id
                         WHERE

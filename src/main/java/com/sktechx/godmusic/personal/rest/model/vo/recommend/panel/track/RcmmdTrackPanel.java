@@ -16,7 +16,7 @@ import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 
 import java.util.List;
-
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
 /**
  * 설명 : 추천 CBF
  *
@@ -24,7 +24,7 @@ import java.util.List;
  * @date 2018. 07. 10.
  */
 public class RcmmdTrackPanel extends TrackPanel {
-    public RcmmdTrackPanel(RecommendPanelType panelType , RecommendTrackDto recommendTrackDto, List<ImageInfo> bgImgList )throws CommonBusinessException {
-        super(panelType , "Made for U" , neverRecommdnTrackNull(recommendTrackDto).getSvcGenreDto().getSvcGenreNm(),recommendTrackDto ,bgImgList);
+    public RcmmdTrackPanel( RecommendTrackDto recommendTrackDto, List<ImageInfo> bgImgList )throws CommonBusinessException {
+        super(RecommendPanelType.RCMMD_TRACK , RCMMD_TRACK_PANEL_TITLE , neverRecommdnTrackNull(recommendTrackDto).getSvcGenreDto().getSvcGenreNm(),recommendTrackDto ,bgImgList);
     }
 }

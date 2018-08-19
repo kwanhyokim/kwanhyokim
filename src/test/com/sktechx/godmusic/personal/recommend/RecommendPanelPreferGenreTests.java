@@ -64,7 +64,7 @@ public class RecommendPanelPreferGenreTests extends RecommendMockData {
         personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_SML_TR, 1L));
         personalPanelList.add(makeMockPersonalPanel(RecommendPanelContentType.RC_ATST_TR, 1L));
 
-        given(channelService.getPopularChannelList(anyInt(),anyObject())).willReturn(makeMockHotPlayChannels(3));
+        given(channelService.getPopularChannelList(anyInt(),anyInt(),anyObject())).willReturn(makeMockHotPlayChannels(3));
 
     }
 
