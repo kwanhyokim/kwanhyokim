@@ -18,6 +18,7 @@ import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -29,8 +30,8 @@ import java.util.List;
  */
 public interface ChannelService {
 
-    List<ChnlDto> getPopularChannelList(int limitSize,OsType osType);
-    List<PreferGenrePopularChnlDto> getPreferGenrePopularChannelIdList(List<Long> preferGenreIdList);
-    List<MoodPopularChnlDto> getListenMoodPopularChannelIdList(List<Long> moodIdList);
+    List<ChnlDto> getPopularChannelList(int channelLimitSize,int trackLimitSize, OsType osType);
+    List<PreferGenrePopularChnlDto> getPreferGenrePopularChannelList(List<Long> preferGenreIdList, int trackLimitSize, OsType osType);
+    List<MoodPopularChnlDto> getListenMoodPopularChannelIdList(List<Long> moodIdList , int trackLimitSize , OsType osType);
     List<LastListenHistoryDto> getLastListenHistory(long characterNo, DayType dayType, OsType osType);
 }

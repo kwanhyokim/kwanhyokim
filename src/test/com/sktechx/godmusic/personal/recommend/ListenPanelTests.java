@@ -58,7 +58,7 @@ public class ListenPanelTests extends RecommendMockData {
 
     @BeforeEach
     public void init(){
-        given(channelService.getPopularChannelList(anyInt(),anyObject())).willReturn(makeMockHotPlayChannels(3));
+        given(channelService.getPopularChannelList(anyInt(),anyInt(),anyObject())).willReturn(makeMockHotPlayChannels(3));
     }
 
     @Test

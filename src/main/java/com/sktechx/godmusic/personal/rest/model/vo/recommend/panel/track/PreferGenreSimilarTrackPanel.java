@@ -26,8 +26,13 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
  */
 public class PreferGenreSimilarTrackPanel extends TrackPanel {
 
-    public PreferGenreSimilarTrackPanel(RecommendPanelType panelType, RecommendTrackDto recommendTrackDto, List<ImageInfo> bgImgList) throws CommonBusinessException {
-        super(panelType , PREFER_GENRE_SIMILAR_TRACK_PANEL_TITLE , neverRecommdnTrackNull(recommendTrackDto).getSvcGenreDto().getSvcGenreNm(),recommendTrackDto ,bgImgList);
+    public PreferGenreSimilarTrackPanel(RecommendTrackDto recommendTrackDto, List<ImageInfo> bgImgList) throws CommonBusinessException {
+        super(RecommendPanelType.PREFER_GENRE_SIMILAR_TRACK ,
+                PREFER_GENRE_SIMILAR_TRACK_PANEL_TITLE ,
+                neverRecommdnTrackNull(recommendTrackDto).getSvcGenreDto().getSvcGenreNm(),
+                recommendTrackDto ,
+                bgImgList
+        );
     }
 
 }

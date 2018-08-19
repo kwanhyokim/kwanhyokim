@@ -21,6 +21,9 @@ import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.recommend.RecommendMockData;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.artist.ArtistPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.ListenMoodPopularChannelPanel;
@@ -29,6 +32,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.chart.ChartPa
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.PreferGenreSimilarTrackPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.PreferSimilarTrackPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
+import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import lombok.extern.slf4j.Slf4j;
@@ -67,6 +71,8 @@ public class ChnlTests extends CommonTest {
 
 
     @Autowired
+    private RecommendMapper recommendMapper;
+    @Autowired
     private RedisService redisService;
 
     @Autowired
@@ -85,15 +91,22 @@ public class ChnlTests extends CommonTest {
         log.info("redis connected.");
     }
 
-
     @Test
     public void 인기채널_GET_테스트(){
         int limitSize = 3;
-        List<ChnlDto> chnlList = channelService.getPopularChannelList(limitSize,OsType.AOS);
+        int trackLimitSize = 15;
+        List<ChnlDto> chnlList = channelService.getPopularChannelList(limitSize,trackLimitSize,OsType.AOS);
 
         assertNotNull(chnlList);
         assertEquals(chnlList.size(), limitSize);
     }
 
+    @Test
+    public void 청취무드_인기채널_GET_테스트(){
+        List<RecommendTrackDto> recommendTrackDtoList =
+                recommendMapper.selectRecommendCfTrackListByIdList(Arrays.asList(1L,2L) , 2 , 15,OsType.AOS);
+
+        log.info("recommendTrackDtoList : {}",recommendTrackDtoList);
+    }
 
 }

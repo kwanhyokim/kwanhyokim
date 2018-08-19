@@ -13,6 +13,7 @@ package com.sktechx.godmusic.personal.rest.service.impl.recommend;
 import java.net.URI;
 import java.util.*;
 
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.common.domain.type.SvcContentType;
@@ -56,6 +57,8 @@ import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelServic
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import lombok.extern.slf4j.Slf4j;
+
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.POPULAR_CHNL_TRACK_LIMIT_SIZE;
 
 /**
  * 설명 : 추천 패널 데이터 생성
@@ -103,10 +106,26 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
     @Override
     public List<Panel> createRecommendPanelList(Long characterNo , OsType osType) {
-        PersonalPhaseMeta personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType);
-        PanelAssembly panelAssembly = recommendPanelAssemblyFactory.getRecommendPanelAssembly(personalPhaseMeta.getFirstPhaseType());
+        List<Panel> panelList = null;
+        try{
 
-        return panelAssembly.assembleRecommendPanel(personalPhaseMeta);
+            PersonalPhaseMeta personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType);
+            PanelAssembly panelAssembly = recommendPanelAssemblyFactory.getRecommendPanelAssembly(personalPhaseMeta.getFirstPhaseType());
+
+            panelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
+
+        }catch(CommonBusinessException cbex){
+            log.error("createRecommendPanel business exception : {}", cbex.getMessage());
+        }catch(Exception ex){
+            log.error("createRecommendPanel not catched exception : {}",ex.getMessage());
+            ex.printStackTrace();
+        }
+
+        if(CollectionUtils.isEmpty(panelList)){
+            //TODO : 기본 인기 채널 패널
+        }
+
+        return panelList;
     }
 
     @Override
@@ -122,53 +141,54 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             ChartPanel liveChartPanel = new ChartPanel(RecommendPanelType.LIVE_CHART, liveChart, makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_top_100_1.png"));
             mockPanelList.add(liveChartPanel);
 
-            List<ChnlDto> popularChannelList = channelService.getPopularChannelList(3, OsType.AOS);
+            List<ChnlDto> popularChannelList = channelService.getPopularChannelList(3,POPULAR_CHNL_TRACK_LIMIT_SIZE , OsType.AOS);
 
             if(!CollectionUtils.isEmpty(popularChannelList)){
-                popularChannelList.stream().forEach(chnlDto -> {
-                    ChannelPanel popularChannelPanel = new PopularChannelPanel(RecommendPanelType.POPULAR_CHANNEL, chnlDto , chnlDto.getImgList());
+                popularChannelList.stream().forEach( channel -> {
+                    ChannelPanel popularChannelPanel = new PopularChannelPanel(channel , channel.getImgList());
                     mockPanelList.add(popularChannelPanel);
                 });
             }
 
             List<ChnlDto> preferPopularGenreChannelList = channelMapper.selectChannelListByIdList(Arrays.asList(18399L),12, OsType.AOS);
             GenreVo danceGenre = makeGenre(1L, "POP");
-            ChannelPanel preferPopularGenreChannelPanel = new PreferGenrePopularChannelPanel(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL, preferPopularGenreChannelList.get(0),danceGenre , preferPopularGenreChannelList.get(0).getImgList() );
+            ChannelPanel preferPopularGenreChannelPanel = new PreferGenrePopularChannelPanel( preferPopularGenreChannelList.get(0),danceGenre , preferPopularGenreChannelList.get(0).getImgList() );
             mockPanelList.add(preferPopularGenreChannelPanel);
 
 
             preferPopularGenreChannelList = channelMapper.selectChannelListByIdList(Arrays.asList(18398L),12, OsType.AOS);
             GenreVo traditionalGenre = makeGenre(2L, "국악");
-            preferPopularGenreChannelPanel = new PreferGenrePopularChannelPanel(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL, preferPopularGenreChannelList.get(0),traditionalGenre ,preferPopularGenreChannelList.get(0).getImgList());
+            preferPopularGenreChannelPanel = new PreferGenrePopularChannelPanel( preferPopularGenreChannelList.get(0),traditionalGenre ,preferPopularGenreChannelList.get(0).getImgList());
             mockPanelList.add(preferPopularGenreChannelPanel);
 
             List<ChnlDto> listenMoodPolularChannelList = channelMapper.selectChannelListByIdList(Arrays.asList(18397L),12, OsType.AOS);
-            ChannelPanel listenMoodPopularChannelPanel = new ListenMoodPopularChannelPanel(RecommendPanelType.LISTEN_MOOD_POPULAR_CHANNEL, listenMoodPolularChannelList.get(0) ,listenMoodPolularChannelList.get(0).getImgList());
+            ChannelPanel listenMoodPopularChannelPanel = new ListenMoodPopularChannelPanel( listenMoodPolularChannelList.get(0) ,listenMoodPolularChannelList.get(0).getImgList());
             mockPanelList.add(listenMoodPopularChannelPanel);
 
 
 
-            Panel artistPanel = new ArtistPanel(RecommendPanelType.ARTIST_POPULAR_TRACK , makeMockRecommendArtistDto());
+            Panel artistPanel = new ArtistPanel(makeMockRecommendArtistDto());
             mockPanelList.add(artistPanel);
 
 
-            TrackPanel preferSimilarTrack = new PreferSimilarTrackPanel(RecommendPanelType.PREFER_SIMILAR_TRACK,makeMockRecommendTrackDto(222L,makeSvcGenre(3L,"댄스"),Arrays.asList(80419008L,80419007L,80419006L,80419005L,80419004L,80419003L,80419002L,80419001L,80419000L,2091L,2092L,2093L,2094L,2100L,2101L)),makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_likeu_1.png"));
+            TrackPanel preferSimilarTrack = new PreferSimilarTrackPanel(makeMockRecommendTrackDto(222L,makeSvcGenre(3L,"댄스"),Arrays.asList(80419008L,80419007L,80419006L,80419005L,80419004L,80419003L,80419002L,80419001L,80419000L,2091L,2092L,2093L,2094L,2100L,2101L)),makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_likeu_1.png"));
             mockPanelList.add(preferSimilarTrack);
 
-            preferSimilarTrack = new PreferSimilarTrackPanel(RecommendPanelType.PREFER_SIMILAR_TRACK,makeMockRecommendTrackDto(223L,makeSvcGenre(4L,"힙합"),Arrays.asList(2091L,2092L,2093L,2094L,2100L,2101L,80419008L,80419007L,80419006L,80419005L,80419004L,80419003L,80419002L,80419001L,80419000L)),makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_likeu_1.png"));
+            preferSimilarTrack = new PreferSimilarTrackPanel(makeMockRecommendTrackDto(223L,makeSvcGenre(4L,"힙합"),Arrays.asList(2091L,2092L,2093L,2094L,2100L,2101L,80419008L,80419007L,80419006L,80419005L,80419004L,80419003L,80419002L,80419001L,80419000L)),makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_likeu_1.png"));
             mockPanelList.add(preferSimilarTrack);
 
 
-            TrackPanel preferGenreSimilarTrack = new PreferGenreSimilarTrackPanel(RecommendPanelType.PREFER_GENRE_SIMILAR_TRACK,makeMockRecommendTrackDto(225L,makeSvcGenre(4L,"힙합"),Arrays.asList(641L,642L,643L,644L,645L,2101L,80419008L,697L,698L,699L,80419004L,741L,742L,743L,744L)) , makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_likeu_1.png") );
+            TrackPanel preferGenreSimilarTrack = new PreferGenreSimilarTrackPanel(makeMockRecommendTrackDto(225L,makeSvcGenre(4L,"힙합"),Arrays.asList(641L,642L,643L,644L,645L,2101L,80419008L,697L,698L,699L,80419004L,741L,742L,743L,744L)) , makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_likeu_1.png") );
             mockPanelList.add(preferGenreSimilarTrack);
 
-            preferGenreSimilarTrack = new PreferGenreSimilarTrackPanel(RecommendPanelType.PREFER_GENRE_SIMILAR_TRACK,makeMockRecommendTrackDto(226L,makeSvcGenre(5L,"간지"),Arrays.asList(80419004L,741L,742L,743L,744L,641L,642L,643L,644L,645L,2101L,80419008L,697L,698L,699L)) , makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_likeu_1.png") );
+            preferGenreSimilarTrack = new PreferGenreSimilarTrackPanel(makeMockRecommendTrackDto(226L,makeSvcGenre(5L,"간지"),Arrays.asList(80419004L,741L,742L,743L,744L,641L,642L,643L,644L,645L,2101L,80419008L,697L,698L,699L)) , makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_likeu_1.png") );
             mockPanelList.add(preferGenreSimilarTrack);
 
-            TrackPanel rcmmdTrack = new RcmmdTrackPanel(RecommendPanelType.RCMMD_TRACK, makeMockRecommendTrackDto(300L,makeSvcGenre(10L,"군가"), Arrays.asList(1010L,1011L,1025L,1026L,1030L,1032L,1039L,643L,644L,645L,2101L,80419008L,697L,698L,699L)) , makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_madeforu_1.png"));
+            TrackPanel rcmmdTrack = new RcmmdTrackPanel(makeMockRecommendTrackDto(300L,makeSvcGenre(10L,"군가"), Arrays.asList(1010L,1011L,1025L,1026L,1030L,1032L,1039L,643L,644L,645L,2101L,80419008L,697L,698L,699L)) , makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_madeforu_1.png"));
             mockPanelList.add(rcmmdTrack);
 
-            rcmmdTrack = new RcmmdTrackPanel(RecommendPanelType.RCMMD_TRACK, makeMockRecommendTrackDto(301L,makeSvcGenre(12L,"축가"), Arrays.asList(1010L,1011L,1025L,1026L,1030L,1032L,1039L,643L,644L,645L,2101L,80419008L,697L,698L,699L)) , makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_madeforu_1.png"));
+            rcmmdTrack = new RcmmdTrackPanel(makeMockRecommendTrackDto(301L,makeSvcGenre(12L,"축가"), Arrays.asList(1010L,1011L,1025L,1026L,1030L,1032L,1039L,643L,644L,645L,2101L,80419008L,697L,698L,699L)) , makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_madeforu_1.png"));
+
             mockPanelList.add(rcmmdTrack);
 
 
@@ -191,7 +211,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         recommendTrackDto.setSvcGenreDto(svcGenre);
         recommendTrackDto.setRcmmdCreateDtime(new Date());
         recommendTrackDto.setTrackList(trackMapper.selectTrackList(trackIdList));
-
+        recommendTrackDto.setTrackCount(recommendTrackDto.getTrackList().size());
         return recommendTrackDto;
     }
 
@@ -366,14 +386,14 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         List<ImageInfo> imgList = null;
 
         try{
-            imgList = redisService.getListWithPrefix(RedisKeyConstant.RECOMMEND_PANEL_DEFAULT_IMG_KEY,ImageInfo.class);
+            imgList = redisService.getListWithPrefix(RedisKeyConstant.RECOMMEND_PANEL_DEFAULT_IMGLIST_KEY,ImageInfo.class);
         }catch(Exception e){
             log.error("getRecommendPanelDefaultImageList error : {}",e.getMessage());
         }finally {
             if(CollectionUtils.isEmpty(imgList)){
                 imgList = recommendMapper.selectRecommendPanelDefaultImageList();
                 if(!CollectionUtils.isEmpty(imgList)){
-                    redisService.setWithPrefix(RedisKeyConstant.RECOMMEND_PANEL_DEFAULT_IMG_KEY, imgList);
+                    redisService.setWithPrefix(RedisKeyConstant.RECOMMEND_PANEL_DEFAULT_IMGLIST_KEY, imgList);
                 }
             }
         }

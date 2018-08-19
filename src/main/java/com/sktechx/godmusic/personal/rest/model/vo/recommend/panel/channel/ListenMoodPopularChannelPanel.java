@@ -24,7 +24,7 @@ import java.util.List;
  * @date 2018. 07. 19.
  */
 public class ListenMoodPopularChannelPanel extends ChannelPanel{
-    public ListenMoodPopularChannelPanel(RecommendPanelType panelType, ChnlDto channel , List<ImageInfo> imgList) throws CommonBusinessException {
-        super(panelType, channel , null , imgList);
+    public ListenMoodPopularChannelPanel( ChnlDto channel , List<ImageInfo> imgList) throws CommonBusinessException {
+        super(RecommendPanelType.LISTEN_MOOD_POPULAR_CHANNEL, channel , null , imgList);
     }
 }

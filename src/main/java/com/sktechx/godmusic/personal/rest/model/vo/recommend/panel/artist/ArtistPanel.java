@@ -31,8 +31,8 @@ public class ArtistPanel extends Panel{
     @JsonIgnore
     private RecommendArtistDto recommendArtistDto;
 
-    public ArtistPanel(RecommendPanelType panelType, RecommendArtistDto recommendArtist)  throws CommonBusinessException{
-        super(panelType);
+    public ArtistPanel(RecommendArtistDto recommendArtist)  throws CommonBusinessException{
+        super(RecommendPanelType.ARTIST_POPULAR_TRACK);
         this.recommendArtistDto = recommendArtist;
         this.initialPanel();
     }

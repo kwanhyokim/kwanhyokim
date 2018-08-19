@@ -24,7 +24,7 @@ import java.util.List;
 public abstract class PanelNonSignAssembly extends PanelAssembly{
 
     @Override
-    public List<Panel> assembleRecommendPanel(final PersonalPhaseMeta personalPhaseMeta){
+    public List<Panel> assembleRecommendPanel(final PersonalPhaseMeta personalPhaseMeta) throws Exception{
         return defaultPanelSetting(personalPhaseMeta);
     }
 

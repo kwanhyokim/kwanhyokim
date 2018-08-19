@@ -36,12 +36,12 @@ public class VisitPhasePanelAssembly extends PanelSignAssembly {
         final List<Panel> panelList = new ArrayList<>();
 
         if(!CollectionUtils.isEmpty(personalPhaseMeta.getPreferGenreList())){
-            appendPreferGenreChannelPanelList(personalPhaseMeta,panelList,PREFER_GENRE_POPULAR_CHNL_LIST_DEFAULT_SIZE);
-            if(isPopularChnlPanelAppend(panelList.size())){
-                appendDefaultPopularChannelPanel(personalPhaseMeta, panelList, PREFER_GENRE_POPULAR_CHNL_LIST_DEFAULT_SIZE - panelList.size());
+            appendPreferGenreChannelPanelList(personalPhaseMeta,panelList,PREFER_GENRE_POPULAR_CHNL_LIST_SIZE);
+            if(isDefaultPanelAppend(panelList.size())){
+                appendDefaultPopularChannelPanel(personalPhaseMeta, panelList, PREFER_GENRE_POPULAR_CHNL_LIST_SIZE - panelList.size());
             }
         }else{
-            appendDefaultPopularChannelPanel(personalPhaseMeta, panelList, PREFER_GENRE_POPULAR_CHNL_LIST_DEFAULT_SIZE);
+            appendDefaultPopularChannelPanel(personalPhaseMeta, panelList, PREFER_GENRE_POPULAR_CHNL_LIST_SIZE);
         }
 
         return panelList;
@@ -54,8 +54,8 @@ public class VisitPhasePanelAssembly extends PanelSignAssembly {
         sort(personalPhaseMeta, panelList);
     }
 
-    private boolean isPopularChnlPanelAppend(int panelSize){
-        return PREFER_GENRE_POPULAR_CHNL_LIST_DEFAULT_SIZE > panelSize ? true : false;
+    private boolean isDefaultPanelAppend(int panelSize){
+        return PREFER_GENRE_POPULAR_CHNL_LIST_SIZE > panelSize ? true : false;
     }
 
 }

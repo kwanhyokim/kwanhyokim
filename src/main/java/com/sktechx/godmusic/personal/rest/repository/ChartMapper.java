@@ -29,12 +29,6 @@ import java.util.List;
  */
 @BaseMapper
 public interface ChartMapper {
-    //TODO : 추후 meta api 호출
-    ChartDto selectLiveChart();
-    ChartDto selectKidsChart();
-    //TODO : 서비스 장르 인기채널
-//    List<PreferGenrePopularChnlDto> selectPreferGenrePopularChannel(List<Long> svcGenreIdList);
-
     ChartDto selectPreferDispChart(@Param("svcContentType") SvcContentType svcContentType,
                                    @Param("chartType") ChartType chartType ,
                                    @Param("osType") OsType osType ,

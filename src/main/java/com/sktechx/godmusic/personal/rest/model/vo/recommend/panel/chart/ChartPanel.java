@@ -43,7 +43,7 @@ public class ChartPanel extends Panel {
 
     @Override
     protected void initialPanel() {
-        this.title = chart.getChartNm();
+        this.title = chart.getChartDispNm();
         this.subTitle = getChartUpdateHourly(chart.getUpdateDtime())+CHART_PANEL_HOURLY_BASIS;
         this.content = createPanelContent();
     }
@@ -64,7 +64,7 @@ public class ChartPanel extends Panel {
     }
 
     private static ChartDto neverNullChart(ChartDto chart) throws CommonBusinessException {
-        if(chart == null || StringUtils.isEmpty(chart.getChartNm()))
+        if(chart == null || StringUtils.isEmpty(chart.getChartDispNm()))
             throw new CommonBusinessException("chart is null.");
         return chart;
     }

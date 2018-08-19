@@ -12,31 +12,29 @@ package com.sktechx.godmusic.personal.rest.service.impl;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
-import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.common.domain.type.DayType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlListDto;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.ListenMoodPopularChannelPanel;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlListDto;
 import com.sktechx.godmusic.personal.rest.repository.AlbumMapper;
 import com.sktechx.godmusic.personal.rest.repository.ChannelMapper;
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.util.PropertySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
+import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.*;
 /**
  * 설명 : 채널 (플레이리스트 ) 서비스
  *
@@ -46,9 +44,6 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class ChannelServiceImpl implements ChannelService {
-
-    private final int popularChnlTrackLimitSize = 10;
-    private final int popularChnlExpiredSeconds = 86400;
 
     @Autowired
     private ChannelMapper channelMapper;
@@ -62,93 +57,77 @@ public class ChannelServiceImpl implements ChannelService {
     @Autowired
     private RedisService redisService;
 
-    public List<ChnlDto> getPopularChannelList(int limitSize, OsType osType){
+    public List<ChnlDto> getPopularChannelList(int channelLimitSize, int trackLimitSize ,OsType osType){
         List<Long> popularChnlIdList = null;
         try{
-            popularChnlIdList = redisService.getListWithPrefix(RedisKeyConstant.ALL_POPULAR_CHNL_KEY,Long.class);
+            popularChnlIdList = redisService.getListWithPrefix(ALL_POPULAR_CHNL_KEY,Long.class);
         }catch( Exception e){
             log.error("getPopularChannelList error : {}",e.getMessage());
         }finally {
             if(CollectionUtils.isEmpty(popularChnlIdList)){
                 popularChnlIdList = channelMapper.selectPopularChannelIdList();
                 if(!CollectionUtils.isEmpty(popularChnlIdList)){
-                    redisService.setWithPrefix(RedisKeyConstant.ALL_POPULAR_CHNL_KEY,popularChnlIdList,popularChnlExpiredSeconds);
+                    redisService.setWithPrefix(ALL_POPULAR_CHNL_KEY,popularChnlIdList,POPULAR_CHNL_EXPIRED_SECONDS);
                 }
             }
         }
 
-        if(!CollectionUtils.isEmpty(popularChnlIdList) && popularChnlIdList.size() > limitSize){
-            popularChnlIdList = popularChnlIdList.subList(0,limitSize);
+        if(!CollectionUtils.isEmpty(popularChnlIdList) && popularChnlIdList.size() > channelLimitSize){
+            popularChnlIdList = popularChnlIdList.subList(0,channelLimitSize);
         }
 
-        return channelMapper.selectChannelListByIdList(popularChnlIdList,popularChnlTrackLimitSize, osType);
+        return channelMapper.selectChannelListByIdList(popularChnlIdList,trackLimitSize, osType);
     }
 
     @Override
-    public List<PreferGenrePopularChnlDto> getPreferGenrePopularChannelIdList(List<Long> preferGenreIdList) {
+    public List<PreferGenrePopularChnlDto> getPreferGenrePopularChannelList(List<Long> preferGenreIdList , int trackLimitSize, OsType osType) {
         List<PreferGenrePopularChnlListDto> preferGenrePopularChannelList = null;
 
+        if(CollectionUtils.isEmpty(preferGenreIdList)){
+            return null;
+        }
+
         try{
-            preferGenrePopularChannelList = redisService.getListWithPrefix(RedisKeyConstant.PREFER_GENRE_POPULAR_CHNL_KEY,PreferGenrePopularChnlListDto.class);
+            preferGenrePopularChannelList = redisService.getListWithPrefix(PREFER_GENRE_POPULAR_CHNL_KEY,PreferGenrePopularChnlListDto.class);
         }catch(Exception e){
             log.error("getPreferGenrePopularChannelIdList error : {}",e.getMessage());
         }finally {
             if(CollectionUtils.isEmpty(preferGenrePopularChannelList)){
                 preferGenrePopularChannelList = channelMapper.selectAllPreferGenrePopularChannelIdList();
                 if(!CollectionUtils.isEmpty(preferGenrePopularChannelList)){
-                    redisService.setWithPrefix(RedisKeyConstant.PREFER_GENRE_POPULAR_CHNL_KEY, preferGenrePopularChannelList , popularChnlExpiredSeconds);
+                    redisService.setWithPrefix(PREFER_GENRE_POPULAR_CHNL_KEY, preferGenrePopularChannelList , PREFER_GENRE_POPULAR_CHNL_EXPIRED_SECONDS);
                 }
             }
         }
 
-        if( !CollectionUtils.isEmpty(preferGenreIdList) && !CollectionUtils.isEmpty(preferGenrePopularChannelList)){
-            List<PreferGenrePopularChnlDto> filterChnlList = new ArrayList<>();
-            preferGenrePopularChannelList
-                    .stream()
-                    .filter(dto -> Objects.nonNull(dto) && !CollectionUtils.isEmpty(dto.getChnlIdList()))
-                    .filter(dto -> preferGenreIdList.contains(dto.getPreferGenreId()))
-                    .forEach(dto -> {
-                        Long chnlId = dto.getChnlIdList().stream().filter(id->!filterChnlList.contains(id)).findFirst().orElse(null);
-                        if(chnlId!= null){
-                            filterChnlList.add(new PreferGenrePopularChnlDto(dto.getPreferGenreId(),chnlId));
-                        }
-                    });
-            return filterChnlList;
+        if(!CollectionUtils.isEmpty(preferGenrePopularChannelList)){
+            return getPreferGenreUniqueChannelList(preferGenreIdList ,preferGenrePopularChannelList, trackLimitSize, osType);
         }
         return null;
-
     }
 
-    public List<MoodPopularChnlDto> getListenMoodPopularChannelIdList(List<Long> moodIdList){
+
+
+    public List<MoodPopularChnlDto> getListenMoodPopularChannelIdList(List<Long> moodIdList , int trackLimitSize , OsType osType){
         List<MoodPopularChnlListDto> moodPopularChannelList = null;
+        if(CollectionUtils.isEmpty(moodIdList))
+            return null;
 
         try{
-            moodPopularChannelList = redisService.getListWithPrefix(RedisKeyConstant.MOOD_POPULAR_CHNL_KEY, MoodPopularChnlListDto.class);
+            moodPopularChannelList = redisService.getListWithPrefix(MOOD_POPULAR_CHNL_KEY, MoodPopularChnlListDto.class);
         }catch(Exception e) {
             log.error("getListenMoodPopularChannelIdList error : {}", e.getMessage());
         }finally{
             if(CollectionUtils.isEmpty(moodPopularChannelList)){
                 moodPopularChannelList = channelMapper.selectAllMoodPopularChannelIdList();
                 if(!CollectionUtils.isEmpty(moodPopularChannelList)){
-                    redisService.setWithPrefix(RedisKeyConstant.MOOD_POPULAR_CHNL_KEY, moodPopularChannelList,popularChnlExpiredSeconds);
+                    redisService.setWithPrefix(MOOD_POPULAR_CHNL_KEY, moodPopularChannelList,MOOD_POPULAR_CHNL_EXPIRED_SECONDS);
                 }
             }
         }
 
-        if(!CollectionUtils.isEmpty(moodIdList) && !CollectionUtils.isEmpty(moodPopularChannelList)){
-            List<MoodPopularChnlDto> filterChnlList = new ArrayList<>();
-            moodPopularChannelList
-                    .stream()
-                    .filter(dto-> Objects.nonNull(dto) && !CollectionUtils.isEmpty(dto.getChnlIdList()))
-                    .filter(dto-> moodIdList.contains(dto.getCategoryId()))
-                    .forEach(dto -> {
-                        Long chnlId = dto.getChnlIdList().stream().filter(id->!filterChnlList.contains(id)).findFirst().orElse(null);
-                        if(chnlId!= null){
-                            filterChnlList.add(new MoodPopularChnlDto(dto.getCategoryId(),chnlId));
-                        }
-                    });
-
-            return filterChnlList;
+        if(!CollectionUtils.isEmpty(moodPopularChannelList)){
+            return getListenMoodUniqueChannelList(moodIdList,moodPopularChannelList ,trackLimitSize,osType);
         }
 
         return null;
@@ -164,5 +143,109 @@ public class ChannelServiceImpl implements ChannelService {
         lastListenHistory.sort((m1, m2) -> m1.getLastListenDtime().after(m2.getLastListenDtime()) ? -1 : 1);
 
         return lastListenHistory;
+    }
+
+    private List<PreferGenrePopularChnlDto> getPreferGenreUniqueChannelList(final List<Long> preferGenreIdList ,
+                                                                            final List<PreferGenrePopularChnlListDto> preferGenrePopularChannelList,
+                                                                            int trackLimitSize ,
+                                                                            OsType osType){
+        List<PreferGenrePopularChnlDto> uniquePopularChannelList = new ArrayList<>();
+
+        if(!CollectionUtils.isEmpty(preferGenrePopularChannelList)){
+            preferGenrePopularChannelList
+                    .stream()
+                    .filter(preferGenre -> Objects.nonNull(preferGenre) && !CollectionUtils.isEmpty(preferGenre.getChnlIdList()))
+                    .filter(preferGenre -> preferGenreIdList.contains(preferGenre.getPreferGenreId()))
+                    .forEach(preferGenre -> {
+                        Long chnlId = preferGenre.getChnlIdList().
+                                stream().
+                                filter(id-> !uniquePopularChannelList.contains(id) ).
+                                findFirst().
+                                orElse(null);
+                        if(chnlId!= null){
+                            try{
+                                uniquePopularChannelList.add(new PreferGenrePopularChnlDto(preferGenre.getPreferGenreId(),chnlId));
+                            }catch(Exception e){
+                                log.error("getPreferGenreUniqueChannelList error : {}",e.getMessage());
+                            }
+                        }
+                    });
+
+            attachPreferGenreChannelInfo(uniquePopularChannelList,trackLimitSize,osType);
+        }
+
+
+        return uniquePopularChannelList;
+    }
+    private void attachPreferGenreChannelInfo(final List<PreferGenrePopularChnlDto> popularChnlList, int trackLimitSize, OsType osType){
+        List<Long> channelIdList = popularChnlList.stream().map(dto -> dto.getChnlId()).collect(Collectors.toList());
+        if(!CollectionUtils.isEmpty( channelIdList )){
+            List<ChnlDto> channelList = channelMapper.selectChannelListByIdList(channelIdList , trackLimitSize, osType);
+            if(!CollectionUtils.isEmpty(channelList)) {
+
+                for(PreferGenrePopularChnlDto popularChnlDto :  popularChnlList ){
+                    ChnlDto channel= channelList
+                            .stream()
+                            .filter(chnlDto -> chnlDto.getChnlId().equals(popularChnlDto.getChnlId()))
+                            .findFirst()
+                            .orElse(null);
+                    if(channel!= null){
+                        popularChnlDto.setChannel(channel);
+                    }
+                }
+            }
+        }
+    }
+
+
+    private void attachListenMoodUniqueChannelList(final List<MoodPopularChnlDto> popularChnlList, int trackLimitSize, OsType osType){
+        List<Long> channelIdList = popularChnlList.stream().map(dto -> dto.getChnlId()).collect(Collectors.toList());
+        if(!CollectionUtils.isEmpty( channelIdList )){
+            List<ChnlDto> channelList = channelMapper.selectChannelListByIdList(channelIdList , trackLimitSize, osType);
+            if(!CollectionUtils.isEmpty(channelList)) {
+
+                for(MoodPopularChnlDto popularChnlDto :  popularChnlList ){
+                    ChnlDto channel= channelList
+                            .stream()
+                            .filter(chnlDto -> chnlDto.getChnlId().equals(popularChnlDto.getChnlId()))
+                            .findFirst()
+                            .orElse(null);
+                    if(channel!= null){
+                        popularChnlDto.setChannel(channel);
+                    }
+                }
+            }
+        }
+    }
+    private List<MoodPopularChnlDto> getListenMoodUniqueChannelList(final List<Long> moodIdList ,
+                                                                    final List<MoodPopularChnlListDto> moodPopularChannelList,
+                                                                    int trackLimitSize ,
+                                                                    OsType osType){
+
+        List<MoodPopularChnlDto> uniquePopularChannelList = new ArrayList<>();
+        if(!CollectionUtils.isEmpty(moodPopularChannelList)){
+            moodPopularChannelList
+                    .stream()
+                    .filter(dto-> Objects.nonNull(dto) && !CollectionUtils.isEmpty(dto.getChnlIdList()))
+                    .filter(dto-> moodIdList.contains(dto.getCategoryId()))
+                    .forEach(dto -> {
+                        Long chnlId = dto.getChnlIdList()
+                                .stream()
+                                .filter(id->!uniquePopularChannelList.contains(id))
+                                .findFirst()
+                                .orElse(null);
+                        if(chnlId!= null){
+                            try{
+                                uniquePopularChannelList.add(new MoodPopularChnlDto(dto.getCategoryId(),chnlId));
+                            }catch(Exception e){
+                                log.error("getListenMoodUniqueChannelList error : {}",e.getMessage());
+                            }
+                        }
+                    });
+
+            attachListenMoodUniqueChannelList(uniquePopularChannelList, trackLimitSize, osType);
+
+        }
+        return uniquePopularChannelList;
     }
 }

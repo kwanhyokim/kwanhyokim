@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto.recommend;
 
+import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import lombok.Data;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class MoodPopularChnlDto {
     private Long categoryId;
     private Long chnlId;
 
+    private ChnlDto channel;
     public MoodPopularChnlDto(){
 
     }
@@ -32,5 +34,20 @@ public class MoodPopularChnlDto {
     public MoodPopularChnlDto(Long categoryId, Long chnlId){
         this.categoryId = categoryId;
         this.chnlId = chnlId;
+    }
+
+    @Override
+    public boolean equals(Object v) {
+        boolean retVal = false;
+
+        if (v instanceof MoodPopularChnlDto){
+            MoodPopularChnlDto ptr = (MoodPopularChnlDto) v;
+            retVal = ptr.chnlId.longValue() == this.chnlId;
+        }
+        if(v instanceof  Long){
+            Long chnlId = (Long) v;
+            retVal = chnlId.longValue() == this.chnlId;
+        }
+        return retVal;
     }
 }

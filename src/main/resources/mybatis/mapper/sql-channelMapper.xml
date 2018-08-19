@@ -254,7 +254,7 @@
           INNER JOIN  tb_chart a ON category.category_id = a.svc_content_id
           INNER JOIN tb_chart_music_content b ON a.chart_id = b.chart_id
           INNER JOIN tb_chnl c ON b.music_content_id = c.chnl_id
-          INNER JOIN tb_img_mang d ON c.chnl_id = d.img_content_id
+          LEFT OUTER JOIN tb_img_mang d ON c.chnl_id = d.img_content_id
         WHERE
             a.chart_type = 'WEEKLY'
         AND

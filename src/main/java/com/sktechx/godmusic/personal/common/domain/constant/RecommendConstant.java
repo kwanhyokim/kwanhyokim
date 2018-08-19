@@ -17,12 +17,15 @@ package com.sktechx.godmusic.personal.common.domain.constant;
  * @date 2018. 08. 17.
  */
 public class RecommendConstant {
-    public static final int POPULAR_CHNL_LIST_DEFAULT_SIZE  = 3;
+    public static final int POPULAR_CHNL_LIST_SIZE  = 3;
+    public static final int POPULAR_CHNL_EXPIRED_SECONDS = 86400;
+    public static final int PREFER_GENRE_POPULAR_CHNL_EXPIRED_SECONDS = 86400;
+    public static final int MOOD_POPULAR_CHNL_EXPIRED_SECONDS = 86400;
 
     //청취 단계 패널
-    public static final int SIMILAR_TRACK_PANEL_DEFAULT_SIZE  = 2;
-    public static final int PREFER_GENRE_SIMILAR_TRACK_PANEL_DEFAULT_SIZE  = 2;
-    public static final int LISTEN_MOOD_POPULAR_CHNL_DEFAULT_SIZE  = 1;
+    public static final int SIMILAR_TRACK_PANEL_SIZE  = 2;
+    public static final int PREFER_GENRE_SIMILAR_PANEL_SIZE  = 2;
+    public static final int LISTEN_MOOD_POPULAR_CHNL_SIZE  = 1;
 
 
     //추천 단계 패널
@@ -32,7 +35,7 @@ public class RecommendConstant {
     public static final int RCMMD_CF_TRACK_LIMIT_SIZE = 15;
 
     //방문 단계
-    public static final int PREFER_GENRE_POPULAR_CHNL_LIST_DEFAULT_SIZE = 3;
+    public static final int PREFER_GENRE_POPULAR_CHNL_LIST_SIZE = 3;
 
 
     public static final int POPULAR_CHNL_TRACK_LIMIT_SIZE = 10;
@@ -46,4 +49,12 @@ public class RecommendConstant {
 
     public static final String PREFER_GENRE_SIMILAR_TRACK_PANEL_TITLE = "Mix Tape";
     public static final String RCMMD_TRACK_PANEL_TITLE = "Made for U";
+
+    public static final String SIMILAR_TRACK_PANEL_TITLE = "Like U";
+    public static final String SIMILAR_TRACK_PANEL_SUB_TITLE = "많이 들었던 노래와\n 유사한 선곡";
+
+
+
 }
+
+
