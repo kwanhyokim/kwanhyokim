@@ -11,7 +11,6 @@ package com.sktechx.godmusic.personal.common.domain;
 
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -29,20 +28,20 @@ import java.util.List;
  *
  */
 @Data
-public class CommonListResponse {
+public class ListResponse {
 	private long totalCount;
 	private int currentPage;
 	private YnType lastPageYn;
 	private List<?> list;
 	
-	public CommonListResponse(Page<?> page){
+	public ListResponse(Page<?> page){
 		this.totalCount = page.getTotalElements();
 		this.currentPage = page.getNumber()+1;
 		this.lastPageYn = page.isLast() ? YnType.Y : YnType.N;
 		this.list = page.getContent();
 	}
 	
-	public CommonListResponse(long totalCount, int currentPage, YnType lastPageYn, List<?> list){
+	public ListResponse(long totalCount, int currentPage, YnType lastPageYn, List<?> list){
 		this.totalCount = totalCount;
 		this.currentPage = currentPage;
 		this.lastPageYn = lastPageYn;

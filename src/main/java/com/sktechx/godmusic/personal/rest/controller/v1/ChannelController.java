@@ -4,7 +4,7 @@ import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.RequestGMContext;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
-import com.sktechx.godmusic.personal.common.domain.CommonListResponse;
+import com.sktechx.godmusic.personal.common.domain.ListResponse;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.common.domain.type.DayType;
 import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
@@ -14,7 +14,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -45,7 +44,7 @@ public class ChannelController {
 
     @ApiOperation(value = "최근 들은 플레이리스트 상세 by Peter ( 기존 /v2/my/channel/recent/list GET )")
     @GetMapping("recentListened")
-    public CommonListResponse getLastListenHistory(
+    public CommonApiResponse<ListResponse> getLastListenHistory(
             @ApiIgnore @RequestGMContext GMContext ctx, @PageableDefault(size=100, page=0) Pageable pageable){
 
         long characterNo = 1000284;
@@ -58,7 +57,7 @@ public class ChannelController {
         int end = (pageable.getPageNumber() + 1) * pageable.getPageSize();
         if(end > lastListenHistory.size()) end = lastListenHistory.size();
 
-        return new CommonListResponse(new PageImpl<>(lastListenHistory.subList(start, end), pageable, lastListenHistory.size()));
+        return new CommonApiResponse<>(new ListResponse(new PageImpl<>(lastListenHistory.subList(start, end), pageable, lastListenHistory.size())));
 
     }
 
