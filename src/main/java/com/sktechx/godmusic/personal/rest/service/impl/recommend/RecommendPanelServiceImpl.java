@@ -136,7 +136,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         try{
 
             //TODO : mockup 데이터 생성
-            ChartDto liveChart = chartMapper.selectPreferDispChart(SvcContentType.TOTAL, ChartType.HOURLY, OsType.AOS , 15);
+            ChartDto liveChart = chartMapper.selectPreferDispChart(SvcContentType.ALL, ChartType.HOURLY, OsType.AOS , 15);
 
             ChartPanel liveChartPanel = new ChartPanel(RecommendPanelType.LIVE_CHART, liveChart, makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_top_100_1.png"));
             mockPanelList.add(liveChartPanel);

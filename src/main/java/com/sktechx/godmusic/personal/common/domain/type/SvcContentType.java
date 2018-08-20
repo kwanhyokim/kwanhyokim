@@ -23,7 +23,7 @@ import org.apache.ibatis.type.MappedTypes;
  */
 public enum SvcContentType implements CodeEnum {
     GENRE("GENRE","장르")
-    ,TOTAL("TOTAL" ,"종합")
+    ,ALL("ALL" ,"종합")
     ,KIDS("KIDS","키즈")
     ;
 

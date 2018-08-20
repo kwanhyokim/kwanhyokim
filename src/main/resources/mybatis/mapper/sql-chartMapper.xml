@@ -38,6 +38,7 @@
             chart_track_table.chart_disp_nm,
             chart_track_table.create_dtime,
             chart_track_table.update_dtime,
+            chart_track_table.disp_start_dtime,
             chart_track_table.img_size,
             chart_track_table.img_url,
             CONVERT (chart_track_table.disp_sn , SIGNED )- CONVERT (chart_track_table.bf_disp_sn , SIGNED )AS rankBadge,
@@ -57,6 +58,7 @@
                 chart_img_table.chart_disp_nm,
                 chart_img_table.create_dtime,
                 chart_img_table.update_dtime,
+                chart_img_table.disp_start_dtime,
                 chart_img_table.img_size,
                 chart_img_table.img_url,
                 b.music_content_id,
@@ -73,6 +75,7 @@
                         a.chart_disp_nm,
                         a.create_dtime,
                         a.update_dtime,
+                        a.disp_start_dtime,
                         b.img_size,
                         b.img_url
                   FROM

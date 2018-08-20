@@ -44,7 +44,7 @@ public class ChartPanel extends Panel {
     @Override
     protected void initialPanel() {
         this.title = chart.getChartDispNm();
-        this.subTitle = getChartUpdateHourly(chart.getUpdateDtime())+CHART_PANEL_HOURLY_BASIS;
+        this.subTitle = getChartUpdateHourly(chart.getDispStartDtime())+CHART_PANEL_HOURLY_BASIS_PHRASES;
         this.content = createPanelContent();
     }
 

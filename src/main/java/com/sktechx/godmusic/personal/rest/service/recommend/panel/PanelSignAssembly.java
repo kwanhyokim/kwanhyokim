@@ -93,7 +93,7 @@ public abstract class PanelSignAssembly extends PanelAssembly {
                             Panel chartPanel =
                                     createChartPanel(
                                             RecommendPanelType.LIVE_CHART,
-                                            SvcContentType.TOTAL,
+                                            SvcContentType.ALL,
                                             ChartType.HOURLY,
                                             personalPhaseMeta.getOsType(),
                                             PREFER_DISP_CHART_TRACK_LIMIT_SIZE

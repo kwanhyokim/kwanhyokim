@@ -48,6 +48,8 @@ public class ChartDto {
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
     private Date updateDtime;
 
+    private Date dispStartDtime;
+
     private Integer trackCount;
 
 
