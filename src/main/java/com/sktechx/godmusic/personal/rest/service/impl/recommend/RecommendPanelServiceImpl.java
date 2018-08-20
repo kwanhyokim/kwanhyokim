@@ -12,17 +12,21 @@ package com.sktechx.godmusic.personal.rest.service.impl.recommend;
 
 import java.net.URI;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
-import com.sktechx.godmusic.personal.common.domain.type.SvcContentType;
+import com.sktechx.godmusic.personal.common.domain.type.*;
+import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
+import com.sktechx.godmusic.personal.common.util.CommonUtils;
 import com.sktechx.godmusic.personal.rest.repository.*;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -30,9 +34,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.code.YnType;
-import com.sktechx.godmusic.personal.common.domain.type.ChartType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
@@ -405,7 +406,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         }
         return null;
     }
-    private ListDto<List<RecommendPanelTrackDto>> getTrackList(List<Long> trackIdList){
+
+	private ListDto<List<RecommendPanelTrackDto>> getTrackList(List<Long> trackIdList){
 
         if(CollectionUtils.isEmpty(trackIdList)){
             return null;
@@ -427,9 +429,26 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
     }
 
+    @Override
+    @Transactional
+    public void addPreferArtistPanel(Long characterNo) {
+        List<RecommendArtistListDto> recommendArtistList = recommendMapper.selectCharacterPreferArtist(characterNo);
 
+        if (CommonUtils.empty(recommendArtistList)) throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
+        else if (recommendArtistList.size() > 2 && recommendArtistList.size() < 5) {
+            List<Long> ids = recommendArtistList.stream().map(RecommendArtistListDto::getArtistId).collect(Collectors.toList());
+            int addCount = recommendArtistList.size();
+            List<SimilaArtistDto> similaArtistList = recommendMapper.selectSimilarArtistByIdList(ids, addCount);
 
+            if (CommonUtils.empty(similaArtistList)) {
+                for (SimilaArtistDto s : similaArtistList) {
+                    recommendArtistList.add(new RecommendArtistListDto().builder()
+                            .artistId(s.getSimilarArtistId())
+                            .artistType(ArtistType.SIMILAR)
+                            .dispSn(addCount++).build());
+                }
+            }
+        }
+    }
 
 }
-
-

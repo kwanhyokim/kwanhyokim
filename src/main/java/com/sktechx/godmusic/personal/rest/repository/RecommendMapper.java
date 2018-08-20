@@ -12,14 +12,14 @@ package com.sktechx.godmusic.personal.rest.repository;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
-import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.SimilaArtistDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -57,4 +57,7 @@ public interface RecommendMapper {
     // 추천 패널 기본 이미지
     List<ImageInfo> selectRecommendPanelDefaultImageList();
 
+	List<RecommendArtistListDto> selectCharacterPreferArtist(@Param("characterNo") Long characterNo);
+
+    List<SimilaArtistDto> selectSimilarArtistByIdList(@Param("artistIdList") List<Long> artistIdList, @Param("addCount") int addCount);
 }

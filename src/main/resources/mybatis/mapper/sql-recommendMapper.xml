@@ -572,4 +572,8 @@
         AND dfk_type = 'EVERY'
         AND img_disp_type = 'DEFAULT'
     </select>
+
+    <select id="selectCharacterPreferArtist" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistListDto">
+
+    </select>
 </mapper>
