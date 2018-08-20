@@ -45,7 +45,7 @@ public class RecommendConstant {
 
 
     public static final String ARTIST_PANEL_TITLE = "Musician focus";
-    public static final String CHART_PANEL_HOURLY_BASIS = "시 기준";
+    public static final String CHART_PANEL_HOURLY_BASIS_PHRASES = "시 기준";
 
     public static final String PREFER_GENRE_SIMILAR_TRACK_PANEL_TITLE = "Mix Tape";
     public static final String RCMMD_TRACK_PANEL_TITLE = "Made for U";
