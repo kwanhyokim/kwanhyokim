@@ -19,12 +19,12 @@
         <id property="trackId" column="trackId" />
         <collection property="album" resultMap="com.sktechx.godmusic.personal.rest.repository.AlbumMapper.albumResultMap"/>
         <collection property="artistList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" column="artistId">
-            <result property="artistId" column="artistId"></result>
-            <result property="artistName" column="artistNm"></result>
+            <result property="artistId" column="artistId"/>
+            <result property="artistName" column="artistNm"/>
         </collection>
         <collection property="artist" ofType="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" column="repArtistId">
-            <result property="artistId" column="repArtistId"></result>
-            <result property="artistName" column="repArtistNm"></result>
+            <result property="artistId" column="repArtistId"/>
+            <result property="artistName" column="repArtistNm"/>
         </collection>
     </resultMap>
 
@@ -37,13 +37,13 @@
         </collection>
 
         <collection property="artistList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" column="albumArtistId">
-            <result property="artistId" column="albumArtistId"></result>
-            <result property="artistName" column="albumArtistName"></result>
+            <result property="artistId" column="albumArtistId"/>
+            <result property="artistName" column="albumArtistName"/>
         </collection>
 
         <collection property="artist" ofType="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" column="albumRepArtistId">
-            <result property="artistId" column="albumRepArtistId"></result>
-            <result property="artistName" column="albumRepArtistName"></result>
+            <result property="artistId" column="albumRepArtistId"/>
+            <result property="artistName" column="albumRepArtistName"/>
         </collection>
     </resultMap>
 
@@ -68,25 +68,25 @@
 
     <select id="getLikeTrackByLikeType" resultMap="trackResultMap">
         SELECT
-              B.TRACK_ID                                                                 AS trackId
-            , A.DISP_SN                                                                  AS trackSn
-            , B.TRACK_NM                                                                 AS trackName
-            , B.ALBUM_ID                                                                 AS albumId
+              B.TRACK_ID
+            , A.DISP_SN
+            , B.TRACK_NM
+            , B.ALBUM_ID
             , B.DISP_STATUS_YN                                                           AS displayYn
-            , B.AGENCY_ID                                                                AS agencyId
+            , B.AGENCY_ID
             , IF(B.TITLE_YN = 'Y', 'Y', 'N')                                             AS titleYn
-            , B.CREATE_DTIME                                                             AS createDateTime
-            , B.UPDATE_DTIME                                                             AS updateDateTime
+            , B.CREATE_DTIME
+            , B.UPDATE_DTIME
             , E.ALBUM_IMG_SIZE                                                           AS size
             , CONCAT(E.ALBUM_IMG_URL, '?updateDate=', unix_timestamp(E.UPDATE_DTIME))    AS url
             , 'Y'                                                                        AS likeYn
             , IF(B.STREAMING_PREMIUM_YN = 'Y' OR B.PPS_YN = 'Y', 'Y', 'N')               AS holdbackYn
             , IF(B.ADULT_AUTH_NEED_TRACK_YN = 'Y', 'Y', 'N')                             AS adultAuthYn
             , D.ARTIST_ID                                                                AS artistId
-            , D.ARTIST_NM                                                                AS artistName
+            , D.ARTIST_NM                                                                AS artistNm
             , F.TITLE                                                                    AS albumTitle
             , G.ARTIST_ID                                                                AS repArtistId
-            , G.ARTIST_NM                                                                AS repArtistName
+            , G.ARTIST_NM                                                                AS repArtistNm
         FROM
             (
                 SELECT
