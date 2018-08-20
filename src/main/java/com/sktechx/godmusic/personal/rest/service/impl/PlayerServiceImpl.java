@@ -22,7 +22,7 @@ public class PlayerServiceImpl implements PlayerService {
     @Autowired
     private RedisService redisService;
 
-    private static final String PLAY_TOKEN_KEY_PREFIX = "playtoken:";
+    private static final String PLAY_TOKEN_KEY_PREFIX = "godmusic.personalapi.playtoken:";
     private static final Long OVERLAP_STREAMING =  4015L;
 
     @Override
