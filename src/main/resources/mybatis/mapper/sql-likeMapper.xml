@@ -68,7 +68,7 @@
 
     <select id="getLikeTrackByLikeType" resultMap="trackResultMap">
         SELECT
-              B.TRACK_ID
+              B.TRACK_ID                                                                AS trackId
             , A.DISP_SN
             , B.TRACK_NM
             , B.ALBUM_ID
