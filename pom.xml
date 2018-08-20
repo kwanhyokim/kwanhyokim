@@ -37,7 +37,7 @@
         <findbugs.jsr305.version>3.0.0</findbugs.jsr305.version>
         <mybatis-starter.version>1.3.2</mybatis-starter.version>
         <swagger2.version>2.9.2</swagger2.version>
-        <godmusic-module.version>0.3.5</godmusic-module.version>
+        <godmusic-module.version>0.3.6</godmusic-module.version>
         <maven-model.version>3.5.2</maven-model.version>
         <junit.jupiter.version>5.2.0</junit.jupiter.version>
         <junit.platform.version>1.2.0</junit.platform.version>
