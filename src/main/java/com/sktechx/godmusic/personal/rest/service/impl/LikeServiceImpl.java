@@ -1,6 +1,7 @@
 package com.sktechx.godmusic.personal.rest.service.impl;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
+import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
 import com.sktechx.godmusic.personal.common.exception.InternalException;
@@ -96,6 +97,18 @@ public class LikeServiceImpl implements LikeService {
 				List<PlayListDto> playListDtos = likeMapper.getLikePlaylistByLikeType(characterNo, pageable);
 
 				if (CollectionUtils.isEmpty(playListDtos)) throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
+
+				for (PlayListDto p : playListDtos) {
+					p.setRenewYn(YnType.N);
+					if (p.getPlayListType().equals(CHANNEL) && p.getRenewDateTime() != null) {
+						Calendar c = Calendar.getInstance();
+						c.setTime(new Date());
+						c.add(Calendar.DATE , -1);
+						if(p.getRenewDateTime().after(c.getTime())){
+							p.setRenewYn(YnType.Y);
+						}
+					}
+				}
 
 				totalCount = likeMapper.getLikeCountByLikeType(CHANNEL, characterNo);
 				totalCount += likeMapper.getLikeCountByLikeType(CHART, characterNo);

@@ -3,11 +3,13 @@ package com.sktechx.godmusic.personal.rest.model.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
 import com.sktechx.godmusic.personal.common.domain.type.PlayListType;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import lombok.Data;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -45,4 +47,9 @@ public class PlayListDto {
 
 	@JsonProperty("type")
 	private PlayListType playListType;
+
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
+	private Date renewDateTime;
+
+	private YnType renewYn;
 }
