@@ -677,7 +677,17 @@
 
     <update id="insertRcmmdArtist" parameterType="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto"
             useGeneratedKeys="true" keyProperty="recommendArtistDto.rcmmdArtistId">
-        INSERT TB_RCMMD_ARTIST (CHARACTER_NO, DISP_STD_START_DT, DISP_STD_END_DT, DISP_SN, CREATE_DTIME, CREATE_STD_DTIME, DEL_TARGET_YN)
-        VALUES (#{}, now(), now(), #{}, now(), now(), 'Y')
+        INSERT INTO TB_RCMMD_ARTIST (CHARACTER_NO, DISP_STD_START_DT, DISP_STD_END_DT, DISP_SN, CREATE_DTIME, CREATE_STD_DTIME, DEL_TARGET_YN)
+        VALUES (#{recommendArtistDto.characterNo}, now(), addtime(adddate(curdate(), - weekday(curdate()) + 6), '23:59:59'), #{recommendArtistDto.dispSn}, now(), now(), 'Y')
+    </update>
+
+    <update id="insertRcmmdArtistList">
+        INSERT INTO TB_RCMMD_ARTIST_LIST (rcmmd_artist_id, artist_id, artist_type, disp_sn)
+        VALUES (#{rcmmdArtistId}, #{artistId}, #{artistType}, #{dispSn})
+    </update>
+
+    <update id="insertRcmmdArtistTrackList">
+        INSERT INTO TB_RCMMD_ARTIST_TRACK_LIST (rcmmd_artist_id, track_id, disp_sn)
+        VALUES (#{rcmmdArtistId}, #{trackId}, #{dispSn})
     </update>
 </mapper>

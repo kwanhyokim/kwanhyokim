@@ -65,4 +65,8 @@ public interface RecommendMapper {
     void updateRcmmdArtistDispStdEndDt(@Param("characterNo") Long characterNo);
 
     void insertRcmmdArtist(@Param("recommendArtistDto") RecommendArtistDto recommendArtistDto);
+
+    void insertRcmmdArtistList(@Param("rcmmdArtistId") Long rcmmdArtistId, @Param("artistId") Long artistId, @Param("artistType") String artistType, @Param("dispSn") int dispSn);
+
+    void insertRcmmdArtistTrackList(@Param("rcmmdArtistId") Long rcmmdArtistId, @Param("trackId") Long trackId, @Param("dispSn") int dispSn);
 }

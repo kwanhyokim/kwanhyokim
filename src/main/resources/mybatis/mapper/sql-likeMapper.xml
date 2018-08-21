@@ -368,7 +368,7 @@
     <update id="updateLikeListByLikeTypeId">
         UPDATE TB_CHARACTER_LIKE
         SET DISP_SN      = #{dispSn}
-            , UPDATE_DTIME = #{now}
+            , UPDATE_DTIME = now()
         WHERE CHARACTER_NO = #{characterNo}
               AND LIKE_TYPE = #{likeType}
               AND LIKE_TYPE_ID = #{likeTypeId}

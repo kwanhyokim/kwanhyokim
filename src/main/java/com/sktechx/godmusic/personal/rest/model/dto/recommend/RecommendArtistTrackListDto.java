@@ -14,6 +14,7 @@ import lombok.Data;
 @Builder
 public class RecommendArtistTrackListDto {
 	private Long rcmmdArtistId;
+	private Long artistId;
 	private Long trackId;
 	private int dispSn;
 }

@@ -10,30 +10,16 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend;
 
-import java.net.URI;
-import java.util.*;
-import java.util.stream.Collectors;
-
+import com.sktechx.godmusic.lib.domain.CommonApiResponse;
+import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.common.domain.type.*;
 import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
+import com.sktechx.godmusic.personal.common.exception.InternalException;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
-import com.sktechx.godmusic.personal.rest.repository.*;
-import com.sktechx.godmusic.personal.rest.service.ChannelService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import com.sktechx.godmusic.lib.domain.CommonApiResponse;
-import com.sktechx.godmusic.lib.domain.code.OsType;
-import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
@@ -53,11 +39,29 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.PreferS
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.RcmmdTrackPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.TrackPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
+import com.sktechx.godmusic.personal.rest.repository.*;
+import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import com.sktechx.godmusic.personal.rest.service.ChartService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.session.ExecutorType;
+import org.apache.ibatis.session.SqlSession;
+import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.POPULAR_CHNL_TRACK_LIMIT_SIZE;
 
@@ -71,7 +75,8 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
 @Slf4j
 public class RecommendPanelServiceImpl implements RecommendPanelService {
 
-
+    @Autowired
+    private SqlSessionTemplate sqlSessionTemplate;
 
     @Autowired
     private ChartService chartService;
@@ -430,60 +435,129 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, CommonBusinessException.class, InternalException.class})
     public void addPreferArtistPanel(Long characterNo) {
+        // 캐릭터가 선정한 아티스트 목록
         List<CharacterPreferArtistDto> characterPreferArtistDtoList = recommendMapper.selectCharacterPreferArtist(characterNo);
 
-        if (CommonUtils.empty(characterPreferArtistDtoList)) throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
+        if (CollectionUtils.isEmpty(characterPreferArtistDtoList)) throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
 
-        List<RecommendArtistListDto> recommendArtistListDto = new ArrayList<>();
         int count = 0;
+        List<RecommendArtistListDto> recommendArtistListDto = new ArrayList<>();
         for (CharacterPreferArtistDto c : characterPreferArtistDtoList) {
             recommendArtistListDto.add(RecommendArtistListDto.builder().artistId(c.getArtistId()).artistType(ArtistType.REPRSNT).dispSn(count++).build());
         }
+
         List<Long> ids = recommendArtistListDto.stream().map(RecommendArtistListDto::getArtistId).collect(Collectors.toList());
+        // 부족한 아티스트는 유사 아티스트 랜덤하게 추가
+        fillSimilarArtist(count, recommendArtistListDto, ids);
+
+        // 선호 아티스트가 3~5명 까지는 명당 2 명씩 추가 나머진 5명씩 추가
+        count = 2;
+        if (characterPreferArtistDtoList.size() < 3) count = 5;
+        // 정책에 따른 유사 아티스트 추가
+        addSimilarArtist(count, recommendArtistListDto, ids);
+
+        // 전체 곡 각 2곡씩 꺼내기
+        List<RecommendArtistTrackListDto> recommendArtistTrackListDto = recommendMapper.selectSimilarArtistTrack(ids);
+
+        if (CommonUtils.empty(recommendArtistTrackListDto)) return;
+        // 모든 곡의 아티스트가 연달아 나오지 않게 정렬
+        notDuplicateList(recommendArtistTrackListDto);
+
+        // 기존 패널 종료시간을 지금시간으로 업데이트
+        recommendMapper.updateRcmmdArtistDispStdEndDt(characterNo);
+        RecommendArtistDto recommendArtistDto = RecommendArtistDto.builder()
+                                                .characterNo(characterNo)
+                                                .dispSn(1)
+                                                .build();
+
+        recommendMapper.insertRcmmdArtist(recommendArtistDto);
+
+        Map<String, Object> batchParam = new HashMap<>();
+
+        try(SqlSession sqlSession = sqlSessionTemplate.getSqlSessionFactory().openSession(ExecutorType.BATCH, false)){
+            IntStream.range(0, recommendArtistListDto.size())
+                    .forEach(index ->
+                            {
+                                batchParam.clear();
+                                batchParam.put("rcmmdArtistId", recommendArtistDto.getRcmmdArtistId());
+                                batchParam.put("artistId", recommendArtistListDto.get(index).getArtistId());
+                                batchParam.put("artistType", recommendArtistListDto.get(index).getArtistType());
+                                batchParam.put("dispSn", index);
+                                sqlSession.update("insertRcmmdArtistList", batchParam);
+                            }
+                    );
+
+            IntStream.range(0, recommendArtistTrackListDto.size())
+                    .forEach(index ->
+                            {
+                                batchParam.clear();
+                                batchParam.put("rcmmdArtistId", recommendArtistDto.getRcmmdArtistId());
+                                batchParam.put("trackId", recommendArtistTrackListDto.get(index).getTrackId());
+                                batchParam.put("dispSn", index);
+                                sqlSession.update("insertRcmmdArtistTrackList", batchParam);
+                            }
+                    );
+            sqlSession.flushStatements();
+            sqlSession.commit();
+        } catch(Exception e) {
+            log.error("Recommend :: recommend artist :: Error Message", e.getMessage());
+            throw new InternalException(CommonErrorMessage.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private void notDuplicateList(List<RecommendArtistTrackListDto> recommendArtistTrackListDto) {
+        List<RecommendArtistTrackListDto> oddList = new ArrayList<>();
+        List<RecommendArtistTrackListDto> evenList = new ArrayList<>();
+        int forCount = 0;
+        for (RecommendArtistTrackListDto t : recommendArtistTrackListDto) {
+            if (forCount % 2 == 0) evenList.add(t);
+            else oddList.add(t);
+            forCount++;
+        }
+        Collections.shuffle(oddList);
+        Collections.shuffle(evenList);
+
+        if (!CollectionUtils.isEmpty(evenList)
+                && oddList.get(oddList.size() - 1).getArtistId().equals(evenList.get(0).getArtistId())) {
+            if (evenList.size() > 1) Collections.swap(evenList, 0, 1);
+            else if (oddList.size() > 1) Collections.swap(oddList, oddList.size() - 1, oddList.size() - 2);
+        }
+
+        recommendArtistTrackListDto.clear();
+        recommendArtistTrackListDto.addAll(oddList);
+        recommendArtistTrackListDto.addAll(evenList);
+    }
+
+    private void addSimilarArtist(int count, List<RecommendArtistListDto> recommendArtistListDto, List<Long> ids) {
+        List<SimilarArtistDto> similarArtistDtoList = recommendMapper.selectSimilarArtistGroupByPerCount(ids, count);
+        if (!CollectionUtils.isEmpty(similarArtistDtoList)) {
+            for (SimilarArtistDto s : similarArtistDtoList) {
+                recommendArtistListDto.add(RecommendArtistListDto.builder()
+                        .artistId(s.getSimilarArtistId())
+                        .artistType(ArtistType.SIMILAR).build());
+                ids.add(s.getSimilarArtistId());
+            }
+        }
+    }
+
+    private void fillSimilarArtist(int count, List<RecommendArtistListDto> recommendArtistListDto, List<Long> ids) {
         // 선호 아티스트가 3, 4명일 경우 유사 아티스트로 5명까지 채움
-        if (recommendArtistListDto.size() > 2 && recommendArtistListDto.size() < 5) {
+        if (recommendArtistListDto.size() >= 2 && recommendArtistListDto.size() < 5) {
             List<SimilarArtistDto> similaArtistList = recommendMapper.selectSimilarArtistByIdList(ids);
 
-            if (CommonUtils.notEmpty(similaArtistList)) {
+            if (!CollectionUtils.isEmpty(similaArtistList)) {
                 Collections.shuffle(similaArtistList);
                 for (SimilarArtistDto s : similaArtistList) {
                     recommendArtistListDto.add(RecommendArtistListDto.builder()
                             .artistId(s.getSimilarArtistId())
-                            .artistType(ArtistType.SIMILAR)
-                            .dispSn(count++).build());
+                            .artistType(ArtistType.SIMILAR).build());
                     ids.add(s.getSimilarArtistId());
                     if (count > 4) break;
                 }
             }
         }
-
-        System.out.println(recommendArtistListDto.toString());
-
-        count = 2;
-        if (characterPreferArtistDtoList.size() < 3) count = 5;
-
-        List<SimilarArtistDto> similarArtistDtoList = recommendMapper.selectSimilarArtistGroupByPerCount(ids, count);
-        if (CommonUtils.notEmpty(similarArtistDtoList)) {
-            for (SimilarArtistDto s : similarArtistDtoList) {
-                recommendArtistListDto.add(RecommendArtistListDto.builder()
-                        .artistId(s.getSimilarArtistId())
-                        .artistType(ArtistType.SIMILAR)
-                        .dispSn(count++).build());
-                ids.add(s.getSimilarArtistId());
-            }
-        }
-
-        System.out.println(recommendArtistListDto.toString());
-
-        List<RecommendArtistTrackListDto> recommendArtistTrackListDto = recommendMapper.selectSimilarArtistTrack(ids);
-
-        if (CommonUtils.empty(recommendArtistTrackListDto)) return;
-
-        recommendMapper.updateRcmmdArtistDispStdEndDt(characterNo);
-        RecommendArtistDto recommendArtistDto = null;
-        recommendMapper.insertRcmmdArtist(recommendArtistDto);
     }
 
 }

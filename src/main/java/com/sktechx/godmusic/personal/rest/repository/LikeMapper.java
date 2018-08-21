@@ -9,6 +9,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.like.LikeVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,7 +25,8 @@ public interface LikeMapper {
 	int getLikeCountByLikeType(@Param("likeType") String likeType, @Param("characterNo") Long characterNo);
 	int insertLike(@Param("likeType") String likeType, @Param("likeTypeId") Long likeTypeId, @Param("characterNo") Long characterNo);
 	int deleteLike(@Param("likeType") String likeType, @Param("likeTypeId") List<Long> likeTypeId, @Param("characterNo") Long characterNo);
-	void updateLikeListByLikeTypeId(@Param("likeType") String likeType, @Param("likeTypeId") Long likeTypeId, @Param("characterNo") Long characterNo);
+	void updateLikeListByLikeTypeId(@Param("likeType") String likeType, @Param("likeTypeId") Long likeTypeId, @Param("characterNo") Long characterNo,
+	                                @Param("dispSn") int dispSn);
 
 	List<TrackDto> getLikeTrackByLikeType(@Param("characterNo") Long characterNo, @Param("pageable") Pageable pageable);
 	List<AlbumDto> getLikeAlbumByLikeType(@Param("characterNo") Long characterNo, @Param("pageable") Pageable pageable);
