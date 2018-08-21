@@ -12,7 +12,12 @@ package com.sktechx.godmusic.personal.rest.controller.v1;
 
 import java.util.List;
 
+import com.sktechx.godmusic.personal.rest.validate.Validator;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
@@ -91,6 +96,16 @@ public class RecommendPanelController {
 		return new CommonApiResponse(response);
 	}
 
+	@ApiOperation(value = "Discovery Flow 2-C 선호/유사 아티스트 인기곡 by Kobe")
+	@PostMapping("/prefer/artist/panel")
+	public CommonApiResponse addPreferArtistPanel() {
+		GMContext currentContext = GMContext.getContext();
 
+		Validator.loginValidate(currentContext);
+
+		recommendPanelService.addPreferArtistPanel(currentContext.getCharacterNo());
+
+		return CommonApiResponse.emptySuccess();
+	}
 
 }

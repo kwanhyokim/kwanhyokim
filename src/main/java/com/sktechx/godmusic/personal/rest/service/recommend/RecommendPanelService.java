@@ -46,4 +46,6 @@ public interface RecommendPanelService {
 
 	// 홈패널 기본 이미지
 	List<ImageInfo> getRecommendPanelDefaultImageList(OsType osType);
+
+	void addPreferArtistPanel(Long characterNo);
 }
