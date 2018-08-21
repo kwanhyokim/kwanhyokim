@@ -33,7 +33,7 @@
     </resultMap>
 
     <resultMap id="rcmmdArtistResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto" autoMapping="true">
-        <id property="rcmmdArtistId" column="rcmmd_artist_id"></id>
+        <id property="rcmmdArtistId" column="rcmmd_artist_id"/>
         <collection property="artistList" resultMap="com.sktechx.godmusic.personal.rest.repository.ArtistMapper.artistResultMap" autoMapping="true">
         </collection>
     </resultMap>
@@ -573,7 +573,111 @@
         AND img_disp_type = 'DEFAULT'
     </select>
 
-    <select id="selectCharacterPreferArtist" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistListDto">
-
+    <select id="selectCharacterPreferArtist" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.CharacterPreferArtistDto">
+        SELECT
+            CHARACTER_NO
+            , ARTIST_ID
+            , GENRE_ID
+            , GENRE_TYPE
+        FROM TB_CHARACTER_PREFER_ARTIST
+        WHERE CHARACTER_NO = #{characterNo}
+        ORDER BY ARTIST_ID
     </select>
+
+    <select id="selectSimilarArtistByIdList" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.SimilarArtistDto">
+        SELECT
+            ARTIST_ID
+            , SIMILAR_ARTIST_ID
+            , DISP_SN
+        FROM TB_SIMILAR_ARTIST
+        WHERE ARTIST_ID IN
+            <foreach item="artistId" index="index" collection="artistIdList" open="(" separator="," close=")">
+                #{artistId}
+            </foreach>
+              AND SIMILAR_ARTIST_ID NOT IN
+            <foreach item="artistId" index="index" collection="artistIdList" open="(" separator="," close=")">
+                #{artistId}
+            </foreach>
+    </select>
+
+    <select id="selectSimilarArtistGroupByPerCount" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.SimilarArtistDto">
+        SELECT
+            A.ARTIST_ID
+            , A.SIMILAR_ARTIST_ID
+            , A.DISP_SN
+        FROM TB_SIMILAR_ARTIST A INNER JOIN (
+                                                SELECT
+                                                    ARTIST_ID
+                                                    , group_concat(SIMILAR_ARTIST_ID) GROUP_SIMILAR_ARTIST_ID
+                                                FROM (
+                                                         SELECT *
+                                                         FROM TB_SIMILAR_ARTIST
+                                                         WHERE ARTIST_ID IN
+                                                <foreach item="artistId" index="index" collection="artistIdList" open="(" separator="," close=")">
+                                                    #{artistId}
+                                                </foreach>
+                                                AND SIMILAR_ARTIST_ID NOT IN
+                                                <foreach item="artistId" index="index" collection="artistIdList" open="(" separator="," close=")">
+                                                    #{artistId}
+                                                </foreach>
+                                                         ORDER BY rand()) I
+                                                GROUP BY ARTIST_ID) B
+                ON A.ARTIST_ID = B.ARTIST_ID
+                   AND find_in_set(A.SIMILAR_ARTIST_ID, B.GROUP_SIMILAR_ARTIST_ID) BETWEEN 1 AND #{perCount}
+    </select>
+
+    <select id="selectSimilarArtistTrack" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistTrackListDto">
+        SELECT
+            TT.REPRSNT_ARTIST_ID AS ARTIST_ID
+            , TT.TRACK_ID
+        FROM TB_TRACK TT INNER JOIN
+            (
+                SELECT
+                    REPRSNT_ARTIST_ID
+                    , group_concat(TRACK_ID) AS GROUP_TRACK_ID
+                FROM (
+                         SELECT
+                             TRACK_ID
+                             , TRACK_NM
+                             , TRACK_POPULARITY
+                             , REPRSNT_ARTIST_ID
+                             , RNUM
+                         FROM (
+                                  SELECT
+                                      A.*
+                                      , (CASE @VARTISTID
+                                         WHEN A.REPRSNT_ARTIST_ID
+                                             THEN @ROWNUM := @ROWNUM + 1
+                                         ELSE @ROWNUM := 1 END)             AS RNUM
+                                      , (@VARTISTID := A.REPRSNT_ARTIST_ID) AS VJOB
+                                  FROM TB_TRACK A, (
+                                                       SELECT
+                                                           @VARTISTID := ''
+                                                           , @ROWNUM := 0
+                                                       FROM DUAL) B
+                                  WHERE REPRSNT_ARTIST_ID IN
+                                    <foreach item="artistId" index="index" collection="artistIdList" open="(" separator="," close=")">
+                                        #{artistId}
+                                    </foreach>
+                                  ORDER BY A.REPRSNT_ARTIST_ID, A.TRACK_POPULARITY DESC
+                              ) C
+                         WHERE RNUM <![CDATA[<]]> 31
+                         ORDER BY rand()) D
+                GROUP BY REPRSNT_ARTIST_ID) I
+                ON TT.REPRSNT_ARTIST_ID = I.REPRSNT_ARTIST_ID
+                   AND find_in_set(TT.TRACK_ID, I.GROUP_TRACK_ID) BETWEEN 1 AND 2
+    </select>
+    
+    <update id="updateRcmmdArtistDispStdEndDt">
+        UPDATE TB_RCMMD_ARTIST
+        SET DISP_STD_END_DT = now()
+        WHERE CHARACTER_NO = #{characterNo}
+              AND now() BETWEEN DISP_STD_START_DT AND DISP_STD_END_DT
+    </update>
+
+    <update id="insertRcmmdArtist" parameterType="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto"
+            useGeneratedKeys="true" keyProperty="recommendArtistDto.rcmmdArtistId">
+        INSERT TB_RCMMD_ARTIST (CHARACTER_NO, DISP_STD_START_DT, DISP_STD_END_DT, DISP_SN, CREATE_DTIME, CREATE_STD_DTIME, DEL_TARGET_YN)
+        VALUES (#{}, now(), now(), #{}, now(), now(), 'Y')
+    </update>
 </mapper>

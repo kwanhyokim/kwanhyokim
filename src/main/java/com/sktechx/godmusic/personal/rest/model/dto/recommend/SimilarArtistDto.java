@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * Created by Kobe.
  *
@@ -13,9 +15,9 @@ import lombok.Data;
  */
 @Data
 @Builder
-public class SimilaArtistDto {
-	private Long artistId;
+public class SimilarArtistDto {
 	@JsonProperty("id")
+	private Long artistId;
 	private Long similarArtistId;
 	private int dispSn;
 }

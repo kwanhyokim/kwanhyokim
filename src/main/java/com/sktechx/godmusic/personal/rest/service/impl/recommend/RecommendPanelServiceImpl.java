@@ -432,23 +432,58 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     @Override
     @Transactional
     public void addPreferArtistPanel(Long characterNo) {
-        List<RecommendArtistListDto> recommendArtistList = recommendMapper.selectCharacterPreferArtist(characterNo);
+        List<CharacterPreferArtistDto> characterPreferArtistDtoList = recommendMapper.selectCharacterPreferArtist(characterNo);
 
-        if (CommonUtils.empty(recommendArtistList)) throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
-        else if (recommendArtistList.size() > 2 && recommendArtistList.size() < 5) {
-            List<Long> ids = recommendArtistList.stream().map(RecommendArtistListDto::getArtistId).collect(Collectors.toList());
-            int addCount = recommendArtistList.size();
-            List<SimilaArtistDto> similaArtistList = recommendMapper.selectSimilarArtistByIdList(ids, addCount);
+        if (CommonUtils.empty(characterPreferArtistDtoList)) throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
 
-            if (CommonUtils.empty(similaArtistList)) {
-                for (SimilaArtistDto s : similaArtistList) {
-                    recommendArtistList.add(new RecommendArtistListDto().builder()
+        List<RecommendArtistListDto> recommendArtistListDto = new ArrayList<>();
+        int count = 0;
+        for (CharacterPreferArtistDto c : characterPreferArtistDtoList) {
+            recommendArtistListDto.add(RecommendArtistListDto.builder().artistId(c.getArtistId()).artistType(ArtistType.REPRSNT).dispSn(count++).build());
+        }
+        List<Long> ids = recommendArtistListDto.stream().map(RecommendArtistListDto::getArtistId).collect(Collectors.toList());
+        // 선호 아티스트가 3, 4명일 경우 유사 아티스트로 5명까지 채움
+        if (recommendArtistListDto.size() > 2 && recommendArtistListDto.size() < 5) {
+            List<SimilarArtistDto> similaArtistList = recommendMapper.selectSimilarArtistByIdList(ids);
+
+            if (CommonUtils.notEmpty(similaArtistList)) {
+                Collections.shuffle(similaArtistList);
+                for (SimilarArtistDto s : similaArtistList) {
+                    recommendArtistListDto.add(RecommendArtistListDto.builder()
                             .artistId(s.getSimilarArtistId())
                             .artistType(ArtistType.SIMILAR)
-                            .dispSn(addCount++).build());
+                            .dispSn(count++).build());
+                    ids.add(s.getSimilarArtistId());
+                    if (count > 4) break;
                 }
             }
         }
+
+        System.out.println(recommendArtistListDto.toString());
+
+        count = 2;
+        if (characterPreferArtistDtoList.size() < 3) count = 5;
+
+        List<SimilarArtistDto> similarArtistDtoList = recommendMapper.selectSimilarArtistGroupByPerCount(ids, count);
+        if (CommonUtils.notEmpty(similarArtistDtoList)) {
+            for (SimilarArtistDto s : similarArtistDtoList) {
+                recommendArtistListDto.add(RecommendArtistListDto.builder()
+                        .artistId(s.getSimilarArtistId())
+                        .artistType(ArtistType.SIMILAR)
+                        .dispSn(count++).build());
+                ids.add(s.getSimilarArtistId());
+            }
+        }
+
+        System.out.println(recommendArtistListDto.toString());
+
+        List<RecommendArtistTrackListDto> recommendArtistTrackListDto = recommendMapper.selectSimilarArtistTrack(ids);
+
+        if (CommonUtils.empty(recommendArtistTrackListDto)) return;
+
+        recommendMapper.updateRcmmdArtistDispStdEndDt(characterNo);
+        RecommendArtistDto recommendArtistDto = null;
+        recommendMapper.insertRcmmdArtist(recommendArtistDto);
     }
 
 }
