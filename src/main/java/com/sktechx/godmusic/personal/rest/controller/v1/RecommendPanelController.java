@@ -22,6 +22,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelRespo
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
+import com.sktechx.godmusic.personal.rest.validate.Validator;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -92,14 +93,12 @@ public class RecommendPanelController {
 
 	@ApiOperation(value = "Discovery Flow 2-C 선호/유사 아티스트 인기곡 by Kobe")
 	@PostMapping("/prefer/artist/panel")
-	public CommonApiResponse addPreferArtistPanel(@RequestParam(value = "abc") Long abc) {
-//	public CommonApiResponse addPreferArtistPanel(@RequestParam(value = "abc") Long abc) {
-//		GMContext currentContext = GMContext.getContext();
-//
-//		Validator.loginValidate(currentContext);
+	public CommonApiResponse addPreferArtistPanel() {
+		GMContext currentContext = GMContext.getContext();
 
-//		recommendPanelService.addPreferArtistPanel(currentContext.getCharacterNo());
-		recommendPanelService.addPreferArtistPanel(abc);
+		Validator.loginValidate(currentContext);
+
+		recommendPanelService.addPreferArtistPanel(currentContext.getCharacterNo());
 
 		return CommonApiResponse.emptySuccess();
 	}
