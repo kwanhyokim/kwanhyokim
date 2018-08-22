@@ -10,16 +10,6 @@
 
 package com.sktechx.godmusic.personal.rest.controller.v1;
 
-import java.util.List;
-
-import com.sktechx.godmusic.personal.rest.validate.Validator;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.web.bind.annotation.*;
-
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.RequestGMContext;
@@ -35,7 +25,11 @@ import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecomm
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+
+import java.util.List;
 
 /**
  * 설명 : 추천 컨트롤러
@@ -98,12 +92,14 @@ public class RecommendPanelController {
 
 	@ApiOperation(value = "Discovery Flow 2-C 선호/유사 아티스트 인기곡 by Kobe")
 	@PostMapping("/prefer/artist/panel")
-	public CommonApiResponse addPreferArtistPanel() {
-		GMContext currentContext = GMContext.getContext();
+	public CommonApiResponse addPreferArtistPanel(@RequestParam(value = "abc") Long abc) {
+//	public CommonApiResponse addPreferArtistPanel(@RequestParam(value = "abc") Long abc) {
+//		GMContext currentContext = GMContext.getContext();
+//
+//		Validator.loginValidate(currentContext);
 
-		Validator.loginValidate(currentContext);
-
-		recommendPanelService.addPreferArtistPanel(currentContext.getCharacterNo());
+//		recommendPanelService.addPreferArtistPanel(currentContext.getCharacterNo());
+		recommendPanelService.addPreferArtistPanel(abc);
 
 		return CommonApiResponse.emptySuccess();
 	}

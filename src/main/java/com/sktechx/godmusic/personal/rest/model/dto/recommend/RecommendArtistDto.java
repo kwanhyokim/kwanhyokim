@@ -12,7 +12,10 @@ package com.sktechx.godmusic.personal.rest.model.dto.recommend;
 
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
@@ -23,7 +26,10 @@ import java.util.List;
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 19.
  */
+@Builder
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class RecommendArtistDto {
     private Long characterNo;
     private Date dispStdStartDt;

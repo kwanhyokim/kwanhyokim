@@ -12,10 +12,7 @@ package com.sktechx.godmusic.personal.rest.repository;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistListDto;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.SimilaArtistDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import org.apache.ibatis.annotations.Param;
@@ -57,7 +54,19 @@ public interface RecommendMapper {
     // 추천 패널 기본 이미지
     List<ImageInfo> selectRecommendPanelDefaultImageList();
 
-	List<RecommendArtistListDto> selectCharacterPreferArtist(@Param("characterNo") Long characterNo);
+	List<CharacterPreferArtistDto> selectCharacterPreferArtist(@Param("characterNo") Long characterNo);
 
-    List<SimilaArtistDto> selectSimilarArtistByIdList(@Param("artistIdList") List<Long> artistIdList, @Param("addCount") int addCount);
+    List<SimilarArtistDto> selectSimilarArtistByIdList(@Param("artistIdList") List<Long> artistIdList);
+
+    List<SimilarArtistDto> selectSimilarArtistGroupByPerCount(@Param("artistIdList") List<Long> artistIdList, @Param("perCount") int perCount);
+
+    List<RecommendArtistTrackListDto> selectSimilarArtistTrack(@Param("artistIdList") List<Long> artistIdList);
+
+    void updateRcmmdArtistDispStdEndDt(@Param("characterNo") Long characterNo);
+
+    void insertRcmmdArtist(@Param("recommendArtistDto") RecommendArtistDto recommendArtistDto);
+
+    void insertRcmmdArtistList(@Param("rcmmdArtistId") Long rcmmdArtistId, @Param("artistId") Long artistId, @Param("artistType") String artistType, @Param("dispSn") int dispSn);
+
+    void insertRcmmdArtistTrackList(@Param("rcmmdArtistId") Long rcmmdArtistId, @Param("trackId") Long trackId, @Param("dispSn") int dispSn);
 }
