@@ -72,7 +72,7 @@ public class LikeServiceImpl implements LikeService {
 			case TRACK:
 				List<TrackDto> trackDtos = likeMapper.getLikeTrackByLikeType(characterNo, pageable);
 
-				if (CollectionUtils.isEmpty(trackDtos)) throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
+				if (CollectionUtils.isEmpty(trackDtos)) return null;
 
 				totalCount = likeMapper.getLikeCountByLikeType(likeType, characterNo);
 
@@ -80,7 +80,7 @@ public class LikeServiceImpl implements LikeService {
 			case ALBUM:
 				List<AlbumDto> albumDtos = likeMapper.getLikeAlbumByLikeType(characterNo, pageable);
 
-				if (CollectionUtils.isEmpty(albumDtos)) throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
+				if (CollectionUtils.isEmpty(albumDtos)) return null;
 
 				totalCount = likeMapper.getLikeCountByLikeType(likeType, characterNo);
 
@@ -88,7 +88,7 @@ public class LikeServiceImpl implements LikeService {
 			case ARTIST:
 				List<ArtistDto> artistDtos = likeMapper.getLikeArtistByLikeType(characterNo, pageable);
 
-				if (CollectionUtils.isEmpty(artistDtos)) throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
+				if (CollectionUtils.isEmpty(artistDtos)) return null;
 
 				totalCount = likeMapper.getLikeCountByLikeType(likeType, characterNo);
 
@@ -96,7 +96,7 @@ public class LikeServiceImpl implements LikeService {
 			case  PLAYLIST:
 				List<PlayListDto> playListDtos = likeMapper.getLikePlaylistByLikeType(characterNo, pageable);
 
-				if (CollectionUtils.isEmpty(playListDtos)) throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
+				if (CollectionUtils.isEmpty(playListDtos)) return null;
 
 				for (PlayListDto p : playListDtos) {
 					p.setRenewYn(YnType.N);
