@@ -137,9 +137,12 @@ public class ChannelServiceImpl implements ChannelService {
     public List<LastListenHistoryDto> getLastListenHistory(long characterNo, DayType dayType, OsType osType){
 
         List<LastListenHistoryDto> lastListenHistory = channelMapper.selectLastListenHistory(characterNo, dayType, osType);
-        List<LastListenHistoryDto> lastListenAlbumHistory = albumMapper.selectLastListenHistory(characterNo);
+        List<LastListenHistoryDto> lastListenHistoryByChannel = channelMapper.selectLastListenHistoryByChannel(characterNo, osType);
+        List<LastListenHistoryDto> lastListenHistoryByAlbum = albumMapper.selectLastListenHistory(characterNo);
 
-        lastListenHistory.addAll(lastListenAlbumHistory);
+
+        lastListenHistory.addAll(lastListenHistoryByChannel);
+        lastListenHistory.addAll(lastListenHistoryByAlbum);
         lastListenHistory.sort((m1, m2) -> m1.getLastListenDtime().after(m2.getLastListenDtime()) ? -1 : 1);
 
         return lastListenHistory;
