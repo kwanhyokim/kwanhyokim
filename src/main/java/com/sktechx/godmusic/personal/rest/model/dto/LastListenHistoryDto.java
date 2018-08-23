@@ -66,7 +66,9 @@ public class LastListenHistoryDto {
     @ApiModelProperty(value = "업데이트 여부")
     public YnType getRenewYn(){
 
-        if(renewDtime == null) return null;
+        if(!"CHNL".equals(listenType)) return null;
+
+        if(renewDtime == null) return YnType.N;
 
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());

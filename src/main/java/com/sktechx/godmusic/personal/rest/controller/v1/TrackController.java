@@ -42,7 +42,7 @@ public class TrackController {
     @ApiOperation(value = "최근 들은 by Peter ( 기존 /v2/my/track/recent/list GET )")
     @GetMapping("/recentlistened")
     public CommonApiResponse<ListResponse> recentListenedTrackList(@PageableDefault(size=300, page=0) Pageable pageable) {
-
-        return new CommonApiResponse<>(new ListResponse(trackService.getMyRecentTrackList(GMContext.getContext().getCharacterNo(), pageable)));
+        long characterNo = 1234567;
+        return new CommonApiResponse<>(new ListResponse(trackService.getMyRecentTrackList(characterNo, pageable)));
     }
 }
