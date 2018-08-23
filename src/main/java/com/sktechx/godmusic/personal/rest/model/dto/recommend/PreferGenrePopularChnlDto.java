@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto.recommend;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import lombok.Data;
 
@@ -21,6 +22,7 @@ import lombok.Data;
  * @date 2018. 07. 27.
  */
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PreferGenrePopularChnlDto {
 
     private Long characterNo;

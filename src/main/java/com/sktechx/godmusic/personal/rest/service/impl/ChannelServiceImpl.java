@@ -58,27 +58,40 @@ public class ChannelServiceImpl implements ChannelService {
     private RedisService redisService;
 
     public List<ChnlDto> getPopularChannelList(int channelLimitSize, int trackLimitSize ,OsType osType){
-        List<Long> popularChnlIdList = null;
+
+        List<ChnlDto> popularChannelList = null;
+
         try{
-            popularChnlIdList = redisService.getListWithPrefix(ALL_POPULAR_CHNL_KEY,Long.class);
+            popularChannelList = redisService.getListWithPrefix(ALL_POPULAR_CHNL_KEY,ChnlDto.class);
         }catch( Exception e){
             log.error("getPopularChannelList error : {}",e.getMessage());
         }finally {
-            if(CollectionUtils.isEmpty(popularChnlIdList)){
-                popularChnlIdList = channelMapper.selectPopularChannelIdList();
-                if(!CollectionUtils.isEmpty(popularChnlIdList)){
-                    redisService.setWithPrefix(ALL_POPULAR_CHNL_KEY,popularChnlIdList,POPULAR_CHNL_EXPIRED_SECONDS);
+            if(CollectionUtils.isEmpty(popularChannelList)){
+                List<Long> popularChannelIdList = channelMapper.selectPopularChannelIdList();
+                if(!CollectionUtils.isEmpty(popularChannelIdList)){
+                    popularChannelIdList = slicePopularChannelIdLimit(popularChannelIdList);
+
+                    popularChannelList = channelMapper.selectChannelListByIdList(popularChannelIdList,trackLimitSize, osType);
+                    if(!CollectionUtils.isEmpty(popularChannelList)){
+                        redisService.setWithPrefix(ALL_POPULAR_CHNL_KEY,popularChannelList,POPULAR_CHNL_EXPIRED_SECONDS);
+                    }
                 }
             }
         }
 
-        if(!CollectionUtils.isEmpty(popularChnlIdList) && popularChnlIdList.size() > channelLimitSize){
-            popularChnlIdList = popularChnlIdList.subList(0,channelLimitSize);
+        if(!CollectionUtils.isEmpty(popularChannelList) && popularChannelList.size() > channelLimitSize){
+            popularChannelList = popularChannelList.subList(0,channelLimitSize);
         }
 
-        return channelMapper.selectChannelListByIdList(popularChnlIdList,trackLimitSize, osType);
+        return popularChannelList;
     }
 
+    private List<Long> slicePopularChannelIdLimit( List<Long> popularChnlIdList){
+        if(!CollectionUtils.isEmpty(popularChnlIdList) && popularChnlIdList.size() > POPULAR_CHNL_CACHE_LIMIT_SIZE){
+            popularChnlIdList = popularChnlIdList.subList(0, POPULAR_CHNL_CACHE_LIMIT_SIZE);
+        }
+        return popularChnlIdList;
+    }
     @Override
     public List<PreferGenrePopularChnlDto> getPreferGenrePopularChannelList(List<Long> preferGenreIdList , int trackLimitSize, OsType osType) {
         List<PreferGenrePopularChnlListDto> preferGenrePopularChannelList = null;

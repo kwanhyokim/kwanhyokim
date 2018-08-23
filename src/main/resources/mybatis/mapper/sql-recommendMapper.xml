@@ -61,6 +61,19 @@
                 disp_std_start_dt <= NOW()
             AND
                 disp_std_end_dt >= NOW()
+			AND create_std_dtime = (SELECT
+                                        create_std_dtime
+                                    FROM
+                                        tb_rcmmd_mforu
+                                    WHERE
+                                        character_no =  #{characterNo}
+                                    AND
+                                        disp_std_start_dt <= NOW()
+                                    AND
+                                        disp_std_end_dt >= NOW()
+                                    GROUP BY create_std_dtime
+                                    ORDER BY create_std_dtime DESC
+                                )
             UNION ALL
             SELECT
                 'RC_SML_TR' as recommendPanelContentType,
