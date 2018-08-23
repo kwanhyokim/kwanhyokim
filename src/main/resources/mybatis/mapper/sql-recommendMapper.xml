@@ -713,13 +713,13 @@
                                  FROM (
                                       SELECT CHARACTER_NO, TRACK_ID, sum(LISTEN_CNT) AS TOTAL_LISTEN_CNT
                                       FROM TB_MOST_LISTEN_TRACK_BYDAY
-                                      WHERE CHARACTER_NO = #{characterNo} AND adddate(curdate(), -90) <![CDATA[<=]]> LISTEN_DT
+                                      WHERE CHARACTER_NO = #{characterNo} AND adddate(curdate(), -7) <![CDATA[<=]]> LISTEN_DT
                                       GROUP BY CHARACTER_NO, TRACK_ID) I
                                           LEFT OUTER JOIN (
                                                           SELECT *
                                                           FROM TB_CHARACTER_LIKE
                                                           WHERE CHARACTER_NO = #{characterNo} AND
-                                                                  addtime(adddate(curdate(), -120), '00:00:00') <![CDATA[<=]]> UPDATE_DTIME) TCL
+                                                                  addtime(adddate(curdate(), -7), '00:00:00') <![CDATA[<=]]> UPDATE_DTIME) TCL
                                               ON TCL.LIKE_TYPE = 'TRACK'
                                                      AND
                                                  I.TRACK_ID = TCL.LIKE_TYPE_ID) J
