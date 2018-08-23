@@ -38,6 +38,13 @@
         </collection>
     </resultMap>
 
+    <resultMap id="similarTrackResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.recommend.SimilarTrackDto">
+        <id property="trackId" column="track_id"/>
+        <collection property="similarTrackIds" ofType="java.lang.Long" javaType="list">
+            <result column="similar_track_id" />
+        </collection>
+    </resultMap>
+
     <select id="selectPersonalRecommendPanelMeta" resultMap="personalPanelResultMap" parameterType="Long">
         <![CDATA[
             SELECT
@@ -54,6 +61,19 @@
                 disp_std_start_dt <= NOW()
             AND
                 disp_std_end_dt >= NOW()
+			AND create_std_dtime = (SELECT
+                                        create_std_dtime
+                                    FROM
+                                        tb_rcmmd_mforu
+                                    WHERE
+                                        character_no =  #{characterNo}
+                                    AND
+                                        disp_std_start_dt <= NOW()
+                                    AND
+                                        disp_std_end_dt >= NOW()
+                                    GROUP BY create_std_dtime
+                                    ORDER BY create_std_dtime DESC
+                                )
             UNION ALL
             SELECT
                 'RC_SML_TR' as recommendPanelContentType,
@@ -690,4 +710,40 @@
         INSERT INTO TB_RCMMD_ARTIST_TRACK_LIST (rcmmd_artist_id, track_id, disp_sn)
         VALUES (#{rcmmdArtistId}, #{trackId}, #{dispSn})
     </update>
+
+    <select id="selectPreferGenreTrack" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenreTrackDto">
+        SELECT B.SVC_GENRE_ID, C.TRACK_ID
+        FROM (
+             SELECT * FROM TB_CHARACTER_PREFER_GENRE WHERE CHARACTER_NO = #{characterNo}) A
+                 INNER JOIN TB_MAP_PREFER_GENRE_SVC_GENRE B ON A.PREFER_GENRE_ID = B.PREFER_GENRE_ID
+                 INNER JOIN TB_MAP_SVC_GENRE_TRACK C ON B.SVC_GENRE_ID = C.SVC_GENRE_ID
+                 INNER JOIN (
+                            SELECT CHARACTER_NO, TRACK_ID, TOTAL_LIST_CNT
+                            FROM (
+                                 SELECT I.CHARACTER_NO, I.TRACK_ID, CASE WHEN LIKE_TYPE IS NOT NULL
+                                                                              THEN I.TOTAL_LISTEN_CNT + 10
+                                                                         ELSE I.TOTAL_LISTEN_CNT END AS TOTAL_LIST_CNT
+                                 FROM (
+                                      SELECT CHARACTER_NO, TRACK_ID, sum(LISTEN_CNT) AS TOTAL_LISTEN_CNT
+                                      FROM TB_MOST_LISTEN_TRACK_BYDAY
+                                      WHERE CHARACTER_NO = #{characterNo} AND adddate(curdate(), -90) <![CDATA[<=]]> LISTEN_DT
+                                      GROUP BY CHARACTER_NO, TRACK_ID) I
+                                          LEFT OUTER JOIN (
+                                                          SELECT *
+                                                          FROM TB_CHARACTER_LIKE
+                                                          WHERE CHARACTER_NO = #{characterNo} AND
+                                                                  addtime(adddate(curdate(), -119), '00:00:00') <![CDATA[<=]]> UPDATE_DTIME) TCL
+                                              ON TCL.LIKE_TYPE = 'TRACK'
+                                                     AND
+                                                 I.TRACK_ID = TCL.LIKE_TYPE_ID) J
+                            WHERE TOTAL_LIST_CNT <![CDATA[>=]]> 3) D ON C.TRACK_ID = D.TRACK_ID
+        ORDER BY D.TOTAL_LIST_CNT DESC
+    </select>
+
+    <select id="selectSimilarTrackListByIdList" resultMap="similarTrackResultMap">
+        SELECT TRACK_ID, SIMILAR_TRACK_ID
+        FROM TB_SIMILAR_TRACK
+        WHERE TRACK_ID = #{trackId}
+        ORDER BY TRACK_ID, DISP_SN
+    </select>
 </mapper>
