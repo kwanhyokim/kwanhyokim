@@ -70,7 +70,13 @@ public interface RecommendMapper {
 
     void insertRcmmdArtistTrackList(@Param("rcmmdArtistId") Long rcmmdArtistId, @Param("trackId") Long trackId, @Param("dispSn") int dispSn);
 
-	List<PreferGenreTrackDto> selectCharacterPreferGenre(@Param("characterNo") Long characterNo);
+	List<PreferGenreTrackDto> selectPreferGenreTrack(@Param("characterNo") Long characterNo);
 
     List<SimilarTrackDto> selectSimilarTrackListByIdList(@Param("trackIds") List<Long> trackIds);
+
+    void insertRcmmdPreferGenreSimilarTrack(@Param("similarTrack") RecommendPreferGenreSimilarTrackDto recommendPreferGenreSimilarTrackDto);
+
+    void updateRcmmdPreferGenreSimilarTrack(@Param("characterNo") Long characterNo);
+
+    void insertRcmmdPreferGenreSimilarTrackList(@Param("rcmmdPreferGenreSimilarTrackId") Long rcmmdPreferGenreSimilarTrackId, @Param("trackId") Long trackId, @Param("dispSn") int dispSn);
 }
