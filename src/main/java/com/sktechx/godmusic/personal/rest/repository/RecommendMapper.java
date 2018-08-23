@@ -69,4 +69,8 @@ public interface RecommendMapper {
     void insertRcmmdArtistList(@Param("rcmmdArtistId") Long rcmmdArtistId, @Param("artistId") Long artistId, @Param("artistType") String artistType, @Param("dispSn") int dispSn);
 
     void insertRcmmdArtistTrackList(@Param("rcmmdArtistId") Long rcmmdArtistId, @Param("trackId") Long trackId, @Param("dispSn") int dispSn);
+
+	List<PreferGenreTrackDto> selectCharacterPreferGenre(@Param("characterNo") Long characterNo);
+
+    List<SimilarTrackDto> selectSimilarTrackListByIdList(@Param("trackIds") List<Long> trackIds);
 }

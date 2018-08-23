@@ -103,4 +103,16 @@ public class RecommendPanelController {
 		return CommonApiResponse.emptySuccess();
 	}
 
+	@ApiOperation(value = "Discovery Flow 2-A` 선호 장르 유사곡 by Kobe")
+	@PostMapping("/prefer/genre/panel")
+	public CommonApiResponse addPreferGenrePanel() {
+		GMContext currentContext = GMContext.getContext();
+
+		Validator.loginValidate(currentContext);
+
+		recommendPanelService.addPreferGenrePanel(currentContext.getCharacterNo());
+
+		return CommonApiResponse.emptySuccess();
+	}
+
 }

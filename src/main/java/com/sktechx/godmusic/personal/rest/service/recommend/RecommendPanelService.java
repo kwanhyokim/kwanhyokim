@@ -48,4 +48,6 @@ public interface RecommendPanelService {
 	List<ImageInfo> getRecommendPanelDefaultImageList(OsType osType);
 
 	void addPreferArtistPanel(Long characterNo);
+
+	void addPreferGenrePanel(Long characterNo);
 }

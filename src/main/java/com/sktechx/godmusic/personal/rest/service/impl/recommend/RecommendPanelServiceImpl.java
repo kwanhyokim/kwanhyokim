@@ -20,10 +20,7 @@ import com.sktechx.godmusic.personal.common.domain.type.*;
 import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
 import com.sktechx.godmusic.personal.common.exception.InternalException;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
-import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ServiceGenreDto;
+import com.sktechx.godmusic.personal.rest.model.dto.*;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
@@ -507,7 +504,54 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         }
     }
 
-    private void notDuplicateList(List<RecommendArtistTrackListDto> recommendArtistTrackListDto) {
+	@Override
+    @Transactional
+	public void addPreferGenrePanel(Long characterNo) {
+        // 캐릭터가 선정한 장르별 곡 목록
+        List<PreferGenreTrackDto> metaPreferGenreTrackDtoList = recommendMapper.selectCharacterPreferGenre(characterNo);
+
+        if (CollectionUtils.isEmpty(metaPreferGenreTrackDtoList)) throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
+
+        Long svcGenreId = -1L;
+        List<PreferGenreTrackDto> preferGenreTrackDtoList = new ArrayList<>();
+        for (PreferGenreTrackDto p : metaPreferGenreTrackDtoList) {
+            if (!svcGenreId.equals(p.getSvcGenreId())) {
+                svcGenreId = p.getSvcGenreId();
+                preferGenreTrackDtoList.add(p);
+            }
+        }
+
+        List<Long> ids = preferGenreTrackDtoList.stream().map(PreferGenreTrackDto::getTrackId).collect(Collectors.toList());
+
+        List<SimilarTrackDto> similarTrackDtoList = recommendMapper.selectSimilarTrackListByIdList(ids);
+
+        similarTrackDtoList.removeIf((SimilarTrackDto s) -> CollectionUtils.isEmpty(s.getSimilarTrackIds()) || s.getSimilarTrackIds().size() < 15);
+
+        if (CollectionUtils.isEmpty(similarTrackDtoList)) throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
+
+        List<Long> similarTrackIds;
+        for (SimilarTrackDto s : similarTrackDtoList) {
+            similarTrackIds = new ArrayList<>();
+            for (int i = 0; i < s.getSimilarTrackIds().size(); i++) {
+                if (i < 30) {
+                    similarTrackIds.add(s.getSimilarTrackIds().get(i));
+                }
+            }
+            s.setSimilarTrackIds(similarTrackIds);
+        }
+
+        for (PreferGenreTrackDto p : preferGenreTrackDtoList) {
+            for (SimilarTrackDto s : similarTrackDtoList) {
+                if (p.getTrackId().equals(s.getTrackId())) {
+                    p.setSimilarTrackIds(s.getSimilarTrackIds());
+                }
+            }
+        }
+
+        // TODO : 기존 데이터 disp_std_end_Dt 업데이트, 키 생성후 나머지 데이터 넣기
+	}
+
+	private void notDuplicateList(List<RecommendArtistTrackListDto> recommendArtistTrackListDto) {
         List<RecommendArtistTrackListDto> oddList = new ArrayList<>();
         List<RecommendArtistTrackListDto> evenList = new ArrayList<>();
         int forCount = 0;
