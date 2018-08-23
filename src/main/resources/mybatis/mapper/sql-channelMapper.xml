@@ -274,28 +274,6 @@
     </select>
 
     <select id = "selectLastListenHistory" resultMap="lastListenHistoryResultMap">
-        ( SELECT CONCAT(a.listen_type, a.listen_type_id) as listen_id,
-                 a.listen_type,
-                 a.listen_type_id,
-                 b.chnl_nm as content_title,
-                 b.track_cnt as track_count,
-                 a.last_listen_dtime,
-                 d.album_img_size as size,
-                 CONCAT(d.album_img_url, '?updateDate=', UNIX_TIMESTAMP(d.update_dtime)) AS url
-            FROM ( SELECT *
-                     FROM tb_member_last_listen_hist
-                    WHERE character_no = #{characterNo}
-                    ORDER BY last_listen_dtime DESC
-                    LIMIT 1000 ) a
-            JOIN tb_chnl b
-              ON a.listen_type_id = b.chnl_id
-             AND a.listen_type = 'CHNL'
-            LEFT JOIN ted_album c
-              ON b.album_id = c.album_id
-            LEFT JOIN tb_album_img d
-              ON c.album_id = d.album_id )
-
-           UNION ALL
 
         ( SELECT CONCAT(a.listen_type, a.listen_type_id) as listen_id,
                  a.listen_type,
@@ -461,4 +439,29 @@
 
          ORDER BY last_listen_dtime DESC
     </select>
+
+    <select id = "selectLastListenHistoryByChannel" resultMap="lastListenHistoryResultMap">
+        SELECT CONCAT(a.listen_type, a.listen_type_id) as listen_id,
+               a.listen_type,
+               a.listen_type_id,
+               b.chnl_nm as content_title,
+               b.track_cnt as track_count,
+               a.last_listen_dtime,
+               d.album_img_size as size,
+               CONCAT(d.album_img_url, '?updateDate=', UNIX_TIMESTAMP(d.update_dtime)) AS url,
+               b.renew_dtime
+          FROM ( SELECT *
+                   FROM tb_member_last_listen_hist
+                  WHERE character_no = #{characterNo}
+                  ORDER BY last_listen_dtime DESC
+                  LIMIT 1000 ) a
+          JOIN tb_chnl b
+            ON a.listen_type_id = b.chnl_id
+           AND a.listen_type = 'CHNL'
+          LEFT JOIN ted_album c
+            ON b.album_id = c.album_id
+          LEFT JOIN tb_album_img d
+            ON c.album_id = d.album_id
+    </select>
+
 </mapper>

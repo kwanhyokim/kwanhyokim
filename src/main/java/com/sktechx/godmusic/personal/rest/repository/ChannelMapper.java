@@ -36,6 +36,7 @@ public interface ChannelMapper {
     List<MoodPopularChnlListDto> selectAllMoodPopularChannelIdList();
 
     List<LastListenHistoryDto> selectLastListenHistory(@Param("characterNo") long characterNo, @Param("dayType") DayType dayType, @Param("osType") OsType osType);
+    List<LastListenHistoryDto> selectLastListenHistoryByChannel(@Param("characterNo") long characterNo, @Param("osType") OsType osType);
 
 //    List<PreferGenrePopularChnlDto> selectPreferGenrePopularChannelIdList(@Param("preferGenreIdList") List<Long> preferGenreIdList,@Param("osType") OsType osType);
 //    List<PreferGenrePopularChnlDto> selectPreferGenrePopularChannel(@Param("preferGenrePopularChnlList") List<PreferGenrePopularChnlDto> preferGenrePopularChnlList,@Param("osType") OsType osType);
