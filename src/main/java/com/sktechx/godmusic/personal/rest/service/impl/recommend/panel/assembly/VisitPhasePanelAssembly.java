@@ -38,10 +38,10 @@ public class VisitPhasePanelAssembly extends PanelSignAssembly {
         if(!CollectionUtils.isEmpty(personalPhaseMeta.getPreferGenreList())){
             appendPreferGenreChannelPanelList(personalPhaseMeta,panelList,PREFER_GENRE_POPULAR_CHNL_LIST_SIZE);
             if(isDefaultPanelAppend(panelList.size())){
-                appendDefaultPopularChannelPanel(personalPhaseMeta, panelList, PREFER_GENRE_POPULAR_CHNL_LIST_SIZE - panelList.size());
+                appendDefaultPopularChannelPanel(personalPhaseMeta, panelList, PREFER_GENRE_POPULAR_CHNL_LIST_SIZE - panelList.size(), null);
             }
         }else{
-            appendDefaultPopularChannelPanel(personalPhaseMeta, panelList, PREFER_GENRE_POPULAR_CHNL_LIST_SIZE);
+            appendDefaultPopularChannelPanel(personalPhaseMeta, panelList, PREFER_GENRE_POPULAR_CHNL_LIST_SIZE, null);
         }
 
         return panelList;

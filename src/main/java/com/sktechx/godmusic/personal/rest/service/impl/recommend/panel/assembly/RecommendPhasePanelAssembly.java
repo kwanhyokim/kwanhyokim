@@ -58,7 +58,7 @@ public class RecommendPhasePanelAssembly extends PanelSignAssembly {
             if(panelDefaultSize > panelList.size()){
                 appendPreferGenreChannelPanelList(personalPhaseMeta, panelList, panelDefaultSize - panelList.size() );
                 if(panelDefaultSize > panelList.size()){
-                    appendDefaultPopularChannelPanel(personalPhaseMeta , panelList ,panelDefaultSize - panelList.size());
+                    appendDefaultPopularChannelPanel(personalPhaseMeta , panelList ,panelDefaultSize - panelList.size() , null);
                 }
             }
         }else{
@@ -72,7 +72,7 @@ public class RecommendPhasePanelAssembly extends PanelSignAssembly {
                         appendPreferGenreChannelPanelList(personalPhaseMeta, panelList, panelAppendCount );
 
                         if(panelDefaultSize >= panelList.size()){
-                            appendDefaultPopularChannelPanel(personalPhaseMeta , panelList ,panelAppendCount);
+                            appendDefaultPopularChannelPanel(personalPhaseMeta , panelList ,panelAppendCount , null);
                         }
                     }
                 }

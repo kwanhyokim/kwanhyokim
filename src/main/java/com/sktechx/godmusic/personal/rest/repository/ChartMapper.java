@@ -15,6 +15,7 @@ package com.sktechx.godmusic.personal.rest.repository;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendChartPanelType;
 import com.sktechx.godmusic.personal.common.domain.type.SvcContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import org.apache.ibatis.annotations.Param;
@@ -29,8 +30,12 @@ import java.util.List;
  */
 @BaseMapper
 public interface ChartMapper {
-    ChartDto selectPreferDispChart(@Param("svcContentType") SvcContentType svcContentType,
-                                   @Param("chartType") ChartType chartType ,
+//    ChartDto selectPreferDispChart(@Param("svcContentType") SvcContentType svcContentType,
+//                                   @Param("chartType") ChartType chartType ,
+//                                   @Param("osType") OsType osType ,
+//                                   @Param("trackLimitSize") int trackLimitSize);
+
+    ChartDto selectPreferDispChart(@Param("chartPanelType") RecommendChartPanelType recommendChartPanelType,
                                    @Param("osType") OsType osType ,
                                    @Param("trackLimitSize") int trackLimitSize);
 

@@ -12,9 +12,7 @@ package com.sktechx.godmusic.personal.rest.service.recommend.panel;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.PreferDispType;
-import com.sktechx.godmusic.personal.common.domain.type.ChartType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
-import com.sktechx.godmusic.personal.common.domain.type.SvcContentType;
+import com.sktechx.godmusic.personal.common.domain.type.*;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlDto;
@@ -89,27 +87,15 @@ public abstract class PanelSignAssembly extends PanelAssembly {
                     .stream()
                     .filter(Objects::nonNull)
                     .forEach(characterPreferDisp -> {
-                        if (PreferDispType.TOP100.getCode().equals(characterPreferDisp.getPreferDispNm())) {
-                            Panel chartPanel =
-                                    createChartPanel(
-                                            RecommendPanelType.LIVE_CHART,
-                                            SvcContentType.ALL,
-                                            ChartType.HOURLY,
-                                            personalPhaseMeta.getOsType(),
-                                            PREFER_DISP_CHART_TRACK_LIMIT_SIZE
-                                    );
-                            panelList.add(chartPanel);
-                        } else if (PreferDispType.KIDS.getCode().equals(characterPreferDisp.getPreferDispNm())) {
-                            Panel chartPanel =
-                                    createChartPanel(
-                                            RecommendPanelType.KIDS_CHART,
-                                            SvcContentType.KIDS,
-                                            ChartType.HOURLY,
-                                            personalPhaseMeta.getOsType(),
-                                            PREFER_DISP_CHART_TRACK_LIMIT_SIZE
-                                    );
-                            panelList.add(chartPanel);
+
+                         RecommendPanelType recommendPanelType = getPreferRecommendPanelType(characterPreferDisp.getPreferDispNm());
+                        if(recommendPanelType != null){
+                            Panel panel = createChartPanel(recommendPanelType , personalPhaseMeta.getOsType(), PREFER_DISP_CHART_TRACK_LIMIT_SIZE);
+                            if(panel != null){
+                                panelList.add(panel);
+                            }
                         }
+
                     });
         });
     }
@@ -214,25 +200,32 @@ public abstract class PanelSignAssembly extends PanelAssembly {
         }
     }
 
-    private Panel createChartPanel(RecommendPanelType recommendPanelType,
-                                   SvcContentType svcContentType,
-                                   ChartType chartType,
-                                   OsType osType,
-                                   int trackLimitSize) {
-        ChartDto chartDto = chartMapper.selectPreferDispChart(svcContentType, chartType, osType, trackLimitSize);
-        if (chartDto != null) {
-            try {
-                return new ChartPanel(recommendPanelType,
-                                      chartDto,
-                                      getDefaultBgImageList(chartDto.getImgList(),osType));
-            } catch (Exception e) {
-                log.error("PanelSignAssembly createChartPanel create error : {}", e.getMessage());
-                e.printStackTrace();
-            }
+
+    private RecommendPanelType getPreferRecommendPanelType(String preferDispNm){
+
+        if(PreferDispType.TOP100.getCode().equals(preferDispNm)){
+            return RecommendPanelType.LIVE_CHART;
+        }else if(PreferDispType.KIDS.getCode().equals(preferDispNm)){
+            return RecommendPanelType.KIDS_CHART;
+        }
+        return null;
+
+    }
+
+    private Panel createChartPanel(RecommendPanelType recommendPanelType, OsType osType, int trackLimitSize){
+
+        ChartDto chart = null;
+
+        if(RecommendPanelType.LIVE_CHART.equals(recommendPanelType)){
+            chart = chartService.getRealTimeTrackChart(osType,trackLimitSize);
+        }else if(RecommendPanelType.KIDS_CHART.equals(recommendPanelType)){
+            chart = chartService.getKidsChart(osType,trackLimitSize);
+        }
+        if(chart != null){
+            return new ChartPanel(recommendPanelType, chart, getDefaultBgImageList(chart.getImgList(),osType));
         }
         return null;
     }
-
 
     private Panel createPreferGenreSimilarTrackPanel(final PersonalPhaseMeta personalPhaseMeta,
                                                      final RecommendTrackDto preferGenreSimilarTrack){
