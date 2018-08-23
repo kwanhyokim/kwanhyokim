@@ -719,7 +719,7 @@
                                                           SELECT *
                                                           FROM TB_CHARACTER_LIKE
                                                           WHERE CHARACTER_NO = #{characterNo} AND
-                                                                  addtime(adddate(curdate(), -119), '00:00:00') <![CDATA[<=]]> UPDATE_DTIME) TCL
+                                                                  addtime(adddate(curdate(), -120), '00:00:00') <![CDATA[<=]]> UPDATE_DTIME) TCL
                                               ON TCL.LIKE_TYPE = 'TRACK'
                                                      AND
                                                  I.TRACK_ID = TCL.LIKE_TYPE_ID) J
@@ -730,7 +730,28 @@
     <select id="selectSimilarTrackListByIdList" resultMap="similarTrackResultMap">
         SELECT TRACK_ID, SIMILAR_TRACK_ID
         FROM TB_SIMILAR_TRACK
-        WHERE TRACK_ID = #{trackId}
+        WHERE TRACK_ID IN
+        <foreach item="trackId" index="index" collection="trackIds" open="(" separator="," close=")">
+            #{trackId}
+        </foreach>
         ORDER BY TRACK_ID, DISP_SN
     </select>
+
+    <update id="insertRcmmdPreferGenreSimilarTrack" parameterType="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPreferGenreSimilarTrackDto"
+            useGeneratedKeys="true" keyProperty="similarTrack.rcmmdPreferGenreSimilarTrackId" keyColumn="rcmmd_prefer_genre_similar_track_id">
+        INSERT INTO TB_RCMMD_PREFER_GENRE_SIMILAR_TRACK (CHARACTER_NO, DISP_STD_START_DT, DISP_STD_END_DT, SVC_GENRE_ID, DISP_SN, CREATE_DTIME, CREATE_STD_DTIME, DEL_TARGET_YN)
+        VALUES (#{similarTrack.characterNo}, now(), date_add(CURDATE(), interval 24*60*60 - 1 second), #{similarTrack.svcGenreId}, #{similarTrack.dispSn}, now(), now(), 'Y')
+    </update>
+
+    <update id="updateRcmmdPreferGenreSimilarTrack">
+        UPDATE TB_RCMMD_PREFER_GENRE_SIMILAR_TRACK
+        SET DISP_STD_END_DT = now()
+        WHERE CHARACTER_NO = #{characterNo}
+                AND now() BETWEEN DISP_STD_START_DT AND DISP_STD_END_DT
+    </update>
+
+    <insert id="insertRcmmdPreferGenreSimilarTrackList">
+        INSERT INTO TB_RCMMD_PREFER_GENRE_SIMILAR_TRACK_LIST (rcmmd_prefer_genre_similar_track_id, track_id, disp_sn)
+        VALUES (#{rcmmdPreferGenreSimilarTrackId}, #{trackId}, #{dispSn})
+    </insert>
 </mapper>
