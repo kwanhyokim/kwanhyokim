@@ -1,12 +1,15 @@
 package com.sktechx.godmusic.personal.rest.model.dto;
 
 import com.fasterxml.jackson.annotation.*;
+import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -52,4 +55,19 @@ public class LastListenHistoryDto {
     @ApiModelProperty(example = "윤종신", value = "아티스트 명(앨범일 경우만 데이터 존재)")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private AlbumDto album;
+
+    @JsonIgnore
+    private Date renewDtime;
+
+    public YnType getRenewYn(){
+
+        if(renewDtime == null) return null;
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        c.add(Calendar.DATE , -1);
+        if(renewDtime.after(c.getTime())) return YnType.Y;
+        else return YnType.N;
+
+    }
 }
