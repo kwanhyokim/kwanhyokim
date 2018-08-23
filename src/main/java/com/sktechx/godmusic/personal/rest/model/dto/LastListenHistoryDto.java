@@ -56,9 +56,14 @@ public class LastListenHistoryDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private AlbumDto album;
 
+    @ApiModelProperty(value = "업데이트 된 트랙 수")
+    @JsonProperty("renewTrackCount")
+    private Integer renewTrackCnt;
+
     @JsonIgnore
     private Date renewDtime;
 
+    @ApiModelProperty(value = "업데이트 여부")
     public YnType getRenewYn(){
 
         if(renewDtime == null) return null;

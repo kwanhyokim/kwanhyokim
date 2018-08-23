@@ -449,6 +449,7 @@
                a.last_listen_dtime,
                d.album_img_size as size,
                CONCAT(d.album_img_url, '?updateDate=', UNIX_TIMESTAMP(d.update_dtime)) AS url,
+               b.renew_track_cnt,
                b.renew_dtime
           FROM ( SELECT *
                    FROM tb_member_last_listen_hist
