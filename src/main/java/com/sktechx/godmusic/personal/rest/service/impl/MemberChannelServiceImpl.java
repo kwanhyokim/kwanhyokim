@@ -86,53 +86,53 @@ public class MemberChannelServiceImpl implements MemberChannelService {
 
     @Override
     @Transactional(readOnly = true)
-    public MyPlaylistRetriveAllResponse getMemberChannelPageImpl(Long characterNo, Long channelId, Pageable pageable) {
-        List<Long> idList = memberChannelMapper.selectMemberChannelIdList(characterNo, channelId, pageable);
+    public MyPlaylistRetriveAllResponse getMemberChannelPageImpl(Long memberNo, Long characterNo, Long channelId, Pageable pageable) {
+        List<Long> idList = memberChannelMapper.selectMemberChannelIdList(memberNo, characterNo, channelId, pageable);
 
         if (CollectionUtils.isEmpty(idList)) {
             throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
         }
 
         List<MemberChannelDto> list = memberChannelMapper.selectMemberChannelList(idList);
-        int totalCount = memberChannelMapper.selectMemberChannelTotalCount(characterNo);
+        int totalCount = memberChannelMapper.selectMemberChannelTotalCount(memberNo, characterNo);
 
         return new MyPlaylistRetriveAllResponse(new PageImpl<>(list, pageable, totalCount));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public MyPlaylistTrackRetrieveAllResponse getMemberChannelTrackList(Long characterNo, Long memberChannelId, Pageable pageable) {
-        List<TrackDto> list = memberChannelTrackMapper.selectMemberChannelTrackList(characterNo, memberChannelId, pageable);
+    public MyPlaylistTrackRetrieveAllResponse getMemberChannelTrackList(Long memberNo, Long characterNo, Long memberChannelId, Pageable pageable) {
+        List<TrackDto> list = memberChannelTrackMapper.selectMemberChannelTrackList(memberNo, characterNo, memberChannelId, pageable);
 
         if (CollectionUtils.isEmpty(list)) {
             throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
         }
 
-        long totalCount = memberChannelTrackMapper.selectMemberChannelTrackListCount(characterNo, memberChannelId);
+        long totalCount = memberChannelTrackMapper.selectMemberChannelTrackListCount(memberNo, characterNo, memberChannelId);
 
         return new MyPlaylistTrackRetrieveAllResponse(new PageImpl<>(list, pageable, totalCount));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public MemberChannelDto getMemberChannel(Long characterNo, Long memberChannelId) {
-        return memberChannelMapper.selectMemberChannel(characterNo, memberChannelId);
+    public MemberChannelDto getMemberChannel(Long memberNo, Long characterNo, Long memberChannelId) {
+        return memberChannelMapper.selectMemberChannel(memberNo, characterNo, memberChannelId);
     }
 
     @Override
-    public MemberChannelDto createMemberChannel(Long characterNo, String memberChannelName) {
+    public MemberChannelDto createMemberChannel(Long memberNo, Long characterNo, String memberChannelName) {
         // 1000 채널 초과 체크
-        if (memberChannelMapper.selectMemberChannelCount(characterNo) >= FixedSize.MY_CHANNEL.getSize()) {
+        if (memberChannelMapper.selectMemberChannelCount(memberNo, characterNo) >= FixedSize.MY_CHANNEL.getSize()) {
             throw new ValidationException(CommonErrorMessage.MY_CHANNEL_OVER_CREATE);
         }
 
         MemberChannelDto memberChannel = new MemberChannelDto();
 
-        int duplicateChannelNameCount = memberChannelMapper.selectMemberChannelEqualsName(characterNo, memberChannelName);
+        int duplicateChannelNameCount = memberChannelMapper.selectMemberChannelEqualsName(memberNo, characterNo, memberChannelName);
 
         if (duplicateChannelNameCount > 0) {
             String likeCondition = new String(memberChannelName).concat("(%)");
-            List<String> likeConditionChannelList = memberChannelMapper.selectMemberChannelLikeNameList(characterNo, likeCondition);
+            List<String> likeConditionChannelList = memberChannelMapper.selectMemberChannelLikeNameList(memberNo, characterNo, likeCondition);
             int channelNumber = getMemberChannelNameNumbering(memberChannelName, likeConditionChannelList);
             memberChannel.setMemberChannelName(memberChannelName + "(" + channelNumber + ")");
         } else {
@@ -143,22 +143,22 @@ public class MemberChannelServiceImpl implements MemberChannelService {
         memberChannel.setChannelPlayTime("0");
         memberChannel.setTrackCount(0);
 
-        memberChannelMapper.insertMemberChannel(characterNo, memberChannel);
+        memberChannelMapper.insertMemberChannel(memberNo, characterNo, memberChannel);
 
         List<Long> updateMemberChannelIdList = new ArrayList<>();
         updateMemberChannelIdList.add(memberChannel.getMemberChannelId());
 
-        List<Long> myChannelIdList = memberChannelMapper.selectMemberChannelIdList(characterNo, memberChannel.getMemberChannelId(), null);
+        List<Long> myChannelIdList = memberChannelMapper.selectMemberChannelIdList(memberNo, characterNo, memberChannel.getMemberChannelId(), null);
         if (!CollectionUtils.isEmpty(myChannelIdList)) {
             updateMemberChannelIdList.addAll(myChannelIdList);
         }
 
-        modifyMemberChannelList(characterNo, updateMemberChannelIdList);
+        modifyMemberChannelList(memberNo, characterNo, updateMemberChannelIdList);
         return memberChannel;
     }
 
     @Override
-    public void modifyMemberChannelList(Long characterNo, List<Long> viewPriorityChannelIdList){
+    public void modifyMemberChannelList(Long memberNo, Long characterNo, List<Long> viewPriorityChannelIdList){
         AtomicInteger atomicInteger = new AtomicInteger(0);
 
         try(SqlSession sqlSession = sqlSessionTemplate.getSqlSessionFactory().openSession(ExecutorType.BATCH, false)){
@@ -167,7 +167,8 @@ public class MemberChannelServiceImpl implements MemberChannelService {
                     .forEach(index ->
                             {
                                 batchParam.clear();
-                                batchParam.put("memberNo",characterNo);
+                                batchParam.put("memberNo",memberNo);
+                                batchParam.put("characterNo",characterNo);
                                 batchParam.put("channelId",viewPriorityChannelIdList.get(index));
                                 batchParam.put("viewPriority", atomicInteger.getAndIncrement()+1);
                                 batchParam.put("albumId", null);
@@ -188,26 +189,26 @@ public class MemberChannelServiceImpl implements MemberChannelService {
     }
 
     @Override
-    public void removeMemberChannel(Long characterNo, List<Long> memberChannelIdList){
-        memberChannelTrackMapper.deleteMapMemberChannelTrack(characterNo, memberChannelIdList);
-        memberChannelMapper.deleteMemberChannel(characterNo, memberChannelIdList);
+    public void removeMemberChannel(Long memberNo, Long characterNo, List<Long> memberChannelIdList){
+        memberChannelTrackMapper.deleteMapMemberChannelTrack(memberNo, characterNo, memberChannelIdList);
+        memberChannelMapper.deleteMemberChannel(memberNo, characterNo, memberChannelIdList);
     }
 
     @Override
-    public void modifyMemberChannel(Long characterNo, Long memberChannelId, String memberChannelName) {
-        int duplicateChannelNameCount = memberChannelMapper.selectMemberChannelEqualsName(characterNo, memberChannelName);
+    public void modifyMemberChannel(Long memberNo, Long characterNo, Long memberChannelId, String memberChannelName) {
+        int duplicateChannelNameCount = memberChannelMapper.selectMemberChannelEqualsName(memberNo, characterNo, memberChannelName);
 
         if (duplicateChannelNameCount > 0) {
             throw new ValidationException(CommonErrorMessage.MY_CHANNEL_DUPLICATED_NAME);
         }
 
-        memberChannelMapper.updateMemberChannel(characterNo, memberChannelId, memberChannelName);
+        memberChannelMapper.updateMemberChannel(memberNo, characterNo, memberChannelId, memberChannelName);
     }
 
     @Override
-    public MemberChannelDto removeTrackList(AppNameType appName, Long characterNo, Long memberChannelId, List<Long> trackIdList) {
+    public MemberChannelDto removeTrackList(AppNameType appName, Long memberNo, Long characterNo, Long memberChannelId, List<Long> trackIdList) {
 
-        if (ObjectUtils.isEmpty(memberChannelMapper.selectMemberChannel(characterNo, memberChannelId))) {
+        if (ObjectUtils.isEmpty(memberChannelMapper.selectMemberChannel(memberNo, characterNo, memberChannelId))) {
             throw new NotFoundException(CommonErrorMessage.MY_CHANNEL_NOT_FOUND);
         }
 
@@ -227,15 +228,15 @@ public class MemberChannelServiceImpl implements MemberChannelService {
 
         // 앨범 아이디 및 trackCount 업데이트
         Long albumId = getMemberChannelAlbumId(memberChannelId);
-        memberChannelMapper.updateMemberChannelList(characterNo, memberChannelId, null, albumId, true, true, new Date());
+        memberChannelMapper.updateMemberChannelList(memberNo, characterNo, memberChannelId, null, albumId, true, true, new Date());
 
-        return memberChannelMapper.selectMemberChannel(characterNo, memberChannelId);
+        return memberChannelMapper.selectMemberChannel(memberNo, characterNo, memberChannelId);
     }
 
     @Override
-    public MyPlaylistTrackCreateResponse addTrackList(AppNameType appName, Long characterNo, Long memberChannelId, List<Long> trackIdList){
+    public MyPlaylistTrackCreateResponse addTrackList(AppNameType appName, Long memberNo, Long characterNo, Long memberChannelId, List<Long> trackIdList){
 
-        if(ObjectUtils.isEmpty(memberChannelMapper.selectMemberChannel(characterNo, memberChannelId))){
+        if(ObjectUtils.isEmpty(memberChannelMapper.selectMemberChannel(memberNo, characterNo, memberChannelId))){
             throw new NotFoundException(CommonErrorMessage.MY_CHANNEL_NOT_FOUND);
         }
 
@@ -261,7 +262,8 @@ public class MemberChannelServiceImpl implements MemberChannelService {
                 UserEvent userEvent = UserEvent.newBuilder()
                         .setPlayChnl(appName)
                         .setEvent(UserEventType.PICK)
-                        .setMemberNo(characterNo)
+                        .setMemberNo(memberNo)
+                        .setCharactorNo(characterNo)
                         .setTargetId(trackId)
                         .setTargetType(UserEventTarget.TRACK)
                         .build();
@@ -280,10 +282,10 @@ public class MemberChannelServiceImpl implements MemberChannelService {
 
         //앨범 아이디 및 trackCount 업데이트
         Long albumId = getMemberChannelAlbumId(memberChannelId);
-        memberChannelMapper.updateMemberChannelList(characterNo, memberChannelId, null, albumId, true, true, new Date());
+        memberChannelMapper.updateMemberChannelList(memberNo, characterNo, memberChannelId, null, albumId, true, true, new Date());
         //TODO 업데이트 한 member channel의 sn 순서를 1로 변경 해준다.
 
-        MemberChannelDto myChannel = getMemberChannel(characterNo, memberChannelId);
+        MemberChannelDto myChannel = getMemberChannel(memberNo, characterNo, memberChannelId);
 
         return MyPlaylistTrackCreateResponse.builder()
                 .memberChannel(myChannel)
@@ -294,12 +296,12 @@ public class MemberChannelServiceImpl implements MemberChannelService {
     }
 
     @Override
-    public MemberChannelDto modifyTrackList(Long characterNo, Long memberChannelId, List<Long> modifyTrackIdList){
-        if(ObjectUtils.isEmpty(memberChannelMapper.selectMemberChannel(characterNo, memberChannelId))){
+    public MemberChannelDto modifyTrackList(Long memberNo, Long characterNo, Long memberChannelId, List<Long> modifyTrackIdList){
+        if(ObjectUtils.isEmpty(memberChannelMapper.selectMemberChannel(memberNo, characterNo, memberChannelId))){
             throw new NotFoundException(CommonErrorMessage.MY_CHANNEL_NOT_FOUND);
         }
 
-        List<Long> memberChannelTrackIdList = memberChannelTrackMapper.selectMemberChannelTrackIdList(characterNo, memberChannelId);
+        List<Long> memberChannelTrackIdList = memberChannelTrackMapper.selectMemberChannelTrackIdList(memberNo, characterNo, memberChannelId);
         int memberChannlAllTrackIdCount = memberChannelTrackIdList.size();
         int modifyTrackIdCount = modifyTrackIdList.size();
 
@@ -333,7 +335,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
         // 첫번째 이미지 트랙으로 채널 이미지 변경
         memberChannelMapper.updateMemberChannelImg(memberChannelId, 1);
 
-        return memberChannelMapper.selectMemberChannel(characterNo, memberChannelId);
+        return memberChannelMapper.selectMemberChannel(memberNo, characterNo, memberChannelId);
     }
 
     private Long getMemberChannelAlbumId(Long memberChannelId){

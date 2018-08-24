@@ -13,6 +13,7 @@ package com.sktechx.godmusic.personal.rest.model.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sktechx.godmusic.lib.domain.code.YnType;
 import lombok.Data;
 
 import java.util.Date;
@@ -38,7 +39,11 @@ public class TrackDto {
     @JsonProperty("beforePriority")
     private Integer trackBfSn;
 
+    private String displayYn;
+
     private String holdbackYn;
+
+    private String adultAuthYn;
 
     private String playTime;
 

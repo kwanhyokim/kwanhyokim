@@ -77,10 +77,11 @@ public class MyPlaylistController {
     @ApiOperation(value = "My Playlist 생성", httpMethod = "POST", notes = "My Playlist 생성 API(/v2/my/channel)", response = MemberChannelDto.class)
     public CommonApiResponse<MemberChannelDto> createMyPlaylist(
             @ApiParam(value = "memberChannelName - 회원 플레이리스트 명", defaultValue = CREATE_MY_PLAYLIST_DEFAULT_REQUEST) @Valid @RequestBody MyPlaylistCreateRequest myPlaylistCreateRequest) {
+        Long memberNo = getMemberNo();
         Long characterNo = getCharacterNo();
-        MemberChannelDto memberChannel = memberChannelService.createMemberChannel(characterNo, myPlaylistCreateRequest.getMemberChannelName());
+        MemberChannelDto memberChannel = memberChannelService.createMemberChannel(memberNo, characterNo, myPlaylistCreateRequest.getMemberChannelName());
 
-        return new CommonApiResponse<>(memberChannelService.getMemberChannel(characterNo, memberChannel.getMemberChannelId()));
+        return new CommonApiResponse<>(memberChannelService.getMemberChannel(memberNo, characterNo, memberChannel.getMemberChannelId()));
     }
 
     @GetMapping
@@ -90,15 +91,17 @@ public class MyPlaylistController {
             @ApiImplicitParam(name = "size", required = false, dataType = "int", paramType = "query", value = "사이즈", defaultValue = "20")
     })
     public CommonApiResponse<MyPlaylistRetriveAllResponse> retrieveAllMyPlaylist(@ApiIgnore @PageableDefault(size=20, page= 0) Pageable pageable) {
+        Long memberNo = getMemberNo();
         Long characterNo = getCharacterNo();
-        return new CommonApiResponse<>(memberChannelService.getMemberChannelPageImpl(characterNo, null, pageable));
+        return new CommonApiResponse<>(memberChannelService.getMemberChannelPageImpl(memberNo, characterNo, null, pageable));
     }
 
     @GetMapping("/{memberChannelId}")
     @ApiOperation(value = "My Playlist 상세 조회", httpMethod = "GET", notes = "My Playlist 상세 조회 API(/v2/my/channel/{channelId})", response = MemberChannelDto.class)
     public CommonApiResponse<MemberChannelDto> retrieveMyPlaylist(@ApiParam(name = "memberChannelId", required = true, value = "회원 플레이리스트 아이디", defaultValue = "170") @PathVariable("memberChannelId") Long memberChannelId) {
+        Long memberNo = getMemberNo();
         Long characterNo = getCharacterNo();
-        return new CommonApiResponse<>(memberChannelService.getMemberChannel(characterNo, memberChannelId));
+        return new CommonApiResponse<>(memberChannelService.getMemberChannel(memberNo, characterNo, memberChannelId));
     }
 
     @PutMapping("/{memberChannelId}")
@@ -106,8 +109,9 @@ public class MyPlaylistController {
     public CommonApiResponse updateMyPlaylist(
             @ApiParam(name = "memberChannelId", required = true, value = "회원 플레이리스트 아이디", defaultValue = "170") @PathVariable("memberChannelId") Long memberChannelId,
             @ApiParam(value = "memberChannelName - 회원 플레이리스트 명", defaultValue = UPDATE_MY_PLAYLIST_DEFAULT_REQUEST) @Valid @RequestBody MyPlaylistUpdateRequest myPlaylistUpdateRequest) {
+        Long memberNo = getMemberNo();
         Long characterNo = getCharacterNo();
-        memberChannelService.modifyMemberChannel(characterNo, memberChannelId, myPlaylistUpdateRequest.getMemberChannelName());
+        memberChannelService.modifyMemberChannel(memberNo, characterNo, memberChannelId, myPlaylistUpdateRequest.getMemberChannelName());
 
         return CommonApiResponse.emptySuccess();
     }
@@ -115,8 +119,9 @@ public class MyPlaylistController {
     @PutMapping
     @ApiOperation(value = "My Playlist 순서 변경", httpMethod = "PUT", notes = "My Playlist 순서 변경 API(/v2/my/channel/list)", response = CommonApiResponse.class)
     public CommonApiResponse updateMyPlaylist(@Valid @RequestBody MyPlaylistUpdateOrderRequest myPlaylistUpdateOrderRequest) {
+        Long memberNo = getMemberNo();
         Long characterNo = getCharacterNo();
-        memberChannelService.modifyMemberChannelList(characterNo, myPlaylistUpdateOrderRequest.getMemberChannelIdList());
+        memberChannelService.modifyMemberChannelList(memberNo, characterNo, myPlaylistUpdateOrderRequest.getMemberChannelIdList());
 
         return CommonApiResponse.emptySuccess();
     }
@@ -124,8 +129,9 @@ public class MyPlaylistController {
     @DeleteMapping
     @ApiOperation(value = "My Playlist 삭제", httpMethod = "DELETE", notes = "My Playlist 삭제 API(/v2/my/channel/)", response = CommonApiResponse.class)
     public CommonApiResponse deleteMyPlaylist(@Valid @RequestBody MyPlaylistDeleteRequest myPlaylistDeleteRequest) {
+        Long memberNo = getMemberNo();
         Long characterNo = getCharacterNo();
-        memberChannelService.removeMemberChannel(characterNo, myPlaylistDeleteRequest.getMemberChannelIdList());
+        memberChannelService.removeMemberChannel(memberNo, characterNo, myPlaylistDeleteRequest.getMemberChannelIdList());
 
         return CommonApiResponse.emptySuccess();
     }
@@ -135,10 +141,11 @@ public class MyPlaylistController {
     public CommonApiResponse<MyPlaylistTrackCreateResponse> createMyPlaylistTrack(
             @ApiParam(name = "memberChannelId", required = true, value = "회원 플레이리스트 아이디", defaultValue = "170") @PathVariable("memberChannelId") Long memberChannelId,
             @Valid @RequestBody MyPlaylistTrackCreateRequest myPlaylistTrackCreateRequest) {
+        Long memberNo = getMemberNo();
         Long characterNo = getCharacterNo();
         String appName = GMContext.getContext().getAppName();
 
-        MyPlaylistTrackCreateResponse res =  memberChannelService.addTrackList(AppNameType.fromCode(appName), characterNo, memberChannelId, myPlaylistTrackCreateRequest.getTrackIdList());
+        MyPlaylistTrackCreateResponse res =  memberChannelService.addTrackList(AppNameType.fromCode(appName), memberNo, characterNo, memberChannelId, myPlaylistTrackCreateRequest.getTrackIdList());
 
         return new CommonApiResponse<>(res);
     }
@@ -152,9 +159,10 @@ public class MyPlaylistController {
     public CommonApiResponse<MyPlaylistTrackRetrieveAllResponse> retrieveAllMyPlaylistTrack(
             @ApiParam(name = "memberChannelId", required = true, value = "회원 플레이리스트 아이디", defaultValue = "170") @PathVariable("memberChannelId") Long memberChannelId,
             @ApiIgnore @PageableDefault(size=300, page= 0) Pageable pageable) {
+        Long memberNo = getMemberNo();
         Long characterNo = getCharacterNo();
 
-        return new CommonApiResponse(memberChannelService.getMemberChannelTrackList(characterNo, memberChannelId, pageable));
+        return new CommonApiResponse(memberChannelService.getMemberChannelTrackList(memberNo, characterNo, memberChannelId, pageable));
     }
 
     @PutMapping("/{memberChannelId}/tracks")
@@ -162,9 +170,10 @@ public class MyPlaylistController {
     public CommonApiResponse<MemberChannelDto> updateMyPlaylistTrack(
             @ApiParam(name = "memberChannelId", required = true, value = "회원 플레이리스트 아이디", defaultValue = "170") @PathVariable("memberChannelId") Long memberChannelId,
             @Valid @RequestBody MyPlaylistTrackUpdateOrderRequest myPlaylistTrackUpdateOrderRequest) {
+        Long memberNo = getMemberNo();
         Long characterNo = getCharacterNo();
 
-        MemberChannelDto memberChannel =  memberChannelService.modifyTrackList(characterNo, memberChannelId, myPlaylistTrackUpdateOrderRequest.getTrackIdList());
+        MemberChannelDto memberChannel =  memberChannelService.modifyTrackList(memberNo, characterNo, memberChannelId, myPlaylistTrackUpdateOrderRequest.getTrackIdList());
         return new CommonApiResponse<>(memberChannel);
     }
 
@@ -173,18 +182,26 @@ public class MyPlaylistController {
     public CommonApiResponse<MemberChannelDto> deleteMyPlaylistTrack(
             @ApiParam(name = "memberChannelId", required = true, value = "회원 플레이리스트 아이디", defaultValue = "170") @PathVariable("memberChannelId") Long memberChannelId,
             @Valid @RequestBody MyPlaylistTrackDeleteRequest myPlaylistTrackDeleteRequest) {
+        Long memberNo = getMemberNo();
         Long characterNo = getCharacterNo();
         String appName = GMContext.getContext().getAppName();
 
-        MemberChannelDto memberChannel = memberChannelService.removeTrackList(AppNameType.fromCode(appName), characterNo, memberChannelId, myPlaylistTrackDeleteRequest.getTrackIdList());
+        MemberChannelDto memberChannel = memberChannelService.removeTrackList(AppNameType.fromCode(appName), memberNo, characterNo, memberChannelId, myPlaylistTrackDeleteRequest.getTrackIdList());
         return new CommonApiResponse<>(memberChannel);
     }
 
+    private Long getMemberNo() {
+        GMContext currentContext = GMContext.getContext();
+        Validator.loginValidate(currentContext);
+
+        return currentContext.getMemberNo();
+//        return 1L; // Mockup
+    }
     private Long getCharacterNo() {
         GMContext currentContext = GMContext.getContext();
         Validator.loginValidate(currentContext);
 
-        return currentContext.getMemberNo(); //TODO : characterNo
+        return currentContext.getCharacterNo();
 //        return 1L; // Mockup
     }
 

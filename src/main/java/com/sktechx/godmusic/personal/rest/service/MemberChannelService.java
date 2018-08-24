@@ -30,23 +30,23 @@ import java.util.List;
  */
 public interface MemberChannelService {
 
-    MyPlaylistRetriveAllResponse getMemberChannelPageImpl(Long characterNo, Long channelId, Pageable pageable);
+    MyPlaylistRetriveAllResponse getMemberChannelPageImpl(Long memberNo, Long characterNo, Long channelId, Pageable pageable);
 
-    MyPlaylistTrackRetrieveAllResponse getMemberChannelTrackList(Long characterNo, Long memberChannelId , Pageable pageable);
+    MyPlaylistTrackRetrieveAllResponse getMemberChannelTrackList(Long memberNo, Long characterNo, Long memberChannelId , Pageable pageable);
 
-    MemberChannelDto getMemberChannel(Long characterNo, Long memberChannelId);
+    MemberChannelDto getMemberChannel(Long memberNo, Long characterNo, Long memberChannelId);
 
-    MemberChannelDto createMemberChannel(Long characterNo, String memberChannelName);
+    MemberChannelDto createMemberChannel(Long memberNo, Long characterNo, String memberChannelName);
 
-    void modifyMemberChannelList(Long characterNo, List<Long> viewPriorityChannelIdList);
+    void modifyMemberChannelList(Long memberNo, Long characterNo, List<Long> viewPriorityChannelIdList);
 
-    void removeMemberChannel(Long characterNo, List<Long> memberChannelIdList);
+    void removeMemberChannel(Long memberNo, Long characterNo, List<Long> memberChannelIdList);
 
-    void modifyMemberChannel(Long characterNo, Long memberChannelId, String memberChannelName);
+    void modifyMemberChannel(Long memberNo, Long characterNo, Long memberChannelId, String memberChannelName);
 
-    MemberChannelDto removeTrackList(AppNameType appName, Long characterNo, Long memberChannelId, List<Long> trackIdList);
+    MemberChannelDto removeTrackList(AppNameType appName, Long memberNo, Long characterNo, Long memberChannelId, List<Long> trackIdList);
 
-    MyPlaylistTrackCreateResponse addTrackList(AppNameType appName, Long characterNo, Long memberChannelId, List<Long> trackIdList);
+    MyPlaylistTrackCreateResponse addTrackList(AppNameType appName, Long memberNo, Long characterNo, Long memberChannelId, List<Long> trackIdList);
 
-    MemberChannelDto modifyTrackList(Long characterNo,  Long memberChannelId, List<Long> trackIdList);
+    MemberChannelDto modifyTrackList(Long memberNo, Long characterNo,  Long memberChannelId, List<Long> trackIdList);
 }
