@@ -49,8 +49,8 @@ public interface MemberChannelMapper {
 
     void updateMemberChannel(@Param("memberNo") Long memberNo, @Param("characterNo")Long characterNo, @Param("channelId")Long memberChannelId, @Param("channelName")String memberChannelName);
 
-    void updateMemberChannelList(@Param("characterNo")Long characterNo,
-            @Param("memberNo")Long memberNo,
+    void updateMemberChannelList(@Param("memberNo")Long memberNo,
+            @Param("characterNo")Long characterNo,
             @Param("channelId")Long memberChannelId,
             @Param("viewPriority")Integer viewPriority,
             @Param("albumId")Long albumId,
