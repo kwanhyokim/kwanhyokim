@@ -67,6 +67,8 @@ public class TrackDto {
 
     private RankDto rank;
 
+    private YnType displayYn;
+
     public YnType getRenewYn(){
         if(renewDtime!= null){
             Calendar cal = Calendar.getInstance();
