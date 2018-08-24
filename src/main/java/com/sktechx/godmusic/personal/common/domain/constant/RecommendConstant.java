@@ -22,6 +22,8 @@ public class RecommendConstant {
     public static final int POPULAR_CHNL_EXPIRED_SECONDS = 300;
     public static final int PREFER_GENRE_POPULAR_CHNL_EXPIRED_SECONDS = 86400;
     public static final int MOOD_POPULAR_CHNL_EXPIRED_SECONDS = 86400;
+    public static final int REALTIME_CHART_EXPIRED_SECONDS = 300;
+    public static final int KIDS_CHART_EXPIRED_SECONDS = 300;
 
     //청취 단계 패널
     public static final int SIMILAR_TRACK_PANEL_SIZE  = 2;

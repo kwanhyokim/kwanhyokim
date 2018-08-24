@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend.panel;
 
+import com.netflix.discovery.converters.Auto;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
@@ -23,6 +24,7 @@ import com.sktechx.godmusic.personal.rest.repository.CharacterPreferGenreMapper;
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
+import com.sktechx.godmusic.personal.rest.service.ChartService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,8 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
 @Slf4j
 public abstract class PanelAssembly {
 
+    @Autowired
+    protected ChartService chartService;
     @Autowired
     protected ChannelService channelService;
     @Autowired
@@ -79,8 +83,8 @@ public abstract class PanelAssembly {
     }
 
 
-    protected void appendDefaultPopularChannelPanel(final PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int panelLimitSize) {
-        List<ChnlDto> popularChannelList = channelService.getPopularChannelList(panelLimitSize,POPULAR_CHNL_TRACK_LIMIT_SIZE ,personalPhaseMeta.getOsType());
+    protected void appendDefaultPopularChannelPanel(final PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int panelLimitSize , List<Long> filterChnlIdList) {
+        List<ChnlDto> popularChannelList = channelService.getPopularChannelList(panelLimitSize,POPULAR_CHNL_TRACK_LIMIT_SIZE ,personalPhaseMeta.getOsType(),filterChnlIdList);
 
         if(!CollectionUtils.isEmpty(popularChannelList)){
             popularChannelList

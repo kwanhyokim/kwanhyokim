@@ -84,9 +84,9 @@
                         tb_chart a
                   LEFT OUTER JOIN tb_img_mang b ON a.chart_id = b.img_content_id
                   WHERE
-                        a.svc_content_type = #{svcContentType}
-                            AND a.chart_type = #{chartType}
-                            AND a.music_content_type = 'TRACK'
+                        a.svc_content_type = #{chartPanelType.svcContentType}
+                            AND a.chart_type = #{chartPanelType.chartType}
+                            AND a.music_content_type = #{chartPanelType.musicContentType}
                             AND b.img_content_type = 'CHART'
                             AND b.dfk_type = 'EVERY'
                             AND b.img_disp_type = 'DEFAULT'

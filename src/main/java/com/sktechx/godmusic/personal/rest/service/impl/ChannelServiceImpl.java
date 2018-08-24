@@ -57,10 +57,9 @@ public class ChannelServiceImpl implements ChannelService {
     @Autowired
     private RedisService redisService;
 
-    public List<ChnlDto> getPopularChannelList(int channelLimitSize, int trackLimitSize ,OsType osType){
 
+    public List<ChnlDto> getPopularChannelList(int channelLimitSize, int trackLimitSize ,OsType osType , List<Long> filterChnlIdList){
         List<ChnlDto> popularChannelList = null;
-
         try{
             popularChannelList = redisService.getListWithPrefix(ALL_POPULAR_CHNL_KEY,ChnlDto.class);
         }catch( Exception e){
@@ -79,6 +78,8 @@ public class ChannelServiceImpl implements ChannelService {
             }
         }
 
+        filterDuplicatePopularChnlList(filterChnlIdList, popularChannelList);
+
         if(!CollectionUtils.isEmpty(popularChannelList) && popularChannelList.size() > channelLimitSize){
             popularChannelList = popularChannelList.subList(0,channelLimitSize);
         }
@@ -86,11 +87,21 @@ public class ChannelServiceImpl implements ChannelService {
         return popularChannelList;
     }
 
-    private List<Long> slicePopularChannelIdLimit( List<Long> popularChnlIdList){
-        if(!CollectionUtils.isEmpty(popularChnlIdList) && popularChnlIdList.size() > POPULAR_CHNL_CACHE_LIMIT_SIZE){
+    private List<Long> slicePopularChannelIdLimit( List<Long> popularChnlIdList) {
+        if (!CollectionUtils.isEmpty(popularChnlIdList) && popularChnlIdList.size() > POPULAR_CHNL_CACHE_LIMIT_SIZE) {
             popularChnlIdList = popularChnlIdList.subList(0, POPULAR_CHNL_CACHE_LIMIT_SIZE);
         }
         return popularChnlIdList;
+    }
+
+    private void filterDuplicatePopularChnlList(List<Long> filterChnlIdList , List<ChnlDto> popularChnlList){
+        if( !CollectionUtils.isEmpty(filterChnlIdList) && !CollectionUtils.isEmpty(popularChnlList) ){
+            popularChnlList.removeIf(chnlDto -> {
+                if(filterChnlIdList.contains(chnlDto.getChnlId()))
+                    return true;
+                return false;
+            });
+        }
     }
     @Override
     public List<PreferGenrePopularChnlDto> getPreferGenrePopularChannelList(List<Long> preferGenreIdList , int trackLimitSize, OsType osType) {

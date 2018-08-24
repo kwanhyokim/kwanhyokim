@@ -26,6 +26,7 @@ import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ServiceGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.artist.ArtistPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.ChannelPanel;
@@ -63,7 +64,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.POPULAR_CHNL_LIST_SIZE;
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.POPULAR_CHNL_TRACK_LIMIT_SIZE;
+import static com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType.*;
 
 /**
  * 설명 : 추천 패널 데이터 생성
@@ -113,11 +116,12 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     @Override
     public List<Panel> createRecommendPanelList(Long characterNo , OsType osType) {
         List<Panel> panelList = null;
+        PersonalPhaseMeta personalPhaseMeta = null;
+        PanelAssembly panelAssembly = null;
         try{
 
-            PersonalPhaseMeta personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType);
-            PanelAssembly panelAssembly = recommendPanelAssemblyFactory.getRecommendPanelAssembly(personalPhaseMeta.getFirstPhaseType());
-
+            personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType);
+            panelAssembly = recommendPanelAssemblyFactory.getRecommendPanelAssembly(personalPhaseMeta.getFirstPhaseType());
             panelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
 
         }catch(CommonBusinessException cbex){
@@ -125,14 +129,21 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         }catch(Exception ex){
             log.error("createRecommendPanel not catched exception : {}",ex.getMessage());
             ex.printStackTrace();
-        }
-
-        if(CollectionUtils.isEmpty(panelList)){
-            //TODO : 기본 인기 채널 패널
+        }finally{
+            if(CollectionUtils.isEmpty(panelList)){
+                if(panelAssembly == null)
+                    panelAssembly = recommendPanelAssemblyFactory.getRecommendPanelAssembly();
+                try{
+                    panelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
+                }catch(Exception e){
+                    log.error("createRecommendPanel recovery not catched exception : {}",e.getMessage());
+                }
+            }
         }
 
         return panelList;
     }
+
 
     @Override
     public List<Panel> createMockupRecommendPanelList() {
@@ -141,13 +152,16 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
         try{
 
+
             //TODO : mockup 데이터 생성
-            ChartDto liveChart = chartMapper.selectPreferDispChart(SvcContentType.ALL, ChartType.HOURLY, OsType.AOS , 15);
+            ChartDto liveChart = chartService.getRealTimeTrackChart(OsType.AOS, 15);
+
+                    //chartMapper.selectPreferDispChart(RecommendChartPanelType.TOP100, OsType.AOS , 15);
 
             ChartPanel liveChartPanel = new ChartPanel(RecommendPanelType.LIVE_CHART, liveChart, makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_top_100_1.png"));
             mockPanelList.add(liveChartPanel);
 
-            List<ChnlDto> popularChannelList = channelService.getPopularChannelList(3,POPULAR_CHNL_TRACK_LIMIT_SIZE , OsType.AOS);
+            List<ChnlDto> popularChannelList = channelService.getPopularChannelList(3,POPULAR_CHNL_TRACK_LIMIT_SIZE , OsType.AOS, null);
 
             if(!CollectionUtils.isEmpty(popularChannelList)){
                 popularChannelList.stream().forEach( channel -> {
@@ -198,7 +212,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             mockPanelList.add(rcmmdTrack);
 
 
-            ChartDto kidsChart = chartMapper.selectPreferDispChart(SvcContentType.KIDS, ChartType.HOURLY, OsType.AOS , 15);
+            ChartDto kidsChart = chartService.getKidsChart(OsType.AOS, 15);
+                    //chartMapper.selectPreferDispChart(RecommendChartPanelType.KIDS, OsType.AOS , 15);
             ChartPanel kidsChartPanel = new ChartPanel(RecommendPanelType.KIDS_CHART, kidsChart, makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_kids_1.png"));
             mockPanelList.add(kidsChartPanel);
 
@@ -551,6 +566,17 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         }
 	}
 
+    @Override
+    public void updateRecommendDataPrevent(ListenRequest request,Long characterNo) {
+
+        if(request != null){
+            RecommendPanelContentType recommendPanelContentType = RecommendPanelContentType.fromCode(request.getListenType());
+            if(recommendPanelContentType != null && request.getListenTypeId() != null && characterNo != null){
+                recommendMapper.updateRecommendDataPrevent(recommendPanelContentType , request.getListenTypeId() , characterNo);
+            }
+        }
+    }
+
     private List<RecommendPreferGenreSimilarTrackDto> getRecommendPreferGenreSimilarTrackDtos(Long characterNo, List<PreferGenreTrackDto> preferGenreTrackDtoList) {
         int dispSn = 0;
         List<RecommendPreferGenreSimilarTrackDto> recommendPreferGenreSimilarTrackDtoList = new ArrayList<>();
@@ -657,4 +683,27 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         }
     }
 
+
+    private List<Panel> defaultRecommendPanelList (PersonalPhaseMeta personalPhaseMeta){
+        List<ChnlDto> popularChannelList =
+                channelService.getPopularChannelList(POPULAR_CHNL_LIST_SIZE,POPULAR_CHNL_TRACK_LIMIT_SIZE ,personalPhaseMeta.getOsType(),null);
+
+        List<Panel> panelList = new ArrayList<>();
+        if(!CollectionUtils.isEmpty(popularChannelList)){
+            popularChannelList
+                    .stream()
+                    .filter(Objects::nonNull)
+                    .forEach(channel -> {
+                        try{
+                            panelList.add( return new PopularChannelPanel(
+                                    channel ,
+                                    getDefaultBgImageList( channel.getImgList(),personalPhaseMeta.getOsType() )
+                            ));
+                        }catch(Exception e){
+                            log.error("GuestPhasePanel defaultPanelSetting Exception : {}",e.getMessage());
+                        }
+                    });
+
+        }
+    }
 }

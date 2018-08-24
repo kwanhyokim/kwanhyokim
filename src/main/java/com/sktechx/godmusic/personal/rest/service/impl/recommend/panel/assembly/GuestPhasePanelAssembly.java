@@ -37,7 +37,7 @@ public class GuestPhasePanelAssembly extends PanelNonSignAssembly {
 
         final List<Panel> panelList = new ArrayList<>();
 
-        appendDefaultPopularChannelPanel(personalPhaseMeta , panelList , POPULAR_CHNL_LIST_SIZE);
+        appendDefaultPopularChannelPanel(personalPhaseMeta , panelList , POPULAR_CHNL_LIST_SIZE , null);
 
         return panelList;
     }

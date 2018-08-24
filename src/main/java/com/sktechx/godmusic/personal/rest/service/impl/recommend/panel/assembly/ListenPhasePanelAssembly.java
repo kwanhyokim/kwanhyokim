@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly;
 
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelSignAssembly;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
 /**
  * 설명 : 청취 단계 ( 2단계 ) 패널 생성기
@@ -47,7 +50,14 @@ public class ListenPhasePanelAssembly extends PanelSignAssembly {
         appendListenMoodPopularChanelPanelList(personalPhaseMeta, panelList,LISTEN_MOOD_POPULAR_CHNL_SIZE);
 
         if( isAppendDefaultPanel(panelList.size()) ){
-            appendDefaultPopularChannelPanel(personalPhaseMeta, panelList,( SIMILAR_TRACK_PANEL_SIZE+LISTEN_MOOD_POPULAR_CHNL_SIZE ) - panelList.size() );
+            List filterChnlIdList = panelList.stream()
+                    .filter(panel -> RecommendPanelType.LISTEN_MOOD_POPULAR_CHANNEL.equals(panel.getType()) && panel.getContent() != null)
+                    .map(panel-> {
+                        return panel.getContent().getId();
+                    })
+                    .collect(Collectors.toList());
+
+            appendDefaultPopularChannelPanel(personalPhaseMeta, panelList,( SIMILAR_TRACK_PANEL_SIZE+LISTEN_MOOD_POPULAR_CHNL_SIZE ) - panelList.size() ,filterChnlIdList );
         }
         return panelList;
     }
