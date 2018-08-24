@@ -20,7 +20,10 @@ import com.sktechx.godmusic.personal.common.domain.type.*;
 import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
 import com.sktechx.godmusic.personal.common.exception.InternalException;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
-import com.sktechx.godmusic.personal.rest.model.dto.*;
+import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ServiceGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
@@ -521,27 +524,69 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     @Transactional
 	public void addPreferGenrePanel(Long characterNo) {
         // 캐릭터가 선정한 장르별 곡 목록
-        List<PreferGenreTrackDto> metaPreferGenreTrackDtoList = recommendMapper.selectCharacterPreferGenre(characterNo);
-
-        if (CollectionUtils.isEmpty(metaPreferGenreTrackDtoList)) throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
-
-        Long svcGenreId = -1L;
-        List<PreferGenreTrackDto> preferGenreTrackDtoList = new ArrayList<>();
-        for (PreferGenreTrackDto p : metaPreferGenreTrackDtoList) {
-            if (!svcGenreId.equals(p.getSvcGenreId())) {
-                svcGenreId = p.getSvcGenreId();
-                preferGenreTrackDtoList.add(p);
-            }
-        }
+        List<PreferGenreTrackDto> preferGenreTrackDtoList = getPreferGenreTrackDtos(characterNo);
 
         List<Long> ids = preferGenreTrackDtoList.stream().map(PreferGenreTrackDto::getTrackId).collect(Collectors.toList());
 
+        // 장르별 1곡에 대한 유사곡 조회
+        List<SimilarTrackDto> similarTrackDtoList = getSimilarTrackDtoList(ids);
+
+        // 기존 패널의 disp_std_end_dt 를 now() 로 업데이트
+        recommendMapper.updateRcmmdPreferGenreSimilarTrack(characterNo);
+
+        // 트랙 패널 생성
+        List<RecommendPreferGenreSimilarTrackDto> recommendPreferGenreSimilarTrackDtoList = getRecommendPreferGenreSimilarTrackDtos(characterNo, preferGenreTrackDtoList);
+
+        // 패널당 곡 리스트
+        Map<String, Object> batchParam = new HashMap<>();
+        try(SqlSession sqlSession = sqlSessionTemplate.getSqlSessionFactory().openSession(ExecutorType.BATCH, false)){
+            for (RecommendPreferGenreSimilarTrackDto r : recommendPreferGenreSimilarTrackDtoList) {
+                for (SimilarTrackDto s : similarTrackDtoList) {
+                    if (r.getTrackId().equals(s.getTrackId())) {
+                        IntStream.range(0, s.getSimilarTrackIds().size())
+                                .forEach(index ->
+                                        {
+                                            batchParam.clear();
+                                            batchParam.put("rcmmdPreferGenreSimilarTrackId", r.getRcmmdPreferGenreSimilarTrackId());
+                                            batchParam.put("trackId", s.getSimilarTrackIds().get(index));
+                                            batchParam.put("dispSn", index);
+                                            sqlSession.update("insertRcmmdPreferGenreSimilarTrackList", batchParam);
+                                        }
+                                );
+                    }
+                }
+            }
+            sqlSession.flushStatements();
+            sqlSession.commit();
+        } catch(Exception e) {
+            log.error("Recommend :: recommend artist :: Error Message", e.getMessage());
+            throw new InternalException(CommonErrorMessage.INTERNAL_SERVER_ERROR);
+        }
+	}
+
+    private List<RecommendPreferGenreSimilarTrackDto> getRecommendPreferGenreSimilarTrackDtos(Long characterNo, List<PreferGenreTrackDto> preferGenreTrackDtoList) {
+        int dispSn = 0;
+        List<RecommendPreferGenreSimilarTrackDto> recommendPreferGenreSimilarTrackDtoList = new ArrayList<>();
+        // TB_RCMMD_PREFER_GENRE_SIMILAR_TRACK 에 넣을 객체
+        for (PreferGenreTrackDto p : preferGenreTrackDtoList) {
+            recommendPreferGenreSimilarTrackDtoList.add(RecommendPreferGenreSimilarTrackDto.builder().characterNo(characterNo)
+                    .svcGenreId(p.getSvcGenreId()).dispSn(dispSn++).trackId(p.getTrackId()).build());
+        }
+
+        for (RecommendPreferGenreSimilarTrackDto r : recommendPreferGenreSimilarTrackDtoList) {
+            recommendMapper.insertRcmmdPreferGenreSimilarTrack(r);
+        }
+        return recommendPreferGenreSimilarTrackDtoList;
+    }
+
+    private List<SimilarTrackDto> getSimilarTrackDtoList(List<Long> ids) {
         List<SimilarTrackDto> similarTrackDtoList = recommendMapper.selectSimilarTrackListByIdList(ids);
 
         similarTrackDtoList.removeIf((SimilarTrackDto s) -> CollectionUtils.isEmpty(s.getSimilarTrackIds()) || s.getSimilarTrackIds().size() < 15);
 
         if (CollectionUtils.isEmpty(similarTrackDtoList)) throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
 
+        // 30개를 초과할경우를 제외해줌
         List<Long> similarTrackIds;
         for (SimilarTrackDto s : similarTrackDtoList) {
             similarTrackIds = new ArrayList<>();
@@ -552,19 +597,27 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             }
             s.setSimilarTrackIds(similarTrackIds);
         }
+        return similarTrackDtoList;
+    }
 
-        for (PreferGenreTrackDto p : preferGenreTrackDtoList) {
-            for (SimilarTrackDto s : similarTrackDtoList) {
-                if (p.getTrackId().equals(s.getTrackId())) {
-                    p.setSimilarTrackIds(s.getSimilarTrackIds());
-                }
+    private List<PreferGenreTrackDto> getPreferGenreTrackDtos(Long characterNo) {
+        List<PreferGenreTrackDto> metaPreferGenreTrackDtoList = recommendMapper.selectPreferGenreTrack(characterNo);
+
+        if (CollectionUtils.isEmpty(metaPreferGenreTrackDtoList)) throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
+
+        // 장르별 1곡씩 꺼내기
+        Long svcGenreId = -1L;
+        List<PreferGenreTrackDto> preferGenreTrackDtoList = new ArrayList<>();
+        for (PreferGenreTrackDto p : metaPreferGenreTrackDtoList) {
+            if (!svcGenreId.equals(p.getSvcGenreId())) {
+                svcGenreId = p.getSvcGenreId();
+                preferGenreTrackDtoList.add(p);
             }
         }
+        return preferGenreTrackDtoList;
+    }
 
-        // TODO : 기존 데이터 disp_std_end_Dt 업데이트, 키 생성후 나머지 데이터 넣기
-	}
-
-	private void notDuplicateList(List<RecommendArtistTrackListDto> recommendArtistTrackListDto) {
+    private void notDuplicateList(List<RecommendArtistTrackListDto> recommendArtistTrackListDto) {
         List<RecommendArtistTrackListDto> oddList = new ArrayList<>();
         List<RecommendArtistTrackListDto> evenList = new ArrayList<>();
         int forCount = 0;
