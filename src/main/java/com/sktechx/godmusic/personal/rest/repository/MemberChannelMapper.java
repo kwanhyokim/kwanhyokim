@@ -29,27 +29,28 @@ import java.util.List;
 @BaseMapper
 public interface MemberChannelMapper {
 
-    List<Long> selectMemberChannelIdList(@Param("memberNo")Long characterNo, @Param("excludeChannelId")Long excludeChannelId, @Param("pageable")Pageable pageable);
+    List<Long> selectMemberChannelIdList(@Param("memberNo") Long memberNo, @Param("characterNo")Long characterNo, @Param("excludeChannelId")Long excludeChannelId, @Param("pageable")Pageable pageable);
 
     List<MemberChannelDto> selectMemberChannelList(@Param("channelIdList") List<Long> channelIdList);
 
-    int selectMemberChannelTotalCount(@Param("memberNo") Long characterNod);
+    int selectMemberChannelTotalCount(@Param("memberNo") Long memberNo, @Param("characterNo") Long characterNo);
 
-    MemberChannelDto selectMemberChannel(@Param("memberNo")Long characterNo, @Param("channelId")Long memberChannelId);
+    MemberChannelDto selectMemberChannel(@Param("memberNo") Long memberNo, @Param("characterNo")Long characterNo, @Param("channelId")Long memberChannelId);
 
-    int selectMemberChannelCount(@Param("memberNo")Long characterNo);
+    int selectMemberChannelCount(@Param("memberNo") Long memberNo, @Param("characterNo")Long characterNo);
 
-    int selectMemberChannelEqualsName(@Param("memberNo") Long characterNo, @Param("channelName")String memberChannelName);
+    int selectMemberChannelEqualsName(@Param("memberNo") Long memberNo, @Param("characterNo") Long characterNo, @Param("channelName")String memberChannelName);
 
-    List<String> selectMemberChannelLikeNameList(@Param("memberNo") Long characterNo, @Param("channelName") String memberChannelName);
+    List<String> selectMemberChannelLikeNameList(@Param("memberNo") Long memberNo, @Param("characterNo") Long characterNo, @Param("channelName") String memberChannelName);
 
-    void insertMemberChannel(@Param("memberNo")Long characterNo, @Param("memberChannelDto")MemberChannelDto memberChannelDto);
+    void insertMemberChannel(@Param("memberNo")Long memberNo, @Param("characterNo")Long characterNo, @Param("memberChannelDto")MemberChannelDto memberChannelDto);
 
-    void deleteMemberChannel(@Param("memberNo")Long characterNo, @Param("channelIdList") List<Long> memberChannelIdList);
+    void deleteMemberChannel(@Param("memberNo") Long memberNo, @Param("characterNo")Long characterNo, @Param("channelIdList") List<Long> memberChannelIdList);
 
-    void updateMemberChannel(@Param("memberNo")Long characterNo, @Param("channelId")Long memberChannelId, @Param("channelName")String memberChannelName);
+    void updateMemberChannel(@Param("memberNo") Long memberNo, @Param("characterNo")Long characterNo, @Param("channelId")Long memberChannelId, @Param("channelName")String memberChannelName);
 
-    void updateMemberChannelList(@Param("memberNo")Long characterNo,
+    void updateMemberChannelList(@Param("characterNo")Long characterNo,
+            @Param("memberNo")Long memberNo,
             @Param("channelId")Long memberChannelId,
             @Param("viewPriority")Integer viewPriority,
             @Param("albumId")Long albumId,

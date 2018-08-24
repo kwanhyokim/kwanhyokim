@@ -27,11 +27,11 @@ import java.util.List;
  */
 @BaseMapper
 public interface MemberChannelTrackMapper {
-    List<TrackDto> selectMemberChannelTrackList(@Param("memberNo") Long memberNo, @Param("channelId") Long memberChannelId, @Param("pageable") Pageable pageable);
+    List<TrackDto> selectMemberChannelTrackList(@Param("memberNo") Long memberNo, @Param("characterNo") Long characterNo, @Param("channelId") Long memberChannelId, @Param("pageable") Pageable pageable);
 
-    int selectMemberChannelTrackListCount(@Param("memberNo") Long memberNo, @Param("channelId") Long memberChannelId);
+    int selectMemberChannelTrackListCount(@Param("memberNo") Long memberNo, @Param("characterNo") Long characterNo, @Param("channelId") Long memberChannelId);
 
-    void deleteMapMemberChannelTrack(@Param("memberNo")Long characterNo, @Param("channelIdList") List<Long> memberChannelIdList);
+    void deleteMapMemberChannelTrack(@Param("memberNo")Long memberNo, @Param("characterNo") Long characterNo, @Param("channelIdList") List<Long> memberChannelIdList);
 
     void deleteTrack(@Param("channelId")Long channelId, @Param("trackIdList")List<Long> trackIdList);
 
@@ -41,5 +41,5 @@ public interface MemberChannelTrackMapper {
 
     int insertTrackMemberChannel(@Param("channelId")Long memberChannelId, @Param("trackId")Long trackId, @Param("viewPriority")Integer viewPriority);
 
-    List<Long> selectMemberChannelTrackIdList(@Param("memberNo")Long characterNo, @Param("channelId")Long memberChannelId);
+    List<Long> selectMemberChannelTrackIdList(@Param("memberNo")Long memberNo, @Param("characterNo") Long characterNo, @Param("channelId")Long memberChannelId);
 }

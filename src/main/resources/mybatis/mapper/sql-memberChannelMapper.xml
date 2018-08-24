@@ -26,6 +26,7 @@
 		FROM
 			TB_MEMBER_CHNL
 		<trim prefix="WHERE" prefixOverrides="AND | OR ">
+			AND character_no = #{characterNo}
 			AND member_no = #{memberNo}
 			<if test="excludeChannelId != null">
 				AND member_chnl_id != #{excludeChannelId}
@@ -69,6 +70,7 @@
 		FROM
 		tb_member_chnl
 		<trim prefix="WHERE" prefixOverrides="AND | OR ">
+			AND character_no = #{characterNo}
 			AND member_no = #{memberNo}
 		</trim>
 	</select>
@@ -91,9 +93,9 @@
 			TB_MEMBER_CHNL AS C
 			LEFT JOIN TB_ALBUM_IMG D ON C.ALBUM_ID = D.ALBUM_ID
 			LEFT JOIN TED_ALBUM E ON C.ALBUM_ID = E.ALBUM_ID
-		WHERE
-			member_no = #{memberNo}
-			AND member_chnl_id = #{channelId}
+		WHERE character_no = #{characterNo}
+		AND member_no = #{memberNo}
+		AND member_chnl_id = #{channelId}
 		ORDER BY channelPriority ASC
 	</select>
 
@@ -103,6 +105,7 @@
 		FROM
 			TB_MEMBER_CHNL
 		<trim prefix="WHERE" prefixOverrides="AND | OR ">
+			AND character_no = #{characterNo}
 			AND member_no = #{memberNo}
 		</trim>
 	</select>
@@ -112,10 +115,9 @@
 			count(*)
 		FROM
 			tb_member_chnl
-		WHERE
-			member_no = #{memberNo}
-		AND
-			member_chnl_nm = #{channelName}
+		WHERE character_no = #{characterNo}
+		AND member_no = #{memberNo}
+		AND member_chnl_nm = #{channelName}
 	</select>
 
 
@@ -124,16 +126,16 @@
 			member_chnl_nm
 		FROM
 			tb_member_chnl
-		WHERE
-			member_no = #{memberNo}
-		AND
-			member_chnl_nm like #{channelName}
+		WHERE character_no = #{characterNo}
+		AND member_no = #{memberNo}
+		AND member_chnl_nm like #{channelName}
 	</select>
 
-    	<update id="insertMemberChannel" parameterType="com.sktechx.godmusic.personal.rest.model.dto.MemberChannelDto"
+	<update id="insertMemberChannel" parameterType="com.sktechx.godmusic.personal.rest.model.dto.MemberChannelDto"
 			useGeneratedKeys="true" keyProperty="memberChannelDto.memberChannelId">
 		INSERT INTO TB_MEMBER_CHNL (
-				MEMBER_NO
+				CHARACTER_NO
+				, MEMBER_NO
 				, MEMBER_CHNL_NM
 				, MEMBER_CHNL_SN
 				, TRACK_CNT
@@ -143,7 +145,8 @@
 				, UPDATE_DTIME
 
 		) VALUES (
-				#{memberNo}
+				#{characterNo}
+				, #{memberNo}
 				, #{memberChannelDto.memberChannelName}
 				, #{memberChannelDto.channelPriority}
 				, #{memberChannelDto.trackCount}
@@ -162,6 +165,7 @@
 		</trim>
 		<trim prefix="WHERE" prefixOverrides="AND | OR ">
 			AND MEMBER_CHNL_ID = #{channelId}
+			AND CHARACTER_NO = #{characterNo}
 			AND MEMBER_NO = #{memberNo}
 		</trim>
 	</update>
@@ -175,6 +179,7 @@
 			<foreach collection="channelIdList" item="channelId" index="index" open="(" separator="," close=")">
 				#{channelId}
 			</foreach>
+			AND character_no = #{characterNo}
 			AND member_no = #{memberNo}
 	</update>
 
@@ -220,6 +225,7 @@
 		</trim>
 		<trim prefix="WHERE" prefixOverrides="AND | OR ">
 			AND MEMBER_CHNL_ID = #{channelId}
+			AND CHARACTER_NO = #{characterNo}
 			AND MEMBER_NO = #{memberNo}
 		</trim>
 	</update>
