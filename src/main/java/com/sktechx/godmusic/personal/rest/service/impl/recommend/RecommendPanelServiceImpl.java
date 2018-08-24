@@ -683,27 +683,4 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         }
     }
 
-
-    private List<Panel> defaultRecommendPanelList (PersonalPhaseMeta personalPhaseMeta){
-        List<ChnlDto> popularChannelList =
-                channelService.getPopularChannelList(POPULAR_CHNL_LIST_SIZE,POPULAR_CHNL_TRACK_LIMIT_SIZE ,personalPhaseMeta.getOsType(),null);
-
-        List<Panel> panelList = new ArrayList<>();
-        if(!CollectionUtils.isEmpty(popularChannelList)){
-            popularChannelList
-                    .stream()
-                    .filter(Objects::nonNull)
-                    .forEach(channel -> {
-                        try{
-                            panelList.add( return new PopularChannelPanel(
-                                    channel ,
-                                    getDefaultBgImageList( channel.getImgList(),personalPhaseMeta.getOsType() )
-                            ));
-                        }catch(Exception e){
-                            log.error("GuestPhasePanel defaultPanelSetting Exception : {}",e.getMessage());
-                        }
-                    });
-
-        }
-    }
 }
