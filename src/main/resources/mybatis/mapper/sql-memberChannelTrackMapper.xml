@@ -42,7 +42,7 @@
 		    f.album_img_size size,
 			CONCAT(f.album_img_url, '?updateDate=', unix_timestamp(f.update_dtime)) AS url,
 			f.update_dtime albumImgUpdateDateTime,
-		    IF(e.track_id is not null, 'Y', 'N') likeYn,
+		    IF(e.like_type_id is not null, 'Y', 'N') likeYn,
 		    IF(b.streaming_premium_yn = 'Y' OR b.pps_yn = 'Y', 'Y', 'N') holdbackYn,
 		    IF(b.adult_auth_need_track_yn = 'Y', 'Y', 'N') adultAuthYn,
 		    d.artist_id artistId,
@@ -62,6 +62,8 @@
 		        WHERE
 					mmc.member_no = #{memberNo}
 				AND
+					mmc.character_no = #{characterNo}
+				AND
 					mmc.member_chnl_id = #{channelId}
 				ORDER BY
 					mmct.update_dtime DESC,
@@ -78,8 +80,8 @@
 				ON b.track_id = c.track_id AND c.rp_yn = 'Y' AND c.db_sts = 'A'
 			LEFT OUTER JOIN ted_artist d
 				ON c.artist_id = d.artist_id
-			LEFT OUTER JOIN tb_map_track_like e
-				ON b.track_id = e.track_id AND e.member_no = #{memberNo}
+			LEFT OUTER JOIN tb_character_like e
+				ON b.track_id = e.like_type_id AND e.character_no = #{characterNo} AND e.like_type = 'TRACK'
 			LEFT OUTER JOIN tb_album_img f
 				ON b.album_id = f.album_id
 			LEFT OUTER JOIN ted_album g
@@ -97,10 +99,9 @@
 		FROM
 			tb_member_chnl a INNER JOIN tb_map_member_chnl_track b
 				ON a.member_chnl_id =b.member_chnl_id
-        WHERE
-			a.member_no = #{memberNo}
-		AND
-			a.member_chnl_id = #{channelId}
+        WHERE a.character_no = #{characterNo}
+		AND a.member_no = #{memberNo}
+		AND a.member_chnl_id = #{channelId}
 	</select>
 
 	<update id="deleteMapMemberChannelTrack">
@@ -113,6 +114,7 @@
 			<foreach collection="channelIdList" item="channelId" index="index" open="(" separator="," close=")">
 				#{channelId}
 			</foreach>
+			AND MC.character_no = #{characterNo}
 			AND MC.member_no = #{memberNo}
 	</update>
 
@@ -167,10 +169,9 @@
 		FROM
 			tb_member_chnl a INNER JOIN tb_map_member_chnl_track b
 			ON a.member_chnl_id = b.member_chnl_id
-		WHERE
-			a.member_chnl_id = #{channelId}
-		AND
-			a.member_no = #{memberNo}
+		WHERE a.member_chnl_id = #{channelId}
+		AND	a.character_no = #{characterNo}
+		AND a.member_no = #{memberNo}
 		ORDER BY b.update_dtime DESC, b.track_sn
 	</select>
 

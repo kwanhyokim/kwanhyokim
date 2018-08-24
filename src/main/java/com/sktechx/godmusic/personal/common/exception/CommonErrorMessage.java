@@ -16,7 +16,7 @@ public enum CommonErrorMessage implements ErrorDomain {
 	 * 200 Content Empty
 	 */
 	// Common 	0000
-	EMPTY_DATA(2000001,HttpStatus.OK,"요청 결과 정보가 없습니다.", "요청 결과 정보 없음")
+	EMPTY_DATA(2040001,HttpStatus.OK,"요청 결과 정보가 없습니다.", "요청 결과 정보 없음")
 	/*
 	 * 400 Default Error
 	 */
