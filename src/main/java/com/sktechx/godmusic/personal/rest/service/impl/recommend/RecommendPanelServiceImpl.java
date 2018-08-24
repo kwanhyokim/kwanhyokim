@@ -26,6 +26,7 @@ import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ServiceGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.artist.ArtistPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.ChannelPanel;
@@ -65,6 +66,7 @@ import java.util.stream.IntStream;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.POPULAR_CHNL_LIST_SIZE;
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.POPULAR_CHNL_TRACK_LIMIT_SIZE;
+import static com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType.*;
 
 /**
  * 설명 : 추천 패널 데이터 생성
@@ -563,6 +565,17 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             throw new InternalException(CommonErrorMessage.INTERNAL_SERVER_ERROR);
         }
 	}
+
+    @Override
+    public void updateRecommendDataPrevent(ListenRequest request,Long characterNo) {
+
+        if(request != null){
+            RecommendPanelContentType recommendPanelContentType = RecommendPanelContentType.fromCode(request.getListenType());
+            if(recommendPanelContentType != null && request.getListenTypeId() != null && characterNo != null){
+                recommendMapper.updateRecommendDataPrevent(recommendPanelContentType , request.getListenTypeId() , characterNo);
+            }
+        }
+    }
 
     private List<RecommendPreferGenreSimilarTrackDto> getRecommendPreferGenreSimilarTrackDtos(Long characterNo, List<PreferGenreTrackDto> preferGenreTrackDtoList) {
         int dispSn = 0;

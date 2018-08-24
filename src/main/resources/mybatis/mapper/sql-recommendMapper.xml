@@ -767,4 +767,40 @@
         INSERT INTO TB_RCMMD_PREFER_GENRE_SIMILAR_TRACK_LIST (rcmmd_prefer_genre_similar_track_id, track_id, disp_sn)
         VALUES (#{rcmmdPreferGenreSimilarTrackId}, #{trackId}, #{dispSn})
     </insert>
+
+    <update id="updateRecommendDataPrevent">
+      UPDATE
+        <if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_ATST_TR'">
+            tb_rcmmd_artist
+        </if>
+        <if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_SML_TR'">
+            tb_rcmmd_similar_track
+        </if>
+        <if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_GR_TR'">
+            tb_rcmmd_prefer_genre_similar_track
+        </if>
+        <if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_CF_TR'">
+            tb_rcmmd_mforu
+        </if>
+      SET
+        del_target_yn = 'N'
+      WHERE
+        character_no = #{characterNo}
+        <if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_ATST_TR'">
+          AND
+            rcmmd_artist_id = #{rcmmdId}
+        </if>
+        <if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_SML_TR'">
+          AND
+            rcmmd_similar_track_id = #{rcmmdId}
+        </if>
+        <if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_GR_TR'">
+          AND
+            rcmmd_prefer_genre_similar_track_id = #{rcmmdId}
+        </if>
+        <if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_CF_TR'">
+          AND
+            rcmmd_mforu_id = #{rcmmdId}
+        </if>
+    </update>
 </mapper>

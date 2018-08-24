@@ -7,6 +7,7 @@ import com.sktechx.godmusic.personal.common.amqp.domain.UserEventTarget;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEventType;
 import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
 import com.sktechx.godmusic.personal.common.domain.type.AppNameType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.TrackLogType;
 import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
 import com.sktechx.godmusic.personal.common.exception.NotFoundException;
@@ -18,13 +19,14 @@ import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenTrackRequest;
 import com.sktechx.godmusic.personal.rest.repository.ListenMapper;
 import com.sktechx.godmusic.personal.rest.service.ListenService;
 import com.sktechx.godmusic.personal.rest.service.PurchaseService;
+import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.util.Date;
-
+import static  com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType.*;
 /**
  * Created by Kobe.
  *
@@ -46,11 +48,21 @@ public class ListenServiceImpl implements ListenService {
 	@Autowired
 	PurchaseService purchaseService;    // 실제론 Purchase 에서 처리해야하지만 청취로그 특성상 빈번한 호출이 예상되어 일단 필요한부분 구현
 
+	@Autowired
+	RecommendPanelService recommendPanelService;
+
 	@Override
 	public void addListenHistByChannel(ListenRequest request, Long memberNo, Long characterNo) {
 		listenMapper.addListenHistByChannel(request.getListenType(), request.getListenTypeId(),
 				memberNo, characterNo);
+
+		//추천 패널의 경우 기존 추천 데이터  삭제 방지를 위한 DB 업데이트 처리
+		if(isRecommendListen(request.getListenType())){
+			recommendPanelService.updateRecommendDataPrevent(request , characterNo);
+		}
+
 	}
+
 
 	@Override
 	public void addListenHistByTrack(ListenTrackRequest request, GMContext currentContext) {
@@ -116,5 +128,15 @@ public class ListenServiceImpl implements ListenService {
 					.build();
 			amqpService.deliverUserEvent(userEvent);
 		}
+	}
+
+	private boolean isRecommendListen(String listenType){
+		if(RC_ATST_TR.getCode().equals(listenType)
+				|| RC_SML_TR.getCode().equals(listenType)
+					|| RC_GR_TR.getCode().equals(listenType)
+						|| RC_CF_TR.getCode().equals(listenType)){
+			return true;
+		}
+		return false;
 	}
 }
