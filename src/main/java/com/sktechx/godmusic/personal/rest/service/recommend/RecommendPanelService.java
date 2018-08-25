@@ -32,8 +32,6 @@ public interface RecommendPanelService {
     List<Panel> createRecommendPanelList(Long characterNo, OsType osType);
 
 
-    void updateRecommendDataPrevent(ListenRequest request,Long characterNo);
-
     // added by bob 2018.08.01
     // edited by bob 2018.08.02
     ListDto<List<RecommendPanelTrackDto>>getRecommendPanelPopularTrackList(Long characterNo, Long rcmmdArtistId);
