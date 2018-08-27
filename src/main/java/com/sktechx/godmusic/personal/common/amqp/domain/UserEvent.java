@@ -14,6 +14,7 @@ package com.sktechx.godmusic.personal.common.amqp.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sktechx.godmusic.personal.common.domain.type.AppNameType;
+import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import lombok.Getter;
 
 /**
@@ -46,6 +47,9 @@ public class UserEvent {
 
 	@JsonProperty("target_id")
 	private String				targetId;
+
+	@JsonProperty("source_type")
+	private SourceType          sourceType;
 	
 	private UserEvent()	{
 		this.timeMillis = System.currentTimeMillis();
@@ -93,6 +97,11 @@ public class UserEvent {
 
 		public UserEventBuilder		setTargetId(long targetId)	{
 			instance.targetId = Long.toString(targetId);
+			return this;
+		}
+
+		public UserEventBuilder		setSourceType(SourceType sourceType)	{
+			instance.sourceType = sourceType;
 			return this;
 		}
 		

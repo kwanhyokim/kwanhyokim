@@ -7,6 +7,8 @@ import com.sktechx.godmusic.personal.common.amqp.domain.UserEventTarget;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEventType;
 import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
 import com.sktechx.godmusic.personal.common.domain.type.AppNameType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
+import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.common.domain.type.TrackLogType;
 import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
 import com.sktechx.godmusic.personal.common.exception.NotFoundException;
@@ -60,7 +62,6 @@ public class ListenServiceImpl implements ListenService {
 
 	}
 
-
 	@Override
 	public void addListenHistByTrack(ListenTrackRequest request, GMContext currentContext) {
 		Long memberNo = currentContext.getMemberNo();
@@ -87,6 +88,7 @@ public class ListenServiceImpl implements ListenService {
 				.memberRcmdId(request.getRecommendTrackId())
 				.addTm(request.getAddDateTime())
 				.sessionToken("")
+				.sourceType(SourceType.STRM)
 				.build();
 
 		TrackListen.TrackListenBuilder trackListenBuilder = trackListen.toBuilder();
@@ -122,6 +124,7 @@ public class ListenServiceImpl implements ListenService {
 					.setCharactorNo(characterNo)
 					.setTargetId(request.getTrackId())
 					.setTargetType(UserEventTarget.TRACK)
+					.setSourceType(SourceType.STRM)
 					.build();
 			amqpService.deliverUserEvent(userEvent);
 		}

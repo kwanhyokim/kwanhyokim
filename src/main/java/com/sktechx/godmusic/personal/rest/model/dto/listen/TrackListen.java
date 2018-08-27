@@ -1,6 +1,7 @@
 package com.sktechx.godmusic.personal.rest.model.dto.listen;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -76,6 +77,9 @@ public class TrackListen {
 
 	@JsonProperty("session_token")
 	private String				sessionToken;
+
+	@JsonProperty("source_type")
+	private SourceType          sourceType;
 
 	public TrackListen() {
 		this.timeMillis = System.currentTimeMillis();
