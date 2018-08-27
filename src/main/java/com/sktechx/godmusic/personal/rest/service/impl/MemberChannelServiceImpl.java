@@ -219,7 +219,8 @@ public class MemberChannelServiceImpl implements MemberChannelService {
             UserEvent userEvent = UserEvent.newBuilder()
                     .setPlayChnl(appName)
                     .setEvent(UserEventType.UNPICK)
-                    .setMemberNo(characterNo)
+                    .setMemberNo(memberNo)
+                    .setCharactorNo(characterNo)
                     .setTargetId(trackId)
                     .setTargetType(UserEventTarget.TRACK)
                     .build();
