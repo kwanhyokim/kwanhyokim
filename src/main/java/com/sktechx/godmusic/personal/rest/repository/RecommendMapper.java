@@ -81,6 +81,15 @@ public interface RecommendMapper {
 
     void insertRcmmdPreferGenreSimilarTrackList(@Param("rcmmdPreferGenreSimilarTrackId") Long rcmmdPreferGenreSimilarTrackId, @Param("trackId") Long trackId, @Param("dispSn") int dispSn);
 
-    void updateRecommendDataPrevent(@Param("recommendPanelContentType") RecommendPanelContentType recommendPanelContentType , @Param("rcmmdId") Long rcmmdId , @Param("characterNo") Long characterNo);
+    //추천 데이터 삭제 방지
+    int updateRecommendDataRemovePrevent(@Param("recommendPanelContentType") RecommendPanelContentType recommendPanelContentType
+            , @Param("rcmmdId") Long rcmmdId
+            , @Param("characterNo") Long characterNo);
 
+    void updateArtistListRemovePrevent(@Param("rcmmdId") Long rcmmdId);
+    void updateArtistTrackListRemovePrevent(@Param("rcmmdId") Long rcmmdId);
+
+    void updateSimilarTrackListRemovePrevent(@Param("rcmmdId") Long rcmmdId);
+    void updatePreferGenreSimilarTrackListRemovePrevent(@Param("rcmmdId") Long rcmmdId);
+    void updateMforuListRemoveRemovePrevent(@Param("rcmmdId") Long rcmmdId);
 }

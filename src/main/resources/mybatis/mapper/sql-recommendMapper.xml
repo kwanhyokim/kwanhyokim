@@ -768,7 +768,7 @@
         VALUES (#{rcmmdPreferGenreSimilarTrackId}, #{trackId}, #{dispSn})
     </insert>
 
-    <update id="updateRecommendDataPrevent">
+    <update id="updateRecommendDataRemovePrevent">
       UPDATE
         <if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_ATST_TR'">
             tb_rcmmd_artist
@@ -803,4 +803,50 @@
             rcmmd_mforu_id = #{rcmmdId}
         </if>
     </update>
+
+    <update id="updateArtistListRemovePrevent">
+        UPDATE
+          tb_rcmmd_artist_list
+        SET
+          del_target_yn = 'N'
+        WHERE
+           rcmmd_artist_id = #{rcmmdId}
+    </update>
+
+    <update id="updateArtistTrackListRemovePrevent">
+        UPDATE
+          tb_rcmmd_artist_track_list
+        SET
+           del_target_yn = 'N'
+        WHERE
+          rcmmd_artist_id = #{rcmmdId}
+    </update>
+
+    <update id="updateSimilarTrackListRemovePrevent">
+        UPDATE
+          tb_rcmmd_similar_track_list
+        SET
+           del_target_yn = 'N'
+        WHERE
+          rcmmd_similar_track_id = #{rcmmdId}
+    </update>
+
+    <update id="updatePreferGenreSimilarTrackListRemovePrevent">
+        UPDATE
+          tb_rcmmd_prefer_genre_similar_track_list
+        SET
+           del_target_yn = 'N'
+        WHERE
+          rcmmd_prefer_genre_similar_track_id = #{rcmmdId}
+    </update>
+
+    <update id="updateMforuListRemoveRemovePrevent">
+        UPDATE
+          tb_rcmmd_mforu_list
+        SET
+           del_target_yn = 'N'
+        WHERE
+          rcmmd_mforu_id = #{rcmmdId}
+    </update>
+
 </mapper>
