@@ -32,7 +32,7 @@ import java.util.List;
  */
 
 
-@Profile({"local", "dev"})
+@Profile({"local", "dev", "qa"})
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
