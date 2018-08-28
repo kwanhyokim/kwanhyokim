@@ -22,7 +22,7 @@ import org.apache.ibatis.type.MappedTypes;
  */
 public enum RecommendChartPanelType {
     TOP100(SvcContentType.ALL, ChartType.HOURLY , MusicContentType.TRACK , 0),
-    KIDS(SvcContentType.KIDS, ChartType.HOURLY , MusicContentType.TRACK , 0);
+    KIDS(SvcContentType.KIDS, ChartType.DAILY , MusicContentType.TRACK , 0);
 
     private final SvcContentType svcContentType;
     private final ChartType chartType;
