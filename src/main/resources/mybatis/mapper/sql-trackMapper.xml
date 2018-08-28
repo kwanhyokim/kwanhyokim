@@ -16,7 +16,7 @@
 <mapper namespace="com.sktechx.godmusic.personal.rest.repository.TrackMapper" >
 
     <resultMap id="trackResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.TrackDto" autoMapping="true">
-        <id property="trackId" column="track_id"/>
+        <id property="trackId" column="trackId"/>
         <collection property="album" resultMap="com.sktechx.godmusic.personal.rest.repository.AlbumMapper.albumResultMap"/>
 
         <collection property="artistList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" column="artist_id">
@@ -154,7 +154,7 @@
 				a.create_dtime createDateTime,
 			    a.update_dtime updateDateTime,
 				b.track_id trackId,
-			    b.track_nm trackName,
+			    b.track_nm trackNm,
                 IF(f.like_type_id is null, 'N', 'Y') likeYn,
 			    b.track_play_tm playTime,
 			    b.adult_auth_need_track_yn adultAuthYn,
