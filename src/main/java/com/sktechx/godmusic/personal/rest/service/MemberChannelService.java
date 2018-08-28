@@ -13,11 +13,11 @@
 package com.sktechx.godmusic.personal.rest.service;
 
 import com.sktechx.godmusic.personal.common.domain.type.AppNameType;
+import com.sktechx.godmusic.personal.common.domain.type.PinType;
 import com.sktechx.godmusic.personal.rest.model.dto.MemberChannelDto;
 import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistRetriveAllResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistTrackCreateResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistTrackRetrieveAllResponse;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -35,6 +35,8 @@ public interface MemberChannelService {
     MyPlaylistTrackRetrieveAllResponse getMemberChannelTrackList(Long memberNo, Long characterNo, Long memberChannelId , Pageable pageable);
 
     MemberChannelDto getMemberChannel(Long memberNo, Long characterNo, Long memberChannelId);
+
+    MyPlaylistTrackCreateResponse pinMemberChannel(Long memberNo, Long characterNo, PinType pinType, Long pinId);
 
     MemberChannelDto createMemberChannel(Long memberNo, Long characterNo, String memberChannelName);
 
