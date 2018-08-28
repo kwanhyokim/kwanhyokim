@@ -12,6 +12,7 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl;
 
+import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEvent;
@@ -20,22 +21,29 @@ import com.sktechx.godmusic.personal.common.amqp.domain.UserEventType;
 import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
 import com.sktechx.godmusic.personal.common.domain.type.AppNameType;
 import com.sktechx.godmusic.personal.common.domain.type.FixedSize;
+import com.sktechx.godmusic.personal.common.domain.type.PinType;
 import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
 import com.sktechx.godmusic.personal.common.exception.InternalException;
 import com.sktechx.godmusic.personal.common.exception.NotFoundException;
 import com.sktechx.godmusic.personal.common.exception.ValidationException;
 import com.sktechx.godmusic.personal.rest.model.dto.AlbumDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.MemberChannelDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistRetriveAllResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistTrackCreateResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistTrackRetrieveAllResponse;
+import com.sktechx.godmusic.personal.rest.repository.ChannelMapper;
+import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
 import com.sktechx.godmusic.personal.rest.repository.MemberChannelMapper;
 import com.sktechx.godmusic.personal.rest.repository.MemberChannelTrackMapper;
+import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
 import com.sktechx.godmusic.personal.rest.service.MemberChannelService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
+import org.apache.logging.log4j.util.Strings;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -46,6 +54,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,6 +67,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -77,6 +87,15 @@ public class MemberChannelServiceImpl implements MemberChannelService {
 
     @Autowired
     MemberChannelTrackMapper memberChannelTrackMapper;
+
+    @Autowired
+    ChannelMapper channelMapper;
+
+    @Autowired
+    ChartMapper chartMapper;
+
+    @Autowired
+    TrackMapper trackMapper;
 
     @Autowired
     AmqpService amqpService;
@@ -117,6 +136,53 @@ public class MemberChannelServiceImpl implements MemberChannelService {
     @Transactional(readOnly = true)
     public MemberChannelDto getMemberChannel(Long memberNo, Long characterNo, Long memberChannelId) {
         return memberChannelMapper.selectMemberChannel(memberNo, characterNo, memberChannelId);
+    }
+
+    @Override
+    public MyPlaylistTrackCreateResponse pinMemberChannel(Long memberNo, Long characterNo, PinType pinType, Long pinId) {
+        // 1000 채널 초과 체크
+        if (memberChannelMapper.selectMemberChannelCount(memberNo, characterNo) >= FixedSize.MY_CHANNEL.getSize()) {
+            throw new ValidationException(CommonErrorMessage.MY_CHANNEL_OVER_CREATE);
+        }
+
+        String memberChannelName = Strings.EMPTY;
+        List<Long> trackIdList = null;
+
+        if (PinType.CHNL == pinType || PinType.MY_CHNL == pinType) {
+            ChnlDto chnlDto = channelMapper.selectChannelById(pinId);
+            memberChannelName = chnlDto.getChnlNm(); // TODO : chnlDispNm?
+            trackIdList = chnlDto.getTrackList().stream().map(x -> x.getTrackId()).collect(Collectors.toList());
+
+        } if (PinType.RC_SML_TR == pinType) {
+            memberChannelName = pinType.getTitle();
+            trackIdList = trackMapper.selectRecommendPanelSimilarTrackList(characterNo, pinId);
+
+        } if (PinType.RC_GR_TR == pinType) {
+            memberChannelName = pinType.getTitle();
+            trackIdList = trackMapper.selectRecommendPanelGenreTrackList(characterNo, pinId);
+
+        } if (PinType.RC_CF_TR == pinType) {
+            memberChannelName = pinType.getTitle();
+            trackIdList = trackMapper.selectRecommendPanelCfTrackList(characterNo, pinId);
+
+        } if (PinType.RC_ATST_TR == pinType) {
+            trackIdList = trackMapper.selectRecommendPanelPopularTrackList(characterNo, pinId);
+        }
+        /*} else if (PinType.CHART == pinType) {
+            ChartDto chartDto = chartMapper.selectChartMusicContentList(pinId);
+            memberChannelName = chartDto.getChartNm();
+            trackIdList = chartDto.getTrackList().stream().map(x -> x.getTrackId()).collect(Collectors.toList());
+        }*/
+
+        if (StringUtils.isEmpty(memberChannelName) || CollectionUtils.isEmpty(trackIdList)) {
+            throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
+        }
+
+        String appName = GMContext.getContext().getAppName();
+        AppNameType appNameType = AppNameType.fromCode(appName);
+
+        MemberChannelDto memberChannelDto = createMemberChannel(memberNo, characterNo, memberChannelName);
+        return addTrackList(appNameType, memberNo, characterNo, memberChannelDto.getMemberChannelId(), trackIdList);
     }
 
     @Override
@@ -262,6 +328,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
                 // 사용자 이벤트 전송
                 UserEvent userEvent = UserEvent.newBuilder()
                         .setPlayChnl(appName)
+                        .setEvent(UserEventType.PICK)
                         .setEvent(UserEventType.PICK)
                         .setMemberNo(memberNo)
                         .setCharactorNo(characterNo)

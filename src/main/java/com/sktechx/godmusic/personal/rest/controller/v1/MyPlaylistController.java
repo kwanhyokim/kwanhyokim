@@ -19,6 +19,7 @@ import com.sktechx.godmusic.personal.common.domain.type.AppNameType;
 import com.sktechx.godmusic.personal.rest.model.dto.MemberChannelDto;
 import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistCreateRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistDeleteRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistPinRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistRetriveAllResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistTrackCreateRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistTrackCreateResponse;
@@ -65,6 +66,11 @@ public class MyPlaylistController {
     @Autowired
     MemberChannelService memberChannelService;
 
+    private static final String PIN_MY_PLAYLIST_DEFAULT_REQUEST = "{\n" +
+            " \"type\": \"회원이 생성할 플레이리스트 타입\", \n" +
+            " \"id\": \"회원이 생성할 플레이리스트 타입 ID\" \n" +
+            "}";
+
     private static final String CREATE_MY_PLAYLIST_DEFAULT_REQUEST = "{\n" +
             " \"memberChannelName\": \"회원이 생성할 플레이리스트 명\" \n" +
             "}";
@@ -72,6 +78,17 @@ public class MyPlaylistController {
     private static final String UPDATE_MY_PLAYLIST_DEFAULT_REQUEST = "{\n" +
             " \"memberChannelName\": \"회원이 수정할 플레이리스트 명\" \n" +
             "}";
+
+    @PostMapping("/pin")
+    @ApiOperation(value = "My Playlist Pin", httpMethod = "POST", notes = "My Playlist Pin", response = MyPlaylistTrackCreateResponse.class)
+    public CommonApiResponse<MyPlaylistTrackCreateResponse> pinMyPlaylist(
+            @ApiParam(value = "type - 회원이 생성할 플레이리스트 타입(RC_SML_TR: Like U(2-A), RC_GR_TR: Mix Tape(2-A'), RC_ATST_TR: Musician focus(2-C), RC_CF_TR: Made for U(3-A), CHNL: 채널, MY_CHNL: 마이채널)\n id - 회원이 생성할 플레이리스트 타입 ID", defaultValue = PIN_MY_PLAYLIST_DEFAULT_REQUEST) @Valid @RequestBody MyPlaylistPinRequest myPlaylistPinRequest) {
+        Long memberNo = getMemberNo();
+        Long characterNo = getCharacterNo();
+        MyPlaylistTrackCreateResponse myPlaylistTrackCreateResponse = memberChannelService.pinMemberChannel(memberNo, characterNo, myPlaylistPinRequest.getPinType(), myPlaylistPinRequest.getPinId());
+
+        return new CommonApiResponse<>(myPlaylistTrackCreateResponse);
+    }
 
     @PostMapping
     @ApiOperation(value = "My Playlist 생성", httpMethod = "POST", notes = "My Playlist 생성 API(/v2/my/channel)", response = MemberChannelDto.class)

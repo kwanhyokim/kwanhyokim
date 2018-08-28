@@ -55,6 +55,33 @@
         </collection>
     </resultMap>
 
+    <select id="selectChannelById" resultMap="channelResultMap">
+        SELECT
+            a.chnl_id,
+            a.chnl_disp_nm,
+            a.renew_track_cnt,
+            a.renew_dtime,
+            a.chnl_nm,
+            a.track_cnt,
+            a.create_dtime,
+            a.update_dtime,
+            d.track_id,
+            d.track_nm,
+            d.agency_id,
+            d.album_id,
+            d.reprsnt_artist_id,
+            d.create_dtime trackCreateDtime,
+            d.update_dtime trackUpdateDtime,
+            c.create_dtime trackRenewDtime,
+            c.track_sn
+        FROM
+          tb_chnl a INNER JOIN tb_map_chnl_track c ON a.chnl_id = c.chnl_id
+                    INNER JOIN tb_track d ON c.track_id = d.track_id
+        WHERE a.chnl_id = #{channelId}
+            AND d.disp_status_yn = 'Y'
+        ORDER BY c.track_sn ASC
+    </select>
+
     <select id="selectChannelListByIdList" resultMap="channelResultMap">
         SELECT
             a.chnl_id,
