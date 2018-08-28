@@ -1,5 +1,9 @@
 package com.sktechx.godmusic.personal.rest.service;
 
+import com.sktechx.godmusic.personal.rest.model.dto.AlbumDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
+import com.sktechx.godmusic.personal.rest.model.dto.PlayListDto;
+import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.vo.like.*;
 import org.springframework.data.domain.PageImpl;
@@ -15,7 +19,10 @@ import java.util.List;
  * @time PM 3:39
  */
 public interface LikeService {
-	PageImpl<?> getLikeListByLikeType(String likeType, Long characterNo, Pageable pageable);
+	PageImpl<List<PlayListDto>> getPlayListLikeListByLikeType(Long characterNo, Pageable pageable);
+	PageImpl<List<AlbumDto>> getAlbumLikeListByLikeType(Long characterNo, Pageable pageable);
+	PageImpl<List<ArtistDto>> getArtistLikeListByLikeType(Long characterNo, Pageable pageable);
+	PageImpl<List<TrackDto>> getTrackLikeListByLikeType(Long characterNo, Pageable pageable);
 
 	void addLike(LikeRequest request, Long characterNo);
 

@@ -3,6 +3,7 @@ package com.sktechx.godmusic.personal.rest.service.impl;
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
+import com.sktechx.godmusic.personal.common.domain.constant.LikeConstant;
 import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
 import com.sktechx.godmusic.personal.common.exception.InternalException;
 import com.sktechx.godmusic.personal.common.exception.NotFoundException;
@@ -48,13 +49,6 @@ import java.util.stream.IntStream;
 @Service
 public class LikeServiceImpl implements LikeService {
 
-	private final static String CHANNEL = "CHNL";
-	private final static String ALBUM = "ALBUM";
-	private final static String CHART = "CHART";
-	private final static String ARTIST = "ARTIST";
-	private final static String TRACK = "TRACK";
-	private final static String PLAYLIST = "PLAYLIST";
-
 	@Autowired
 	RestTemplate restTemplate;
 
@@ -65,58 +59,68 @@ public class LikeServiceImpl implements LikeService {
 	private LikeMapper likeMapper;
 
 	@Override
-	public PageImpl<?> getLikeListByLikeType(String likeType, Long characterNo, Pageable pageable) {
+	public PageImpl<List<PlayListDto>> getPlayListLikeListByLikeType(Long characterNo, Pageable pageable) {
 		int totalCount = 0;
 
-		switch (likeType) {
-			case TRACK:
-				List<TrackDto> trackDtos = likeMapper.getLikeTrackByLikeType(characterNo, pageable);
+		List<PlayListDto> playListDtos = likeMapper.getLikePlaylistByLikeType(characterNo, pageable);
 
-				if (CollectionUtils.isEmpty(trackDtos)) return null;
+		if (CollectionUtils.isEmpty(playListDtos)) return null;
 
-				totalCount = likeMapper.getLikeCountByLikeType(likeType, characterNo);
-
-				return new PageImpl<>(trackDtos, pageable, totalCount);
-			case ALBUM:
-				List<AlbumDto> albumDtos = likeMapper.getLikeAlbumByLikeType(characterNo, pageable);
-
-				if (CollectionUtils.isEmpty(albumDtos)) return null;
-
-				totalCount = likeMapper.getLikeCountByLikeType(likeType, characterNo);
-
-				return new PageImpl<>(albumDtos, pageable, totalCount);
-			case ARTIST:
-				List<ArtistDto> artistDtos = likeMapper.getLikeArtistByLikeType(characterNo, pageable);
-
-				if (CollectionUtils.isEmpty(artistDtos)) return null;
-
-				totalCount = likeMapper.getLikeCountByLikeType(likeType, characterNo);
-
-				return new PageImpl<>(artistDtos, pageable, totalCount);
-			case  PLAYLIST:
-				List<PlayListDto> playListDtos = likeMapper.getLikePlaylistByLikeType(characterNo, pageable);
-
-				if (CollectionUtils.isEmpty(playListDtos)) return null;
-
-				for (PlayListDto p : playListDtos) {
-					p.setRenewYn(YnType.N);
-					if (p.getPlayListType().equals(CHANNEL) && p.getRenewDateTime() != null) {
-						Calendar c = Calendar.getInstance();
-						c.setTime(new Date());
-						c.add(Calendar.DATE , -1);
-						if(p.getRenewDateTime().after(c.getTime())){
-							p.setRenewYn(YnType.Y);
-						}
-					}
+		for (PlayListDto p : playListDtos) {
+			p.setRenewYn(YnType.N);
+			if (p.getPlayListType().equals(LikeConstant.LIKE_CHANNEL) && p.getRenewDateTime() != null) {
+				Calendar c = Calendar.getInstance();
+				c.setTime(new Date());
+				c.add(Calendar.DATE , -1);
+				if(p.getRenewDateTime().after(c.getTime())){
+					p.setRenewYn(YnType.Y);
 				}
-
-				totalCount = likeMapper.getLikeCountByLikeType(CHANNEL, characterNo);
-				totalCount += likeMapper.getLikeCountByLikeType(CHART, characterNo);
-
-				return new PageImpl<>(playListDtos, pageable, totalCount);
-			default:
-				throw new CommonBusinessException(CommonErrorMessage.BAD_REQUEST);
+			}
 		}
+
+		totalCount = likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_CHANNEL, characterNo);
+		totalCount += likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_CHART, characterNo);
+
+		return new PageImpl(playListDtos, pageable, totalCount);
+	}
+
+	@Override
+	public PageImpl<List<AlbumDto>> getAlbumLikeListByLikeType(Long characterNo, Pageable pageable) {
+		int totalCount = 0;
+
+		List<AlbumDto> albumDtos = likeMapper.getLikeAlbumByLikeType(characterNo, pageable);
+
+		if (CollectionUtils.isEmpty(albumDtos)) return null;
+
+		totalCount = likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_ALBUM, characterNo);
+
+		return new PageImpl(albumDtos, pageable, totalCount);
+	}
+
+	@Override
+	public PageImpl<List<ArtistDto>> getArtistLikeListByLikeType(Long characterNo, Pageable pageable) {
+		int totalCount = 0;
+
+		List<ArtistDto> artistDtos = likeMapper.getLikeArtistByLikeType(characterNo, pageable);
+
+		if (CollectionUtils.isEmpty(artistDtos)) return null;
+
+		totalCount = likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_ARTIST, characterNo);
+
+		return new PageImpl(artistDtos, pageable, totalCount);
+	}
+
+	@Override
+	public PageImpl<List<TrackDto>> getTrackLikeListByLikeType(Long characterNo, Pageable pageable) {
+		int totalCount = 0;
+
+		List<TrackDto> trackDtos = likeMapper.getLikeTrackByLikeType(characterNo, pageable);
+
+		if (CollectionUtils.isEmpty(trackDtos)) return null;
+
+		totalCount = likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_TRACK, characterNo);
+
+		return new PageImpl(trackDtos, pageable, totalCount);
 	}
 
 	@Override
@@ -184,10 +188,10 @@ public class LikeServiceImpl implements LikeService {
 
 		int likeCnt = likeMapper.getLikeCountByLikeTypeAndLikeTypeId(request.getLikeType(), request.getLikeTypeId(), characterNo);
 
-		if (CHANNEL.equals(request.getLikeType())) {
-			likeCnt += likeMapper.getLikeCountByLikeTypeAndLikeTypeId(CHART, request.getLikeTypeId(), characterNo);
-		} else if (CHART.equals(request.getLikeType())) {
-			likeCnt += likeMapper.getLikeCountByLikeTypeAndLikeTypeId(CHANNEL, request.getLikeTypeId(), characterNo);
+		if (LikeConstant.LIKE_CHANNEL.equals(request.getLikeType())) {
+			likeCnt += likeMapper.getLikeCountByLikeTypeAndLikeTypeId(LikeConstant.LIKE_CHART, request.getLikeTypeId(), characterNo);
+		} else if (LikeConstant.LIKE_CHART.equals(request.getLikeType())) {
+			likeCnt += likeMapper.getLikeCountByLikeTypeAndLikeTypeId(LikeConstant.LIKE_CHANNEL, request.getLikeTypeId(), characterNo);
 		}
 
 		if(likeCnt > 0){
@@ -203,15 +207,15 @@ public class LikeServiceImpl implements LikeService {
 
 	private String getLikeTypePath(String likeType) {
 		switch (likeType) {
-			case CHANNEL :
+			case LikeConstant.LIKE_CHANNEL :
 				return "channel/";
-			case ALBUM :
+			case LikeConstant.LIKE_ALBUM :
 				return "album/";
-			case CHART :
+			case LikeConstant.LIKE_CHART :
 				return "chart/track/";
-			case ARTIST :
+			case LikeConstant.LIKE_ARTIST :
 				return "artist/";
-			case TRACK :
+			case LikeConstant.LIKE_TRACK :
 				return "track/";
 			default :
 				throw new CommonBusinessException(CommonErrorMessage.BAD_REQUEST);
@@ -220,15 +224,15 @@ public class LikeServiceImpl implements LikeService {
 
 	private CommonErrorMessage getLikeTypeNotFoundMessage(String likeType) {
 		switch (likeType) {
-			case CHANNEL :
+			case LikeConstant.LIKE_CHANNEL :
 				return CommonErrorMessage.CHANNEL_NOT_FOUND;
-			case ALBUM :
+			case LikeConstant.LIKE_ALBUM :
 				return CommonErrorMessage.ALBUM_NOT_FOUND;
-			case CHART :
+			case LikeConstant.LIKE_CHART :
 				return CommonErrorMessage.CHART_NOT_FOUND;
-			case ARTIST :
+			case LikeConstant.LIKE_ARTIST :
 				return CommonErrorMessage.ARTIST_NOT_FOUND;
-			case TRACK :
+			case LikeConstant.LIKE_TRACK :
 				return CommonErrorMessage.TRACK_NOT_FOUND;
 			default :
 				throw new CommonBusinessException(CommonErrorMessage.BAD_REQUEST);
@@ -237,15 +241,15 @@ public class LikeServiceImpl implements LikeService {
 
 	private CommonErrorMessage getLikeTypeDuplicated(String likeType) {
 		switch (likeType) {
-			case CHANNEL :
+			case LikeConstant.LIKE_CHANNEL :
 				return CommonErrorMessage.CHANNEL_DUPLICATED_LIKE;
-			case ALBUM :
+			case LikeConstant.LIKE_ALBUM :
 				return CommonErrorMessage.ALBUM_DUPLICATED_LIKE;
-			case CHART :
+			case LikeConstant.LIKE_CHART :
 				return CommonErrorMessage.CHART_DUPLICATED_LIKE;
-			case ARTIST :
+			case LikeConstant.LIKE_ARTIST :
 				return CommonErrorMessage.ARTIST_DUPLICATED_LIKE;
-			case TRACK :
+			case LikeConstant.LIKE_TRACK :
 				return CommonErrorMessage.TRACK_DUPLICATED_LIKE;
 			default :
 				throw new CommonBusinessException(CommonErrorMessage.BAD_REQUEST);
@@ -254,15 +258,15 @@ public class LikeServiceImpl implements LikeService {
 
 	private CommonErrorMessage getLikeTypeOverAdd(String likeType) {
 		switch (likeType) {
-			case CHANNEL :
+			case LikeConstant.LIKE_CHANNEL :
 				return CommonErrorMessage.CHANNEL_OVER_ADD_LIKE;
-			case ALBUM :
+			case LikeConstant.LIKE_ALBUM :
 				return CommonErrorMessage.ALBUM_OVER_ADD_LIKE;
-			case CHART :
+			case LikeConstant.LIKE_CHART :
 				return CommonErrorMessage.CHART_OVER_ADD_LIKE;
-			case ARTIST :
+			case LikeConstant.LIKE_ARTIST :
 				return CommonErrorMessage.ARTIST_OVER_ADD_LIKE;
-			case TRACK :
+			case LikeConstant.LIKE_TRACK :
 				return CommonErrorMessage.TRACK_OVER_ADD_LIKE;
 			default :
 				throw new CommonBusinessException(CommonErrorMessage.BAD_REQUEST);

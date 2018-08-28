@@ -31,7 +31,7 @@ public class ListenController {
 	@ApiOperation(value = "채널 청취 로그 by Kobe ( 기존 /v2/user/log/channel POST )")
 	@PostMapping("/channel")
 	public CommonApiResponse addListenHistByChannel(
-			@RequestBody ListenRequest request
+			@Valid @RequestBody ListenRequest request
 	) {
 		GMContext currentContext = GMContext.getContext();
 
