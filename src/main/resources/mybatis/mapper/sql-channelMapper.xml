@@ -220,7 +220,7 @@
               tb_chart b ON a.svc_genre_id = b.svc_content_id
             INNER JOIN
               tb_chart_music_content c ON b.chart_id = c.chart_id
-            INNER JOIN
+            LEFT OUTER JOIN
               tb_img_mang d ON c.music_content_id = d.img_content_id
             INNER JOIN
               tb_chnl e ON d.img_content_id = e.chnl_id
