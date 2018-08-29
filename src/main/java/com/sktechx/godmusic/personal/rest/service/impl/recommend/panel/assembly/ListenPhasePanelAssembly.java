@@ -47,7 +47,7 @@ public class ListenPhasePanelAssembly extends PanelSignAssembly {
                 appendPreferGenreChannelPanelList(personalPhaseMeta, panelList, SIMILAR_TRACK_PANEL_SIZE - panelList.size() );
             }
         }
-        appendListenMoodPopularChanelPanelList(personalPhaseMeta, panelList,LISTEN_MOOD_POPULAR_CHNL_SIZE);
+        appendListenMoodPopularChanelPanelList(personalPhaseMeta, panelList,LISTEN_MOOD_POPULAR_PANEL_SIZE);
 
         if( isAppendDefaultPanel(panelList.size()) ){
             List filterChnlIdList = panelList.stream()
@@ -57,7 +57,7 @@ public class ListenPhasePanelAssembly extends PanelSignAssembly {
                     })
                     .collect(Collectors.toList());
 
-            appendDefaultPopularChannelPanel(personalPhaseMeta, panelList,( SIMILAR_TRACK_PANEL_SIZE+LISTEN_MOOD_POPULAR_CHNL_SIZE ) - panelList.size() ,filterChnlIdList );
+            appendDefaultPopularChannelPanel(personalPhaseMeta, panelList,( SIMILAR_TRACK_PANEL_SIZE+LISTEN_MOOD_POPULAR_PANEL_SIZE ) - panelList.size() ,filterChnlIdList );
         }
         return panelList;
     }
@@ -78,7 +78,7 @@ public class ListenPhasePanelAssembly extends PanelSignAssembly {
     }
 
     private boolean isAppendDefaultPanel(int panelListSize){
-        return ( SIMILAR_TRACK_PANEL_SIZE+ LISTEN_MOOD_POPULAR_CHNL_SIZE )  > panelListSize ? true : false;
+        return ( SIMILAR_TRACK_PANEL_SIZE+ LISTEN_MOOD_POPULAR_PANEL_SIZE )  > panelListSize ? true : false;
     }
 
 }

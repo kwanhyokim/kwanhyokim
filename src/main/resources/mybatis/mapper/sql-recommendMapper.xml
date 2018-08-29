@@ -74,6 +74,7 @@
                                     GROUP BY create_std_dtime
                                     ORDER BY create_std_dtime DESC
                                 )
+            ORDER BY disp_sn
             UNION ALL
             SELECT
                 'RC_SML_TR' as recommendPanelContentType,
@@ -89,6 +90,7 @@
                 disp_std_start_dt <= NOW()
             AND
                 disp_std_end_dt >= NOW()
+            ORDER BY disp_sn
             UNION ALL
             SELECT
                 'RC_GR_TR' as recommendPanelContentType,
