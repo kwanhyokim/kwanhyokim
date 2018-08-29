@@ -153,7 +153,7 @@
 				a.listen_cnt listenCount,
 				a.create_dtime createDateTime,
 			    a.update_dtime updateDateTime,
-				b.track_id trackId,
+				b.track_id,
 			    b.track_nm trackNm,
                 IF(f.like_type_id is null, 'N', 'Y') likeYn,
 			    b.track_play_tm playTime,
