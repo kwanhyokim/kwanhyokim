@@ -8,6 +8,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -584,5 +586,9 @@ public class DateUtil {
 
 	public static Date getLastDateTimeSecondOfMonth() {
 		return DateUtils.addSeconds(DateUtils.addMonths(getFirstDateOfMonth(), 1), -1);
+	}
+
+	public static String getCurrentDateTime() {
+		return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
 	}
 }

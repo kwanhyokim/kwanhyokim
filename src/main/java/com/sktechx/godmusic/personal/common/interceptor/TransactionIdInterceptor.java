@@ -10,6 +10,8 @@
 
 package com.sktechx.godmusic.personal.common.interceptor;
 
+import com.sktechx.godmusic.personal.common.util.CommonUtils;
+import com.sktechx.godmusic.personal.common.util.DateUtil;
 import org.slf4j.MDC;
 import org.springframework.core.Ordered;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -31,12 +33,13 @@ public class TransactionIdInterceptor extends HandlerInterceptorAdapter implemen
     private	Object		lock = new Object();
 
     private String		getNextSequence()	{
-        synchronized(lock)	{
-            sessionSequence += 1;
-            if( sessionSequence > 999999)
-                sessionSequence = 0;
-            return String.format("%06d", sessionSequence);
-        }
+        return "PER" + DateUtil.getCurrentDateTime() + CommonUtils.getRandomStr(3);
+//        synchronized(lock)	{
+//            sessionSequence += 1;
+//            if( sessionSequence > 999999)
+//                sessionSequence = 0;
+//            return String.format("%06d", sessionSequence);
+//        }
     }
 
     @Override
