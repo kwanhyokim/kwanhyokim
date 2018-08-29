@@ -230,6 +230,7 @@
             , dispSn
             , likeUpdateDtime
             , renewDateTime
+            , renewTrackCnt
         FROM (
                  SELECT
                        CL.CHART_ID                                                   AS id
@@ -247,6 +248,7 @@
                      , CL.DISP_SN                                                    AS dispSn
                      , CL.UPDATE_DTIME                                               AS likeUpdateDtime
                      , ''                                                            AS renewDateTime
+                     , ''                                                            AS renewTrackCnt
                  FROM
                      (
                          SELECT
@@ -298,6 +300,7 @@
                      , L.DISP_SN                                                               AS dispSn
                      , L.UPDATE_DTIME                                                          AS likeUpdateDtime
                      , A.RENEW_DTIME                                                           AS renewDateTime
+                     , A.RENEW_TRACK_CNT                                                       AS renewTrackCnt
                  FROM
                      (
                          SELECT

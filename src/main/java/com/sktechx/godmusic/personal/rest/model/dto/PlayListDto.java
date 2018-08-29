@@ -52,4 +52,8 @@ public class PlayListDto {
 	private Date renewDateTime;
 
 	private YnType renewYn;
+
+	@JsonProperty("renewTrackCount")
+	private Integer renewTrackCnt;
+
 }

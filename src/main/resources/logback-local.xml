@@ -13,7 +13,8 @@
     <!-- SERVICE LOG APPENDER -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-        <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%15X{transactionId} - %30.30logger{30}:%4.4line / %5level] : %msg%n</pattern>
+        <!--<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%15X{transactionId} - %30.30logger{30}:%4.4line / %5level] : %msg%n</pattern>-->
+        <pattern>%X{hostName} | %d{${datestamp}} | %-5level | %X{transactionId} | %X{resCode} | %X{memberNo} | %X{characterNo} | %msg%n</pattern>
         </encoder>
     </appender>
 

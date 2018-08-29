@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.common.interceptor;
 
+import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
 import org.slf4j.MDC;
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.InetAddress;
 import java.util.Enumeration;
 
 /**
@@ -53,6 +55,12 @@ public class TransactionIdInterceptor extends HandlerInterceptorAdapter implemen
 
         String traceId = getNextSequence();
         MDC.put("transactionId", traceId);
+        MDC.put("hostName", InetAddress.getLocalHost().getHostName());
+        if (GMContext.getContext() != null) {
+            MDC.put("memberNo", String.valueOf(GMContext.getContext().getMemberNo()));
+            MDC.put("characterNo", String.valueOf(GMContext.getContext().getCharacterNo()));
+        }
+
         return super.preHandle(request, response, handler);
     }
 
