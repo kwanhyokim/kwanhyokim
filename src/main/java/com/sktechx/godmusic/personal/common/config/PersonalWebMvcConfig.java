@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 //import com.sktechx.godmusic.meta.common.interceptor.TransactionIdInterceptor;
+import com.sktechx.godmusic.personal.common.interceptor.TransactionIdInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -49,10 +50,10 @@ public class PersonalWebMvcConfig implements WebMvcConfigurer {
     @Autowired
     private MappingJackson2HttpMessageConverter jsonConverter;
 
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
-//        registry.addInterceptor(new TransactionIdInterceptor());
-//    }
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new TransactionIdInterceptor());
+    }
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
