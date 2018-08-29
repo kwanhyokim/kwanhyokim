@@ -21,7 +21,8 @@
         </rollingPolicy>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <charset>UTF-8</charset>
-            <pattern>%d %5p [%15X{transactionId}] : %msg%n</pattern>
+            <!--<pattern>%d %5p [%15X{transactionId}] : %msg%n</pattern>-->
+            <pattern>%X{hostName} | %d{${datestamp}} | %-5level | %X{transactionId} | %X{resCode} | %X{memberNo} | %X{characterNo} | %msg%n</pattern>
         </encoder>
     </appender>
     
