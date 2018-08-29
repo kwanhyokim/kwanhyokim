@@ -135,43 +135,55 @@
             FROM
             (
                 SELECT
-                    a.chnl_id,
-                    a.chnl_disp_nm,
-                    a.renew_track_cnt,
-                    a.renew_dtime,
-                    a.chnl_nm,
-                    a.track_cnt,
-                    a.create_dtime,
-                    a.update_dtime,
-                    b.img_size,
-                    b.img_url,
-                    d.track_id,
-                    d.track_nm,
-                    d.agency_id,
-                    d.album_id,
-                    d.reprsnt_artist_id,
-                    d.create_dtime trackCreateDtime,
-                    d.update_dtime trackUpdateDtime,
-                    c.create_dtime trackRenewDtime,
-                    c.track_sn
+                    chnl.chnl_id,
+                    chnl.renew_track_cnt,
+                    chnl.renew_dtime,
+                    chnl.chnl_nm,
+                    chnl.chnl_disp_nm,
+                    chnl.track_cnt,
+                    chnl.create_dtime,
+                    chnl.update_dtime,
+                    d.img_url,
+                    d.img_size,
+                    c.track_id,
+                    c.track_nm,
+                    c.agency_id,
+                    c.album_id,
+                    c.reprsnt_artist_id,
+                    c.create_dtime trackCreateDtime,
+                    c.update_dtime trackUpdateDtime,
+                    b.create_dtime trackRenewDtime,
+                    b.track_sn
                 FROM
-                  tb_chnl a LEFT OUTER JOIN tb_img_mang b ON a.chnl_id = b.img_content_id
-                            INNER JOIN tb_map_chnl_track c ON a.chnl_id = c.chnl_id
-                            INNER JOIN tb_track d ON c.track_id = d.track_id
-                WHERE
-                    a.disp_status_type = 'Y'
-                    AND b.img_content_type = 'CHNL'
-                    AND b.os_type = #{osType}
-                    AND b.dfk_type = 'EVERY'
-                    AND a.chnl_id IN
-                    <foreach item="channelId" index="index" collection="channelIdList" open="(" separator="," close=")">
-                        #{channelId}
-                    </foreach>
-                    AND d.disp_status_yn = 'Y'
-                ORDER BY FIELD(a.chnl_id,
+                (
+                  SELECT
+                    a.*,
+                    b.category_id
+                  FROM
+                  tb_chnl a
+                    LEFT OUTER JOIN tb_map_category_chnl b ON a.chnl_id = b.chnl_id
+                  WHERE
+                    a.chnl_id IN
+                <foreach item="channelId" index="index" collection="channelIdList" open="(" separator="," close=")">
+                    #{channelId}
+                </foreach>
+                  AND a.disp_status_type = 'Y'
+                  GROUP BY a.chnl_id
+                ) chnl
+                INNER JOIN
+                  tb_map_chnl_track b ON chnl.chnl_id = b.chnl_id
+                INNER JOIN
+                  tb_track c ON b.track_id = c.track_id
+                LEFT OUTER JOIN  ( SELECT * FROM tb_img_mang WHERE img_content_type IN ('MOOD', 'SITTN') ) AS d
+                  ON chnl.category_id = d.img_content_id
+                AND d.img_disp_type = 'CHNL_MAIN'
+                AND d.dfk_type = 'EVERY'
+                AND d.os_type = #{osType}
+                ORDER BY FIELD(chnl.chnl_id,
                 <foreach item="channelId" index="index" collection="channelIdList" open="" separator="," close="">
                     #{channelId}
-                </foreach> ) , c.track_sn ASC
+                </foreach>
+                ) , b.track_sn ASC
             ) a
         ) a
         LEFT OUTER JOIN ted_album b ON a.album_id = b.album_id
@@ -188,81 +200,29 @@
 
     <select id="selectPopularChannelIdList" resultType="Long">
        SELECT
-           chnl_id
-       FROM
-           (
-           SELECT
-               a.chnl_id,
-               b.disp_sn,
-               c.category_id
-           FROM
-               tb_chnl a
-           INNER JOIN (
-                       SELECT
-                           b.music_content_id, b.disp_sn
-                       FROM
-                           tb_chart a
-                       INNER JOIN tb_chart_music_content b ON a.chart_id = b.chart_id
-                       LEFT OUTER JOIN tb_img_mang c ON b.music_content_id = c.img_content_id
-                       WHERE
-                           a.chart_type = 'WEEKLY'
-                       AND a.svc_content_type = 'ALL'
-                       AND a.music_content_type = 'CHNL'
-                       AND c.dfk_type = 'EVERY'
-               AND c.img_content_type='CHNL'
-           ) b ON a.chnl_id = b.music_content_id
-           LEFT OUTER JOIN
-             tb_map_category_chnl c ON b.music_content_id = c.chnl_id
-           LEFT OUTER JOIN
-             tb_category d ON c.category_id = d.category_id
-           WHERE
-               a.disp_status_type = 'Y'
-           GROUP BY a.chnl_id
-           ORDER BY b.disp_sn
-           ) a
-       ORDER BY disp_sn
-    </select>
-    <!--
-        <select id="selectPopularChannelIdList" resultType="Long">
-            SELECT
-                chnl_id
+            b.chnl_id
+        FROM
+            (SELECT
+                b.music_content_id, b.disp_sn, c.chnl_id, c.category_id
             FROM
-                (
-                SELECT
-                    a.chnl_id,
-                    b.disp_sn,
-                    c.category_id
-                FROM
-                    tb_chnl a
-                INNER JOIN (
-                            SELECT
-                                b.music_content_id, b.disp_sn
-                            FROM
-                                tb_chart a
-                            INNER JOIN tb_chart_music_content b ON a.chart_id = b.chart_id
-                            LEFT OUTER JOIN tb_img_mang c ON b.music_content_id = c.img_content_id
-                            WHERE
-                                a.chart_type = 'WEEKLY'
-                            AND a.svc_content_type = 'ALL'
-                            AND a.music_content_type = 'CHNL'
-                            AND c.dfk_type = 'EVERY'
-                    AND c.img_content_type='CHNL'
-                ) b ON a.chnl_id = b.music_content_id
-                INNER JOIN
-                  tb_map_category_chnl c ON b.music_content_id = c.chnl_id
-                INNER JOIN
-                  tb_category d ON c.category_id = d.category_id
-                WHERE
-                    a.disp_status_type = 'Y'
-                GROUP BY a.chnl_id
-                ORDER BY b.disp_sn
-                ) a
+                tb_chart a
+            INNER JOIN tb_chart_music_content b ON a.chart_id = b.chart_id
+            INNER JOIN tb_map_category_chnl c ON b.music_content_id = c.chnl_id
+            LEFT OUTER JOIN tb_category d ON c.category_id = d.category_id
             WHERE
-                category_id IS NOT NULL
-            GROUP BY category_id
-            ORDER BY disp_sn
-        </select>
-    -->
+                a.chart_type = 'WEEKLY'
+                    AND a.svc_content_type = 'ALL'
+                    AND a.music_content_type = 'CHNL'
+            GROUP BY chnl_id
+            ORDER BY b.disp_sn) a INNER JOIN tb_chnl b ON a.music_content_id = b.chnl_id
+        WHERE
+            b.disp_status_type = 'Y'
+        AND
+            category_id IS NOT NULL
+        GROUP BY category_id
+        ORDER BY disp_sn
+    </select>
+
     <select id="selectAllPreferGenrePopularChannelIdList" resultMap="preferGenrePopularChnlResultMap">
         SELECT
             a.svc_genre_id,
@@ -285,29 +245,26 @@
               tb_chart b ON a.svc_genre_id = b.svc_content_id
             INNER JOIN
               tb_chart_music_content c ON b.chart_id = c.chart_id
-            LEFT OUTER JOIN
-              tb_img_mang d ON c.music_content_id = d.img_content_id
             INNER JOIN
-              tb_chnl e ON d.img_content_id = e.chnl_id
+              tb_chnl e ON e.chnl_id = c.music_content_id
+			LEFT OUTER JOIN
+			  tb_map_category_chnl f ON e.chnl_id = f.chnl_id
         WHERE
                 b.chart_type = 'WEEKLY'
             AND b.svc_content_type = 'GENRE'
             AND b.music_content_type = 'CHNL'
-            AND d.img_content_type = 'CHNL'
-            AND d.dfk_type = 'EVERY'
-            AND d.img_disp_type = 'DEFAULT'
             AND e.disp_status_type = 'Y'
             AND a.rank <![CDATA[<=]]> 1
-        GROUP BY a.svc_genre_id , a.prefer_genre_id , b.chart_id , c.disp_sn
+        GROUP BY a.svc_genre_id , a.prefer_genre_id , b.chart_id ,e.chnl_id, c.disp_sn
         ORDER BY b.chart_id , c.disp_sn
     </select>
 
     <select id="selectAllMoodPopularChannelIdList" resultMap="moodPopularChnlResultMap">
-      SELECT
+        SELECT
             category.category_id,
             b.music_content_id chnl_id,
             b.disp_sn
-      FROM (
+        FROM (
                 SELECT
                     category_id
                 FROM
@@ -319,7 +276,7 @@
           INNER JOIN  tb_chart a ON category.category_id = a.svc_content_id
           INNER JOIN tb_chart_music_content b ON a.chart_id = b.chart_id
           INNER JOIN tb_chnl c ON b.music_content_id = c.chnl_id
-          LEFT OUTER JOIN tb_img_mang d ON c.chnl_id = d.img_content_id
+          LEFT OUTER JOIN tb_map_category_chnl d ON c.chnl_id = d.chnl_id
         WHERE
             a.chart_type = 'WEEKLY'
         AND
@@ -328,12 +285,6 @@
             a.music_content_type = 'CHNL'
         AND
             c.disp_status_type = 'Y'
-        AND
-            d.img_content_type = 'CHNL'
-        AND
-            d.dfk_type = 'EVERY'
-        AND
-            d.img_disp_type = 'DEFAULT'
         GROUP BY category.category_id , a.chart_id, b.disp_sn
         ORDER BY a.chart_id , b.disp_sn
     </select>
