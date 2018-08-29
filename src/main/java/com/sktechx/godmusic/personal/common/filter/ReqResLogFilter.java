@@ -38,8 +38,6 @@ public class ReqResLogFilter implements Filter {
 
 			httpServletResponse.setHeader("Content-Type", MediaType.APPLICATION_JSON_UTF8_VALUE);
 
-//            lastLineLog.info("[REST URI] " + httpServletRequest.getRequestURI());
-
 			Map<String, String> requestMap = this.getTypesafeRequestMap(httpServletRequest);
 			BufferedRequestWrapper bufferedReqest = new BufferedRequestWrapper(httpServletRequest);
 			BufferedResponseWrapper bufferedResponse = new BufferedResponseWrapper(httpServletResponse);
@@ -54,8 +52,8 @@ public class ReqResLogFilter implements Filter {
 				requestMap.put("password", "********");
 			}
 
-			final StringBuilder logMessage = new StringBuilder("REST Request - ")
-					.append("[").append(elapsed).append("ms] ");
+			final StringBuilder logMessage = new StringBuilder("[")
+					.append(elapsed).append("ms] ");
 
 			if (!StringUtils.isEmpty(httpServletRequest.getMethod())) {
 				logMessage.append("[HTTP METHOD:")
@@ -107,7 +105,6 @@ public class ReqResLogFilter implements Filter {
 
 			log.info(logMessage.toString());
 		} catch( Throwable a ) {
-//            lastLineLog.error(a.getMessage());
 			log.error(a.getMessage());
 		}
 	}
@@ -119,7 +116,7 @@ public class ReqResLogFilter implements Filter {
 		Enumeration headerNames = request.getHeaderNames();
 		while (headerNames.hasMoreElements()) {
 			String key = (String) headerNames.nextElement();
-			if ("X-ANNE-INFOX-CLIENT-UID-ACCEPTUSER-AGENT".contains(key.toUpperCase())) {
+			if ("X_GM_DEVICE_IDX_GM_APP_VERSIONX_GM_OS_TYPEX_GM_OS_VERSION".contains(key.toUpperCase())) {
 				String value = request.getHeader(key);
 				map.put(key, value);
 			}

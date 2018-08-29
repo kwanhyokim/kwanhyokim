@@ -56,10 +56,6 @@ public class TransactionIdInterceptor extends HandlerInterceptorAdapter implemen
         String traceId = getNextSequence();
         MDC.put("transactionId", traceId);
         MDC.put("hostName", InetAddress.getLocalHost().getHostName());
-        if (GMContext.getContext() != null) {
-            MDC.put("memberNo", String.valueOf(GMContext.getContext().getMemberNo()));
-            MDC.put("characterNo", String.valueOf(GMContext.getContext().getCharacterNo()));
-        }
 
         return super.preHandle(request, response, handler);
     }
