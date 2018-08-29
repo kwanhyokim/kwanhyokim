@@ -24,6 +24,6 @@ public class ListenRequest {
 
 	@Max(20)
 	@NotNull
-	@ApiModelProperty(name = "listenTypeId", value = "좋아하는 타입에 맞는 ID의 리스트")
+	@ApiModelProperty(name = "listenTypeId", value = "Listen 타입에 맞는 ID의 리스트")
 	private Long listenTypeId;
 }
