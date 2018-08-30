@@ -115,6 +115,7 @@ public class ListenServiceImpl implements ListenService {
 		}
 
 		amqpService.deliverTrackListen(trackListenBuilder.build());
+		log.info("[Track Listen Hist] " + trackListenBuilder.toString());
 
 		UserEventType userEventType = UserEventType.fromTrackLogType(request.getTrackLogType());
 		if( !userEventType.equals(UserEventType.UNKNOWN) )	{
@@ -128,6 +129,7 @@ public class ListenServiceImpl implements ListenService {
 					.setSourceType(SourceType.STRM)
 					.build();
 			amqpService.deliverUserEvent(userEvent);
+			log.info("[Track Listen Hist - User event] " + userEvent.toString());
 		}
 	}
 
