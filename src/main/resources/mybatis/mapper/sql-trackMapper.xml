@@ -222,8 +222,8 @@
 
     <select id="selectMyRecentTrackList" resultMap="mostListenedTrackResultMap">
         SELECT a.member_no AS memberNo,
-               b.track_id,
-               b.track_nm,
+               b.track_id AS trackId,
+               b.track_nm AS trackNm,
                b.track_play_tm AS playTime,
                IF(b.title_yn = 'Y' , 'Y', 'N') AS titleYn,
                b.adult_auth_need_track_yn AS adultAuthYn,
