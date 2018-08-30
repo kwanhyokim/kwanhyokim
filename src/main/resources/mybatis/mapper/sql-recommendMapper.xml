@@ -254,12 +254,11 @@
                     -- 1. rcmmd_table end
                     ) rcmmd_table
                     LEFT OUTER JOIN tb_map_img_rcmmd_img b ON rcmmd_table.svc_genre_id = b.img_content_id
-                    WHERE
-                            b.img_content_type = 'GENRE'
+                        AND b.img_content_type = 'GENRE'
                         AND b.rcmmd_type_id = 'RC_GR_TR'
                         AND b.os_type = #{osType}
                         AND b.dfk_type = rcmmd_table.week
-                        AND b.img_disp_type = 'DEFAULT'
+                        AND b.img_disp_type = 'MAIN_TOP'
                     ORDER BY rcmmd_table.disp_sn
 
                 -- 2. rcmmd_img_table end
@@ -402,9 +401,9 @@
                             -- 1. rcmmd_table end;
                         ) rcmmd_table
                         LEFT OUTER JOIN tb_rcmmd_img_mang b ON rcmmd_table.week = b.dfk_type
-                        WHERE
-                            b.rcmmd_type_id = 'RC_SML_TR'
-                            AND b.os_type = #{osType}
+                        AND b.rcmmd_type_id = 'RC_SML_TR'
+                        AND b.img_disp_type = 'MAIN_TOP'
+                        AND b.os_type = #{osType}
                         ORDER BY rcmmd_table.disp_sn
 
                         -- 2. rcmmd_img_table end
@@ -535,6 +534,9 @@
                     WHERE
                         b.rcmmd_type_id = 'RC_CF_TR'
                     AND b.os_type = #{osType}
+                    AND b.img_disp_type = 'MAIN_TOP'
+                    AND b.img_content_type = 'GENRE'
+
                     ORDER BY rcmmd_table.disp_sn
                     -- 2. rcmmd_img_table end
                 ) rcmmd_img_table
