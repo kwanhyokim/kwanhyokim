@@ -88,6 +88,8 @@ public class ListenServiceImpl implements ListenService {
 				.addTm(request.getAddDateTime())
 				.sessionToken("")
 				.sourceType(SourceType.STRM)
+				.free(false)
+				.timeMillis(System.currentTimeMillis())
 				.build();
 
 		TrackListen.TrackListenBuilder trackListenBuilder = trackListen.toBuilder();
