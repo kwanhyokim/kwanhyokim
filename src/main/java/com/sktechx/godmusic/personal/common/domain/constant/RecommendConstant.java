@@ -18,7 +18,7 @@ package com.sktechx.godmusic.personal.common.domain.constant;
  */
 public class RecommendConstant {
     public static final int POPULAR_CHNL_LIST_SIZE  = 3;
-    public static final int POPULAR_CHNL_CACHE_LIMIT_SIZE= 5;
+    public static final int POPULAR_CHNL_CACHE_LIMIT_SIZE= 20;
     public static final int POPULAR_CHNL_EXPIRED_SECONDS = 300;
     public static final int PREFER_GENRE_POPULAR_CHNL_EXPIRED_SECONDS = 86400;
     public static final int MOOD_POPULAR_CHNL_EXPIRED_SECONDS = 86400;
@@ -28,7 +28,7 @@ public class RecommendConstant {
     //청취 단계 패널
     public static final int SIMILAR_TRACK_PANEL_SIZE  = 2;
     public static final int PREFER_GENRE_SIMILAR_PANEL_SIZE  = 2;
-    public static final int LISTEN_MOOD_POPULAR_CHNL_SIZE  = 1;
+    public static final int LISTEN_MOOD_POPULAR_PANEL_SIZE  = 1;
 
 
     //추천 단계 패널

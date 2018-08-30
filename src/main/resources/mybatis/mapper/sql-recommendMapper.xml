@@ -125,8 +125,7 @@
                 rcmmd_listen_mood_id as recommendId,
                 disp_std_end_dt as avaliableDateTime,
                 disp_sn as dispSn,
-                category_id as moodId,
-                0 as trackCount
+                category_id as moodId
             FROM
                 tb_rcmmd_listen_mood
             WHERE

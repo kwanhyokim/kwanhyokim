@@ -25,5 +25,5 @@ public class CharacterPreferDispDto {
     private Long characterNo;
     private Long preferDispId;
     private String preferDispNm;
-    private String preferDispType;
+    private String dispType;
 }
