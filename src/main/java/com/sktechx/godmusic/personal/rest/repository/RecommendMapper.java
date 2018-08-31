@@ -86,10 +86,4 @@ public interface RecommendMapper {
             , @Param("rcmmdId") Long rcmmdId
             , @Param("characterNo") Long characterNo);
 
-    void updateArtistListRemovePrevent(@Param("rcmmdId") Long rcmmdId);
-    void updateArtistTrackListRemovePrevent(@Param("rcmmdId") Long rcmmdId);
-
-    void updateSimilarTrackListRemovePrevent(@Param("rcmmdId") Long rcmmdId);
-    void updatePreferGenreSimilarTrackListRemovePrevent(@Param("rcmmdId") Long rcmmdId);
-    void updateMforuListRemoveRemovePrevent(@Param("rcmmdId") Long rcmmdId);
 }

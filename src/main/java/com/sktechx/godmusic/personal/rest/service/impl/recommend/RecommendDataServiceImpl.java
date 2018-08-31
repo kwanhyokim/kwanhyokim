@@ -41,35 +41,11 @@ public class RecommendDataServiceImpl implements RecommendDataService {
             if(request != null){
                 RecommendPanelContentType recommendPanelContentType = RecommendPanelContentType.fromCode(request.getListenType());
                 if(recommendPanelContentType != null && request.getListenTypeId() != null && characterNo != null){
-                    int updateCount = recommendMapper.updateRecommendDataRemovePrevent(recommendPanelContentType , request.getListenTypeId() , characterNo);
-
-                    if(updateCount > 0){
-                        updateForeignRecommendDataRemovePrevent(recommendPanelContentType , request.getListenTypeId());
-                    }
+                    recommendMapper.updateRecommendDataRemovePrevent(recommendPanelContentType , request.getListenTypeId() , characterNo);
                 }
             }
         }catch(Exception e){
             log.error("Recommend :: updateRecommendDataPrevent :: Error Message",e.getMessage());
-        }
-    }
-
-    private void updateForeignRecommendDataRemovePrevent(RecommendPanelContentType recommendPanelContentType , Long rcmmdId){
-        switch(recommendPanelContentType){
-            case RC_ATST_TR :
-                recommendMapper.updateArtistListRemovePrevent(rcmmdId);
-                recommendMapper.updateArtistTrackListRemovePrevent(rcmmdId);
-                break;
-            case RC_SML_TR :
-                recommendMapper.updateSimilarTrackListRemovePrevent(rcmmdId);
-                break;
-            case RC_GR_TR :
-                recommendMapper.updatePreferGenreSimilarTrackListRemovePrevent(rcmmdId);
-                break;
-            case RC_CF_TR :
-                recommendMapper.updateMforuListRemoveRemovePrevent(rcmmdId);
-                 break;
-            default :
-                return;
         }
     }
 }
