@@ -28,7 +28,9 @@
 			-->
    		</encoder>
     </appender>
-    
+
+    <logger name="io.swagger.models.parameters.AbstractSerializableParameter" level="ERROR" />
+
     <root>
         <level value="INFO" />
         <appender-ref ref="SERVICE_API_ROLLINGFILE" />

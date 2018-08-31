@@ -22,6 +22,8 @@
     <logger name="springfox.documentation" level="OFF" />
     <logger name="org.springframework.jdbc" level="INFO" />
 
+    <logger name="io.swagger.models.parameters.AbstractSerializableParameter" level="ERROR" />
+
     <logger name="com.sktechx" level="trace" additivity="false">
         <appender-ref ref="CONSOLE" />
     </logger>
