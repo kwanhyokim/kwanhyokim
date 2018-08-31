@@ -214,13 +214,13 @@
                 a.chart_type = 'WEEKLY'
                     AND a.svc_content_type = 'ALL'
                     AND a.music_content_type = 'CHNL'
-            GROUP BY chnl_id
+            GROUP BY b.music_content_id
             ORDER BY b.disp_sn) a INNER JOIN tb_chnl b ON a.music_content_id = b.chnl_id
         WHERE
             b.disp_status_type = 'Y'
-        AND
-            category_id IS NOT NULL
-        GROUP BY category_id
+        -- AND
+        --       category_id IS NOT NULL
+        -- GROUP BY category_id
         ORDER BY disp_sn
     </select>
 
