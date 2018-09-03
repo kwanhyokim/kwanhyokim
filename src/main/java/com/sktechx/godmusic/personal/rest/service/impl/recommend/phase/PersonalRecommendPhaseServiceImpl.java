@@ -10,10 +10,10 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.phase;
 
-import com.netflix.discovery.converters.Auto;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.lib.redis.manager.RedisConnManager;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
-import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferDispDto;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
@@ -28,13 +28,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 
-import java.text.SimpleDateFormat;
-import java.time.*;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.*;
+
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.RCMMD_CF_TRACK_DISP_STANDARD_COUNT;
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.SIMILAR_TRACK_DISP_STANDARD_COUNT;
+import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.PERSONAL_RECOMMEND_PHASE_KEY;
 /**
  * 설명 : 사용자 청취 단계 / 패널 메타 관리
  *
@@ -55,6 +61,8 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    RedisConnManager connManager;
 
     @Override
     public PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType){
@@ -87,10 +95,11 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
             personalPhaseMeta.setPreferDispList(characterPreferDispList);
 
             //개인화 추천 패널
-            List<PersonalPanel> rcmmdPanelList = recommendMapper.selectPersonalRecommendPanelMeta(characterNo);
+            List<PersonalPanel> rcmmdPanelList = recommendMapper.selectPersonalRecommendPanelMeta(characterNo, SIMILAR_TRACK_DISP_STANDARD_COUNT , RCMMD_CF_TRACK_DISP_STANDARD_COUNT);
             personalPhaseMeta.setRcmmdPanelList(rcmmdPanelList);
 
-            redisService.setWithPrefix(personalRecommendPhaseKey, personalPhaseMeta, "NX", "PX", todayRemainMillisecond());
+            redisService.setWithPrefix(personalRecommendPhaseKey, personalPhaseMeta, "NX", "PX", hourlyRemainMillisecond());
+
         }catch(Exception ex){
             log.error("getPersonalRecommendPhaseMeta not catched exception : {}",ex.getMessage());
             ex.printStackTrace();
@@ -99,7 +108,19 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
         return personalPhaseMeta;
     }
 
+    private long hourlyRemainMillisecond(){
+        Calendar cal = Calendar.getInstance();
 
+        cal.set(Calendar.MINUTE , 59);
+        cal.set(Calendar.SECOND,56);
+        cal.set(Calendar.MILLISECOND,999);
+
+        long remainMillisecond = cal.getTimeInMillis() - System.currentTimeMillis();
+        if(remainMillisecond > 0)
+            return remainMillisecond;
+        return 0;
+
+    }
     private long todayRemainMillisecond(){
         LocalDateTime todayMaxLocalTime = LocalDate.now().atTime(LocalTime.MAX);
         long epochMilli = todayMaxLocalTime.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();

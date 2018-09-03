@@ -20,6 +20,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.GenreVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -30,6 +31,7 @@ import java.util.List;
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 09.
  */
+@Slf4j
 public abstract class TrackPanel extends Panel {
 
     @JsonIgnore
@@ -37,6 +39,7 @@ public abstract class TrackPanel extends Panel {
 
     public TrackPanel(RecommendPanelType panelType ,String title, String subTitle, RecommendTrackDto recommendTrackDto, List<ImageInfo> bgImgList) throws CommonBusinessException {
         super(panelType);
+        log.info("trackPanel create imgList: {}",bgImgList);
         this.recommendTrackDto = recommendTrackDto;
         this.imgList = bgImgList;
         this.title = title;

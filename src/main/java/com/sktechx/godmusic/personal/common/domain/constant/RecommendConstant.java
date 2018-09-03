@@ -40,12 +40,16 @@ public class RecommendConstant {
     //방문 단계
     public static final int PREFER_GENRE_POPULAR_CHNL_LIST_SIZE = 3;
 
-
     public static final int POPULAR_CHNL_TRACK_LIMIT_SIZE = 10;
     public static final int PREFER_GENRE_SIMILAR_TRACK_LIMIT_SIZE = 10;
     public static final int SIMILAR_TRACK_LIMIT_SIZE = 10;
     public static final int PREFER_DISP_CHART_TRACK_LIMIT_SIZE = 12;
 
+    //노출 가능한 최소 개수
+    public static final int SIMILAR_TRACK_DISP_STANDARD_COUNT = 15;
+    public static final int PREFER_GENRE_SIMILAR_TRACK_DISP_STANDARD_COUNT = 15;
+    public static final int ARTIST_POPULAR_TRACK_DISP_STANDARD_COUNT = 15;
+    public static final int RCMMD_CF_TRACK_DISP_STANDARD_COUNT = 50;
 
     public static final String ARTIST_PANEL_TITLE = "Musician focus";
     public static final String CHART_PANEL_HOURLY_BASIS_PHRASES = "시 기준";
@@ -55,8 +59,6 @@ public class RecommendConstant {
 
     public static final String SIMILAR_TRACK_PANEL_TITLE = "Like U";
     public static final String SIMILAR_TRACK_PANEL_SUB_TITLE = "많이 들었던 노래와\n 유사한 선곡";
-
-
 
 }
 

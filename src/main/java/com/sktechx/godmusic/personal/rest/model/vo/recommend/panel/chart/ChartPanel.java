@@ -21,6 +21,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
 import org.springframework.util.StringUtils;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
@@ -44,7 +45,7 @@ public class ChartPanel extends Panel {
     @Override
     protected void initialPanel() {
         this.title = chart.getChartDispNm();
-        this.subTitle = getChartUpdateHourly(chart.getDispStartDtime())+CHART_PANEL_HOURLY_BASIS_PHRASES;
+        this.subTitle = getBasedOnUpdate(chart , this.type);
         this.content = createPanelContent();
     }
 
@@ -69,7 +70,30 @@ public class ChartPanel extends Panel {
         return chart;
     }
 
+    private String getBasedOnUpdate(ChartDto chart , RecommendPanelType panelType){
+        if(chart != null){
+            if(RecommendPanelType.KIDS_CHART.equals(panelType)){
+                return getChartUpdateDateBetween(chart.getDispStartDtime());
+            }else if(RecommendPanelType.LIVE_CHART.equals(panelType)){
+                return getChartUpdateHourly(chart.getUpdateDtime());
+            }
+        }
+        return null;
+    }
     private String getChartUpdateHourly(Date updateDateTime){
-        return DateUtil.dateToString(updateDateTime, "HH");
+        return DateUtil.dateToString(updateDateTime, "HH")+CHART_PANEL_HOURLY_BASIS_PHRASES;
+    }
+
+    private String getChartUpdateDateBetween(Date dispStartDtime) {
+        if(dispStartDtime != null){
+            Calendar c = Calendar.getInstance();
+            c.setTime(dispStartDtime);
+            c.add(Calendar.MINUTE , - 1);
+            String end = String.format("%02d/%02d" , c.get(Calendar.MONTH) , c.get(Calendar.DAY_OF_MONTH));
+            c.add(Calendar.DATE , -7);
+            String start = String.format("%02d/%02d" , c.get(Calendar.MONTH) , c.get(Calendar.DAY_OF_MONTH));
+            return String.format("%s ~ %s" , start , end );
+        }
+        return null;
     }
 }

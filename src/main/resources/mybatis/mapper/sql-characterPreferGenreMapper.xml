@@ -37,7 +37,8 @@
                 b.character_no,
                 a.prefer_disp_id,
                 a.prefer_disp_nm,
-                a.disp_type
+                a.disp_type,
+                a.disp_props_type
             FROM
                 tb_prefer_disp a
                     INNER JOIN

@@ -119,8 +119,9 @@ public class PersonalPhaseMeta {
     public List<Long> getListenMoodIdList(RecommendPanelContentType recommendPanelContentType , int limitSize){
         List<PersonalPanel> personalPanelList = getRecommendPersonalPanelList(recommendPanelContentType);
         if(!CollectionUtils.isEmpty(personalPanelList)){
-            return rcmmdPanelList
+            return personalPanelList
                     .stream()
+                    .filter(Objects::nonNull)
                     .map(PersonalPanel::getMoodId)
                     .distinct()
                     .limit(limitSize)
@@ -128,6 +129,10 @@ public class PersonalPhaseMeta {
         }
 
         return null;
+    }
+
+    static public void main(String[] args){
+
     }
     private PersonalPanel getRecommendPersonalPanel(RecommendPanelContentType recommendPanelContentType){
         if(!CollectionUtils.isEmpty(rcmmdPanelList)){

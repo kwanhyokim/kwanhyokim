@@ -26,4 +26,5 @@ public class CharacterPreferDispDto {
     private Long preferDispId;
     private String preferDispNm;
     private String dispType;
+    private String dispPropsType;
 }

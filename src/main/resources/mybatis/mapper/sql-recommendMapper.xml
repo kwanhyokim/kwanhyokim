@@ -27,6 +27,7 @@
         <collection property="imgList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" autoMapping="true">
             <id property="size" column="img_size"/>
             <id property="url" column="img_url"/>
+            <id property="dispSn" column="img_disp_sn"/>
         </collection>
         <collection property="trackList" resultMap="com.sktechx.godmusic.personal.rest.repository.TrackMapper.trackResultMap" autoMapping="true">
         </collection>
@@ -45,23 +46,27 @@
         </collection>
     </resultMap>
 
-    <select id="selectPersonalRecommendPanelMeta" resultMap="personalPanelResultMap" parameterType="Long">
+    <select id="selectPersonalRecommendPanelMeta" resultMap="personalPanelResultMap" >
         <![CDATA[
             SELECT
                 'RC_CF_TR' as recommendPanelContentType,
-                rcmmd_mforu_id as recommendId,
-                disp_std_end_dt as avaliableDateTime,
-                disp_sn as dispSn,
-                0 as moodId
+                a.rcmmd_mforu_id as recommendId,
+                a.disp_std_end_dt as avaliableDateTime,
+                a.disp_sn as dispSn,
+                0 as moodId,
+                count(a.rcmmd_mforu_id) contentCount
             FROM
-                tb_rcmmd_mforu
+                tb_rcmmd_mforu a INNER JOIN tb_rcmmd_mforu_list b ON a.rcmmd_mforu_id = b.rcmmd_mforu_id
+                INNER JOIN tb_track c ON b.track_id = c.track_id
             WHERE
-                character_no = #{characterNo}
+                a.character_no = #{characterNo}
             AND
-                disp_std_start_dt <= NOW()
+                a.disp_std_start_dt <= NOW()
             AND
-                disp_std_end_dt >= NOW()
-			AND create_std_dtime = (SELECT
+                a.disp_std_end_dt >= NOW()
+            AND
+                c.disp_status_yn = 'Y'
+            AND a.create_std_dtime = ( SELECT
                                         create_std_dtime
                                     FROM
                                         tb_rcmmd_mforu
@@ -74,43 +79,37 @@
                                     GROUP BY create_std_dtime
                                     ORDER BY create_std_dtime DESC
                                 )
+            GROUP BY a.rcmmd_mforu_id
+            HAVING contentCount >= #{rcmmdCfTrackDispStandardCount}
             UNION ALL
             SELECT
                 'RC_SML_TR' as recommendPanelContentType,
-                rcmmd_similar_track_id as recommendId,
-                disp_std_end_dt as avaliableDateTime,
-                disp_sn as dispSn,
-                0 as moodId
+                a.rcmmd_similar_track_id as recommendId,
+                a.disp_std_end_dt as avaliableDateTime,
+                a.disp_sn as dispSn,
+                0 as moodId,
+                count(b.rcmmd_similar_track_id) contentCount
             FROM
-                tb_rcmmd_similar_track
+                tb_rcmmd_similar_track a INNER JOIN tb_rcmmd_similar_track_list b ON a.rcmmd_similar_track_id = b.rcmmd_similar_track_id
+                INNER JOIN tb_track c ON b.track_id = c.track_id
             WHERE
-                character_no =#{characterNo}
+                a.character_no =#{characterNo}
             AND
-                disp_std_start_dt <= NOW()
+                a.disp_std_start_dt <= NOW()
             AND
-                disp_std_end_dt >= NOW()
-            UNION ALL
-            SELECT
-                'RC_GR_TR' as recommendPanelContentType,
-                rcmmd_prefer_genre_similar_track_id as recommendId,
-                disp_std_end_dt as avaliableDateTime,
-                disp_sn as dispSn,
-                0 as moodId
-            FROM
-                tb_rcmmd_prefer_genre_similar_track
-            WHERE
-                character_no = #{characterNo}
+                a.disp_std_end_dt >= NOW()
             AND
-                disp_std_start_dt <= NOW()
-            AND
-                disp_std_end_dt >= NOW()
+                c.disp_status_yn = 'Y'
+            GROUP BY a.rcmmd_similar_track_id
+            HAVING contentCount >= #{similarTrackDispStandardCount}
             UNION ALL
             SELECT
                 'RC_ATST_TR' as recommendPanelContentType,
                 rcmmd_artist_id as recommendId,
                 disp_std_end_dt as avaliableDateTime,
                 disp_sn as dispSn,
-                0 as moodId
+                0 as moodId,
+                0 as contentCount
             FROM
                 tb_rcmmd_artist
             WHERE
@@ -125,7 +124,8 @@
                 rcmmd_listen_mood_id as recommendId,
                 disp_std_end_dt as avaliableDateTime,
                 disp_sn as dispSn,
-                category_id as moodId
+                category_id as moodId,
+                0 as contentCount
             FROM
                 tb_rcmmd_listen_mood
             WHERE
@@ -134,6 +134,19 @@
                 disp_std_start_dt <= NOW()
             AND
                 disp_std_end_dt >= NOW()
+            UNION ALL
+            SELECT
+                'RC_GR_TR' as recommendPanelContentType,
+                rcmmd_prefer_genre_similar_track_id as recommendId,
+                disp_std_end_dt as avaliableDateTime,
+                disp_sn as dispSn,
+                0 as moodId,
+                0 as contentCount
+            FROM
+                tb_rcmmd_prefer_genre_similar_track
+            WHERE
+                character_no = #{characterNo}
+
          ]]>
     </select>
 
@@ -142,6 +155,7 @@
             rcmmd_track_rank_table.rcmmd_id,
             rcmmd_track_rank_table.rcmmd_disp_sn,
             rcmmd_track_rank_table.track_id,
+            rcmmd_track_rank_table.track_nm,
             rcmmd_track_rank_table.disp_sn,
             rcmmd_track_rank_table.reprsnt_artist_id,
             rcmmd_track_rank_table.agency_id,
@@ -170,6 +184,7 @@
                 rcmmd_track_table.rcmmd_id,
                 rcmmd_track_table.rcmmd_disp_sn,
                 rcmmd_track_table.track_id,
+                rcmmd_track_table.track_nm,
                 rcmmd_track_table.disp_sn,
                 rcmmd_track_table.album_id,
                 rcmmd_track_table.reprsnt_artist_id,
@@ -197,6 +212,7 @@
                     b.track_id,
                     b.disp_sn,
                     c.album_id,
+                    c.track_nm,
                     c.reprsnt_artist_id,
                     c.agency_id,
                     c.create_dtime,
@@ -288,6 +304,7 @@
             rcmmd_track_rank_table.rcmmd_id,
             rcmmd_track_rank_table.rcmmd_disp_sn,
             rcmmd_track_rank_table.track_id,
+            rcmmd_track_rank_table.track_nm,
             rcmmd_track_rank_table.disp_sn,
             rcmmd_track_rank_table.reprsnt_artist_id,
             rcmmd_track_rank_table.agency_id,
@@ -316,6 +333,7 @@
                 rcmmd_track_table.rcmmd_id,
                 rcmmd_track_table.rcmmd_disp_sn,
                 rcmmd_track_table.track_id,
+                rcmmd_track_table.track_nm,
                 rcmmd_track_table.disp_sn,
                 rcmmd_track_table.album_id,
                 rcmmd_track_table.reprsnt_artist_id,
@@ -343,6 +361,7 @@
                         b.track_id,
                         b.disp_sn,
                         c.album_id,
+                        c.track_nm,
                         c.reprsnt_artist_id,
                         c.agency_id,
                         c.create_dtime,
@@ -432,6 +451,7 @@
             rcmmd_track_rank_table.rcmmd_id,
             rcmmd_track_rank_table.rcmmd_disp_sn,
             rcmmd_track_rank_table.track_id,
+            rcmmd_track_rank_table.track_nm,
             rcmmd_track_rank_table.disp_sn,
             rcmmd_track_rank_table.reprsnt_artist_id,
             rcmmd_track_rank_table.agency_id,
@@ -459,6 +479,7 @@
                 rcmmd_track_table.rcmmd_id,
                 rcmmd_track_table.rcmmd_disp_sn,
                 rcmmd_track_table.track_id,
+                rcmmd_track_table.track_nm,
                 rcmmd_track_table.disp_sn,
                 rcmmd_track_table.album_id,
                 rcmmd_track_table.reprsnt_artist_id,
@@ -483,6 +504,7 @@
                     rcmmd_img_table.trackCount,
                     b.track_id,
                     b.disp_sn,
+                    c.track_nm,
                     c.album_id,
                     c.reprsnt_artist_id,
                     c.agency_id,
@@ -531,8 +553,7 @@
                         -- 1. rcmmd_table end;
                     ) rcmmd_table
                     LEFT OUTER JOIN tb_map_img_rcmmd_img b ON rcmmd_table.svc_genre_id = b.img_content_id
-                    WHERE
-                        b.rcmmd_type_id = 'RC_CF_TR'
+                    AND b.rcmmd_type_id = 'RC_CF_TR'
                     AND b.os_type = #{osType}
                     AND b.img_disp_type = 'MAIN_TOP'
                     AND b.img_content_type = 'GENRE'
@@ -566,7 +587,15 @@
           c.artist_nm,
           d.size,
           d.url,
-          a.create_dtime
+          a.create_dtime,
+          (
+            SELECT
+              COUNT(*)
+            FROM
+              tb_rcmmd_artist_track_list
+            WHERE
+              rcmmd_artist_id = a.rcmmd_artist_id
+          ) trackCount
       FROM
         tb_rcmmd_artist a
             INNER JOIN
