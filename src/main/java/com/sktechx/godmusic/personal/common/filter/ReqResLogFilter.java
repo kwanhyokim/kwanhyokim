@@ -35,6 +35,7 @@ public class ReqResLogFilter implements Filter {
 		try {
 			HttpServletRequest httpServletRequest = (HttpServletRequest)request;
 			HttpServletResponse httpServletResponse = (HttpServletResponse)response;
+			MDC.put("resCode", "");
 
 			httpServletResponse.setHeader("Content-Type", MediaType.APPLICATION_JSON_UTF8_VALUE);
 
