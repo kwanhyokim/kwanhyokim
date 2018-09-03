@@ -114,5 +114,18 @@ public class UserEvent {
 			return instance;
 		}
 	}
-	
+
+	@Override
+	public String toString() {
+		return "UserEvent{" +
+				"playChnl='" + playChnl + '\'' +
+				", event=" + event +
+				", memberNo=" + memberNo +
+				", charactorNo=" + charactorNo +
+				", timeMillis=" + timeMillis +
+				", targetType=" + targetType +
+				", targetId='" + targetId + '\'' +
+				", sourceType=" + sourceType +
+				'}';
+	}
 }
