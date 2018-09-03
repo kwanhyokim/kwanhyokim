@@ -37,13 +37,13 @@ public class LikeController {
 	@Autowired
 	private LikeService likeService;
 
-	@ApiOperation(value = "좋아요 플레이리스트 목록 by Kobe ( 기존 /v2/my/channel/like/list GET )")
+	@ApiOperation(value = "좋아요 플레이리스트 목록 by Kobe ( 기존 /v2/my/channel/like/list GET )", response = LikePlaylistListResponse.class)
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "page", required = false, dataType = "int", paramType = "query", value = "페이지", defaultValue = "1"),
 			@ApiImplicitParam(name = "size", required = false, dataType = "int", paramType = "query", value = "사이즈", defaultValue = "1000")
 	})
 	@GetMapping("/type/playlist/list")
-	public CommonApiResponse<PageImpl<List<PlayListDto>>> getPlayListLikeListByLikeType(
+	public CommonApiResponse<LikePlaylistListResponse> getPlayListLikeListByLikeType(
 			@ApiIgnore @PageableDefault(size=1000, page=0) Pageable pageable
 	) {
 		GMContext currentContext = GMContext.getContext();
@@ -51,15 +51,16 @@ public class LikeController {
 		Validator.loginValidate(currentContext);
 
 		return new CommonApiResponse(likeService.getPlayListLikeListByLikeType(currentContext.getCharacterNo(), pageable));
+//		return new CommonApiResponse(likeService.getPlayListLikeListByLikeType(new Long(12), pageable));
 	}
 
-	@ApiOperation(value = "좋아요 앨범 목록 by Kobe ( 기존 /v2/my/album/like/list GET )")
+	@ApiOperation(value = "좋아요 앨범 목록 by Kobe ( 기존 /v2/my/album/like/list GET )", response = LikeAlbumListResponse.class)
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "page", required = false, dataType = "int", paramType = "query", value = "페이지", defaultValue = "1"),
 			@ApiImplicitParam(name = "size", required = false, dataType = "int", paramType = "query", value = "사이즈", defaultValue = "1000")
 	})
 	@GetMapping("/type/album/list")
-	public CommonApiResponse<PageImpl<List<AlbumDto>>> getAlbumLikeListByLikeType(
+	public CommonApiResponse<LikeAlbumListResponse> getAlbumLikeListByLikeType(
 			@ApiIgnore @PageableDefault(size=1000, page=0) Pageable pageable
 	) {
 		GMContext currentContext = GMContext.getContext();
@@ -67,15 +68,16 @@ public class LikeController {
 		Validator.loginValidate(currentContext);
 
 		return new CommonApiResponse(likeService.getAlbumLikeListByLikeType(currentContext.getCharacterNo(), pageable));
+//		return new CommonApiResponse(likeService.getAlbumLikeListByLikeType(new Long(73), pageable));
 	}
 
-	@ApiOperation(value = "좋아요 아티스트 목록 by Kobe ( 기존 /v2/my/artist/like/list GET )")
+	@ApiOperation(value = "좋아요 아티스트 목록 by Kobe ( 기존 /v2/my/artist/like/list GET )", response = LikeArtistListResponse.class)
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "page", required = false, dataType = "int", paramType = "query", value = "페이지", defaultValue = "1"),
 			@ApiImplicitParam(name = "size", required = false, dataType = "int", paramType = "query", value = "사이즈", defaultValue = "1000")
 	})
 	@GetMapping("/type/artist/list")
-	public CommonApiResponse<PageImpl<List<ArtistDto>>> getArtistLikeListByLikeType(
+	public CommonApiResponse<LikeArtistListResponse> getArtistLikeListByLikeType(
 			@ApiIgnore @PageableDefault(size=1000, page=0) Pageable pageable
 	) {
 		GMContext currentContext = GMContext.getContext();
@@ -83,15 +85,16 @@ public class LikeController {
 		Validator.loginValidate(currentContext);
 
 		return new CommonApiResponse(likeService.getArtistLikeListByLikeType(currentContext.getCharacterNo(), pageable));
+//		return new CommonApiResponse(likeService.getArtistLikeListByLikeType(new Long(12), pageable));
 	}
 
-	@ApiOperation(value = "좋아요 트랙별 목록 by Kobe ( 기존 /v2/my/track/like/list GET )")
+	@ApiOperation(value = "좋아요 트랙별 목록 by Kobe ( 기존 /v2/my/track/like/list GET )", response = LikeTrackListResponse.class)
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "page", required = false, dataType = "int", paramType = "query", value = "페이지", defaultValue = "1"),
 			@ApiImplicitParam(name = "size", required = false, dataType = "int", paramType = "query", value = "사이즈", defaultValue = "1000")
 	})
 	@GetMapping("/type/track/list")
-	public CommonApiResponse<PageImpl<List<TrackDto>>> getTrackLikeListByLikeType(
+	public CommonApiResponse<LikeTrackListResponse> getTrackLikeListByLikeType(
 			@ApiIgnore @PageableDefault(size=1000, page=0) Pageable pageable
 	) {
 		GMContext currentContext = GMContext.getContext();
@@ -99,6 +102,7 @@ public class LikeController {
 		Validator.loginValidate(currentContext);
 
 		return new CommonApiResponse(likeService.getTrackLikeListByLikeType(currentContext.getCharacterNo(), pageable));
+//		return new CommonApiResponse(likeService.getTrackLikeListByLikeType(new Long(12), pageable));
 	}
 
 	@ApiOperation(value = "좋아요 여부 확인 by Kobe")

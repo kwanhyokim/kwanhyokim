@@ -19,10 +19,10 @@ import java.util.List;
  * @time PM 3:39
  */
 public interface LikeService {
-	PageImpl<List<PlayListDto>> getPlayListLikeListByLikeType(Long characterNo, Pageable pageable);
-	PageImpl<List<AlbumDto>> getAlbumLikeListByLikeType(Long characterNo, Pageable pageable);
-	PageImpl<List<ArtistDto>> getArtistLikeListByLikeType(Long characterNo, Pageable pageable);
-	PageImpl<List<TrackDto>> getTrackLikeListByLikeType(Long characterNo, Pageable pageable);
+	LikePlaylistListResponse getPlayListLikeListByLikeType(Long characterNo, Pageable pageable);
+	LikeAlbumListResponse getAlbumLikeListByLikeType(Long characterNo, Pageable pageable);
+	LikeArtistListResponse getArtistLikeListByLikeType(Long characterNo, Pageable pageable);
+	LikeTrackListResponse getTrackLikeListByLikeType(Long characterNo, Pageable pageable);
 
 	void addLike(LikeRequest request, Long characterNo);
 

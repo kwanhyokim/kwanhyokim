@@ -59,7 +59,7 @@ public class LikeServiceImpl implements LikeService {
 	private LikeMapper likeMapper;
 
 	@Override
-	public PageImpl<List<PlayListDto>> getPlayListLikeListByLikeType(Long characterNo, Pageable pageable) {
+	public LikePlaylistListResponse getPlayListLikeListByLikeType(Long characterNo, Pageable pageable) {
 		int totalCount = 0;
 
 		List<PlayListDto> playListDtos = likeMapper.getLikePlaylistByLikeType(characterNo, pageable);
@@ -81,11 +81,11 @@ public class LikeServiceImpl implements LikeService {
 		totalCount = likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_CHANNEL, characterNo);
 		totalCount += likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_CHART, characterNo);
 
-		return new PageImpl(playListDtos, pageable, totalCount);
+		return new LikePlaylistListResponse(new PageImpl(playListDtos, pageable, totalCount));
 	}
 
 	@Override
-	public PageImpl<List<AlbumDto>> getAlbumLikeListByLikeType(Long characterNo, Pageable pageable) {
+	public LikeAlbumListResponse getAlbumLikeListByLikeType(Long characterNo, Pageable pageable) {
 		int totalCount = 0;
 
 		List<AlbumDto> albumDtos = likeMapper.getLikeAlbumByLikeType(characterNo, pageable);
@@ -94,11 +94,11 @@ public class LikeServiceImpl implements LikeService {
 
 		totalCount = likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_ALBUM, characterNo);
 
-		return new PageImpl(albumDtos, pageable, totalCount);
+		return new LikeAlbumListResponse(new PageImpl(albumDtos, pageable, totalCount));
 	}
 
 	@Override
-	public PageImpl<List<ArtistDto>> getArtistLikeListByLikeType(Long characterNo, Pageable pageable) {
+	public LikeArtistListResponse getArtistLikeListByLikeType(Long characterNo, Pageable pageable) {
 		int totalCount = 0;
 
 		List<ArtistDto> artistDtos = likeMapper.getLikeArtistByLikeType(characterNo, pageable);
@@ -107,11 +107,11 @@ public class LikeServiceImpl implements LikeService {
 
 		totalCount = likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_ARTIST, characterNo);
 
-		return new PageImpl(artistDtos, pageable, totalCount);
+		return new LikeArtistListResponse(new PageImpl(artistDtos, pageable, totalCount));
 	}
 
 	@Override
-	public PageImpl<List<TrackDto>> getTrackLikeListByLikeType(Long characterNo, Pageable pageable) {
+	public LikeTrackListResponse getTrackLikeListByLikeType(Long characterNo, Pageable pageable) {
 		int totalCount = 0;
 
 		List<TrackDto> trackDtos = likeMapper.getLikeTrackByLikeType(characterNo, pageable);
@@ -120,7 +120,7 @@ public class LikeServiceImpl implements LikeService {
 
 		totalCount = likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_TRACK, characterNo);
 
-		return new PageImpl(trackDtos, pageable, totalCount);
+		return new LikeTrackListResponse(new PageImpl(trackDtos, pageable, totalCount));
 	}
 
 	@Override
