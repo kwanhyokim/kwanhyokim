@@ -162,7 +162,7 @@
 			    IF(b.title_yn = 'Y' , 'Y', 'N') titleYn,
 			    IF(b.streaming_premium_yn = 'Y' OR b.pps_yn = 'Y', 'Y', 'N') holdbackYn,
 			    b.agency_id agencyId,
-			    c.album_id albumId,
+			    c.album_id,
 			    c.album_img_size size,
 			    CONCAT(c.album_img_url, '?updateDate=', unix_timestamp(c.update_dtime)) AS url,
 			    c.update_dtime albumImgUpdateDateTime,
