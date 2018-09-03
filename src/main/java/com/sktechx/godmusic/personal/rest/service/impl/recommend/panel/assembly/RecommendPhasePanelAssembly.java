@@ -63,8 +63,8 @@ public class RecommendPhasePanelAssembly extends PanelSignAssembly {
             }
         }else{
             if(isFillRecommendPanel){
-                int panelCount = panelCount(RecommendPanelType.RCMMD_TRACK,panelList);
-                int panelAppendCount = RCMMD_CF_PANEL_DEFAULT_SIZE - panelCount;
+                int mforuPanelCount = panelCount(RecommendPanelType.RCMMD_TRACK,panelList);
+                int panelAppendCount = RCMMD_CF_PANEL_DEFAULT_SIZE - mforuPanelCount;
                 if(panelAppendCount > 0){
                     appendSimilarTrackPanelList(personalPhaseMeta,panelList,panelAppendCount);
 
@@ -104,7 +104,11 @@ public class RecommendPhasePanelAssembly extends PanelSignAssembly {
                     .filter(Objects::nonNull)
                     .forEach(cfTrack -> {
                         try {
-                            panelList.add(createRecommendCfTrackPanel(personalPhaseMeta,cfTrack));
+
+                            if(cfTrack.getTrackCount() >= RCMMD_CF_TRACK_DISP_STANDARD_COUNT){
+
+                                panelList.add(createRecommendCfTrackPanel(personalPhaseMeta,cfTrack));
+                            }
 
                         } catch (Exception e) {
                             log.error("RecommendPhasePanelAssembly appendRecommendCfTrackPanelList error : {}", e.getMessage());

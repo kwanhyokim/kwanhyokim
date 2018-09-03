@@ -16,27 +16,27 @@ import com.sktechx.godmusic.lib.mybatis.code.CodeEnumTypeHandler;
 import org.apache.ibatis.type.MappedTypes;
 
 /**
- * 설명 : 선호 노출 타입
+ * 설명 : 선호 전시 속성 타입
  *
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 08. 17.
  */
-public enum PreferDispType implements CodeEnum {
+public enum PreferPropsType implements CodeEnum {
     TOP100("TOP100", "실시간 차트")
-    , KIDS("KIDS" , "키즈 차트")
+    , KIDS100("KIDS100" , "키즈 차트")
     ;
 
     private final String value;
     private final String code;
 
-    PreferDispType(String code, String value) {
+    PreferPropsType(String code, String value) {
         this.code = code;
         this.value = value;
     }
-    @MappedTypes(PreferDispType.class)
-    public static class TypeHandler extends CodeEnumTypeHandler<PreferDispType> {
+    @MappedTypes(PreferPropsType.class)
+    public static class TypeHandler extends CodeEnumTypeHandler<PreferPropsType> {
         public TypeHandler() {
-            super(PreferDispType.class);
+            super(PreferPropsType.class);
         }
     }
 

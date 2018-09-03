@@ -39,6 +39,7 @@ public abstract class ChannelPanel extends Panel{
     private ChnlDto channel;
 
     @Getter
+    @JsonIgnore
     private GenreVo genre;
 
     public ChannelPanel(RecommendPanelType panelType, ChnlDto channel, GenreVo genre , List<ImageInfo> imgList) throws CommonBusinessException {
@@ -69,6 +70,8 @@ public abstract class ChannelPanel extends Panel{
         content.setUpdateDtime(channel.getUpdateDtime());
         content.setRenewTrackCount(channel.getRenewTrackCnt());
         content.setRenewYn(channel.getRenewYn());
+        content.setGenre(this.genre);
+
         return content;
     }
 

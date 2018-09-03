@@ -29,6 +29,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
@@ -52,7 +54,7 @@ public class PersonalPhaseMetaTests extends CommonTest {
     public void GUEST_테스트(){
         // CASE : 비로그인
         // expected : PersonalPhaseType.GUEST
-        given(recommendMapper.selectPersonalRecommendPanelMeta(anyLong())).willReturn(null);
+        given(recommendMapper.selectPersonalRecommendPanelMeta(anyLong() , anyInt() , anyInt())).willReturn(null);
         PersonalPhaseMeta  personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(null, OsType.AOS);
 
         assertNotNull(personalPhaseMeta);
@@ -71,7 +73,7 @@ public class PersonalPhaseMetaTests extends CommonTest {
         PersonalPanel personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_SML_TR, 1L , 1);
         personalPanelList.add(personalPanel);
 
-        given(recommendMapper.selectPersonalRecommendPanelMeta(anyLong())).willReturn(personalPanelList);
+        given(recommendMapper.selectPersonalRecommendPanelMeta(anyLong(),anyInt() , anyInt())).willReturn(personalPanelList);
         Long characterNo = 1L;
         OsType osType = OsType.AOS;
         PersonalPhaseMeta  personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType);
@@ -97,7 +99,7 @@ public class PersonalPhaseMetaTests extends CommonTest {
         personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_SML_TR, 2L , 2);
         personalPanelList.add(personalPanel);
 
-        given(recommendMapper.selectPersonalRecommendPanelMeta(anyLong())).willReturn(personalPanelList);
+        given(recommendMapper.selectPersonalRecommendPanelMeta(anyLong(),anyInt() , anyInt())).willReturn(personalPanelList);
         Long characterNo = 1L;
         OsType osType = OsType.AOS;
         PersonalPhaseMeta  personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType);
@@ -121,7 +123,7 @@ public class PersonalPhaseMetaTests extends CommonTest {
         PersonalPanel personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_CF_TR, 1L , 1);
         personalPanelList.add(personalPanel);
 
-        given(recommendMapper.selectPersonalRecommendPanelMeta(anyLong())).willReturn(personalPanelList);
+        given(recommendMapper.selectPersonalRecommendPanelMeta(anyLong(),anyInt() , anyInt())).willReturn(personalPanelList);
         Long characterNo = 1L;
         OsType osType = OsType.AOS;
         PersonalPhaseMeta  personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType);
@@ -147,7 +149,7 @@ public class PersonalPhaseMetaTests extends CommonTest {
         personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_CF_TR, 2L , 2);
         personalPanelList.add(personalPanel);
 
-        given(recommendMapper.selectPersonalRecommendPanelMeta(anyLong())).willReturn(personalPanelList);
+        given(recommendMapper.selectPersonalRecommendPanelMeta(anyLong(),anyInt() , anyInt())).willReturn(personalPanelList);
         Long characterNo = 1L;
         OsType osType = OsType.AOS;
         PersonalPhaseMeta  personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType);
@@ -172,7 +174,7 @@ public class PersonalPhaseMetaTests extends CommonTest {
         personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_SML_TR, 4L , 1);
         personalPanelList.add(personalPanel);
 
-        given(recommendMapper.selectPersonalRecommendPanelMeta(anyLong())).willReturn(personalPanelList);
+        given(recommendMapper.selectPersonalRecommendPanelMeta(anyLong(),anyInt() , anyInt())).willReturn(personalPanelList);
         Long characterNo = 3L;
         OsType osType = OsType.IOS;
         PersonalPhaseMeta  personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType);
@@ -201,7 +203,7 @@ public class PersonalPhaseMetaTests extends CommonTest {
         personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_SML_TR, 4L , 1);
         personalPanelList.add(personalPanel);
 
-        given(recommendMapper.selectPersonalRecommendPanelMeta(anyLong())).willReturn(personalPanelList);
+        given(recommendMapper.selectPersonalRecommendPanelMeta(anyLong(),anyInt() , anyInt())).willReturn(personalPanelList);
         Long characterNo = 3L;
         OsType osType = OsType.IOS;
         PersonalPhaseMeta  personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType);
@@ -233,7 +235,7 @@ public class PersonalPhaseMetaTests extends CommonTest {
         personalPanel = makeMockPersonalPanel(RecommendPanelContentType.RC_SML_TR, 3L , 2);
         personalPanelList.add(personalPanel);
 
-        given(recommendMapper.selectPersonalRecommendPanelMeta(anyLong())).willReturn(personalPanelList);
+        given(recommendMapper.selectPersonalRecommendPanelMeta(anyLong(),anyInt() , anyInt())).willReturn(personalPanelList);
         Long characterNo = 3L;
         OsType osType = OsType.IOS;
         PersonalPhaseMeta  personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType);

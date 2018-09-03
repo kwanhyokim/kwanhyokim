@@ -36,7 +36,7 @@ public class RecommendTrackDto {
     private Date rcmmdUpdateDtime;
 
     private List<TrackDto> trackList;
-    private Integer trackCount;
+    private int trackCount;
 
     private ServiceGenreDto svcGenreDto;
 

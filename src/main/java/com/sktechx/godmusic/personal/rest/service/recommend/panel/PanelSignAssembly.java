@@ -11,8 +11,8 @@
 package com.sktechx.godmusic.personal.rest.service.recommend.panel;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
-import com.sktechx.godmusic.personal.common.domain.PreferDispType;
-import com.sktechx.godmusic.personal.common.domain.type.*;
+import com.sktechx.godmusic.personal.common.domain.PreferPropsType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlDto;
@@ -82,22 +82,23 @@ public abstract class PanelSignAssembly extends PanelAssembly {
     }
 
     public void appendPreferenceChartPanel(final PersonalPhaseMeta personalPhaseMeta, final List<Panel> panelList) {
-        Optional.ofNullable(personalPhaseMeta.getPreferDispList()).ifPresent(preferDispList -> {
-            preferDispList
+        if(!CollectionUtils.isEmpty(personalPhaseMeta.getPreferDispList())) {
+
+            personalPhaseMeta.getPreferDispList()
                     .stream()
                     .filter(Objects::nonNull)
                     .forEach(characterPreferDisp -> {
 
-                         RecommendPanelType recommendPanelType = getPreferRecommendPanelType(characterPreferDisp.getPreferDispNm());
-                        if(recommendPanelType != null){
-                            Panel panel = createChartPanel(recommendPanelType , personalPhaseMeta.getOsType(), PREFER_DISP_CHART_TRACK_LIMIT_SIZE);
-                            if(panel != null){
+                        RecommendPanelType recommendPanelType = getPreferRecommendPanelType(characterPreferDisp.getDispPropsType());
+                        if (recommendPanelType != null) {
+                            Panel panel = createChartPanel(recommendPanelType, personalPhaseMeta.getOsType(), PREFER_DISP_CHART_TRACK_LIMIT_SIZE);
+                            if (panel != null) {
                                 panelList.add(panel);
                             }
                         }
 
                     });
-        });
+        }
     }
 
     protected void appendPreferArtistPopularTrackPanel(final PersonalPhaseMeta personalPhaseMeta, final List<Panel> panelList) {
@@ -107,7 +108,10 @@ public abstract class PanelSignAssembly extends PanelAssembly {
             RecommendArtistDto recommendArtistDto = recommendMapper.selectRecommendArtistById(rcmmdId);
             if (recommendArtistDto != null) {
                 try {
-                    panelList.add(new ArtistPanel(recommendArtistDto));
+
+                    if(recommendArtistDto.getTrackCount()>= ARTIST_POPULAR_TRACK_DISP_STANDARD_COUNT){
+                        panelList.add(new ArtistPanel(recommendArtistDto));
+                    }
                 } catch (Exception e) {
                     log.error("PanelSignAssembly appendPreferArtistPanel artistPanel create error : {}", e.getMessage());
                     e.printStackTrace();
@@ -159,7 +163,9 @@ public abstract class PanelSignAssembly extends PanelAssembly {
                     .filter(Objects::nonNull)
                     .forEach(similarTrack ->{
                         try {
-                            panelList.add(createSimilarTrackPanel (personalPhaseMeta, similarTrack));
+                            if(similarTrack.getTrackCount() >= SIMILAR_TRACK_DISP_STANDARD_COUNT){
+                                panelList.add(createSimilarTrackPanel (personalPhaseMeta, similarTrack));
+                            }
                         } catch (Exception e) {
                             log.error("appendSimilarTrackPanelList error : {}", e
                                     .getMessage());
@@ -188,7 +194,9 @@ public abstract class PanelSignAssembly extends PanelAssembly {
                     .filter(Objects::nonNull)
                     .forEach(preferGenreSimilarTrack ->{
                         try {
-                            panelList.add(createPreferGenreSimilarTrackPanel(personalPhaseMeta,preferGenreSimilarTrack));
+                            if(preferGenreSimilarTrack.getTrackCount() >= PREFER_GENRE_SIMILAR_TRACK_DISP_STANDARD_COUNT){
+                                panelList.add(createPreferGenreSimilarTrackPanel(personalPhaseMeta,preferGenreSimilarTrack));
+                            }
                         } catch (Exception e) {
                             log.error("appendPreferGenreSimilarTrackPanelList error : {}", e
                                     .getMessage());
@@ -201,11 +209,11 @@ public abstract class PanelSignAssembly extends PanelAssembly {
     }
 
 
-    private RecommendPanelType getPreferRecommendPanelType(String preferDispNm){
+    private RecommendPanelType getPreferRecommendPanelType(String preferPropsType ){
 
-        if(PreferDispType.TOP100.getCode().equals(preferDispNm)){
+        if(PreferPropsType.TOP100.getCode().equals(preferPropsType)){
             return RecommendPanelType.LIVE_CHART;
-        }else if(PreferDispType.KIDS.getCode().equals(preferDispNm)){
+        }else if(PreferPropsType.KIDS100.getCode().equals(preferPropsType)){
             return RecommendPanelType.KIDS_CHART;
         }
         return null;

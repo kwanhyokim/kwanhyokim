@@ -406,7 +406,9 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         List<ImageInfo> imgList = null;
 
         try{
+
             imgList = redisService.getListWithPrefix(RedisKeyConstant.RECOMMEND_PANEL_DEFAULT_IMGLIST_KEY,ImageInfo.class);
+            log.info("getRecommendPanelDefaultImageList imgList : {}",imgList);
         }catch(Exception e){
             log.error("getRecommendPanelDefaultImageList error : {}",e.getMessage());
         }finally {

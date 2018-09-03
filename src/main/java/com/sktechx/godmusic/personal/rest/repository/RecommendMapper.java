@@ -28,7 +28,9 @@ import java.util.List;
  */
 @BaseMapper
 public interface RecommendMapper {
-    List<PersonalPanel> selectPersonalRecommendPanelMeta(@Param("characterNo") Long characterNo);
+    List<PersonalPanel> selectPersonalRecommendPanelMeta(@Param("characterNo") Long characterNo ,
+                                                         @Param("similarTrackDispStandardCount") int similarTrackDispStandardCount,
+                                                         @Param("rcmmdCfTrackDispStandardCount") int rcmmdCfTrackDispStandardCount);
 
     // 2-A' 선호장르 유사곡 패널
     List<RecommendTrackDto> selectRecommendPreferGenreSimilarTrackListByIdList(@Param("recommendIdList") List<Long> recommendIdList ,

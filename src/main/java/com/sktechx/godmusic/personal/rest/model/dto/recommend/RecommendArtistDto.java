@@ -39,6 +39,8 @@ public class RecommendArtistDto {
     private Date createDtime;
     private Date updateDtime;
 
+    private int trackCount;
+
     private List<ArtistDto> artistList;
 
 }

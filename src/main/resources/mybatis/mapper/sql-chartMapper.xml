@@ -38,6 +38,7 @@
             chart_track_table.chart_disp_nm,
             chart_track_table.create_dtime,
             chart_track_table.update_dtime,
+            chart_track_table.track_nm,
             chart_track_table.disp_start_dtime,
             chart_track_table.img_size,
             chart_track_table.img_url,
@@ -67,6 +68,7 @@
                 b.disp_sn,
                 b.bf_disp_sn,
                 c.track_id,
+                c.track_nm,
                 c.album_id,
                 c.reprsnt_artist_id
             FROM
@@ -83,14 +85,14 @@
                   FROM
                         tb_chart a
                   LEFT OUTER JOIN tb_img_mang b ON a.chart_id = b.img_content_id
+                  AND b.img_content_type = 'CHART'
+                            AND b.dfk_type = 'EVERY'
+                            AND b.img_disp_type = 'DEFAULT'
+                            AND b.os_type = #{osType}
                   WHERE
                         a.svc_content_type = #{chartPanelType.svcContentType}
                             AND a.chart_type = #{chartPanelType.chartType}
                             AND a.music_content_type = #{chartPanelType.musicContentType}
-                            AND b.img_content_type = 'CHART'
-                            AND b.dfk_type = 'EVERY'
-                            AND b.img_disp_type = 'DEFAULT'
-                            AND b.os_type = #{osType}
                 ) chart_img_table
                 INNER JOIN
                   tb_chart_music_content b ON chart_img_table.chart_id = b.chart_id
