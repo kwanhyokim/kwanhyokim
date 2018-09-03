@@ -17,7 +17,7 @@
 
     <resultMap id="albumResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.AlbumDto" autoMapping="true">
         <id property="albumId" column="album_id"/>
-        <collection property="imgList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" column="album_id" autoMapping="true">
+        <collection property="imgList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" column="album_id">
             <result property="size" column="size" />
             <result property="url" column="url" />
         </collection>
