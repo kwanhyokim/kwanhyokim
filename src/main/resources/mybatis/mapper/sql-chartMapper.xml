@@ -17,8 +17,7 @@
 
     <resultMap type="com.sktechx.godmusic.personal.rest.model.dto.ChartDto" id="chartListResultMap" autoMapping="true">
         <id property="chartId" column="chart_id" />
-
-        <collection property="trackList" resultMap="com.sktechx.godmusic.personal.rest.repository.TrackMapper.trackResultMap" />
+        <collection property="trackList" resultMap="com.sktechx.godmusic.personal.rest.repository.TrackMapper.trackResultMap" column="chart_id" autoMapping="true" />
     </resultMap>
 
     <resultMap id="chartResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.ChartDto" autoMapping="true">
@@ -31,6 +30,7 @@
             <result property="url" column="img_url" />
         </collection>
     </resultMap>
+
     <select id="selectPreferDispChart" resultMap="chartResultMap">
         SELECT
             chart_track_table.chart_id,
@@ -107,179 +107,101 @@
         WHERE a.disp_status_yn = 'Y'
 
     </select>
-    <select id="selectKidsChart">
 
-
-    </select>
     <select id="selectChartListByDefaultGenre" resultMap="chartListResultMap">
         <![CDATA[
             SELECT
-              b.chart_id,
-              b.chart_nm,
+              c.chart_id,
+              c.chart_nm,
               d.track_id,
               f.album_id,
-              g.album_img_url as url,
-              g.album_img_size as size
-            FROM tb_svc_genre a
-              JOIN tb_chart b ON a.svc_genre_id = b.svc_content_id
-              JOIN tb_chart_music_content c ON b.chart_id = c.chart_id
+              g.album_img_url  AS url,
+              g.album_img_size AS size
+            FROM (
+                   SELECT
+                     b.chart_id,
+                     b.chart_nm,
+                     c.music_content_id
+                   FROM tb_svc_genre a
+                     JOIN tb_chart b ON a.svc_genre_id = b.svc_content_id
+                     JOIN tb_chart_music_content c ON b.chart_id = c.chart_id
+                   WHERE a.main_disp_std_yn = 'Y'
+                         AND b.chart_type IN ('HOURLY', 'NEW')
+                         AND b.svc_content_type = 'GENRE'
+                         AND b.music_content_type = 'TRACK'
+                         AND c.disp_sn = 1
+                   /*AND b.disp_start_dtime <= now()*/
+                   /*AND b.disp_end_dtime >= now()*/
+                   ORDER BY a.main_disp_sn, b.update_dtime DESC
+                   LIMIT 12
+                 ) c
               JOIN tb_track d ON c.music_content_id = d.track_id
               JOIN ted_track e ON d.track_id = e.track_id
               JOIN ted_album f ON e.album_id = f.album_id
               JOIN tb_album_img g ON f.album_id = g.album_id
-            WHERE a.main_disp_std_yn = 'Y'
-                  AND b.chart_type IN ('DAILY', 'NEW')
-                  AND b.svc_content_type = 'GENRE'
-                  AND b.music_content_type = 'TRACK'
-                  AND c.disp_sn = 1
-            ORDER BY a.main_disp_sn
-            LIMIT 12
         ]]>
     </select>
 
     <select id="selectChartListByPreferGenre" resultMap="chartListResultMap">
+        <![CDATA[
             SELECT
-              bb.chart_id,
-              bb.chart_nm,
-              dd.track_id,
-              ff.album_id,
-              gg.album_img_url as url,
-              gg.album_img_size as size
+              c.chart_id,
+              c.chart_nm,
+              d.track_id,
+              f.album_id,
+              g.album_img_url  AS url,
+              g.album_img_size AS size
             FROM (
-                   SELECT /* 1. 선호 장르에 매핑된 서비스 장르가 1개: 장르 기준 제공 */
-                     10 ord,
-                     b.update_dtime,
-                     d.svc_genre_id
-                   FROM TB_CHARACTER a
-                     JOIN tb_character_prefer_genre b ON a.character_no = b.character_no
-                     JOIN TB_PREFER_GENRE C ON B.PREFER_GENRE_ID = C.PREFER_GENRE_ID
-                     JOIN (SELECT
-                             prefer_genre_id,
-                             svc_genre_id,
-                             disp_sn,
-                             count(*) AS svc_genre_cnt
-                           FROM tb_map_prefer_genre_svc_genre
-                           GROUP BY prefer_genre_id
-                          ) d ON c.prefer_genre_id = d.prefer_genre_id
-                   WHERE a.character_no = #{characterNo}
-                         AND d.svc_genre_cnt = 1
-                   UNION
-                   SELECT /* 2-1. 선호 장르에 매핑된 서비스 장르가 N개 이고 아티스트 미선택: 서비스 장르의 3뎁스 동일명 디폴트 설정:사용 장르 기준 제공 */
-                     21 ord,
-                     b.update_dtime,
-                     f.svc_genre_id
-                   FROM tb_character a
-                     JOIN tb_character_prefer_genre b ON a.character_no = b.character_no
-                     JOIN tb_prefer_genre c ON b.prefer_genre_id = c.prefer_genre_id
-                     JOIN (SELECT
-                             prefer_genre_id,
-                             svc_genre_id,
-                             disp_sn,
-                             count(*) AS svc_genre_cnt
-                           FROM tb_map_prefer_genre_svc_genre
-                           GROUP BY prefer_genre_id
-                          ) d ON c.prefer_genre_id = d.prefer_genre_id
-                     LEFT JOIN (SELECT
-                                  prefer_genre_id,
-                                  count(*) AS prefer_genre_cnt
-                                FROM tb_prefer_genre_artist
-                                GROUP BY prefer_genre_id
-                               ) e ON c.prefer_genre_id = e.prefer_genre_cnt
-                     JOIN tb_svc_genre f ON d.svc_genre_id = f.svc_genre_id
-                   WHERE a.character_no = #{characterNo}
-                         AND d.svc_genre_cnt > 1
-                         AND f.browser_disp_std_yn = 'Y' #3뎁스 동일명 디폴트 설정:사용 으로 변경
-                         AND e.prefer_genre_id IS NULL
-                   UNION
-                   SELECT /* 2-2. 선호 장르에 매핑된 서비스 장르가 N개 이고 아티스트 선택: 선호 아티스트 국가와 장르의 최상위 장르(1레벨) 구분으로 매핑된 장르 기준 제공 */
-                     22 ord,
-                     c.update_dtime,
-                     e.svc_genre_id
-                   FROM tb_character a
-                     JOIN tb_character_prefer_genre b ON a.character_no = b.character_no
-                     JOIN tb_prefer_genre_artist C ON b.prefer_genre_id = c.prefer_genre_id
-                     JOIN (SELECT
-                             prefer_genre_id,
-                             svc_genre_id,
-                             disp_sn,
-                             count(*) AS svc_genre_cnt
-                           FROM tb_map_prefer_genre_svc_genre
-                           GROUP BY prefer_genre_id
-                          ) d ON c.prefer_genre_id = d.prefer_genre_id
-                     JOIN (
-                            SELECT
-                              x.svc_genre_id,
-                              x.parents_svc_genre_id,
-                              x.svc_genre_nm,
-                              x.level,
-                              CASE (
-                                CASE level
-                                WHEN 1
-                                  THEN svc_genre_id
-                                WHEN 2
-                                  THEN parents_svc_genre_id
-                                WHEN 3
-                                  THEN (SELECT parents_svc_genre_id
-                                        FROM tb_svc_genre
-                                        WHERE svc_genre_id = x.parents_svc_genre_id)
-                                END
-                              )
-                              WHEN 1
-                                THEN 'KOR'
-                              WHEN 2
-                                THEN 'KOR'
-                              ELSE 'FOR'
-                              END AS root_svc_genre
-                            FROM tb_svc_genre X
-                          ) e ON d.svc_genre_id = e.svc_genre_id
-                     JOIN (
-                            SELECT
-                              b.character_no,
-                              b.genre_id as prefer_genre_id,
-                              b.artist_id AS prefer_artist_id,
-                              CASE C.nation_cd
-                              WHEN 'KOR'
-                                THEN 1
-                              ELSE 'FOR'
-                              END         AS artist_nation
-                            FROM tb_character A
-                              JOIN tb_character_prefer_artist b ON a.character_no = b.character_no
-                              JOIN ted_artist c ON b.artist_id = c.artist_id
-                            WHERE a.character_no = #{characterNo}
-                          ) f ON d.prefer_genre_id = f.prefer_genre_id and e.root_svc_genre = f.artist_nation
-                   WHERE a.character_no = #{characterNo}
-                         AND d.svc_genre_cnt > 1
-                 ) aa
-              JOIN tb_chart bb ON aa.svc_genre_id = bb.svc_content_id
-              JOIN tb_chart_music_content cc ON bb.chart_id = cc.chart_id
-              JOIN tb_track dd ON cc.music_content_id = dd.track_id
-              JOIN ted_track ee ON dd.track_id = ee.track_id
-              JOIN ted_album ff ON ee.album_id = ff.album_id
-              JOIN tb_album_img gg ON ff.album_id = gg.album_id
-            WHERE bb.chart_type IN ('DAILY', 'NEW')
-                  AND bb.svc_content_type = 'GENRE'
-                  AND bb.music_content_type = 'TRACK'
-                  AND cc.disp_sn = 1
-            ORDER BY aa.ord ASC, aa.update_dtime DESC
-            LIMIT 12
-    </select>
-
-    <select id="selectChartMusicContentList" resultMap="chartListResultMap">
-    <![CDATA[
-        SELECT
-          a.chart_id,
-          a.chart_nm,
-          c.track_id,
-          c.track_nm,
-          b.disp_sn as trackSn,
-          b.bf_disp_sn trackBfSn
-        FROM tb_chart a
-          JOIN tb_chart_music_content b ON a.chart_id = b.chart_id
-          JOIN tb_track c ON b.music_content_id = c.track_id
-        WHERE a.chart_id = #{chartId}
-              AND c.disp_status_yn = 'Y'
-        ORDER BY b.disp_sn
-    ]]>
+                   SELECT
+                     a.chart_id,
+                     a.chart_nm,
+                     a.music_content_id
+                   FROM (
+                          SELECT
+                            e.chart_id,
+                            e.chart_nm,
+                            f.music_content_id,
+                            1 ord,
+                            a.update_dtime
+                          FROM tb_character_prefer_genre a
+                            JOIN tb_prefer_genre b ON a.prefer_genre_id = b.prefer_genre_id
+                            JOIN tb_map_prefer_genre_svc_genre c ON b.prefer_genre_id = c.prefer_genre_id
+                            JOIN tb_svc_genre d ON c.prefer_genre_id = d.svc_genre_id
+                            JOIN tb_chart e ON d.svc_genre_id = e.svc_content_id
+                            JOIN tb_chart_music_content f ON e.chart_id = f.chart_id
+                          WHERE a.character_no = #{characterNo}
+                                AND b.use_yn = 'Y'
+                                AND e.chart_type IN ('HOURLY', 'NEW')
+                                AND e.svc_content_type = 'GENRE'
+                                AND e.music_content_type = 'TRACK'
+                                AND f.disp_sn = 1
+                          /*AND f.disp_start_dtime <= now()*/
+                          /*AND f.disp_end_dtime >= now()*/
+                          UNION ALL
+                          SELECT
+                            c.chart_id,
+                            c.chart_nm,
+                            d.music_content_id,
+                            2 ord,
+                            a.update_dtime
+                          FROM tb_character_prefer_disp a
+                            JOIN tb_prefer_disp b ON a.prefer_disp_id = b.prefer_disp_id
+                            JOIN tb_chart c ON b.disp_id = c.chart_id
+                            JOIN tb_chart_music_content d ON c.chart_id = d.chart_id
+                          WHERE a.character_no = #{characterNo}
+                                AND b.use_yn = 'Y'
+                                /*AND c.disp_start_dtime <= now()*/
+                                /*AND c.disp_end_dtime >= now()*/
+                                AND d.disp_sn = 1
+                        ) a
+                   ORDER BY ord, update_dtime DESC
+                   LIMIT 12
+                 ) c
+              JOIN tb_track d ON c.music_content_id = d.track_id
+              JOIN ted_track e ON d.track_id = e.track_id
+              JOIN ted_album f ON e.album_id = f.album_id
+              JOIN tb_album_img g ON f.album_id = g.album_id
+        ]]>
     </select>
 
 </mapper>

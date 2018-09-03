@@ -19,7 +19,7 @@
     <resultMap id="artistResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" autoMapping="true">
         <id property="artistId" column="artist_id"/>
         <result property="artistName" column="artist_nm"/>
-        <collection property="imgList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" column="artistId" autoMapping="true">
+        <collection property="imgList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" column="artist_id" autoMapping="true">
             <result property="size" column="size" />
             <result property="url" column="url" />
         </collection>
@@ -57,11 +57,12 @@
                       FROM (
                              SELECT artist_id
                              FROM tb_character_prefer_artist
-                             WHERE character_no = IFNULL(#{characterNo}, 12)
+                             WHERE character_no = #{characterNo}
                              UNION
-                             SELECT artist_id
-                             FROM tb_map_artist_like
-                             WHERE member_no = IFNULL(#{characterNo}, 1)  # TODO: character_no 로 변경
+                             SELECT like_type_id as artist_id
+                             FROM tb_character_like
+                             WHERE character_no = #{characterNo}
+                             AND like_type = 'ARTIST'
                            ) x
                       ORDER BY RAND()
                     ) a
@@ -70,10 +71,9 @@
                  JOIN tb_track d ON c.track_id = d.track_id AND d.disp_status_yn = 'Y' AND d.track_popularity > 0
                GROUP BY a.artist_id, b.artist_nm
                HAVING COUNT(1) >= 5
+               LIMIT 12
              ) t1
           JOIN ted_artistimage t2 ON t1.artist_id = t2.artist_id
-          GROUP BY t1.artist_id, t1.artist_nm, t2.url, t2.size
-          LIMIT 12
         ]]>
     </select>
 </mapper>

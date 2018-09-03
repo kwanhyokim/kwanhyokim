@@ -12,7 +12,6 @@
 
 package com.sktechx.godmusic.personal.rest.service;
 
-import com.sktechx.godmusic.personal.rest.model.vo.preference.Chart;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.ChartResponse;
 
 /**
@@ -28,13 +27,6 @@ public interface PreferenceService {
      * @return
      */
     ChartResponse getPreferenceGenreList(Long characterNo);
-
-    /**
-     * 선호장르별 상세(차트내 트랙 목록)
-     * @param chartId
-     * @return
-     */
-    Chart getPreferenceGenre(Long chartId);
 
     /**
      * 선호아티스트 목록 조회

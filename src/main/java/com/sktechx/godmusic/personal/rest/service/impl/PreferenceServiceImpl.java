@@ -71,26 +71,6 @@ public class PreferenceServiceImpl implements PreferenceService {
     }
 
     @Override
-    public Chart getPreferenceGenre(Long chartId) {
-        ChartDto chartDto = chartMapper.selectChartMusicContentList(chartId);
-
-        return Chart.builder()
-                .chartId(chartDto.getChartId())
-                .chartNm(chartDto.getChartNm())
-                .chartMusicContentList(
-                        chartDto.getTrackList()
-                                .stream()
-                                .map(trackDto -> Chart.ChartMusicContent.builder()
-                                        .trackId(trackDto.getTrackId())
-                                        .trackNm(trackDto.getTrackNm())
-                                        .trackSn(trackDto.getTrackSn())
-                                        .trackBfSn(trackDto.getTrackBfSn())
-                                        .build())
-                                .collect(Collectors.toList()))
-                .build();
-    }
-
-    @Override
     public ChartResponse getPreferenceArtistList(Long characterNo) {
         List<ArtistDto> artistDtoList = artistMapper.selectArtistListByPreferArtist(characterNo);
 
