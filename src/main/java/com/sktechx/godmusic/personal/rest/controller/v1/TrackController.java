@@ -56,7 +56,6 @@ public class TrackController {
     public CommonApiResponse<ListResponse> recentListenedTrackList(
             @ApiIgnore @RequestGMContext GMContext ctx,
             @ApiIgnore @PageableDefault(size=300, page=0) Pageable pageable) {
-        //        long characterNo = 1234567;
         return new CommonApiResponse<>(new ListResponse(trackService.getMyRecentTrackList(ctx.getCharacterNo(), pageable)));
     }
 }

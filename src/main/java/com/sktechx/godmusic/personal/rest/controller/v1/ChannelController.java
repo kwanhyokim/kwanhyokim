@@ -48,7 +48,6 @@ public class ChannelController {
     public CommonApiResponse<ListResponse> getLastListenHistory(
             @ApiIgnore @RequestGMContext GMContext ctx, @PageableDefault(size=100, page=0) Pageable pageable){
 
-//        long characterNo = 1000284;
         DayType dayType = DayType.findDayOfWeek(LocalDate.now().getDayOfWeek());
 
         List<LastListenHistoryDto> lastListenHistory = channelService.getLastListenHistory(ctx.getCharacterNo(), dayType, ctx.getOsType());
