@@ -10,33 +10,53 @@
   -->
 
 <configuration>
-	<!-- SERVICE LOG APPENDER -->   
-	<appender name="SERVICE_API_ROLLINGFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${catalina.home}/logs/service/api.${instance.id}.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- daily rollover -->
-            <fileNamePattern>${catalina.home}/logs/service/api.${instance.id}.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <!-- keep x days' worth of history -->
-            <maxHistory>30</maxHistory>
-        </rollingPolicy>
+
+    <!--<include resource="org/springframework/boot/logging/logback/defaults.xml"/>-->
+    ​
+    <!--<springProperty scope="context" name="springAppName" source="spring.application.name"/>-->
+
+    <property name="LOG_FILE" value="${catalina.home}/logs/service/api.${instance.id}.log"/>​
+    <property name="LOG_PATTERN"
+              value="%X{hostName} | %d{${datestamp}} | ${LOG_LEVEL_PATTERN:-%5p} | %X{transactionId} | %X{resCode} | %X{memberNo} | %X{characterNo} | %msg%n"/>
+
+    <!-- Appender to log to console -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <charset>UTF-8</charset>
-            <!--<pattern>%d %5p [%15X{transactionId}] : %msg%n</pattern>-->
-            <pattern>%X{hostName} | %d{${datestamp}} | %-5level | %X{transactionId} | %X{resCode} | %X{memberNo} | %X{characterNo} | %msg%n</pattern>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
         </encoder>
     </appender>
 
-    <logger name="io.swagger.models.parameters.AbstractSerializableParameter" level="ERROR" />
+    <!-- Appender to log to file -->​
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${catalina.home}/logs/service/api.${instance.id}.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
 
-    <root>
-        <level value="INFO" />
-        <appender-ref ref="SERVICE_API_ROLLINGFILE" />
+    <logger name="org.springframework" level="info" />
+    <logger name="org.springframework.jdbc" level="info" />
+
+    <logger name="java.sql" level="off" />
+    <logger name="com.spring.ibatis" level="off" />
+    <logger name="org.apache.ibatis" level="off" />
+    <logger name="org.mybatis.spring" level="off" />
+    <logger name="com.netflix.discovery" level="off" />
+
+    <logger name="springfox.documentation" level="off" />
+    <logger name="io.swagger.models.parameters.AbstractSerializableParameter" level="error" />
+
+    <logger name="com.sktechx" level="info" />
+
+    <root level="info">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
     </root>
-    
-    <logger name="org.springframework" level="INFO" additivity="false">
-        <appender-ref ref="SERVICE_API_ROLLINGFILE" />
-    </logger>
-    <logger name="com.sktechx" level="INFO" additivity="false">
-        <appender-ref ref="SERVICE_API_ROLLINGFILE" />
-    </logger>
+
 </configuration>
