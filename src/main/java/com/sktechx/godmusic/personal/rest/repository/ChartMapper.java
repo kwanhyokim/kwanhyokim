@@ -14,9 +14,9 @@ package com.sktechx.godmusic.personal.rest.repository;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
-import com.sktechx.godmusic.personal.common.domain.type.ChartType;
+import com.sktechx.godmusic.lib.redis.annotation.RedisCacheable;
+import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendChartPanelType;
-import com.sktechx.godmusic.personal.common.domain.type.SvcContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import org.apache.ibatis.annotations.Param;
 
@@ -39,7 +39,9 @@ public interface ChartMapper {
                                    @Param("osType") OsType osType ,
                                    @Param("trackLimitSize") int trackLimitSize);
 
+    @RedisCacheable(key = RedisKeyConstant.PERSONAL_PREFERENCE_GENRE_DEFAULT_KEY, expireSeconds = 60)
     List<ChartDto> selectChartListByDefaultGenre();
+
     List<ChartDto> selectChartListByPreferGenre(@Param("characterNo") Long characterNo);
-    ChartDto selectChartMusicContentList(@Param("chartId") Long chartId);
+
 }

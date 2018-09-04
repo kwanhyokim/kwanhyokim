@@ -26,4 +26,7 @@ public class RedisKeyConstant {
 	public static final String REALTIME_CHART_KEY = "godmusic.personalapi.recommend.chart.realtime";
 	public static final String KIDS_CHART_KEY = "godmusic.personalapi.recommend.chart.kids";
 
+	//선호
+	public static final String PERSONAL_PREFERENCE_GENRE_DEFAULT_KEY = "godmusic.personalapi.preference.genre.default";
+
 }
