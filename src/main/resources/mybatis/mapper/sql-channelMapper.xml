@@ -365,6 +365,7 @@
                          img_url AS url
                     FROM tb_rcmmd_img_mang
                    WHERE rcmmd_type_id = 'RC_SML_TR'
+                     AND img_disp_type = 'RCT_DTL'
                      AND dfk_type = #{dayType}
                      AND os_type = #{osType}
                    LIMIT 1 ) c
@@ -393,6 +394,7 @@
                           img_url AS url
                      FROM tb_rcmmd_img_mang
                     WHERE rcmmd_type_id = 'RC_GR_TR'
+                      AND img_disp_type = 'RCT_DTL'
                       AND dfk_type = #{dayType}
                       AND os_type = #{osType}
                     LIMIT 1 ) c
@@ -406,8 +408,8 @@
                  'Musician Focus' AS content_title,
                  ( SELECT COUNT(*) FROM tb_rcmmd_artist_list WHERE rcmmd_artist_id = b.rcmmd_artist_id) AS track_count,
                  a.last_listen_dtime,
-                 c.size,
-                 c.url
+                 e.size,
+                 e.url
             FROM ( SELECT *
                      FROM tb_member_last_listen_hist
                     WHERE character_no = #{characterNo}
@@ -417,14 +419,12 @@
               ON a.listen_type_id = b.rcmmd_artist_id
              AND a.character_no = b.character_no
              AND a.listen_type = 'RC_ATST_TR'
-            JOIN ( SELECT img_size AS size,
-                          img_url AS url
-                     FROM tb_rcmmd_img_mang
-                    WHERE rcmmd_type_id = 'RC_ATST_TR'
-                      AND dfk_type = #{dayType}
-                      AND os_type = #{osType}
-                    LIMIT 1 ) c
-            ON 1=1 )
+            JOIN tb_rcmmd_artist_list c
+              ON b.rcmmd_artist_id = c.artist_id
+            JOIN ted_artist d
+              ON c.artist_id = d.artist_id
+            LEFT JOIN ted_artistimage e
+              ON d.artist_id = e.artist_id )
 
            UNION ALL
 
@@ -449,6 +449,7 @@
                           img_url AS url
                      FROM tb_rcmmd_img_mang
                     WHERE rcmmd_type_id = 'RC_CF_TR'
+                      AND img_disp_type = 'RCT_DTL'
                       AND dfk_type = #{dayType}
                       AND os_type = #{osType}
                     LIMIT 1 ) c
