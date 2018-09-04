@@ -23,6 +23,8 @@ eureka.instance:
   non-secure-port: ${server.port}
   prefer-ip-address: true
 
+gm.lib.filter.logger.request : true
+
 ---
 spring.profiles: local
 spring.cloud.config.uri: http://172.21.112.94:8888
