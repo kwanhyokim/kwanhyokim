@@ -51,7 +51,7 @@ public class LikeController {
 		Validator.loginValidate(currentContext);
 
 		return new CommonApiResponse(likeService.getPlayListLikeListByLikeType(currentContext.getCharacterNo(), pageable));
-//		return new CommonApiResponse(likeService.getPlayListLikeListByLikeType(new Long(12), pageable));
+//		return new CommonApiResponse(likeService.getPlayListLikeListByLikeType(new Long(2100798), pageable));
 	}
 
 	@ApiOperation(value = "좋아요 앨범 목록 by Kobe ( 기존 /v2/my/album/like/list GET )", response = LikeAlbumListResponse.class)
@@ -68,7 +68,7 @@ public class LikeController {
 		Validator.loginValidate(currentContext);
 
 		return new CommonApiResponse(likeService.getAlbumLikeListByLikeType(currentContext.getCharacterNo(), pageable));
-//		return new CommonApiResponse(likeService.getAlbumLikeListByLikeType(new Long(73), pageable));
+//		return new CommonApiResponse(likeService.getAlbumLikeListByLikeType(new Long(2100798), pageable));
 	}
 
 	@ApiOperation(value = "좋아요 아티스트 목록 by Kobe ( 기존 /v2/my/artist/like/list GET )", response = LikeArtistListResponse.class)
@@ -85,7 +85,7 @@ public class LikeController {
 		Validator.loginValidate(currentContext);
 
 		return new CommonApiResponse(likeService.getArtistLikeListByLikeType(currentContext.getCharacterNo(), pageable));
-//		return new CommonApiResponse(likeService.getArtistLikeListByLikeType(new Long(12), pageable));
+//		return new CommonApiResponse(likeService.getArtistLikeListByLikeType(new Long(2100798), pageable));
 	}
 
 	@ApiOperation(value = "좋아요 트랙별 목록 by Kobe ( 기존 /v2/my/track/like/list GET )", response = LikeTrackListResponse.class)
@@ -102,7 +102,7 @@ public class LikeController {
 		Validator.loginValidate(currentContext);
 
 		return new CommonApiResponse(likeService.getTrackLikeListByLikeType(currentContext.getCharacterNo(), pageable));
-//		return new CommonApiResponse(likeService.getTrackLikeListByLikeType(new Long(12), pageable));
+//		return new CommonApiResponse(likeService.getTrackLikeListByLikeType(new Long(2100798), pageable));
 	}
 
 	@ApiOperation(value = "좋아요 여부 확인 by Kobe")

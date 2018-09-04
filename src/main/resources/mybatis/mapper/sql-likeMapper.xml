@@ -242,12 +242,12 @@
                      , CL.MUSIC_CONTENT_CNT                                          AS trackCount
                      , CL.CREATE_DTIME                                               AS createDateTime
                      , CL.UPDATE_DTIME                                               AS updateDateTime
-                     , ''                                                            AS registDateTime
+                     , null                                                          AS registDateTime
                      , ''                                                            AS playTime
                      , CL.LIKE_TYPE                                                  AS playListType
                      , CL.DISP_SN                                                    AS dispSn
                      , CL.UPDATE_DTIME                                               AS likeUpdateDtime
-                     , ''                                                            AS renewDateTime
+                     , null                                                          AS renewDateTime
                      , ''                                                            AS renewTrackCnt
                  FROM
                      (
