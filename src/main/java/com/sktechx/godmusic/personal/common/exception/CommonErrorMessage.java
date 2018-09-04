@@ -49,7 +49,7 @@ public enum CommonErrorMessage implements ErrorDomain {
 	, CHART_NOT_FOUND(4040302, HttpStatus.BAD_REQUEST, "존재 하지 않은 차트 정보 입니다.", "차트 정보 없음")
 	, ALBUM_NOT_FOUND(4040303,HttpStatus.NOT_FOUND ,"존재 하지 않은 앨범 정보 입니다.","앨범 정보 없음"  )
 	, ARTIST_NOT_FOUND(4040304,HttpStatus.NOT_FOUND ,"존재 하지 않은 아티스트 정보 입니다.","아티스트 정보 없음"  )
-	, TRACK_NOT_FOUND(4040305,HttpStatus.NOT_FOUND ,"존재 하지 않은 아티스트 정보 입니다.","아티스트 정보 없음"  )
+	, TRACK_NOT_FOUND(4040305,HttpStatus.NOT_FOUND ,"존재 하지 않은 곡 정보 입니다.","곡 정보 없음"  )
 
 	, USER_PSSRL_NOT_FOUND(4040402, HttpStatus.NOT_FOUND, "회원의 PSSRL이 존재하지 않아 정산 요청을 할 수 없습니다.", "회원 PSSRL 코드 없음")
 
