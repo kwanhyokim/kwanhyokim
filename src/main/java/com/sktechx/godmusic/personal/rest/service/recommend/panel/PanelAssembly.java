@@ -10,14 +10,13 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend.panel;
 
-import com.netflix.discovery.converters.Auto;
 import com.sktechx.godmusic.lib.domain.code.OsType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.PopularChannelPanel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.chart.ChartPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.repository.ChannelMapper;
 import com.sktechx.godmusic.personal.rest.repository.CharacterPreferGenreMapper;
@@ -31,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.POPULAR_CHNL_TRACK_LIMIT_SIZE;
 
@@ -79,7 +79,8 @@ public abstract class PanelAssembly {
             }
         });
 
-        //TODO : 선호장르 및 선호노출중 KIDS만 선택했을 경우 KIDS차트의 경우 가장 처음으로 이동
+        pullForwardKidsChartPanel(panelList);
+
     }
 
 
@@ -115,5 +116,27 @@ public abstract class PanelAssembly {
                 getDefaultBgImageList( channel.getImgList(),personalPhaseMeta.getOsType() )
         );
     }
+
+    private void pullForwardKidsChartPanel(final List<Panel> panelList ){
+        if(!CollectionUtils.isEmpty(panelList) && panelList.size() > 1){
+
+            List<Panel> chartPanelList = panelList.stream().filter(panel -> {
+                if(panel instanceof ChartPanel) {
+                    return true;
+                }
+                return false;
+            }).collect(Collectors.toList());
+
+            if(!CollectionUtils.isEmpty(chartPanelList) && chartPanelList.size() == 1 ){
+                Panel chartPanel = chartPanelList.get(0);
+                if(RecommendPanelType.KIDS_CHART.equals(chartPanel.getType())){
+                    if(panelList.removeIf(panel -> panel.equals(chartPanel))){
+                        panelList.add(0,chartPanel);
+                    }
+                }
+            }
+        }
+    }
+
 
 }

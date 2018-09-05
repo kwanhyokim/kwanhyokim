@@ -72,16 +72,21 @@ public class ChartPanel extends Panel {
 
     private String getBasedOnUpdate(ChartDto chart , RecommendPanelType panelType){
         if(chart != null){
-            if(RecommendPanelType.KIDS_CHART.equals(panelType)){
-                return getChartUpdateDateBetween(chart.getDispStartDtime());
-            }else if(RecommendPanelType.LIVE_CHART.equals(panelType)){
-                return getChartUpdateHourly(chart.getUpdateDtime());
-            }
+//            if(RecommendPanelType.KIDS_CHART.equals(panelType)){
+//                return getChartUpdateDateBetween(chart.getDispStartDtime());
+//            }else if(RecommendPanelType.LIVE_CHART.equals(panelType)){
+//                return getChartUpdateHourly(chart.getUpdateDtime());
+//            }
+            return getChartUpdateHourly(chart.getUpdateDtime());
         }
         return null;
     }
     private String getChartUpdateHourly(Date updateDateTime){
-        return DateUtil.dateToString(updateDateTime, "HH")+CHART_PANEL_HOURLY_BASIS_PHRASES;
+        if(updateDateTime != null){
+
+            return DateUtil.dateToString(updateDateTime, "HH")+CHART_PANEL_HOURLY_BASIS_PHRASES;
+        }
+        return "";
     }
 
     private String getChartUpdateDateBetween(Date dispStartDtime) {
