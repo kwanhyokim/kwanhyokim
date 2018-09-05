@@ -251,7 +251,7 @@
                    FROM tb_member_track_listen_hist
                   WHERE character_no = #{characterNo}
                   ORDER BY last_listen_dtime DESC
-                  LIMIT #{pageable.offset}, #{pageable.pageSize} ) a
+                  LIMIT 500 ) a
           JOIN tb_track b
             ON a.track_id = b.track_id
           LEFT JOIN	tb_album_img c
