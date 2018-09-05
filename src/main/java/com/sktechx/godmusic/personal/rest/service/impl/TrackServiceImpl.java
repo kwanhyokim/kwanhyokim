@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl;
 
+import com.google.common.primitives.Ints;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
 import com.sktechx.godmusic.personal.rest.model.dto.MostListenedTrackDto;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.NumberUtils;
 
 import java.util.List;
 
@@ -54,8 +56,14 @@ public class TrackServiceImpl implements TrackService {
             throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
         }
 
-        long totalCount = trackMapper.selectMyRecentTrackTotalCount(characterNo);
+        int start = pageable.getPageNumber() * pageable.getPageSize();
+        int end = (pageable.getPageNumber() + 1) * pageable.getPageSize();
 
-        return new PageImpl<>(recentListenedTrackList, pageable, totalCount);
+        long totalCount = trackMapper.selectMyRecentTrackTotalCount(characterNo);
+        if(totalCount > 500) totalCount = 500;
+        if(end > 500) end = 500;
+        if(end > totalCount) end = Ints.checkedCast(totalCount);
+
+        return new PageImpl<>(recentListenedTrackList.subList(start, end), pageable, totalCount);
     }
 }
