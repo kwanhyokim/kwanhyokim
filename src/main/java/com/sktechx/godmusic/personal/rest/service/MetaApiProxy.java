@@ -12,11 +12,17 @@
 
 package com.sktechx.godmusic.personal.rest.service;
 
-import com.sktechx.godmusic.lib.domain.CommonApiResponse;
-import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
+import java.util.List;
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.sktechx.godmusic.lib.domain.CommonApiResponse;
+import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
 
 /**
  * 설명 :
@@ -29,4 +35,10 @@ public interface MetaApiProxy {
 
     @GetMapping("/meta/v1/artist/{artistId}")
     public CommonApiResponse<ArtistDto> artists(@PathVariable("artistId") Long artistId);
+
+
+    @GetMapping("/meta/v1/track/list")
+    public CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>> recommendPanelTracks(@RequestParam(value="trackIdList") Long[] trackIdList);
+
+
 }

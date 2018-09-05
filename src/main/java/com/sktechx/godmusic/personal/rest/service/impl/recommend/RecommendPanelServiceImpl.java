@@ -44,6 +44,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase
 import com.sktechx.godmusic.personal.rest.repository.*;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import com.sktechx.godmusic.personal.rest.service.ChartService;
+import com.sktechx.godmusic.personal.rest.service.MetaApiProxy;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
@@ -111,6 +112,9 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
     @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private MetaApiProxy metaApiProxy;
 
     @Override
     public List<Panel> createRecommendPanelList(Long characterNo , OsType osType) {
@@ -433,18 +437,23 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         if(CollectionUtils.isEmpty(trackIdList)){
             return null;
         }
-        URI uri = UriComponentsBuilder.newInstance().scheme("http").host("meta-api")
-                .path("meta/v1/track/list")
-                .queryParam("trackIdList", trackIdList.toArray(new Long[0]))
-                .build().encode().toUri();
 
-
-        CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>> response = restTemplate.exchange(
-                uri,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>>>() {}).getBody();
-
+//        URI uri = UriComponentsBuilder.newInstance().scheme("http").host("meta-api")
+//                .path("meta/v1/track/list")
+//                .queryParam("trackIdList", trackIdList.toArray(new Long[0]))
+//                .build().encode().toUri();
+//
+//
+//        CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>> response = restTemplate.exchange(
+//                uri,
+//                HttpMethod.GET,
+//                null,
+//                new ParameterizedTypeReference<CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>>>() {}).getBody();
+//
+//
+        // feign 으로 변경
+        // edited by Bob 2018.09.05
+        CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>> response = metaApiProxy.recommendPanelTracks(trackIdList.toArray(new Long[0]));
 
         return response.getData();
 
