@@ -16,13 +16,7 @@ import java.util.List;
  */
 @Data
 public class LikeTypeIdListRequest {
-	@Length(max = 10)
 	@NotNull
-	@ApiModelProperty(name = "likeType", value = "좋아하는 타입(CHNL: 채널, ALBUM: 앨범, CHART: 차트, ARTIST: 아티스트, TRACK: 곡)",
-			allowableValues = "CHNL, ALBUM, CHART, ARTIST, TRACK")
-	private String likeType;
-
-	@NotNull
-	@ApiModelProperty(name = "likeTypeIdList", value = "좋아하는 타입 아이디 리스트")
-	private List<Long> likeTypeIdList;
+	@ApiModelProperty(name = "likeTypeList", value = "좋아하는 타입별 아이디(CHNL: 채널, ALBUM: 앨범, CHART: 차트, ARTIST: 아티스트, TRACK: 곡)")
+	private List<LikeTypeVo> likeTypeList;
 }

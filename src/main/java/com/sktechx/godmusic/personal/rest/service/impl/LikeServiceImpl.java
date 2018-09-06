@@ -158,13 +158,13 @@ public class LikeServiceImpl implements LikeService {
 		Map<String, Object> batchParam = new HashMap<>();
 
 		try(SqlSession sqlSession = sqlSessionTemplate.getSqlSessionFactory().openSession(ExecutorType.BATCH, false)){
-			IntStream.range(0, request.getLikeTypeIdList().size())
+			IntStream.range(0, request.getLikeTypeList().size())
 					.forEach(index ->
 							{
 								batchParam.clear();
 								batchParam.put("dispSn", index+1);
-								batchParam.put("likeType", request.getLikeType());
-								batchParam.put("likeTypeId", request.getLikeTypeIdList().get(index));
+								batchParam.put("likeType", request.getLikeTypeList().get(index).getLikeType());
+								batchParam.put("likeTypeId", request.getLikeTypeList().get(index).getLikeTypeId());
 								batchParam.put("characterNo", characterNo);
 								sqlSession.update("updateLikeListByLikeTypeId", batchParam);
 							}
