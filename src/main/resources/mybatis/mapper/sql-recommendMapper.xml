@@ -638,7 +638,6 @@
         SELECT
             ARTIST_ID
             , SIMILAR_ARTIST_ID
-            , DISP_SN
         FROM TB_SIMILAR_ARTIST
         WHERE ARTIST_ID IN
             <foreach item="artistId" index="index" collection="artistIdList" open="(" separator="," close=")">
@@ -654,7 +653,6 @@
         SELECT
             A.ARTIST_ID
             , A.SIMILAR_ARTIST_ID
-            , A.DISP_SN
         FROM TB_SIMILAR_ARTIST A INNER JOIN (
                                                 SELECT
                                                     ARTIST_ID
