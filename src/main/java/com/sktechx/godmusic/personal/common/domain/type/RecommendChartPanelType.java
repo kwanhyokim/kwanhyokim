@@ -10,8 +10,8 @@
 
 package com.sktechx.godmusic.personal.common.domain.type;
 
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnumTypeHandler;
+import com.sktechx.godmusic.personal.common.domain.PreferPropsType;
 import org.apache.ibatis.type.MappedTypes;
 
 /**
@@ -21,19 +21,19 @@ import org.apache.ibatis.type.MappedTypes;
  * @date 2018. 08. 23.
  */
 public enum RecommendChartPanelType {
-    TOP100(SvcContentType.ALL, ChartType.HOURLY , MusicContentType.TRACK , 0),
-    KIDS(SvcContentType.KIDS, ChartType.DAILY , MusicContentType.TRACK , 0);
+    TOP100(SvcContentType.ALL, ChartType.HOURLY , MusicContentType.TRACK , PreferPropsType.TOP100),
+    KIDS(SvcContentType.KIDS, ChartType.DAILY , MusicContentType.TRACK , PreferPropsType.KIDS100);
 
     private final SvcContentType svcContentType;
     private final ChartType chartType;
     private final MusicContentType musicContentType;
-    private final int svcContentId;
+    private final PreferPropsType dispPropsType;
 
-    RecommendChartPanelType(SvcContentType svcContentType, ChartType chartType,MusicContentType musicContentType, int svcContentId) {
+    RecommendChartPanelType(SvcContentType svcContentType, ChartType chartType,MusicContentType musicContentType , PreferPropsType dispPropsType) {
         this.svcContentType = svcContentType;
         this.chartType = chartType;
         this.musicContentType = musicContentType;
-        this.svcContentId = svcContentId;
+        this.dispPropsType = dispPropsType;
     }
 
     @MappedTypes(RecommendChartPanelType.class)

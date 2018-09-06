@@ -47,7 +47,21 @@
                 a.use_yn = 'Y'
             AND b.character_no = #{characterNo}
         ]]>
+    </select>
 
+    <select id="selectCharacterPreferDispMapGenre" resultMap="characterPreferGenreResultMap" parameterType="Long">
+        <![CDATA[
+            SELECT
+                a.character_no,
+                b.prefer_genre_id,
+                c.prefer_genre_nm
+            FROM
+                tb_character_prefer_disp a INNER JOIN tb_map_prefer_genre_prefer_disp b
+            ON a.prefer_disp_id = b.prefer_disp_id INNER JOIN tb_prefer_genre c
+            ON b.prefer_genre_id = c.prefer_genre_id
+            WHERE
+                character_no = #{characterNo}
+        ]]>
     </select>
 
 </mapper>

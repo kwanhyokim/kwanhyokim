@@ -84,10 +84,19 @@
                         b.img_url
                   FROM
                         tb_chart a
-                  LEFT OUTER JOIN tb_img_mang b ON a.chart_id = b.img_content_id
-                  AND b.img_content_type = 'CHART'
+                  LEFT OUTER JOIN tb_img_mang b
+                    ON b.img_content_id = (
+                                            SELECT
+                                              prefer_disp_id
+                                            FROM
+                                              tb_prefer_disp
+                                            WHERE
+                                              disp_props_type = #{chartPanelType.dispPropsType}
+                                            AND disp_type = 'CHART'
+                                          )
+                  AND b.img_content_type = 'DISP'
                             AND b.dfk_type = 'EVERY'
-                            AND b.img_disp_type = 'DEFAULT'
+                            AND b.img_disp_type = 'MAIN_TOP'
                             AND b.os_type = #{osType}
                   WHERE
                         a.svc_content_type = #{chartPanelType.svcContentType}
@@ -107,7 +116,6 @@
             LEFT OUTER JOIN ted_artist d ON c.artist_id = d.artist_id
             LEFT OUTER JOIN ted_artist e ON e.artist_id = chart_track_table.reprsnt_artist_id
         WHERE a.disp_status_yn = 'Y'
-
     </select>
 
     <select id="selectChartListByDefaultGenre" resultMap="chartListResultMap">

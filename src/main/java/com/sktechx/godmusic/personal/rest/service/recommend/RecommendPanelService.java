@@ -28,7 +28,6 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
  * @date 2018. 07. 09.
  */
 public interface RecommendPanelService {
-    List<Panel> createMockupRecommendPanelList();
     List<Panel> createRecommendPanelList(Long characterNo, OsType osType);
 
 
