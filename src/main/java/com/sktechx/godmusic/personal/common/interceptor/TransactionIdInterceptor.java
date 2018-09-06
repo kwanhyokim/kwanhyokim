@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.common.interceptor;
 
+import com.sktechx.godmusic.lib.domain.CommonConstant;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
@@ -30,33 +31,24 @@ import java.util.Enumeration;
  */
 
 public class TransactionIdInterceptor extends HandlerInterceptorAdapter implements Ordered {
-    public final static String     XGmTransactionIdKey = "X-GM-TransactionId";
-    private long			sessionSequence = 0;
-    private	Object		lock = new Object();
 
-    private String		getNextSequence()	{
+    private String getNextTransactionId() {
         return "PER" + DateUtil.getCurrentDateTime() + CommonUtils.getRandomStr(3);
-//        synchronized(lock)	{
-//            sessionSequence += 1;
-//            if( sessionSequence > 999999)
-//                sessionSequence = 0;
-//            return String.format("%06d", sessionSequence);
-//        }
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        Enumeration<String> idEnum = request.getHeaders(XGmTransactionIdKey);
-        if( idEnum.hasMoreElements() )  {
+        MDC.put("hostName", InetAddress.getLocalHost().getHostName());
+
+        Enumeration<String> idEnum = request.getHeaders(CommonConstant.X_GM_TRANSACTION_ID);
+        if (idEnum.hasMoreElements()) {
             MDC.put("transactionId", idEnum.nextElement());
             return super.preHandle(request, response, handler);
         }
 
-        String traceId = getNextSequence();
-        MDC.put("transactionId", traceId);
-        MDC.put("hostName", InetAddress.getLocalHost().getHostName());
-
+        String transactionId = getNextTransactionId();
+        MDC.put("transactionId", transactionId);
         return super.preHandle(request, response, handler);
     }
 
