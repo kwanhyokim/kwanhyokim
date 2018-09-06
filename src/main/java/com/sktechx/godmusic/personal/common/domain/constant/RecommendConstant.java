@@ -25,6 +25,8 @@ public class RecommendConstant {
     public static final int REALTIME_CHART_EXPIRED_SECONDS = 300;
     public static final int KIDS_CHART_EXPIRED_SECONDS = 300;
 
+    public static final int CHARACTER_PREFER_GENRE_VIEW_LIMIT_SIZE = 3;
+
     //청취 단계 패널
     public static final int SIMILAR_TRACK_PANEL_SIZE  = 2;
     public static final int PREFER_GENRE_SIMILAR_PANEL_SIZE  = 2;
