@@ -31,8 +31,11 @@
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_FILE}</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${catalina.home}/logs/service/api.${instance.id}.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>30</maxHistory>
+            <fileNamePattern>${catalina.home}/logs/service/api.${instance.id}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>200MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>620</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>${LOG_PATTERN}</pattern>
