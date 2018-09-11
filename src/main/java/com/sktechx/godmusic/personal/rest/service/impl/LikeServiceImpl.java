@@ -16,6 +16,7 @@ import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.like.*;
 import com.sktechx.godmusic.personal.rest.repository.LikeMapper;
 import com.sktechx.godmusic.personal.rest.service.LikeService;
+import com.sktechx.godmusic.personal.rest.service.MetaApiProxy;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
@@ -48,6 +49,9 @@ import java.util.stream.IntStream;
 @Slf4j
 @Service
 public class LikeServiceImpl implements LikeService {
+
+	@Autowired
+	private MetaApiProxy metaApiProxy;
 
 	@Autowired
 	RestTemplate restTemplate;
@@ -184,7 +188,7 @@ public class LikeServiceImpl implements LikeService {
 	}
 
 	private void validCheckAddLike(LikeRequest request, Long characterNo){
-		validMeta(getLikeTypePath(request.getLikeType()), request.getLikeTypeId(), getLikeTypeNotFoundMessage(request.getLikeType()));
+		validMeta(request.getLikeType(), request.getLikeTypeId(), getLikeTypeNotFoundMessage(request.getLikeType()));
 
 		int likeCnt = likeMapper.getLikeCountByLikeTypeAndLikeTypeId(request.getLikeType(), request.getLikeTypeId(), characterNo);
 
@@ -202,23 +206,6 @@ public class LikeServiceImpl implements LikeService {
 
 		if(likeTotalCnt >= 1000){
 			throw new ValidationException(getLikeTypeOverAdd(request.getLikeType()));
-		}
-	}
-
-	private String getLikeTypePath(String likeType) {
-		switch (likeType) {
-			case LikeConstant.LIKE_CHANNEL :
-				return "channel/";
-			case LikeConstant.LIKE_ALBUM :
-				return "album/";
-			case LikeConstant.LIKE_CHART :
-				return "chart/track/";
-			case LikeConstant.LIKE_ARTIST :
-				return "artist/";
-			case LikeConstant.LIKE_TRACK :
-				return "track/";
-			default :
-				throw new CommonBusinessException(CommonErrorMessage.BAD_REQUEST);
 		}
 	}
 
@@ -273,26 +260,32 @@ public class LikeServiceImpl implements LikeService {
 		}
 	}
 
-	private void validMeta(String path, Long likeTypeId, CommonErrorMessage message) {
-		URI uri = UriComponentsBuilder.newInstance().scheme("http").host("meta-api")
-				.path("meta/v1/" + path + likeTypeId).build().encode().toUri();
-
-		log.info("valid meta uri :" + uri);
-
-		HttpHeaders headers = new HttpHeaders();
-
-		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-		headers.setContentType(MediaType.APPLICATION_JSON);
-
-		HttpEntity<?> entity = new HttpEntity<>(headers);
-
-		try {
-			CommonApiResponse result = restTemplate.exchange(uri, HttpMethod.GET, entity, new ParameterizedTypeReference<CommonApiResponse>() {}).getBody();
-
-			if(StringUtils.isEmpty(result) || StringUtils.isEmpty(result.getCode()) || !"2000000".equals(result.getCode()) || CommonUtils.empty(result.getData())) throw new NotFoundException(message);
-		} catch (Exception e){
-			log.error(e.getMessage() , e);
-			throw new NotFoundException(message);
+	private void validMeta(String likeType, Long likeTypeId, CommonErrorMessage message) {
+		CommonApiResponse response;
+		log.info("validMeta :: " + likeType);
+		switch (likeType) {
+			case LikeConstant.LIKE_CHANNEL :
+				response = metaApiProxy.channel(likeTypeId);
+				break;
+			case LikeConstant.LIKE_ALBUM :
+				response = metaApiProxy.album(likeTypeId);
+				break;
+			case LikeConstant.LIKE_CHART :
+				response = metaApiProxy.chart(likeTypeId);
+				break;
+			case LikeConstant.LIKE_ARTIST :
+				response = metaApiProxy.artists(likeTypeId);
+				break;
+			case LikeConstant.LIKE_TRACK :
+				response = metaApiProxy.track(likeTypeId);
+				break;
+			default :
+				throw new CommonBusinessException(CommonErrorMessage.BAD_REQUEST);
 		}
+
+		log.info("validMeta :: " + response.toString());
+
+		if(StringUtils.isEmpty(response) || StringUtils.isEmpty(response.getCode())
+				|| !"2000000".equals(response.getCode()) || CommonUtils.empty(response.getData())) throw new NotFoundException(message);
 	}
 }
