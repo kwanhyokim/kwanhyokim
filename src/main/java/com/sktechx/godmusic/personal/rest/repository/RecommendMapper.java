@@ -12,6 +12,7 @@ package com.sktechx.godmusic.personal.rest.repository;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
+import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
@@ -87,5 +88,6 @@ public interface RecommendMapper {
     int updateRecommendDataRemovePrevent(@Param("recommendPanelContentType") RecommendPanelContentType recommendPanelContentType
             , @Param("rcmmdId") Long rcmmdId
             , @Param("characterNo") Long characterNo);
+
 
 }

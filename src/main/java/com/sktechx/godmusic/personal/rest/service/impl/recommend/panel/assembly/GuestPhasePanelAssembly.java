@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly;
 
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelNonSignAssembly;
@@ -32,6 +33,7 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
 public class GuestPhasePanelAssembly extends PanelNonSignAssembly {
 
     private GuestPhasePanelAssembly(){}
+
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
 
@@ -39,6 +41,11 @@ public class GuestPhasePanelAssembly extends PanelNonSignAssembly {
 
         appendDefaultPopularChannelPanel(personalPhaseMeta , panelList , POPULAR_CHNL_LIST_SIZE , null);
 
+        Panel chartPanel = createChartPanel(RecommendPanelType.LIVE_CHART,personalPhaseMeta.getOsType(),PREFER_DISP_CHART_TRACK_LIMIT_SIZE);
+        if(chartPanel != null){
+            panelList.add(0,chartPanel);
+        }
         return panelList;
     }
+
 }

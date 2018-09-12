@@ -220,20 +220,7 @@ public abstract class PanelSignAssembly extends PanelAssembly {
 
     }
 
-    private Panel createChartPanel(RecommendPanelType recommendPanelType, OsType osType, int trackLimitSize){
 
-        ChartDto chart = null;
-
-        if(RecommendPanelType.LIVE_CHART.equals(recommendPanelType)){
-            chart = chartService.getRealTimeTrackChart(osType,trackLimitSize);
-        }else if(RecommendPanelType.KIDS_CHART.equals(recommendPanelType)){
-            chart = chartService.getKidsChart(osType,trackLimitSize);
-        }
-        if(chart != null){
-            return new ChartPanel(recommendPanelType, chart, getDefaultBgImageList(chart.getImgList(),osType));
-        }
-        return null;
-    }
 
     private Panel createPreferGenreSimilarTrackPanel(final PersonalPhaseMeta personalPhaseMeta,
                                                      final RecommendTrackDto preferGenreSimilarTrack){

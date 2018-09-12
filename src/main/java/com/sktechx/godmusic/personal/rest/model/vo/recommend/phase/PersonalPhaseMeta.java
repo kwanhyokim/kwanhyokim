@@ -131,9 +131,6 @@ public class PersonalPhaseMeta {
         return null;
     }
 
-    static public void main(String[] args){
-
-    }
     private PersonalPanel getRecommendPersonalPanel(RecommendPanelContentType recommendPanelContentType){
         if(!CollectionUtils.isEmpty(rcmmdPanelList)){
             return rcmmdPanelList

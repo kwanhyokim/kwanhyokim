@@ -11,15 +11,20 @@
 package com.sktechx.godmusic.personal.rest.controller.v1;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
+import com.sktechx.godmusic.lib.domain.CommonConstant;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.RequestGMContext;
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelInfoDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
+import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistUpdateOrderRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendDummyDataRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
+import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDataService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import com.sktechx.godmusic.personal.rest.validate.Validator;
@@ -30,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -45,6 +51,9 @@ public class RecommendPanelController {
     @Autowired
     private RecommendPanelService recommendPanelService;
 
+    @Autowired
+    private RecommendDataService recommendDataService;
+
 	@Autowired
 	private PersonalRecommendPhaseService personalRecommendPhaseService;
 
@@ -54,14 +63,33 @@ public class RecommendPanelController {
 		return new CommonApiResponse<>(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(ctx.getCharacterNo(),ctx.getOsType()));
 	}
 
-    @ApiOperation(value = "추천 홈 패널 조회 ( New )", httpMethod = "GET", notes = "추천 패널 조회 MockUp API" , response = RecommendPanelResponse.class)
+    @ApiOperation(value = "추천 홈 패널 조회 ( New )", httpMethod = "GET", notes = "추천 패널 조회 API" , response = RecommendPanelResponse.class)
     @GetMapping(value = "/home/panels")
     public CommonApiResponse<RecommendPanelResponse> recommendHomePanels(@ApiIgnore @RequestGMContext GMContext ctx){
 		RecommendPanelResponse recommendPanelResponse = new RecommendPanelResponse();
 		recommendPanelResponse.setList(recommendPanelService.createRecommendPanelList(ctx.getCharacterNo(),ctx.getOsType()));
 		return new CommonApiResponse<RecommendPanelResponse>(recommendPanelResponse);
-
     }
+
+
+	@ApiOperation(value = "추천 단계별 데이터 생성 ( New )", httpMethod = "POST", notes =
+			"추천 단계별 데이터 생성\r\n" +
+			"1단계 : 기존 2,3단계 데이터를 모두 삭제 \r\n" +
+			"2단계 : 기존 3단계 데이터를 모두 삭제 후 2단계 패널 생성 ( 2단계 패널 데이터가 있는 경우 유지 ) \r\n" +
+			"3단계 : 3단계 데이터를 생성 ( 3단계 패널 데이터가 있는 경우 유지 ) \r\n" +
+			"4단계 : 4단계 데이터를 생성 "
+			, response = CommonApiResponse.class)
+	@PostMapping(value = "/home/panels/create")
+	public CommonApiResponse recommendDummyData(@ApiIgnore @RequestGMContext GMContext ctx,
+												 @Valid @RequestBody RecommendDummyDataRequest recommendDummyDataRequest,
+												@ApiParam(value = "캐릭터 번호", defaultValue = "1") @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = true) Long characterNo
+												){
+		if(characterNo != null){
+			recommendDataService.createRecommendDummyData(characterNo,recommendDummyDataRequest);
+		}
+		return CommonApiResponse.emptySuccess();
+	}
+
 
 	// added by bob 2018.08.03
 	@ApiOperation(value = "추천 패널 상세 트랙 목록 조회 API", httpMethod = "GET", notes = "추천 패널 트랙 목록 조회 API - 추천 홈 패널 API 에서 제공하는 RecommendPanelContentType와 id 값으로 트랙 목록 조회 \r\n"
