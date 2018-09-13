@@ -82,7 +82,7 @@
 
     <select id="selectRecommendPanelPopularTrackList" resultType="Long">
         SELECT
-            tracK_id
+            track_id
         FROM
             tb_rcmmd_artist_track_list
         WHERE
@@ -92,13 +92,13 @@
                     tb_rcmmd_artist
                 WHERE
                     rcmmd_artist_id = #{rcmmdArtistId}
-                        AND character_no = #{characterNo})
+                    )
         ORDER BY disp_sn ASC
 
     </select>
     <select id="selectRecommendPanelSimilarTrackList" resultType="Long">
         SELECT
-            tracK_id
+            track_id
         FROM
             tb_rcmmd_similar_track_list
         WHERE
@@ -108,13 +108,13 @@
                     tb_rcmmd_similar_track
                 WHERE
                     rcmmd_similar_track_id = #{rcmmdTrackId}
-                        AND character_no = #{characterNo})
+                    )
         ORDER BY disp_sn ASC
 
     </select>
     <select id="selectRecommendPanelGenreTrackList" resultType="Long">
         SELECT
-            tracK_id
+            track_id
         FROM
             tb_rcmmd_prefer_genre_similar_track_list
         WHERE
@@ -124,12 +124,12 @@
                     tb_rcmmd_prefer_genre_similar_track
                 WHERE
                     rcmmd_prefer_genre_similar_track_id = #{rcmmdGenreId}
-                        AND character_no = #{characterNo})
+                    )
         ORDER BY disp_sn ASC
     </select>
     <select id="selectRecommendPanelCfTrackList" resultType="Long">
         SELECT
-            tracK_id
+            track_id
         FROM
             tb_rcmmd_mforu_list
         WHERE
@@ -139,7 +139,7 @@
                     tb_rcmmd_mforu
                 WHERE
                     rcmmd_mforu_id = #{rcmmdMforuId}
-                        AND character_no = #{characterNo})
+                )
         ORDER BY disp_sn ASC
 
     </select>

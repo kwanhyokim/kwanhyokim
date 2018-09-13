@@ -10,17 +10,21 @@
 
 package com.sktechx.godmusic.personal.rest.controller.v1;
 
+import java.util.List;
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.CommonConstant;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.RequestGMContext;
-import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelInfoDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
-import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistUpdateOrderRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendDummyDataRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
@@ -31,12 +35,7 @@ import com.sktechx.godmusic.personal.rest.validate.Validator;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
-
-import javax.validation.Valid;
-import java.util.List;
 
 /**
  * 설명 : 추천 컨트롤러
@@ -114,7 +113,7 @@ public class RecommendPanelController {
 			@ApiParam(defaultValue = "52") @PathVariable Long panelContentId,
 			@ApiParam(value = "추천 패널 컨텐트 타입", allowableValues = "RC_ATST_TR, RC_SML_TR, RC_GR_TR, RC_CF_TR") @RequestParam(value = "type") RecommendPanelContentType recommendPanelContentType){
 
-		RecommendPanelInfoDto response = recommendPanelService.getRecommendPanelInfo(recommendPanelContentType, panelContentId);
+		RecommendPanelInfoDto response = recommendPanelService.getRecommendPanelInfo(ctx.getCharacterNo(), recommendPanelContentType, panelContentId, ctx.getOsType());
 		return new CommonApiResponse(response);
 	}
 
