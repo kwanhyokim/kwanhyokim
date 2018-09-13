@@ -97,10 +97,9 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             panelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
 
         }catch(CommonBusinessException cbex){
-            log.error("createRecommendPanel business exception : {}", cbex.getMessage());
+            log.error("createRecommendPanel business exception : {}", cbex.getDisplayMessage());
         }catch(Exception ex){
             log.error("createRecommendPanel not catched exception : {}",ex.getMessage());
-            ex.printStackTrace();
         }finally{
             if(CollectionUtils.isEmpty(panelList)){
                 if(panelAssembly == null)
@@ -299,7 +298,6 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         try{
 
             imgList = redisService.getListWithPrefix(RedisKeyConstant.RECOMMEND_PANEL_DEFAULT_IMGLIST_KEY,ImageInfo.class);
-            log.info("getRecommendPanelDefaultImageList imgList : {}",imgList);
         }catch(Exception e){
             log.error("getRecommendPanelDefaultImageList error : {}",e.getMessage());
         }finally {

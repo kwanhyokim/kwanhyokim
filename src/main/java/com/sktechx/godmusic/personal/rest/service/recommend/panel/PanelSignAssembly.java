@@ -74,7 +74,6 @@ public abstract class PanelSignAssembly extends PanelAssembly {
                             panelList.add(createPreferGenrePopularChannelPanel(personalPhaseMeta,channel));
                         }catch(Exception e){
                             log.error("appendPreferGenreChannelPanelList error : {}", e.getMessage());
-                            e.printStackTrace();
                         }
                     });
         }
@@ -114,7 +113,6 @@ public abstract class PanelSignAssembly extends PanelAssembly {
                     }
                 } catch (Exception e) {
                     log.error("PanelSignAssembly appendPreferArtistPanel artistPanel create error : {}", e.getMessage());
-                    e.printStackTrace();
                 }
             }
         }
@@ -138,7 +136,6 @@ public abstract class PanelSignAssembly extends PanelAssembly {
                             panelList.add(createListenMoodPopularChannelPanel(personalPhaseMeta,channel));
                         } catch (Exception e) {
                             log.error("appendPreferGenreChannelPanelList error : {}", e.getMessage());
-                            e.printStackTrace();
                         }
                     });
             }
@@ -167,9 +164,7 @@ public abstract class PanelSignAssembly extends PanelAssembly {
                                 panelList.add(createSimilarTrackPanel (personalPhaseMeta, similarTrack));
                             }
                         } catch (Exception e) {
-                            log.error("appendSimilarTrackPanelList error : {}", e
-                                    .getMessage());
-                            e.printStackTrace();
+                            log.error("appendSimilarTrackPanelList error : {}", e.getMessage());
                         }
                     });
             }
@@ -198,9 +193,7 @@ public abstract class PanelSignAssembly extends PanelAssembly {
                                 panelList.add(createPreferGenreSimilarTrackPanel(personalPhaseMeta,preferGenreSimilarTrack));
                             }
                         } catch (Exception e) {
-                            log.error("appendPreferGenreSimilarTrackPanelList error : {}", e
-                                    .getMessage());
-                            e.printStackTrace();
+                            log.error("appendPreferGenreSimilarTrackPanelList error : {}", e.getMessage());
                         }
                     });
             }
