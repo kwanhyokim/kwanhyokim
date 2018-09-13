@@ -396,6 +396,7 @@
                                 WHEN '7' THEN 'SAT'
                                 END AS week,
                             a.create_dtime rcmmdCreateDtime,
+                            a.disp_sn panel_disp_sn,
                             (
                                 SELECT
                                   COUNT(*)
@@ -420,6 +421,7 @@
                             -- 1. rcmmd_table end;
                         ) rcmmd_table
                         LEFT OUTER JOIN tb_rcmmd_img_mang b ON rcmmd_table.week = b.dfk_type
+                        AND rcmmd_table.panel_disp_sn = b.disp_sn
                         AND b.rcmmd_type_id = 'RC_SML_TR'
                         AND b.img_disp_type = 'MAIN_TOP'
                         AND b.os_type = #{osType}
