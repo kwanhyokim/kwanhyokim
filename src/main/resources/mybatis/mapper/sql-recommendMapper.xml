@@ -146,7 +146,10 @@
                 tb_rcmmd_prefer_genre_similar_track
             WHERE
                 character_no = #{characterNo}
-
+            AND
+                disp_std_start_dt <= NOW()
+            AND
+                disp_std_end_dt >= NOW()
          ]]>
     </select>
 
