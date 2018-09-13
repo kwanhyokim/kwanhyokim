@@ -16,6 +16,7 @@ import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
+import com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant;
 import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.common.domain.type.ArtistType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
@@ -40,6 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -195,35 +197,69 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 		return trackList;
 	}
 
+	private List<ImageInfo> getRecommendPanelInfoBgImage(RecommendPanelContentType recommendPanelContentType,Long panelContentId, OsType osType){
+
+        String imgUrl = recommendMapper.selectRecommendPanelInfoBgImageUrl(recommendPanelContentType, panelContentId, osType);
+
+        if(StringUtils.isEmpty(imgUrl)) {
+            List<ImageInfo> imageInfoList = getRecommendPanelDefaultImageList(osType);
+
+            imgUrl = imageInfoList.get(0).getUrl();
+        }
+
+        return makePanelBackGroundImageList(imgUrl);
+    }
+
     @Override
-    public RecommendPanelInfoDto getRecommendPanelInfo(RecommendPanelContentType recommendPanelContentType,
-            Long panelContentId) {
+    public RecommendPanelInfoDto getRecommendPanelInfo(Long characterNo, RecommendPanelContentType recommendPanelContentType,
+            Long panelContentId, OsType osType) {
 
         RecommendPanelInfoDto panel = null;
+
+        ListDto<List<RecommendPanelTrackDto>> trackList = getRecommendPanelTrackList(characterNo, recommendPanelContentType, panelContentId);
+
+        int trackCount = 0;
+
+        if( trackList != null && !CollectionUtils.isEmpty(trackList.getList())){
+            trackCount = trackList.getList().size();
+        }
+
 
 
         switch (recommendPanelContentType){
             // 아티스트
             case RC_ATST_TR:
 
+                RecommendArtistDto recommendArtistDto= recommendMapper.selectRecommendArtistById(panelContentId);
+
+                List<ArtistDto> artistDtoList;
+
+                if(recommendArtistDto == null || CollectionUtils.isEmpty(recommendArtistDto.getArtistList())){
+                    artistDtoList = artistMapper.getArtistList(Arrays.asList(12L,14L,15L));
+                }else {
+                    artistDtoList = recommendArtistDto.getArtistList();
+                }
+
+                List<String> artistNameList = new ArrayList<>();
+
+                artistDtoList.forEach(artistDto -> artistNameList.add(artistDto.getArtistName()));
                 // 아티스트의 첫 이미지를 배경 이미지로 사용
-                List<ArtistDto> artistDtoList = artistMapper.getArtistList(Arrays.asList(12L,14L,15L));
                 panel =  new RecommendPanelInfoDto.Builder()
-                        .title("Musician focus")
-                        .subTitle("마이큐 인기곡")
+                        .title(RecommendConstant.ARTIST_PANEL_TITLE)
+                        .subTitle(String.join(",", artistNameList))
                         .imgList((artistDtoList == null || artistDtoList.get(0) == null? null : artistDtoList.get(0).getImgList()))
                         .artistList(artistDtoList)
-                        .artistCount(3)
+                        .artistCount(artistDtoList.size())
                         .newYn(YnType.Y)
                         .build();
                 break;
             // 선호 유사
             case RC_SML_TR:
                 panel = new RecommendPanelInfoDto.Builder()
-                        .title("Like U")
-                        .subTitle("많이 들었던 노래와\n 유사한 선곡")
-                        .imgList(makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_likeu_1.png"))
-                        .trackCount(60)
+                        .title(RecommendConstant.SIMILAR_TRACK_PANEL_TITLE)
+                        .subTitle(RecommendConstant.SIMILAR_TRACK_PANEL_SUB_TITLE)
+                        .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType))
+                        .trackCount(trackCount)
                         .newYn(YnType.Y)
                         .renewDtime(new Date())
                         .build();
@@ -231,10 +267,10 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             // 유사 장르
             case RC_GR_TR:
                 panel = new RecommendPanelInfoDto.Builder()
-                        .title("Like U")
-                        .subTitle("유사 장르")
-                        .imgList(makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_likeu_1.png") )
-                        .trackCount(60)
+                        .title(RecommendConstant.PREFER_GENRE_SIMILAR_TRACK_PANEL_TITLE)
+                        .subTitle(RecommendConstant.PREFER_GENRE_SIMILAR_TRACK_PANEL_SUB_TITLE)
+                        .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType) )
+                        .trackCount(trackCount)
                         .newYn(YnType.Y)
                         .renewDtime(new Date())
                         .build();
@@ -243,10 +279,10 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             // 추천
             case RC_CF_TR:
                 panel = new RecommendPanelInfoDto.Builder()
-                        .title("Made For U")
-                        .subTitle("추천")
-                        .imgList(makePanelBackGroundImageList("https://api3-dev.musicmates.co.kr/img/recommend/new_poc/image_madeforu_1.png"))
-                        .trackCount(60)
+                        .title(RecommendConstant.RCMMD_TRACK_PANEL_TITLE)
+                        .subTitle(RecommendConstant.RCMMD_TRACK_PANEL_SUB_TITLE)
+                        .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType))
+                        .trackCount(trackCount)
                         .newYn(YnType.Y)
                         .renewDtime(new Date())
                         .build();

@@ -123,7 +123,7 @@ public class RecommendPanelController {
 			@ApiParam(defaultValue = "52") @PathVariable Long panelContentId,
 			@ApiParam(value = "추천 패널 컨텐트 타입", allowableValues = "RC_ATST_TR, RC_SML_TR, RC_GR_TR, RC_CF_TR") @RequestParam(value = "type") RecommendPanelContentType recommendPanelContentType){
 
-		RecommendPanelInfoDto response = recommendPanelService.getRecommendPanelInfo(recommendPanelContentType, panelContentId);
+		RecommendPanelInfoDto response = recommendPanelService.getRecommendPanelInfo(ctx.getCharacterNo(), recommendPanelContentType, panelContentId, ctx.getOsType());
 		return new CommonApiResponse(response);
 	}
 
