@@ -10,19 +10,14 @@
 
 package com.sktechx.godmusic.personal.recommend;
 
-import com.netflix.discovery.converters.Auto;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.CommonTest;
-import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendDummyDataRequest;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * 설명 : 추천 데이터 생성 테스트
