@@ -27,16 +27,16 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableFeignClients
-public class WebInitializer extends SpringBootServletInitializer {
+public class PersonalApplication extends SpringBootServletInitializer {
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         // set register error pagefilter false
         setRegisterErrorPageFilter(false);
-        return application.sources(WebInitializer.class);
+        return application.sources(PersonalApplication.class);
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(WebInitializer.class, args);
+        SpringApplication.run(PersonalApplication.class, args);
     }
 }
 

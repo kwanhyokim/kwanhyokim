@@ -14,32 +14,16 @@ import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
+import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.common.domain.type.ArtistType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
-import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
-import com.sktechx.godmusic.personal.common.exception.InternalException;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ServiceGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.artist.ArtistPanel;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.ChannelPanel;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.ListenMoodPopularChannelPanel;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.PopularChannelPanel;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.PreferGenrePopularChannelPanel;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.chart.ChartPanel;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.GenreVo;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.PreferGenreSimilarTrackPanel;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.PreferSimilarTrackPanel;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.RcmmdTrackPanel;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.TrackPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.repository.*;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
@@ -53,20 +37,14 @@ import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.POPULAR_CHNL_TRACK_LIMIT_SIZE;
 
 /**
  * 설명 : 추천 패널 데이터 생성
@@ -80,17 +58,6 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
     @Autowired
     private SqlSessionTemplate sqlSessionTemplate;
-
-    @Autowired
-    private ChartService chartService;
-
-    @Autowired
-    private ChannelMapper channelMapper;
-
-    @Autowired
-    private ChannelService channelService;
-    @Autowired
-    private ChartMapper chartMapper;
 
     @Autowired
     private ArtistMapper artistMapper;
@@ -344,12 +311,12 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     }
 
     @Override
-    @Transactional(rollbackFor = {Exception.class, CommonBusinessException.class, InternalException.class})
+    @Transactional(rollbackFor = {Exception.class, CommonBusinessException.class})
     public void addPreferArtistPanel(Long characterNo) {
         // 캐릭터가 선정한 아티스트 목록
         List<CharacterPreferArtistDto> characterPreferArtistDtoList = recommendMapper.selectCharacterPreferArtist(characterNo);
 
-        if (CollectionUtils.isEmpty(characterPreferArtistDtoList)) throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
+        if (CollectionUtils.isEmpty(characterPreferArtistDtoList)) throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
 
         int count = 0;
         List<RecommendArtistListDto> recommendArtistListDto = new ArrayList<>();
@@ -412,7 +379,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             sqlSession.commit();
         } catch(Exception e) {
             log.error("Recommend :: recommend artist :: Error Message", e.getMessage());
-            throw new InternalException(CommonErrorMessage.INTERNAL_SERVER_ERROR);
+            throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -456,7 +423,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             sqlSession.commit();
         } catch(Exception e) {
             log.error("Recommend :: recommend artist :: Error Message", e.getMessage());
-            throw new InternalException(CommonErrorMessage.INTERNAL_SERVER_ERROR);
+            throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
         }
 	}
 
@@ -481,7 +448,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
         similarTrackDtoList.removeIf((SimilarTrackDto s) -> CollectionUtils.isEmpty(s.getSimilarTrackIds()) || s.getSimilarTrackIds().size() < 15);
 
-        if (CollectionUtils.isEmpty(similarTrackDtoList)) throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
+        if (CollectionUtils.isEmpty(similarTrackDtoList)) throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
 
         // 30개를 초과할경우를 제외해줌
         List<Long> similarTrackIds;
@@ -500,7 +467,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     private List<PreferGenreTrackDto> getPreferGenreTrackDtos(Long characterNo) {
         List<PreferGenreTrackDto> metaPreferGenreTrackDtoList = recommendMapper.selectPreferGenreTrack(characterNo);
 
-        if (CollectionUtils.isEmpty(metaPreferGenreTrackDtoList)) throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
+        if (CollectionUtils.isEmpty(metaPreferGenreTrackDtoList)) throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
 
         // 장르별 1곡씩 꺼내기
         Long svcGenreId = -1L;
