@@ -11,23 +11,20 @@
 package com.sktechx.godmusic.personal.rest.service.impl.recommend;
 
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
+import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
-import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendDummyDataRequest;
 import com.sktechx.godmusic.personal.rest.repository.RecommendDummyDataMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
-import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.RecommendPhasePanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -154,7 +151,7 @@ public class RecommendDataServiceImpl implements RecommendDataService {
                 return ;
             }
         }
-        throw new CommonBusinessException(CommonErrorMessage.BAD_REQUEST);
+        throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
     }
 
 

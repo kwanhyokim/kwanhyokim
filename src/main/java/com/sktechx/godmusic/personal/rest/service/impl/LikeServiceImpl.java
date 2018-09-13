@@ -3,11 +3,9 @@ package com.sktechx.godmusic.personal.rest.service.impl;
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
+import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.personal.common.domain.constant.LikeConstant;
-import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
-import com.sktechx.godmusic.personal.common.exception.InternalException;
-import com.sktechx.godmusic.personal.common.exception.NotFoundException;
-import com.sktechx.godmusic.personal.common.exception.ValidationException;
+import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
 import com.sktechx.godmusic.personal.rest.model.dto.AlbumDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
@@ -22,20 +20,13 @@ import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -153,7 +144,7 @@ public class LikeServiceImpl implements LikeService {
 			sqlSession.commit();
 		}catch(Exception e){
 			log.error("Like :: like delete :: Error Message", e.getMessage());
-			throw new InternalException(CommonErrorMessage.INTERNAL_SERVER_ERROR);
+			throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -177,7 +168,7 @@ public class LikeServiceImpl implements LikeService {
 			sqlSession.commit();
 		}catch(Exception e){
 			log.error("Like :: like update :: Error Message", e.getMessage());
-			throw new InternalException(CommonErrorMessage.INTERNAL_SERVER_ERROR);
+			throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -199,68 +190,68 @@ public class LikeServiceImpl implements LikeService {
 		}
 
 		if(likeCnt > 0){
-			throw new ValidationException(getLikeTypeDuplicated(request.getLikeType()));
+			throw new CommonBusinessException(getLikeTypeDuplicated(request.getLikeType()));
 		}
 
 		int likeTotalCnt = likeMapper.getLikeCountByLikeType(request.getLikeType(), characterNo);
 
 		if(likeTotalCnt >= 1000){
-			throw new ValidationException(getLikeTypeOverAdd(request.getLikeType()));
+			throw new CommonBusinessException(getLikeTypeOverAdd(request.getLikeType()));
 		}
 	}
 
-	private CommonErrorMessage getLikeTypeNotFoundMessage(String likeType) {
+	private PersonalErrorDomain getLikeTypeNotFoundMessage(String likeType) {
 		switch (likeType) {
 			case LikeConstant.LIKE_CHANNEL :
-				return CommonErrorMessage.CHANNEL_NOT_FOUND;
+				//return CommonErrorMessage.CHANNEL_NOT_FOUND;
 			case LikeConstant.LIKE_ALBUM :
-				return CommonErrorMessage.ALBUM_NOT_FOUND;
+				//return CommonErrorMessage.ALBUM_NOT_FOUND;
 			case LikeConstant.LIKE_CHART :
-				return CommonErrorMessage.CHART_NOT_FOUND;
+				//return CommonErrorMessage.CHART_NOT_FOUND;
 			case LikeConstant.LIKE_ARTIST :
-				return CommonErrorMessage.ARTIST_NOT_FOUND;
+				//return CommonErrorMessage.ARTIST_NOT_FOUND;
 			case LikeConstant.LIKE_TRACK :
-				return CommonErrorMessage.TRACK_NOT_FOUND;
+				//return CommonErrorMessage.TRACK_NOT_FOUND;
 			default :
-				throw new CommonBusinessException(CommonErrorMessage.BAD_REQUEST);
+				throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
 		}
 	}
 
-	private CommonErrorMessage getLikeTypeDuplicated(String likeType) {
+	private PersonalErrorDomain getLikeTypeDuplicated(String likeType) {
 		switch (likeType) {
 			case LikeConstant.LIKE_CHANNEL :
-				return CommonErrorMessage.CHANNEL_DUPLICATED_LIKE;
+				return PersonalErrorDomain.CHANNEL_DUPLICATED_LIKE;
 			case LikeConstant.LIKE_ALBUM :
-				return CommonErrorMessage.ALBUM_DUPLICATED_LIKE;
+				return PersonalErrorDomain.ALBUM_DUPLICATED_LIKE;
 			case LikeConstant.LIKE_CHART :
-				return CommonErrorMessage.CHART_DUPLICATED_LIKE;
+				return PersonalErrorDomain.CHART_DUPLICATED_LIKE;
 			case LikeConstant.LIKE_ARTIST :
-				return CommonErrorMessage.ARTIST_DUPLICATED_LIKE;
+				return PersonalErrorDomain.ARTIST_DUPLICATED_LIKE;
 			case LikeConstant.LIKE_TRACK :
-				return CommonErrorMessage.TRACK_DUPLICATED_LIKE;
+				return PersonalErrorDomain.TRACK_DUPLICATED_LIKE;
 			default :
-				throw new CommonBusinessException(CommonErrorMessage.BAD_REQUEST);
+				throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
 		}
 	}
 
-	private CommonErrorMessage getLikeTypeOverAdd(String likeType) {
+	private PersonalErrorDomain getLikeTypeOverAdd(String likeType) {
 		switch (likeType) {
 			case LikeConstant.LIKE_CHANNEL :
-				return CommonErrorMessage.CHANNEL_OVER_ADD_LIKE;
+				return PersonalErrorDomain.CHANNEL_OVER_ADD_LIKE;
 			case LikeConstant.LIKE_ALBUM :
-				return CommonErrorMessage.ALBUM_OVER_ADD_LIKE;
+				return PersonalErrorDomain.ALBUM_OVER_ADD_LIKE;
 			case LikeConstant.LIKE_CHART :
-				return CommonErrorMessage.CHART_OVER_ADD_LIKE;
+				return PersonalErrorDomain.CHART_OVER_ADD_LIKE;
 			case LikeConstant.LIKE_ARTIST :
-				return CommonErrorMessage.ARTIST_OVER_ADD_LIKE;
+				return PersonalErrorDomain.ARTIST_OVER_ADD_LIKE;
 			case LikeConstant.LIKE_TRACK :
-				return CommonErrorMessage.TRACK_OVER_ADD_LIKE;
+				return PersonalErrorDomain.TRACK_OVER_ADD_LIKE;
 			default :
-				throw new CommonBusinessException(CommonErrorMessage.BAD_REQUEST);
+				throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
 		}
 	}
 
-	private void validMeta(String likeType, Long likeTypeId, CommonErrorMessage message) {
+	private void validMeta(String likeType, Long likeTypeId, PersonalErrorDomain message) {
 		CommonApiResponse response;
 		log.info("validMeta :: " + likeType);
 		switch (likeType) {
@@ -280,12 +271,12 @@ public class LikeServiceImpl implements LikeService {
 				response = metaApiProxy.track(likeTypeId);
 				break;
 			default :
-				throw new CommonBusinessException(CommonErrorMessage.BAD_REQUEST);
+				throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
 		}
 
 		log.info("validMeta :: " + response.toString());
 
 		if(StringUtils.isEmpty(response) || StringUtils.isEmpty(response.getCode())
-				|| !"2000000".equals(response.getCode()) || CommonUtils.empty(response.getData())) throw new NotFoundException(message);
+				|| !"2000000".equals(response.getCode()) || CommonUtils.empty(response.getData())) throw new CommonBusinessException(message);
 	}
 }

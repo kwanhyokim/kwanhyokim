@@ -2,6 +2,7 @@ package com.sktechx.godmusic.personal.rest.service.impl;
 
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.code.YnType;
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEvent;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEventTarget;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEventType;
@@ -9,8 +10,7 @@ import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
 import com.sktechx.godmusic.personal.common.domain.type.AppNameType;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.common.domain.type.TrackLogType;
-import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
-import com.sktechx.godmusic.personal.common.exception.NotFoundException;
+import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.PurchasePassDto;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.TrackListen;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
@@ -99,7 +99,7 @@ public class ListenServiceImpl implements ListenService {
 			if(!YnType.Y.equals(request.getFreeYn())){
 				String pssrl = purchaseService.getPssrlCd(memberNo);
 				if(ObjectUtils.isEmpty(pssrl)){
-					throw new NotFoundException(CommonErrorMessage.USER_PSSRL_NOT_FOUND);
+					throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
 				}
 				PurchasePassDto purchasePassDto = purchaseService.getInUsePurchaseIdByMemberNo(memberNo);
 
