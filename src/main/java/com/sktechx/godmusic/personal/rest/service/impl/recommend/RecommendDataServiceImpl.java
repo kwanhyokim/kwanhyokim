@@ -128,11 +128,6 @@ public class RecommendDataServiceImpl implements RecommendDataService {
                 }
             }
         }
-        //4단계 데이터
-        //TODO : TOP 추천 데이터 ...
-        if(4 == recommendDummyDataRequest.getRcmmdPhase()){
-
-        }
 
         //캐시 삭제
         String personalRecommendPhaseKey = String.format(RedisKeyConstant.PERSONAL_RECOMMEND_PHASE_KEY, characterNo);
@@ -154,5 +149,14 @@ public class RecommendDataServiceImpl implements RecommendDataService {
         throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
     }
 
+    public int addTpoRecommendDummyData(Long characterNo){
+        if(recommendDummyDataMapper.selectTpoRecommendDataCount(characterNo) < 1)
+            return recommendDummyDataMapper.insertTpoRecommendData(characterNo);
+        return 0;
+    }
+
+    public int deleteTpoRecommendDummyData(Long characterNo){
+        return recommendDummyDataMapper.deleteTpoRecommendData(characterNo);
+    }
 
 }

@@ -32,4 +32,7 @@ public class RecommendDummyDataRequest {
     @NotNull
     @ApiModelProperty(required = true, example = "2", value = "단계별 패널 개수")
     private Integer panelCount;
+
+    @ApiModelProperty(required = true, example = "Y", value = "TPO추천 데이터 추가/삭제")
+    private String tpoYn;
 }
