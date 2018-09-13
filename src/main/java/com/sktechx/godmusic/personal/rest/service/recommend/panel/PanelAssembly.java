@@ -12,6 +12,7 @@ package com.sktechx.godmusic.personal.rest.service.recommend.panel;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
@@ -109,6 +110,22 @@ public abstract class PanelAssembly {
             return imgList;
         }
     }
+
+    protected Panel createChartPanel(RecommendPanelType recommendPanelType, OsType osType, int trackLimitSize){
+
+        ChartDto chart = null;
+
+        if(RecommendPanelType.LIVE_CHART.equals(recommendPanelType)){
+            chart = chartService.getRealTimeTrackChart(osType,trackLimitSize);
+        }else if(RecommendPanelType.KIDS_CHART.equals(recommendPanelType)){
+            chart = chartService.getKidsChart(osType,trackLimitSize);
+        }
+        if(chart != null){
+            return new ChartPanel(recommendPanelType, chart, getDefaultBgImageList(chart.getImgList(),osType));
+        }
+        return null;
+    }
+
 
     private Panel createPopularChannelPanel(final ChnlDto channel,final PersonalPhaseMeta personalPhaseMeta){
         return new PopularChannelPanel(

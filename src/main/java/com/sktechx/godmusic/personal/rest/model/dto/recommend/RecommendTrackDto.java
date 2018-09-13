@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto.recommend;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sktechx.godmusic.personal.rest.model.dto.ServiceGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
@@ -41,5 +42,4 @@ public class RecommendTrackDto {
     private ServiceGenreDto svcGenreDto;
 
     private List<ImageInfo> imgList;
-
 }
