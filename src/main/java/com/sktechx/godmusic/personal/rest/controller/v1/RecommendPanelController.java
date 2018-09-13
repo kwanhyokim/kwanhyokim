@@ -31,6 +31,7 @@ import com.sktechx.godmusic.personal.rest.validate.Validator;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -77,16 +78,24 @@ public class RecommendPanelController {
 			"1단계 : 기존 2,3단계 데이터를 모두 삭제 \r\n" +
 			"2단계 : 기존 3단계 데이터를 모두 삭제 후 2단계 패널 생성 ( 2단계 패널 데이터가 있는 경우 유지 ) \r\n" +
 			"3단계 : 3단계 데이터를 생성 ( 3단계 패널 데이터가 있는 경우 유지 ) \r\n" +
-			"4단계 : 4단계 데이터를 생성 "
+			"TPO : TPO 데이터 추가 (기존 1,2,3 단계와는 무관) "
 			, response = CommonApiResponse.class)
 	@PostMapping(value = "/home/panels/create")
 	public CommonApiResponse recommendDummyData(@ApiIgnore @RequestGMContext GMContext ctx,
 												 @Valid @RequestBody RecommendDummyDataRequest recommendDummyDataRequest,
-												@ApiParam(value = "캐릭터 번호", defaultValue = "1") @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = true) Long characterNo
-												){
+												@ApiParam(value = "캐릭터 번호", defaultValue = "1") @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = true) Long characterNo){
 		if(characterNo != null){
 			recommendDataService.createRecommendDummyData(characterNo,recommendDummyDataRequest);
 		}
+
+		String tpoYn = recommendDummyDataRequest.getTpoYn();
+		if("Y".equals(tpoYn)){
+			recommendDataService.addTpoRecommendDummyData(characterNo);
+		}
+		else if("N".equals(tpoYn)){
+			recommendDataService.deleteTpoRecommendDummyData(characterNo);
+		}
+
 		return CommonApiResponse.emptySuccess();
 	}
 

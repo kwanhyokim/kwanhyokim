@@ -48,4 +48,9 @@ public interface RecommendDummyDataMapper {
 
     List<Long> selectRandomSvcGenreId(@Param("size") int size);
 
+    int insertTpoRecommendData(@Param("characterNo") Long characterNo);
+
+    int deleteTpoRecommendData(@Param("characterNo") Long characterNo);
+
+    int selectTpoRecommendDataCount(@Param("characterNo") Long characterNo);
 }

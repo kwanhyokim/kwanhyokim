@@ -22,4 +22,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendDummyDataR
 public interface RecommendDataService {
     void updateRecommendDataRemovePrevent(ListenRequest request, Long characterNo);
     void createRecommendDummyData(Long characterNo ,RecommendDummyDataRequest recommendDummyDataRequest);
+
+    int addTpoRecommendDummyData(Long characterNo);
+    int deleteTpoRecommendDummyData(Long characterNo);
 }
