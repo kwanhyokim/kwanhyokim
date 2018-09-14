@@ -103,6 +103,10 @@ public class ListenServiceImpl implements ListenService {
 				}
 				PurchasePassDto purchasePassDto = purchaseService.getInUsePurchaseIdByMemberNo(memberNo);
 
+				if(purchasePassDto == null){
+					throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
+				}
+
 				trackListenBuilder
 						.pssrlCd(pssrl)
 						.prchsId(purchasePassDto.getPrchsId())
