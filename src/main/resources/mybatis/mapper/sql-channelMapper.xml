@@ -458,8 +458,8 @@
                b.chnl_nm as content_title,
                b.track_cnt as track_count,
                a.last_listen_dtime,
-               c.img_size AS size,
-               CONCAT(c.img_url, '?updateDate=', UNIX_TIMESTAMP(c.create_dtime)) AS url,
+               d.album_img_size as size,
+               CONCAT(d.album_img_url, '?updateDate=', UNIX_TIMESTAMP(d.update_dtime)) AS url,
                b.renew_track_cnt,
                b.renew_dtime
           FROM ( SELECT *
@@ -470,11 +470,10 @@
           JOIN tb_chnl b
             ON a.listen_type_id = b.chnl_id
            AND a.listen_type = 'CHNL'
-          LEFT JOIN ( SELECT *
-                        FROM tb_img_mang
-                       WHERE img_content_type = 'CHNL'
-                         AND os_type IN ( #{osType}, 'ALL') ) c
-            ON b.chnl_id = c.img_content_id
+          LEFT JOIN ted_album c
+            ON b.album_id = c.album_id
+          LEFT JOIN tb_album_img d
+            ON c.album_id = d.album_id
     </select>
 
 </mapper>
