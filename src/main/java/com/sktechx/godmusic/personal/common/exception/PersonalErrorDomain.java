@@ -14,8 +14,9 @@ import com.sktechx.godmusic.lib.domain.exception.ErrorDomain;
 import org.springframework.http.HttpStatus;
 
 public enum PersonalErrorDomain implements ErrorDomain {
+	GM_CONTEXT_MEMBER_NO_NOT_EXIST(4030701, HttpStatus.FORBIDDEN ,"회원 정보 없음", "유효하지 않은 API 접근입니다.")
 
-    TRACK_DUPLICATED_LIKE(4090701,HttpStatus.CONFLICT,"이미 추가된 곡 입니다.", "이미 추가된 곡")
+    , TRACK_DUPLICATED_LIKE(4090701, HttpStatus.CONFLICT, "이미 추가된 곡 입니다.", "이미 추가된 곡")
 	, TRACK_OVER_ADD_LIKE(4090702, HttpStatus.CONFLICT,"좋아요 한 곡을 더 이상 추가할 수 없습니다. 최대 1000곡까지 담을 수 있습니다.","좋아하는 곡 추가 최대값 초과")
 	, CHANNEL_DUPLICATED_LIKE(4090703, HttpStatus.CONFLICT, "이미 추가된 채널 입니다.","중복된 채널")
 	, CHANNEL_OVER_ADD_LIKE(4090704,HttpStatus.CONFLICT,"좋아요 한 플레이리스트를 더 이상 추가할 수 없습니다. 최대 1000개까지 담을 수 있습니다.","좋아하는 채널 최대값 초과")
