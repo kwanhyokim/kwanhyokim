@@ -112,7 +112,6 @@ public class RecommendPhasePanelAssembly extends PanelSignAssembly {
 
                         } catch (Exception e) {
                             log.error("RecommendPhasePanelAssembly appendRecommendCfTrackPanelList error : {}", e.getMessage());
-                            e.printStackTrace();
                         }
                     });
             }

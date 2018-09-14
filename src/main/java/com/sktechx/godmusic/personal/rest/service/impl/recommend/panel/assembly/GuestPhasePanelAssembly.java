@@ -23,7 +23,7 @@ import java.util.List;
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
 /**
  * 설명 : 비로그인 사용자 패널 생성기
- *       인기 채널 3종 제공
+ *       인기 채널 3종 제공 + 실시간 차트
  *
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 24.

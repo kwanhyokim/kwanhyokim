@@ -103,8 +103,7 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
 
         }catch(Exception ex){
             log.error("getPersonalRecommendPhaseMeta not catched exception : {}",ex.getMessage());
-            ex.printStackTrace();
-            personalPhaseMeta =  getGuestPhaseMeta(osType);
+            personalPhaseMeta = getGuestPhaseMeta(osType);
         }
         return personalPhaseMeta;
     }
