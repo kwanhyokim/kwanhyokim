@@ -365,7 +365,7 @@
                         WHERE rcmmd_type_id = 'RC_SML_TR'
                           AND img_disp_type = 'RCT_DTL'
                           AND dfk_type = #{dayType}
-                          AND os_type = #{osType}
+                          AND os_type IN ('ALL', #{osType})
                         LIMIT 1 ) c
               ON 1=1 )
 
@@ -393,8 +393,7 @@
                     WHERE rcmmd_type_id = 'RC_GR_TR'
                       AND img_disp_type = 'RCT_DTL'
                       AND dfk_type = #{dayType}
-                      AND os_type = #{osType}
-                    LIMIT 1 ) c
+                      AND os_type IN ('ALL', #{osType}) ) c
               ON b.svc_genre_id = c.img_content_id )
 
            UNION ALL
@@ -446,9 +445,7 @@
                      FROM tb_map_img_rcmmd_img
                     WHERE rcmmd_type_id = 'RC_CF_TR'
                       AND img_disp_type = 'RCT_DTL'
-                      AND dfk_type = #{dayType}
-                      AND os_type = #{osType}
-                    LIMIT 1 ) c
+                      AND os_type IN ('ALL', #{osType}) ) c
               ON b.svc_genre_id = c.img_content_id )
 
          ORDER BY last_listen_dtime DESC
