@@ -64,4 +64,13 @@ public enum PersonalPhaseType implements CodeEnum {
     public CodeEnum getDefault() {
         return null;
     }
+
+    public static PersonalPhaseType fromCode(String code) {
+        for (PersonalPhaseType type : PersonalPhaseType.values()) {
+            if (type.getCode().equals(code)){
+                return type;
+            }
+        }
+        return null;
+    }
 }

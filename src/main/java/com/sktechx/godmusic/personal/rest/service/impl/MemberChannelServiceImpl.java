@@ -15,6 +15,7 @@ package com.sktechx.godmusic.personal.rest.service.impl;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
+import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEvent;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEventTarget;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEventType;
@@ -22,23 +23,15 @@ import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
 import com.sktechx.godmusic.personal.common.domain.type.AppNameType;
 import com.sktechx.godmusic.personal.common.domain.type.FixedSize;
 import com.sktechx.godmusic.personal.common.domain.type.PinType;
-import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
-import com.sktechx.godmusic.personal.common.exception.InternalException;
-import com.sktechx.godmusic.personal.common.exception.NotFoundException;
-import com.sktechx.godmusic.personal.common.exception.ValidationException;
+import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.rest.model.dto.AlbumDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.MemberChannelDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistRetriveAllResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistTrackCreateResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistTrackRetrieveAllResponse;
-import com.sktechx.godmusic.personal.rest.repository.ChannelMapper;
-import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
-import com.sktechx.godmusic.personal.rest.repository.MemberChannelMapper;
-import com.sktechx.godmusic.personal.rest.repository.MemberChannelTrackMapper;
-import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
+import com.sktechx.godmusic.personal.rest.repository.*;
 import com.sktechx.godmusic.personal.rest.service.MemberChannelService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.ExecutorType;
@@ -56,14 +49,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -109,7 +95,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
         List<Long> idList = memberChannelMapper.selectMemberChannelIdList(memberNo, characterNo, channelId, pageable);
 
         if (CollectionUtils.isEmpty(idList)) {
-            throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
+            throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
         }
 
         List<MemberChannelDto> list = memberChannelMapper.selectMemberChannelList(idList);
@@ -124,7 +110,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
         List<TrackDto> list = memberChannelTrackMapper.selectMemberChannelTrackList(memberNo, characterNo, memberChannelId, pageable);
 
         if (CollectionUtils.isEmpty(list)) {
-            throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
+            throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
         }
 
         long totalCount = memberChannelTrackMapper.selectMemberChannelTrackListCount(memberNo, characterNo, memberChannelId);
@@ -142,7 +128,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
     public MyPlaylistTrackCreateResponse pinMemberChannel(Long memberNo, Long characterNo, PinType pinType, Long pinId) {
         // 1000 채널 초과 체크
         if (memberChannelMapper.selectMemberChannelCount(memberNo, characterNo) >= FixedSize.MY_CHANNEL.getSize()) {
-            throw new ValidationException(CommonErrorMessage.MY_CHANNEL_OVER_CREATE);
+            throw new CommonBusinessException(PersonalErrorDomain.MY_CHANNEL_OVER_CREATE);
         }
 
         String memberChannelName = Strings.EMPTY;
@@ -175,7 +161,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
         }*/
 
         if (StringUtils.isEmpty(memberChannelName) || CollectionUtils.isEmpty(trackIdList)) {
-            throw new CommonBusinessException(CommonErrorMessage.EMPTY_DATA);
+            throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
         }
 
         String appName = GMContext.getContext().getAppName();
@@ -189,7 +175,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
     public MemberChannelDto createMemberChannel(Long memberNo, Long characterNo, String memberChannelName) {
         // 1000 채널 초과 체크
         if (memberChannelMapper.selectMemberChannelCount(memberNo, characterNo) >= FixedSize.MY_CHANNEL.getSize()) {
-            throw new ValidationException(CommonErrorMessage.MY_CHANNEL_OVER_CREATE);
+            throw new CommonBusinessException(PersonalErrorDomain.MY_CHANNEL_OVER_CREATE);
         }
 
         MemberChannelDto memberChannel = new MemberChannelDto();
@@ -249,7 +235,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
             sqlSession.close();
         }catch(Exception e){
             log.error("MyChannel :: track id list order modify :: Error Message", e.getMessage());
-            throw new InternalException(CommonErrorMessage.INTERNAL_SERVER_ERROR);
+            throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
         }
 
     }
@@ -265,7 +251,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
         int duplicateChannelNameCount = memberChannelMapper.selectMemberChannelEqualsName(memberNo, characterNo, memberChannelName);
 
         if (duplicateChannelNameCount > 0) {
-            throw new ValidationException(CommonErrorMessage.MY_CHANNEL_DUPLICATED_NAME);
+            throw new CommonBusinessException(PersonalErrorDomain.MY_CHANNEL_DUPLICATED_NAME);
         }
 
         memberChannelMapper.updateMemberChannel(memberNo, characterNo, memberChannelId, memberChannelName);
@@ -275,7 +261,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
     public MemberChannelDto removeTrackList(AppNameType appName, Long memberNo, Long characterNo, Long memberChannelId, List<Long> trackIdList) {
 
         if (ObjectUtils.isEmpty(memberChannelMapper.selectMemberChannel(memberNo, characterNo, memberChannelId))) {
-            throw new NotFoundException(CommonErrorMessage.MY_CHANNEL_NOT_FOUND);
+            throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
         }
 
         memberChannelTrackMapper.deleteTrack(memberChannelId, trackIdList);
@@ -304,13 +290,13 @@ public class MemberChannelServiceImpl implements MemberChannelService {
     public MyPlaylistTrackCreateResponse addTrackList(AppNameType appName, Long memberNo, Long characterNo, Long memberChannelId, List<Long> trackIdList){
 
         if(ObjectUtils.isEmpty(memberChannelMapper.selectMemberChannel(memberNo, characterNo, memberChannelId))){
-            throw new NotFoundException(CommonErrorMessage.MY_CHANNEL_NOT_FOUND);
+            throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
         }
 
         int trackTotalCnt = memberChannelTrackMapper.selectTrackTotalCount(memberChannelId);
         if(trackTotalCnt >= FixedSize.MY_CHANNEL_TRACK.getSize()
                 || (trackTotalCnt + trackIdList.size()) > FixedSize.MY_CHANNEL_TRACK.getSize()){
-            throw new ValidationException(CommonErrorMessage.MY_CHANNEL_TRACK_OVER_ADD);
+            throw new CommonBusinessException(PersonalErrorDomain.MY_CHANNEL_TRACK_OVER_ADD);
         }
 
         List<Long> duplicateKeyIdList = new ArrayList<>();
@@ -366,7 +352,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
     @Override
     public MemberChannelDto modifyTrackList(Long memberNo, Long characterNo, Long memberChannelId, List<Long> modifyTrackIdList){
         if(ObjectUtils.isEmpty(memberChannelMapper.selectMemberChannel(memberNo, characterNo, memberChannelId))){
-            throw new NotFoundException(CommonErrorMessage.MY_CHANNEL_NOT_FOUND);
+            throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
         }
 
         List<Long> memberChannelTrackIdList = memberChannelTrackMapper.selectMemberChannelTrackIdList(memberNo, characterNo, memberChannelId);
@@ -398,7 +384,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
             sqlSession.close();
         }catch(Exception e){
             log.error("MyChannel :: track id list order modify :: Error Message", e.getMessage());
-            throw new InternalException(CommonErrorMessage.INTERNAL_SERVER_ERROR);
+            throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
         }
         // 첫번째 이미지 트랙으로 채널 이미지 변경
         memberChannelMapper.updateMemberChannelImg(memberChannelId, 1);

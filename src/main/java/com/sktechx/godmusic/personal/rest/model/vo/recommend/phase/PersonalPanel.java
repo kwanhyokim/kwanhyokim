@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.phase;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import lombok.Data;
 
@@ -24,6 +25,8 @@ import java.util.Date;
 @Data
 public class PersonalPanel {
     private RecommendPanelContentType recommendPanelContentType;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
     private Date avaliableDateTime;
     private int dispSn;
     //패널 별 추천 아이디

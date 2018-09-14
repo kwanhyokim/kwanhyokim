@@ -10,7 +10,6 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.phase;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.redis.manager.RedisConnManager;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
@@ -26,9 +25,8 @@ import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecomm
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import redis.clients.jedis.Jedis;
+import org.springframework.util.CollectionUtils;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -40,6 +38,7 @@ import java.util.List;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.RCMMD_CF_TRACK_DISP_STANDARD_COUNT;
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.SIMILAR_TRACK_DISP_STANDARD_COUNT;
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.CHARACTER_PREFER_GENRE_VIEW_LIMIT_SIZE;
 import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.PERSONAL_RECOMMEND_PHASE_KEY;
 /**
  * 설명 : 사용자 청취 단계 / 패널 메타 관리
@@ -86,8 +85,10 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
 
             personalPhaseMeta.setCharacterNo(characterNo);
             personalPhaseMeta.setOsType(osType);
+
             //선호 장르 리스트
             List<CharacterPreferGenreDto> characterPreferGenreList = characterPreferGenreMapper.selectCharacterPreferGenreList(characterNo);
+            fillCharacterPreferGenre(characterPreferGenreList , characterNo);
             personalPhaseMeta.setPreferGenreList(characterPreferGenreList);
 
             //선호 노출 리스트
@@ -102,12 +103,21 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
 
         }catch(Exception ex){
             log.error("getPersonalRecommendPhaseMeta not catched exception : {}",ex.getMessage());
-            ex.printStackTrace();
-            personalPhaseMeta =  getGuestPhaseMeta(osType);
+            personalPhaseMeta = getGuestPhaseMeta(osType);
         }
         return personalPhaseMeta;
     }
 
+    private void fillCharacterPreferGenre(final List<CharacterPreferGenreDto> characterPreferGenreList , Long characterNo){
+        if(!CollectionUtils.isEmpty(characterPreferGenreList)
+                && CHARACTER_PREFER_GENRE_VIEW_LIMIT_SIZE > characterPreferGenreList.size()){
+            List<CharacterPreferGenreDto> fillPreferGenreList =  characterPreferGenreMapper.selectCharacterPreferDispMapGenre(characterNo);
+            if(!CollectionUtils.isEmpty(fillPreferGenreList)){
+                characterPreferGenreList.addAll(fillPreferGenreList);
+            }
+        }
+
+    }
     private long hourlyRemainMillisecond(){
         Calendar cal = Calendar.getInstance();
 

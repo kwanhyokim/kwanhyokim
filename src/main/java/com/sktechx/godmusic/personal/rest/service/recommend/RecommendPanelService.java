@@ -18,7 +18,6 @@ import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelInfoDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 
 /**
@@ -28,7 +27,6 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
  * @date 2018. 07. 09.
  */
 public interface RecommendPanelService {
-    List<Panel> createMockupRecommendPanelList();
     List<Panel> createRecommendPanelList(Long characterNo, OsType osType);
 
 
@@ -42,7 +40,7 @@ public interface RecommendPanelService {
 	ListDto<List<RecommendPanelTrackDto>> getRecommendPanelTrackList(Long characterNo, RecommendPanelContentType recommendPanelType, Long panelContentId);
 
 	// added by bob 2018.08.16
-	RecommendPanelInfoDto getRecommendPanelInfo(RecommendPanelContentType recommendPanelContentType, Long panelContentId);
+	RecommendPanelInfoDto getRecommendPanelInfo(Long characterNo,RecommendPanelContentType recommendPanelContentType, Long panelContentId, OsType osType);
 
 
 	// 홈패널 기본 이미지

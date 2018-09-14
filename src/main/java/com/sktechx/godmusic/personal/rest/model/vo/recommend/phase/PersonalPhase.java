@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.phase;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import lombok.Data;
 
@@ -24,6 +25,8 @@ import java.util.Date;
 @Data
 public class PersonalPhase {
     private PersonalPhaseType phaseType;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
     private Date avaliableDateTime;
 
     public PersonalPhase(){

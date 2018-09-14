@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.service.recommend;
 
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendDummyDataRequest;
 
 /**
  * 설명 : 추천 데이터
@@ -20,4 +21,8 @@ import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
  */
 public interface RecommendDataService {
     void updateRecommendDataRemovePrevent(ListenRequest request, Long characterNo);
+    void createRecommendDummyData(Long characterNo ,RecommendDummyDataRequest recommendDummyDataRequest);
+
+    int addTpoRecommendDummyData(Long characterNo);
+    int deleteTpoRecommendDummyData(Long characterNo);
 }

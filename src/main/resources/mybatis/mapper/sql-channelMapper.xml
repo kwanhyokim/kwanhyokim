@@ -143,8 +143,8 @@
                     chnl.track_cnt,
                     chnl.create_dtime,
                     chnl.update_dtime,
-                    d.img_url,
-                    d.img_size,
+                    chnl.img_url,
+                    chnl.img_size,
                     c.track_id,
                     c.track_nm,
                     c.agency_id,
@@ -158,10 +158,17 @@
                 (
                   SELECT
                     a.*,
-                    b.category_id
+                    b.category_id,
+                    c.img_url,
+                    c.img_size
                   FROM
                   tb_chnl a
                     LEFT OUTER JOIN tb_map_category_chnl b ON a.chnl_id = b.chnl_id
+                    LEFT OUTER JOIN  ( SELECT * FROM tb_img_mang WHERE img_content_type IN ('MOOD', 'SITTN') ) AS c
+                  ON b.category_id = c.img_content_id
+                    AND c.img_disp_type = 'CHNL_MAIN'
+                    AND c.dfk_type = 'EVERY'
+                    AND c.os_type = #{osType}
                   WHERE
                     a.chnl_id IN
                 <foreach item="channelId" index="index" collection="channelIdList" open="(" separator="," close=")">
@@ -174,11 +181,6 @@
                   tb_map_chnl_track b ON chnl.chnl_id = b.chnl_id
                 INNER JOIN
                   tb_track c ON b.track_id = c.track_id
-                LEFT OUTER JOIN  ( SELECT * FROM tb_img_mang WHERE img_content_type IN ('MOOD', 'SITTN') ) AS d
-                  ON chnl.category_id = d.img_content_id
-                AND d.img_disp_type = 'CHNL_MAIN'
-                AND d.dfk_type = 'EVERY'
-                AND d.os_type = #{osType}
                 ORDER BY FIELD(chnl.chnl_id,
                 <foreach item="channelId" index="index" collection="channelIdList" open="" separator="," close="">
                     #{channelId}
@@ -204,12 +206,14 @@
         FROM
             (SELECT
                 b.music_content_id,
-                b.disp_sn, c.chnl_id, c.category_id
+                b.disp_sn,
+                c.chnl_id,
+                c.category_id
             FROM
                 tb_chart a
             INNER JOIN tb_chart_music_content b ON a.chart_id = b.chart_id
-            LEFT OUTER JOIN tb_map_category_chnl c ON b.music_content_id = c.chnl_id
-            LEFT OUTER JOIN tb_category d ON c.category_id = d.category_id
+            INNER JOIN tb_map_category_chnl c ON b.music_content_id = c.chnl_id
+            INNER JOIN tb_category d ON c.category_id = d.category_id
             WHERE
                 a.chart_type = 'WEEKLY'
                     AND a.svc_content_type = 'ALL'
@@ -218,9 +222,9 @@
             ORDER BY b.disp_sn) a INNER JOIN tb_chnl b ON a.music_content_id = b.chnl_id
         WHERE
             b.disp_status_type = 'Y'
-        -- AND
-        --       category_id IS NOT NULL
-        -- GROUP BY category_id
+        AND
+              category_id IS NOT NULL
+        GROUP BY category_id
         ORDER BY disp_sn
     </select>
 
@@ -248,7 +252,7 @@
               tb_chart_music_content c ON b.chart_id = c.chart_id
             INNER JOIN
               tb_chnl e ON e.chnl_id = c.music_content_id
-			LEFT OUTER JOIN
+			INNER JOIN
 			  tb_map_category_chnl f ON e.chnl_id = f.chnl_id
         WHERE
                 b.chart_type = 'WEEKLY'
@@ -274,10 +278,10 @@
                     category_type = 'MOOD'
                 AND disp_status_type = 'Y'
           ) category
-          INNER JOIN  tb_chart a ON category.category_id = a.svc_content_id
+          INNER JOIN tb_chart a ON category.category_id = a.svc_content_id
           INNER JOIN tb_chart_music_content b ON a.chart_id = b.chart_id
           INNER JOIN tb_chnl c ON b.music_content_id = c.chnl_id
-          LEFT OUTER JOIN tb_map_category_chnl d ON c.chnl_id = d.chnl_id
+          INNER JOIN tb_map_category_chnl d ON c.chnl_id = d.chnl_id
         WHERE
             a.chart_type = 'WEEKLY'
         AND
@@ -356,13 +360,13 @@
               ON a.listen_type_id = b.rcmmd_similar_track_id
              AND a.character_no = b.character_no
              AND a.listen_type = 'RC_SML_TR'
-            JOIN (SELECT *
-                    FROM tb_rcmmd_img_mang
-                   WHERE rcmmd_type_id = 'RC_SML_TR'
-                     AND img_disp_type = 'RCT_DTL'
-                     AND dfk_type = #{dayType}
-                     AND os_type = #{osType}
-                   LIMIT 1 ) c
+            LEFT JOIN (SELECT *
+                         FROM tb_rcmmd_img_mang
+                        WHERE rcmmd_type_id = 'RC_SML_TR'
+                          AND img_disp_type = 'RCT_DTL'
+                          AND dfk_type = #{dayType}
+                          AND os_type = #{osType}
+                        LIMIT 1 ) c
               ON 1=1 )
 
            UNION ALL
@@ -385,13 +389,13 @@
              AND a.character_no = b.character_no
              AND a.listen_type = 'RC_GR_TR'
             JOIN ( SELECT *
-                     FROM tb_rcmmd_img_mang
+                     FROM tb_map_img_rcmmd_img
                     WHERE rcmmd_type_id = 'RC_GR_TR'
                       AND img_disp_type = 'RCT_DTL'
                       AND dfk_type = #{dayType}
                       AND os_type = #{osType}
                     LIMIT 1 ) c
-            ON 1=1 )
+              ON b.svc_genre_id = c.img_content_id )
 
            UNION ALL
 
@@ -439,13 +443,13 @@
              AND a.character_no = b.character_no
              AND a.listen_type = 'RC_CF_TR'
             JOIN ( SELECT *
-                     FROM tb_rcmmd_img_mang
+                     FROM tb_map_img_rcmmd_img
                     WHERE rcmmd_type_id = 'RC_CF_TR'
                       AND img_disp_type = 'RCT_DTL'
                       AND dfk_type = #{dayType}
                       AND os_type = #{osType}
                     LIMIT 1 ) c
-              ON 1=1 )
+              ON b.svc_genre_id = c.img_content_id )
 
          ORDER BY last_listen_dtime DESC
     </select>

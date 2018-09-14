@@ -35,6 +35,8 @@ public class ChartDto {
     @JsonProperty("name")
     private String chartNm;
 
+    private Long svcContentId;
+
     private String chartDispNm;
 
     private ChartType chartType;

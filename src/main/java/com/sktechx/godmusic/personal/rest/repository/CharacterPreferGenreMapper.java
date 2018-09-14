@@ -33,4 +33,5 @@ import java.util.List;
 public interface CharacterPreferGenreMapper {
     List<CharacterPreferGenreDto> selectCharacterPreferGenreList(@Param("characterNo") Long characterNo);
     List<CharacterPreferDispDto> selectCharacterPreferDispList(@Param("characterNo") Long characterNo);
+    List<CharacterPreferGenreDto> selectCharacterPreferDispMapGenre(@Param("characterNo") Long characterNo);
 }

@@ -25,6 +25,8 @@ public class RecommendConstant {
     public static final int REALTIME_CHART_EXPIRED_SECONDS = 300;
     public static final int KIDS_CHART_EXPIRED_SECONDS = 300;
 
+    public static final int CHARACTER_PREFER_GENRE_VIEW_LIMIT_SIZE = 3;
+
     //청취 단계 패널
     public static final int SIMILAR_TRACK_PANEL_SIZE  = 2;
     public static final int PREFER_GENRE_SIMILAR_PANEL_SIZE  = 2;
@@ -55,7 +57,9 @@ public class RecommendConstant {
     public static final String CHART_PANEL_HOURLY_BASIS_PHRASES = "시 기준";
 
     public static final String PREFER_GENRE_SIMILAR_TRACK_PANEL_TITLE = "Mix Tape";
+    public static final String PREFER_GENRE_SIMILAR_TRACK_PANEL_SUB_TITLE = "내가 많이 들은 곡과\n비슷한 노래";
     public static final String RCMMD_TRACK_PANEL_TITLE = "Made for U";
+    public static final String RCMMD_TRACK_PANEL_SUB_TITLE = "내가 많이 들은\n 장르의 추천 노래";
 
     public static final String SIMILAR_TRACK_PANEL_TITLE = "Like U";
     public static final String SIMILAR_TRACK_PANEL_SUB_TITLE = "많이 들었던 노래와\n 유사한 선곡";

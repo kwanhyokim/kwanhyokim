@@ -42,6 +42,8 @@ public class TrackDto {
 
     private String holdbackYn;
 
+    private YnType adultAuthYn;
+
     private String playTime;
 
     private String titleYn;

@@ -53,6 +53,7 @@
                b.album_id,
                b.title,
                b.release_ymd,
+               IF(b.album_tp='MF', '', b.album_tp) album_type,
                d.artist_id albumArtistId,
                d.artist_nm albumArtistName,
                h.artist_id albumRepArtistId,

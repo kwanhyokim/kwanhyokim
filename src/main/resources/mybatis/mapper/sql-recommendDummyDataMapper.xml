@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2018 SK TECHX.
+  ~ All right reserved.
+  ~
+  ~ This software is the confidential and proprietary information of SK TECHX.
+  ~ You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with SK TECHX.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.RecommendDummyDataMapper" >
+
+    <select id="selectRandomSvcGenreId" resultType="Long">
+          SELECT
+            svc_genre_id
+          FROM
+            tb_svc_genre
+          WHERE
+            parents_svc_genre_id != 0
+          ORDER BY rand()
+          LIMIT #{size}
+    </select>
+    <select id="selectRcmmdMforuRcmmdId" resultType="Long">
+        <![CDATA[
+            SELECT
+              rcmmd_mforu_id
+            FROM
+              tb_rcmmd_mforu
+            WHERE
+              character_no = #{characterNo}
+            AND
+              disp_std_start_dt <= NOW()
+            AND
+              disp_std_end_dt >= NOW()
+            LIMIT 1
+        ]]>
+    </select>
+    <select id="selectRcmmdSimilarTrackRcmmdId" resultType="Long">
+        <![CDATA[
+            SELECT
+              rcmmd_similar_track_id
+            FROM
+              tb_rcmmd_similar_track
+            WHERE
+              character_no =#{characterNo}
+            AND
+              disp_std_start_dt <= NOW()
+            AND
+              disp_std_end_dt >= NOW()
+            LIMIT 1
+        ]]>
+    </select>
+    <select id="selectRcmmdListenMoodChnlRcmmdId" resultType="Long">
+        <![CDATA[
+            SELECT
+              rcmmd_listen_mood_id
+            FROM
+              tb_rcmmd_listen_mood
+            WHERE
+              character_no = #{characterNo}
+            AND
+              disp_std_start_dt <= NOW()
+            AND
+              disp_std_end_dt >= NOW()
+         ]]>
+    </select>
+
+
+    <delete id="deleteRcmmdMforuData">
+        <![CDATA[
+          DELETE
+          FROM
+            tb_rcmmd_mforu
+          WHERE
+            character_no = #{characterNo}
+        ]]>
+    </delete>
+    <delete id="deleteRcmmdMforuSubData">
+         <![CDATA[
+          DELETE
+          FROM
+            tb_rcmmd_mforu_list
+          WHERE
+            rcmmd_mforu_id IN (
+              SELECT rcmmd_mforu_id FROM tb_rcmmd_mforu WHERE character_no = #{characterNo}
+            )
+        ]]>
+    </delete>
+    <delete id="deleteRcmmdSimilarTrackData">
+        <![CDATA[
+          DELETE
+          FROM
+          tb_rcmmd_similar_track
+          WHERE
+            character_no = #{characterNo}
+        ]]>
+    </delete>
+    <delete id="deleteRcmmdSimilarTrackSubData">
+        <![CDATA[
+          DELETE
+          FROM
+            tb_rcmmd_similar_track_list
+          WHERE
+            rcmmd_similar_track_id IN ( SELECT rcmmd_similar_track_id FROM  tb_rcmmd_similar_track  WHERE character_no = #{characterNo} )
+        ]]>
+    </delete>
+    <delete id="deleteRcmmdListenMoodChnlTrackData">
+        <![CDATA[
+          DELETE
+          FROM
+          tb_rcmmd_listen_mood
+          WHERE
+            character_no = #{characterNo}
+          AND
+            rcmmd_listen_mood_id = #{rcmmdId}
+        ]]>
+    </delete>
+
+    <insert id="insertRcmmdMforuData" parameterType="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto"
+            useGeneratedKeys="true" keyProperty="recommendTrackDto.rcmmdId">
+          INSERT INTO tb_rcmmd_mforu (
+                      character_no ,
+                      disp_std_start_dt ,
+                      disp_std_end_dt ,
+                      svc_genre_id ,
+                      disp_sn ,
+                      create_dtime,
+                      create_std_dtime
+                    )
+          VALUES (
+              #{recommendTrackDto.characterNo},
+              addtime(adddate(curdate(),0), '00:00:00'),
+              addtime(adddate(curdate(),0), '23:59:59'),
+              #{recommendTrackDto.svcGenreId},
+              #{recommendTrackDto.dispSn},
+              NOW(),
+              NOW()
+          )
+    </insert>
+
+    <select id="insertRcmmdMforuSubData" parameterType="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto">
+            INSERT INTO tb_rcmmd_mforu_list
+              SELECT
+                #{rcmmdId},
+                track_id,
+                1
+              FROM ( SELECT track_id FROM tb_track WHERE disp_status_yn = 'Y' LIMIT 10000 ) a
+            ORDER BY rand()
+            LIMIT 50
+    </select>
+
+    <insert id="insertRcmmdSimilarTrackData" parameterType="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto"
+            useGeneratedKeys="true" keyProperty="recommendTrackDto.rcmmdId">
+          INSERT INTO tb_rcmmd_similar_track (
+                      character_no ,
+                      disp_std_start_dt ,
+                      disp_std_end_dt ,
+                      svc_genre_id ,
+                      disp_sn ,
+                      create_dtime
+                    )
+          VALUES (
+               #{recommendTrackDto.characterNo},
+              addtime(adddate(curdate(),0), '00:00:00'),
+              addtime(adddate(curdate(),0), '23:59:59'),
+              #{recommendTrackDto.svcGenreId},
+			  #{recommendTrackDto.dispSn},
+              NOW()
+          )
+    </insert>
+
+    <insert id="insertRcmmdSimilarTrackSubData" parameterType="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto">
+          INSERT INTO tb_rcmmd_similar_track_list
+              SELECT
+                #{rcmmdId},
+                track_id,
+                1
+              FROM ( SELECT track_id FROM tb_track WHERE disp_status_yn = 'Y' LIMIT 10000 ) a
+            ORDER BY rand()
+            LIMIT 50
+    </insert>
+    <insert id="insertRcmmdListenMoodChnlTrackData">
+
+    </insert>
+
+    <select id="selectTpoRecommendDataCount" resultType="int">
+        SELECT COUNT(*)
+          FROM tb_rcmmd_tpo
+         WHERE character_no = #{characterNo}
+    </select>
+    <insert id="insertTpoRecommendData">
+        INSERT INTO tb_rcmmd_tpo
+        SELECT #{characterNo},
+               date_add(now(), INTERVAL -10 DAY),
+               date_add(now(), INTERVAL 30 DAY),
+               category_id,
+               chnl_id,
+               weekend_yn,
+               tm_cd,
+               sittn_disp_sn,
+               chnl_disp_sn
+          FROM tb_rcmmd_tpo
+         WHERE character_no = 1234
+    </insert>
+    <delete id="deleteTpoRecommendData">
+        DELETE
+          FROM tb_rcmmd_tpo
+         WHERE character_no = #{characterNo}
+    </delete>
+</mapper>

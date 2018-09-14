@@ -16,8 +16,8 @@
 <mapper namespace="com.sktechx.godmusic.personal.rest.repository.ChartMapper">
 
     <resultMap type="com.sktechx.godmusic.personal.rest.model.dto.ChartDto" id="chartListResultMap" autoMapping="true">
-        <id property="chartId" column="chart_id" />
-        <collection property="trackList" resultMap="com.sktechx.godmusic.personal.rest.repository.TrackMapper.trackResultMap" column="chart_id" autoMapping="true" />
+        <!--<id property="chartId" column="chart_id" />-->
+        <!--<collection property="trackList" resultMap="com.sktechx.godmusic.personal.rest.repository.TrackMapper.trackResultMap" column="chart_id" autoMapping="true" />-->
     </resultMap>
 
     <resultMap id="chartResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.ChartDto" autoMapping="true">
@@ -84,10 +84,19 @@
                         b.img_url
                   FROM
                         tb_chart a
-                  LEFT OUTER JOIN tb_img_mang b ON a.chart_id = b.img_content_id
-                  AND b.img_content_type = 'CHART'
+                  LEFT OUTER JOIN tb_img_mang b
+                    ON b.img_content_id = (
+                                            SELECT
+                                              prefer_disp_id
+                                            FROM
+                                              tb_prefer_disp
+                                            WHERE
+                                              disp_props_type = #{chartPanelType.dispPropsType}
+                                            AND disp_type = 'CHART'
+                                          )
+                  AND b.img_content_type = 'DISP'
                             AND b.dfk_type = 'EVERY'
-                            AND b.img_disp_type = 'DEFAULT'
+                            AND b.img_disp_type = 'MAIN_TOP'
                             AND b.os_type = #{osType}
                   WHERE
                         a.svc_content_type = #{chartPanelType.svcContentType}
@@ -107,62 +116,67 @@
             LEFT OUTER JOIN ted_artist d ON c.artist_id = d.artist_id
             LEFT OUTER JOIN ted_artist e ON e.artist_id = chart_track_table.reprsnt_artist_id
         WHERE a.disp_status_yn = 'Y'
-
     </select>
 
     <select id="selectChartListByDefaultGenre" resultMap="chartListResultMap">
         <![CDATA[
-            SELECT
-              c.chart_id,
-              c.chart_nm,
-              d.track_id,
-              f.album_id,
-              g.album_img_url  AS url,
-              g.album_img_size AS size
-            FROM (
+--             SELECT
+--               c.chart_id,
+--               c.chart_nm,
+--               d.track_id,
+--               f.album_id,
+--               g.album_img_url  AS url,
+--               g.album_img_size AS size
+--             FROM (
                    SELECT
                      b.chart_id,
+                     b.chart_type,
                      b.chart_nm,
-                     c.music_content_id
+                     b.svc_content_id
+--                      c.music_content_id
                    FROM tb_svc_genre a
                      JOIN tb_chart b ON a.svc_genre_id = b.svc_content_id
-                     JOIN tb_chart_music_content c ON b.chart_id = c.chart_id
+--                      JOIN tb_chart_music_content c ON b.chart_id = c.chart_id
                    WHERE a.main_disp_std_yn = 'Y'
                          AND b.chart_type IN ('HOURLY', 'NEW')
                          AND b.svc_content_type = 'GENRE'
                          AND b.music_content_type = 'TRACK'
-                         AND c.disp_sn = 1
+--                          AND c.disp_sn = 1
                    /*AND b.disp_start_dtime <= now()*/
                    /*AND b.disp_end_dtime >= now()*/
                    ORDER BY a.main_disp_sn, b.update_dtime DESC
                    LIMIT 12
-                 ) c
-              JOIN tb_track d ON c.music_content_id = d.track_id
-              JOIN ted_track e ON d.track_id = e.track_id
-              JOIN ted_album f ON e.album_id = f.album_id
-              JOIN tb_album_img g ON f.album_id = g.album_id
+--                  ) c
+--               JOIN tb_track d ON c.music_content_id = d.track_id
+--               JOIN ted_track e ON d.track_id = e.track_id
+--               JOIN ted_album f ON e.album_id = f.album_id
+--               JOIN tb_album_img g ON f.album_id = g.album_id
         ]]>
     </select>
 
     <select id="selectChartListByPreferGenre" resultMap="chartListResultMap">
         <![CDATA[
-            SELECT
-              c.chart_id,
-              c.chart_nm,
-              d.track_id,
-              f.album_id,
-              g.album_img_url  AS url,
-              g.album_img_size AS size
-            FROM (
+--             SELECT
+--               c.chart_id,
+--               c.chart_nm,
+--               d.track_id,
+--               f.album_id,
+--               g.album_img_url  AS url,
+--               g.album_img_size AS size
+--             FROM (
                    SELECT
                      a.chart_id,
+                     a.chart_type,
                      a.chart_nm,
-                     a.music_content_id
+                     a.svc_content_id
+--                      a.music_content_id
                    FROM (
                           SELECT
                             e.chart_id,
+                            e.chart_type,
                             e.chart_nm,
-                            f.music_content_id,
+                            e.svc_content_id,
+--                             f.music_content_id,
                             1 ord,
                             a.update_dtime
                           FROM tb_character_prefer_genre a
@@ -170,39 +184,41 @@
                             JOIN tb_map_prefer_genre_svc_genre c ON b.prefer_genre_id = c.prefer_genre_id
                             JOIN tb_svc_genre d ON c.prefer_genre_id = d.svc_genre_id
                             JOIN tb_chart e ON d.svc_genre_id = e.svc_content_id
-                            JOIN tb_chart_music_content f ON e.chart_id = f.chart_id
+--                             JOIN tb_chart_music_content f ON e.chart_id = f.chart_id
                           WHERE a.character_no = #{characterNo}
                                 AND b.use_yn = 'Y'
                                 AND e.chart_type IN ('HOURLY', 'NEW')
                                 AND e.svc_content_type = 'GENRE'
                                 AND e.music_content_type = 'TRACK'
-                                AND f.disp_sn = 1
+--                                 AND f.disp_sn = 1
                           /*AND f.disp_start_dtime <= now()*/
                           /*AND f.disp_end_dtime >= now()*/
                           UNION ALL
                           SELECT
                             c.chart_id,
+                            c.chart_type,
                             c.chart_nm,
-                            d.music_content_id,
+                            c.svc_content_id,
+--                             d.music_content_id,
                             2 ord,
                             a.update_dtime
                           FROM tb_character_prefer_disp a
                             JOIN tb_prefer_disp b ON a.prefer_disp_id = b.prefer_disp_id
                             JOIN tb_chart c ON b.disp_id = c.chart_id
-                            JOIN tb_chart_music_content d ON c.chart_id = d.chart_id
+--                             JOIN tb_chart_music_content d ON c.chart_id = d.chart_id
                           WHERE a.character_no = #{characterNo}
                                 AND b.use_yn = 'Y'
                                 /*AND c.disp_start_dtime <= now()*/
                                 /*AND c.disp_end_dtime >= now()*/
-                                AND d.disp_sn = 1
+--                                 AND d.disp_sn = 1
                         ) a
                    ORDER BY ord, update_dtime DESC
                    LIMIT 12
-                 ) c
-              JOIN tb_track d ON c.music_content_id = d.track_id
-              JOIN ted_track e ON d.track_id = e.track_id
-              JOIN ted_album f ON e.album_id = f.album_id
-              JOIN tb_album_img g ON f.album_id = g.album_id
+--                  ) c
+--               JOIN tb_track d ON c.music_content_id = d.track_id
+--               JOIN ted_track e ON d.track_id = e.track_id
+--               JOIN ted_album f ON e.album_id = f.album_id
+--               JOIN tb_album_img g ON f.album_id = g.album_id
         ]]>
     </select>
 

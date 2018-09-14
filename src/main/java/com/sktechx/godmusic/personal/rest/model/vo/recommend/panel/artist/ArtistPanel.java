@@ -19,7 +19,8 @@ import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
 import org.springframework.util.CollectionUtils;
-import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
+
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.ARTIST_PANEL_TITLE;
 /**
  * 설명 : 아티스트형 추천 패널
  *
@@ -69,9 +70,11 @@ public class ArtistPanel extends Panel{
         }
 
 
-        ArtistDto artist = recommendArtist.getArtistList().stream().filter(artistDto->{
-            return !CollectionUtils.isEmpty(artistDto.getImgList());
-        }).findFirst().orElse(recommendArtist.getArtistList().get(0));
+        ArtistDto artist = recommendArtist.getArtistList()
+                .stream()
+                .filter(artistDto->!CollectionUtils.isEmpty(artistDto.getImgList()))
+                .findFirst()
+                .orElse(recommendArtist.getArtistList().get(0));
 
         if(artist==null){
             throw new CommonBusinessException("artist is null.");

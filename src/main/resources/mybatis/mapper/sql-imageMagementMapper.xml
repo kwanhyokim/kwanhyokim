@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ /*
+  ~  * Copyright (c) 2018 SK TECHX.
+  ~  * All right reserved.
+  ~  *
+  ~  * This software is the confidential and proprietary information of SK TECHX.
+  ~  * You shall not disclose such Confidential Information and
+  ~  * shall use it only in accordance with the terms of the license agreement
+  ~  * you entered into with SK TECHX.
+  ~  */
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.ImageManagementMapper">
+
+    <resultMap id="imageManagementResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.ImageManagementDto" autoMapping="true" />
+
+	<select id="selectImageManagementList" resultMap="imageManagementResultMap">
+		SELECT
+		  img_content_type,
+		  img_content_id,
+		  img_size,
+		  os_type,
+		  dfk_type,
+		  img_disp_type,
+		  shortcut_type,
+		  disp_sn,
+		  img_url
+		FROM tb_img_mang
+		WHERE img_content_id = 5
+		<if test="imgContentType != null">
+			  AND img_content_type = #{imgContentType}
+		</if>
+		<if test="shortcutType != null">
+			  AND shortcut_type = #{shortcutType}
+		</if>
+		ORDER BY disp_sn
+	</select>
+
+</mapper>

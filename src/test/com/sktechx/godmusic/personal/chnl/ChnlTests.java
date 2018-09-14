@@ -119,9 +119,4 @@ public class ChnlTests extends CommonTest {
         log.info("recommendTrackDtoList : {}",recommendTrackDtoList);
     }
 
-    @Test
-    public void 차트_테스트(){
-        ChartDto realTimeChart = chartService.getKidsChart(OsType.AOS, 15);
-        log.info("realTimeChart : {}",realTimeChart);
-    }
 }

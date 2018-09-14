@@ -19,5 +19,4 @@ public class SimilarArtistDto {
 	@JsonProperty("id")
 	private Long artistId;
 	private Long similarArtistId;
-	private int dispSn;
 }

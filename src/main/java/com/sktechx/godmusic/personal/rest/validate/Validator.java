@@ -1,8 +1,8 @@
 package com.sktechx.godmusic.personal.rest.validate;
 
 import com.sktechx.godmusic.lib.domain.GMContext;
+import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.domain.exception.LoginValidationException;
-import com.sktechx.godmusic.personal.common.exception.CommonErrorMessage;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -19,9 +19,9 @@ public class Validator {
 
 	public static void loginValidate(GMContext context) {
 		try {
-			if(ObjectUtils.isEmpty(context.getMemberNo()) || ObjectUtils.isEmpty(context.getCharacterNo())) throw new LoginValidationException(CommonErrorMessage.UNAUTHORIZED);
+			if(ObjectUtils.isEmpty(context.getMemberNo()) || ObjectUtils.isEmpty(context.getCharacterNo())) throw new LoginValidationException(CommonErrorDomain.UNAUTHORIZED);
 		} catch (NullPointerException e) {
-			throw new LoginValidationException(CommonErrorMessage.UNAUTHORIZED);
+			throw new LoginValidationException(CommonErrorDomain.UNAUTHORIZED);
 		}
 	}
 
@@ -29,8 +29,8 @@ public class Validator {
 
 		GMContext currentContext = GMContext.getContext();
 
-        if(ObjectUtils.isEmpty(currentContext.getMemberNo())) throw new LoginValidationException(CommonErrorMessage.UNAUTHORIZED);
-        if(!ObjectUtils.isEmpty(memberNo) && !memberNo.equals(currentContext.getMemberNo())) throw new LoginValidationException(CommonErrorMessage.UNAUTHORIZED);
-        if(!ObjectUtils.isEmpty(characterNo) && !characterNo.equals(currentContext.getCharacterNo())) throw new LoginValidationException(CommonErrorMessage.UNAUTHORIZED);
+        if(ObjectUtils.isEmpty(currentContext.getMemberNo())) throw new LoginValidationException(CommonErrorDomain.UNAUTHORIZED);
+        if(!ObjectUtils.isEmpty(memberNo) && !memberNo.equals(currentContext.getMemberNo())) throw new LoginValidationException(CommonErrorDomain.UNAUTHORIZED);
+        if(!ObjectUtils.isEmpty(characterNo) && !characterNo.equals(currentContext.getCharacterNo())) throw new LoginValidationException(CommonErrorDomain.UNAUTHORIZED);
 	}
 }

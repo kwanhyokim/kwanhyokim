@@ -39,7 +39,6 @@ public abstract class TrackPanel extends Panel {
 
     public TrackPanel(RecommendPanelType panelType ,String title, String subTitle, RecommendTrackDto recommendTrackDto, List<ImageInfo> bgImgList) throws CommonBusinessException {
         super(panelType);
-        log.info("trackPanel create imgList: {}",bgImgList);
         this.recommendTrackDto = recommendTrackDto;
         this.imgList = bgImgList;
         this.title = title;
