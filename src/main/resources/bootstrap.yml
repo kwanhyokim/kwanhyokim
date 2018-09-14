@@ -41,6 +41,9 @@ spring:
     config:
       uri: http://172.21.100.178:8888
       label: develop
+server:
+  port: 8080
+
 
 ---
 spring:
