@@ -11,7 +11,6 @@
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.phase;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
-import com.sktechx.godmusic.lib.redis.manager.RedisConnManager;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferDispDto;
@@ -36,9 +35,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.RCMMD_CF_TRACK_DISP_STANDARD_COUNT;
-import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.SIMILAR_TRACK_DISP_STANDARD_COUNT;
-import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.CHARACTER_PREFER_GENRE_VIEW_LIMIT_SIZE;
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
 import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.PERSONAL_RECOMMEND_PHASE_KEY;
 /**
  * 설명 : 사용자 청취 단계 / 패널 메타 관리
@@ -59,9 +56,6 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
 
     @Autowired
     private RedisService redisService;
-
-    @Autowired
-    RedisConnManager connManager;
 
     @Override
     public PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType){
