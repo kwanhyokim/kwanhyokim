@@ -29,12 +29,13 @@
 		  disp_sn,
 		  img_url
 		FROM tb_img_mang
-		WHERE img_content_id = 5
+		WHERE img_content_id = #{imgContentId}
+		    AND img_disp_type = 'MAIN_SRT'
 		<if test="imgContentType != null">
-			  AND img_content_type = #{imgContentType}
+			AND img_content_type = #{imgContentType}
 		</if>
 		<if test="shortcutType != null">
-			  AND shortcut_type = #{shortcutType}
+			AND shortcut_type = #{shortcutType}
 		</if>
 		ORDER BY disp_sn
 	</select>
