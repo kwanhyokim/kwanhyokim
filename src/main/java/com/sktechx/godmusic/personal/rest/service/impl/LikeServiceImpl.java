@@ -183,12 +183,6 @@ public class LikeServiceImpl implements LikeService {
 
 		int likeCnt = likeMapper.getLikeCountByLikeTypeAndLikeTypeId(request.getLikeType(), request.getLikeTypeId(), characterNo);
 
-		if (LikeConstant.LIKE_CHANNEL.equals(request.getLikeType())) {
-			likeCnt += likeMapper.getLikeCountByLikeTypeAndLikeTypeId(LikeConstant.LIKE_CHART, request.getLikeTypeId(), characterNo);
-		} else if (LikeConstant.LIKE_CHART.equals(request.getLikeType())) {
-			likeCnt += likeMapper.getLikeCountByLikeTypeAndLikeTypeId(LikeConstant.LIKE_CHANNEL, request.getLikeTypeId(), characterNo);
-		}
-
 		if(likeCnt > 0){
 			throw new CommonBusinessException(getLikeTypeDuplicated(request.getLikeType()));
 		}
