@@ -203,15 +203,15 @@ public class LikeServiceImpl implements LikeService {
 	private PersonalErrorDomain getLikeTypeNotFoundMessage(String likeType) {
 		switch (likeType) {
 			case LikeConstant.LIKE_CHANNEL :
-				//return CommonErrorMessage.CHANNEL_NOT_FOUND;
+				return PersonalErrorDomain.CHANNEL_NOT_FOUND;
 			case LikeConstant.LIKE_ALBUM :
-				//return CommonErrorMessage.ALBUM_NOT_FOUND;
+				return PersonalErrorDomain.ALBUM_NOT_FOUND;
 			case LikeConstant.LIKE_CHART :
-				//return CommonErrorMessage.CHART_NOT_FOUND;
+				return PersonalErrorDomain.CHART_NOT_FOUND;
 			case LikeConstant.LIKE_ARTIST :
-				//return CommonErrorMessage.ARTIST_NOT_FOUND;
+				return PersonalErrorDomain.ARTIST_NOT_FOUND;
 			case LikeConstant.LIKE_TRACK :
-				//return CommonErrorMessage.TRACK_NOT_FOUND;
+				return PersonalErrorDomain.TRACK_NOT_FOUND;
 			default :
 				throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
 		}
