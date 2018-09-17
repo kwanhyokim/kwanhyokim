@@ -17,6 +17,8 @@ spring:
   cloud:
     config:
       name: personal-api,lib-module
+    refresh:
+      extra-refreshable: javax.sql.DataSource
 
 ---
 spring:
