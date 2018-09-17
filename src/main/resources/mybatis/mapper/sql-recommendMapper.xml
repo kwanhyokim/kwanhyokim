@@ -467,6 +467,7 @@
             rcmmd_track_rank_table.svc_genre_id,
             rcmmd_track_rank_table.svc_genre_nm,
             rcmmd_track_rank_table.trackCount,
+            rcmmd_track_rank_table.rcmmdCreateDtime,
             d.artist_id,
             d.artist_nm,
             a.album_id,
@@ -495,7 +496,8 @@
                 rcmmd_track_table.img_url,
                 rcmmd_track_table.svc_genre_id,
                 rcmmd_track_table.svc_genre_nm,
-                rcmmd_track_table.trackCount
+                rcmmd_track_table.trackCount,
+                rcmmd_track_table.rcmmdCreateDtime
             FROM
             (
                 SELECT
@@ -507,6 +509,7 @@
                     rcmmd_img_table.img_size,
                     rcmmd_img_table.img_url,
                     rcmmd_img_table.trackCount,
+                    rcmmd_img_table.rcmmdCreateDtime,
                     b.track_id,
                     b.disp_sn,
                     c.track_nm,
@@ -524,6 +527,7 @@
                         rcmmd_table.svc_genre_nm,
                         rcmmd_table.disp_sn,
                         rcmmd_table.trackCount,
+                        rcmmd_table.rcmmdCreateDtime,
                         b.img_size,
                         b.img_url
                     FROM
@@ -541,7 +545,8 @@
                                   tb_rcmmd_mforu_list
                                 WHERE
                                   rcmmd_mforu_id = a.rcmmd_mforu_id
-                            ) trackCount
+                            ) trackCount,
+                            a.create_dtime rcmmdCreateDtime
                         FROM
                           tb_rcmmd_mforu a INNER JOIN tb_svc_genre b ON a.svc_genre_id = b.svc_genre_id
                         WHERE
