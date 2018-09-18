@@ -26,7 +26,7 @@ public interface LikeService {
 
 	void addLike(LikeRequest request, Long characterNo);
 
-	void deleteLike(LikeListRequest request, Long characterNo);
+	void deleteLike(LikeTypeIdListRequest request, Long characterNo);
 
 	void updateLike(LikeTypeIdListRequest request, Long characterNo);
 

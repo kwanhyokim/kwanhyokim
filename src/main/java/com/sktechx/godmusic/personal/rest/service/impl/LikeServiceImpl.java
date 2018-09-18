@@ -126,16 +126,16 @@ public class LikeServiceImpl implements LikeService {
 	}
 
 	@Override
-	public void deleteLike(LikeListRequest request, Long characterNo) {
+	public void deleteLike(LikeTypeIdListRequest request, Long characterNo) {
 		Map<String, Object> batchParam = new HashMap<>();
 
 		try(SqlSession sqlSession = sqlSessionTemplate.getSqlSessionFactory().openSession(ExecutorType.BATCH, false)){
-			IntStream.range(0, request.getLikeTypeIds().size())
+			IntStream.range(0, request.getLikeTypeList().size())
 					.forEach(index ->
 							{
 								batchParam.clear();
-								batchParam.put("likeType", request.getLikeType());
-								batchParam.put("likeTypeId", request.getLikeTypeIds().get(index));
+								batchParam.put("likeType", request.getLikeTypeList().get(index).getLikeType());
+								batchParam.put("likeTypeId", request.getLikeTypeList().get(index).getLikeTypeId());
 								batchParam.put("characterNo", characterNo);
 								sqlSession.update("deleteLike", batchParam);
 							}

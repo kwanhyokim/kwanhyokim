@@ -395,6 +395,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                                 batchParam.put("artistId", recommendArtistListDto.get(index).getArtistId());
                                 batchParam.put("artistType", recommendArtistListDto.get(index).getArtistType());
                                 batchParam.put("dispSn", index);
+                                log.info("recommendArtistListDto batchParam : " + batchParam.toString());
                                 sqlSession.update("insertRcmmdArtistList", batchParam);
                             }
                     );
@@ -406,12 +407,14 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                                 batchParam.put("rcmmdArtistId", recommendArtistDto.getRcmmdArtistId());
                                 batchParam.put("trackId", recommendArtistTrackListDto.get(index).getTrackId());
                                 batchParam.put("dispSn", index);
+                                log.info("recommendArtistTrackListDto batchParam : " + batchParam.toString());
                                 sqlSession.update("insertRcmmdArtistTrackList", batchParam);
                             }
                     );
             sqlSession.flushStatements();
             sqlSession.commit();
         } catch(Exception e) {
+            e.printStackTrace();
             log.error("Recommend :: recommend artist :: Error Message", e.getMessage());
             throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
         }

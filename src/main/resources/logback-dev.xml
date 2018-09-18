@@ -46,11 +46,11 @@
     <logger name="org.springframework" level="info" />
     <logger name="org.springframework.jdbc" level="info" />
 
-    <logger name="java.sql" level="off" />
-    <logger name="jdbc.sqlonly" level="info"/>
-    <logger name="com.spring.ibatis" level="off" />
-    <logger name="org.apache.ibatis" level="off" />
-    <logger name="org.mybatis.spring" level="off" />
+    <logger name="java.sql" level="error" />
+    <logger name="jdbc.sqlonly" level="debug"/>
+    <logger name="com.spring.ibatis" level="debug" />
+    <logger name="org.apache.ibatis" level="debug" />
+    <logger name="org.mybatis.spring" level="debug" />
     <logger name="com.netflix.discovery" level="off" />
 
     <logger name="springfox.documentation" level="off" />
