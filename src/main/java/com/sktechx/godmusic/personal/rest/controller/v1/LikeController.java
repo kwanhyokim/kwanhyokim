@@ -132,7 +132,7 @@ public class LikeController {
 	@ApiOperation(value = "좋아요 삭제 by Kobe ( 기존 /v2/my/album/like , /v2/my/track/like , /v2/my/channel/like, /v2/my/artist/like DELETE )")
 	@DeleteMapping("")
 	public CommonApiResponse deleteLike(
-			@RequestBody LikeListRequest request
+			@RequestBody LikeTypeIdListRequest request
 	) {
 		GMContext currentContext = GMContext.getContext();
 
