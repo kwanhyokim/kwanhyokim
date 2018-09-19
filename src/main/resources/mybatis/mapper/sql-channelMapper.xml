@@ -325,6 +325,34 @@
                  b.chart_disp_nm AS content_title,
                  b.music_content_cnt as track_count,
                  a.last_listen_dtime,
+                 e.size,
+                 CONCAT(e.url, '?updateDate=', UNIX_TIMESTAMP(e.create_dtime)) AS url
+            FROM ( SELECT *
+                     FROM tb_member_last_listen_hist
+                    WHERE character_no = #{characterNo}
+                    ORDER BY last_listen_dtime DESC
+                    LIMIT 300 ) a
+            JOIN tb_chart b
+              ON a.listen_type_id = b.chart_id
+             AND a.listen_type = 'CHART'
+             AND b.svc_content_type IN ('ALL', 'KIDS')
+             AND b.music_content_type = 'TRACK'
+            JOIN tb_chart_music_content c
+              ON b.chart_id = c.chart_id
+             AND c.disp_sn = 1
+            JOIN tb_track d
+              ON c.music_content_id = d.track_id
+            JOIN ted_albumimage e
+              ON d.album_id = e.album_id )
+
+           UNION ALL
+
+        ( SELECT CONCAT(a.listen_type, a.listen_type_id) as listen_id,
+                 a.listen_type,
+                 a.listen_type_id,
+                 b.chart_disp_nm AS content_title,
+                 b.music_content_cnt as track_count,
+                 a.last_listen_dtime,
                  c.img_size AS size,
                  CONCAT(c.img_url, '?updateDate=', UNIX_TIMESTAMP(c.create_dtime)) AS url
             FROM ( SELECT *
@@ -335,11 +363,12 @@
             JOIN tb_chart b
               ON a.listen_type_id = b.chart_id
              AND a.listen_type = 'CHART'
+             AND b.svc_content_type = 'GENRE'
             LEFT JOIN ( SELECT *
                           FROM tb_img_mang
-                         WHERE img_content_type = 'CHART'
+                         WHERE img_content_type = 'GENRE'
                            AND os_type IN ( #{osType}, 'ALL') ) c
-              ON b.chart_id = c.img_content_id )
+              ON b.svc_content_id = c.img_content_id )
 
            UNION ALL
 
