@@ -12,6 +12,7 @@ package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
@@ -68,8 +69,8 @@ public abstract class ChannelPanel extends Panel{
         content.setTrackList(channel.getTrackList());
         content.setCreateDtime(channel.getCreateDtime());
         content.setUpdateDtime(channel.getUpdateDtime());
-        content.setRenewTrackCount(channel.getRenewTrackCnt());
         content.setRenewYn(channel.getRenewYn());
+        content.setRenewTrackCount( YnType.Y.equals(channel.getRenewYn())?channel.getRenewTrackCnt() : 0);
         content.setGenre(this.genre);
 
         return content;
