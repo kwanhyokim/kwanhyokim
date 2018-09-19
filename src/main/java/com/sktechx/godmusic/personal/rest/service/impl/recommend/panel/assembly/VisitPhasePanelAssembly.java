@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly;
 
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelSignAssembly;
@@ -19,6 +20,8 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
 /**
  * 설명 : 방문 단계 패널 생성기
@@ -38,7 +41,15 @@ public class VisitPhasePanelAssembly extends PanelSignAssembly {
         if(!CollectionUtils.isEmpty(personalPhaseMeta.getPreferGenreList())){
             appendPreferGenreChannelPanelList(personalPhaseMeta,panelList,PREFER_GENRE_POPULAR_CHNL_LIST_SIZE);
             if(isDefaultPanelAppend(panelList.size())){
-                appendDefaultPopularChannelPanel(personalPhaseMeta, panelList, PREFER_GENRE_POPULAR_CHNL_LIST_SIZE - panelList.size(), null);
+
+                List filterChnlIdList = panelList.stream()
+                        .filter(panel -> RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL.equals(panel.getType()) && panel.getContent() != null)
+                        .map(panel-> {
+                            return panel.getContent().getId();
+                        })
+                        .collect(Collectors.toList());
+
+                appendDefaultPopularChannelPanel(personalPhaseMeta, panelList, PREFER_GENRE_POPULAR_CHNL_LIST_SIZE - panelList.size(), filterChnlIdList);
             }
         }else{
             appendDefaultPopularChannelPanel(personalPhaseMeta, panelList, PREFER_GENRE_POPULAR_CHNL_LIST_SIZE, null);
