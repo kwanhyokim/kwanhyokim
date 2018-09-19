@@ -81,6 +81,9 @@ public class TrackListen {
 	@JsonProperty("source_type")
 	private SourceType          sourceType;
 
+	@JsonProperty("user_client_ip")
+	private String              userClientIp;
+
 	public TrackListen() {
 		this.timeMillis = System.currentTimeMillis();
 		this.free = false;

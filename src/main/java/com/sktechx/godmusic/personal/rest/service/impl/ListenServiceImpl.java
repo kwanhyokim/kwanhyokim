@@ -24,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import javax.servlet.http.HttpServletRequest;
+
 import static com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType.*;
 /**
  * Created by Kobe.
@@ -62,7 +64,7 @@ public class ListenServiceImpl implements ListenService {
 	}
 
 	@Override
-	public void addListenHistByTrack(ListenTrackRequest request, GMContext currentContext) {
+	public void addListenHistByTrack(ListenTrackRequest request, GMContext currentContext, HttpServletRequest httpServletRequest) {
 		Long memberNo = currentContext.getMemberNo();
 		Long characterNo = currentContext.getCharacterNo();
 		String deviceId = currentContext.getDeviceId();
@@ -70,6 +72,7 @@ public class ListenServiceImpl implements ListenService {
 		String logType = request.getTrackLogType() != null ? request.getTrackLogType().getCode() : "";
 		String bitrate = request.getBitrate() != null ? request.getBitrate().getCode() : "";
 		String osType = request.getOsType() != null ? request.getOsType().getCode() : "";
+		String clientIp = httpServletRequest.getHeader("client_ip") != null ? httpServletRequest.getHeader("client_ip") : "";
 
 		TrackListen trackListen = TrackListen.builder()
 				.playChnl(playChannel)
@@ -90,6 +93,7 @@ public class ListenServiceImpl implements ListenService {
 				.sourceType(SourceType.STRM)
 				.free(false)
 				.timeMillis(System.currentTimeMillis())
+				.userClientIp(clientIp)
 				.build();
 
 		TrackListen.TrackListenBuilder trackListenBuilder = trackListen.toBuilder();

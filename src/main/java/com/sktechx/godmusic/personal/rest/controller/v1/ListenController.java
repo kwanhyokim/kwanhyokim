@@ -10,9 +10,12 @@ import com.sktechx.godmusic.personal.rest.validate.Validator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by Kobe.
@@ -44,13 +47,14 @@ public class ListenController {
 	@ApiOperation(value = "곡 청취 로그 by Kobe ( 기존 /v2/user/log/track POST )")
 	@PostMapping("/track")
 	public CommonApiResponse addListenHistByTrack(
+			HttpServletRequest httpServletRequest,
 			@RequestBody ListenTrackRequest request
 	) {
 		GMContext currentContext = GMContext.getContext();
 
 		Validator.loginValidate(currentContext);
 
-		listenService.addListenHistByTrack(request, currentContext);
+		listenService.addListenHistByTrack(request, currentContext, httpServletRequest);
 		return CommonApiResponse.emptySuccess();
 	}
 
