@@ -33,9 +33,12 @@ public enum PersonalErrorDomain implements ErrorDomain {
 	// My 		0300
 	, CHANNEL_NOT_FOUND(4090715, HttpStatus.BAD_REQUEST, "존재 하지 않은 채널 정보 입니다.", "채널 정보 없음")
 	, CHART_NOT_FOUND(4090716, HttpStatus.BAD_REQUEST, "존재 하지 않은 차트 정보 입니다.", "차트 정보 없음")
-	, ALBUM_NOT_FOUND(4090717,HttpStatus.NOT_FOUND ,"존재 하지 않은 앨범 정보 입니다.","앨범 정보 없음"  )
-	, ARTIST_NOT_FOUND(4090718,HttpStatus.NOT_FOUND ,"존재 하지 않은 아티스트 정보 입니다.","아티스트 정보 없음"  )
-	, TRACK_NOT_FOUND(4090719,HttpStatus.NOT_FOUND ,"존재 하지 않은 곡 정보 입니다.","곡 정보 없음"  )
+	, ALBUM_NOT_FOUND(4090717,HttpStatus.BAD_REQUEST ,"존재 하지 않은 앨범 정보 입니다.","앨범 정보 없음"  )
+	, ARTIST_NOT_FOUND(4090718,HttpStatus.BAD_REQUEST ,"존재 하지 않은 아티스트 정보 입니다.","아티스트 정보 없음"  )
+	, TRACK_NOT_FOUND(4090719,HttpStatus.BAD_REQUEST ,"존재 하지 않은 곡 정보 입니다.","곡 정보 없음"  )
+
+	, PREFER_ARTIST_PANEL_FAIL(4090720,HttpStatus.CONFLICT ,"선호/유사 아티스트 인기곡 입력시 문제가 발생했습니다.","데이터 문제"  )
+	, PREFER_GENRE_PANEL_FAIL(4090721,HttpStatus.CONFLICT ,"선호 장르 유사곡 입력시 문제가 발생했습니다.","데이터 문제"  )
 
 	, USER_PSSRL_NOT_FOUND(4090701, HttpStatus.CONFLICT, "회원의 PSSRL이 존재하지 않아 정산 요청을 할 수 없습니다.", "회원 PSSRL 코드 없음")
     ;

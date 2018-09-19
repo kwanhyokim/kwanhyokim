@@ -15,11 +15,13 @@ import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
+import com.sktechx.godmusic.lib.mybatis.autoconfigure.MyBatisDatasourceConfig;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant;
 import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.common.domain.type.ArtistType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
+import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
@@ -345,7 +347,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     }
 
     @Override
-    @Transactional(rollbackFor = {Exception.class, CommonBusinessException.class})
+    @Transactional(MyBatisDatasourceConfig.SERVICE_SQL_TRANSACTION_BEAN_NAME)
     public void addPreferArtistPanel(Long characterNo) {
         // 캐릭터가 선정한 아티스트 목록
         List<CharacterPreferArtistDto> characterPreferArtistDtoList = recommendMapper.selectCharacterPreferArtist(characterNo);
@@ -359,12 +361,15 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         }
 
         List<Long> ids = recommendArtistListDto.stream().map(RecommendArtistListDto::getArtistId).collect(Collectors.toList());
+
         // 부족한 아티스트는 유사 아티스트 랜덤하게 추가
-        fillSimilarArtist(count, recommendArtistListDto, ids);
+        if (recommendArtistListDto.size() > 2 && recommendArtistListDto.size() < 5) // 선호 아티스트가 3, 4명일 경우 유사 아티스트로 5명까지 채움
+            fillSimilarArtist(count, recommendArtistListDto, ids);
 
         // 선호 아티스트가 3~5명 까지는 명당 2 명씩 추가 나머진 5명씩 추가
         count = 2;
         if (characterPreferArtistDtoList.size() < 3) count = 5;
+
         // 정책에 따른 유사 아티스트 추가
         addSimilarArtist(count, recommendArtistListDto, ids);
 
@@ -416,12 +421,12 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         } catch(Exception e) {
             e.printStackTrace();
             log.error("Recommend :: recommend artist :: Error Message", e.getMessage());
-            throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
+            throw new CommonBusinessException(PersonalErrorDomain.PREFER_ARTIST_PANEL_FAIL);
         }
     }
 
 	@Override
-    @Transactional
+    @Transactional(MyBatisDatasourceConfig.SERVICE_SQL_TRANSACTION_BEAN_NAME)
 	public void addPreferGenrePanel(Long characterNo) {
         // 캐릭터가 선정한 장르별 곡 목록
         List<PreferGenreTrackDto> preferGenreTrackDtoList = getPreferGenreTrackDtos(characterNo);
@@ -450,6 +455,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                                             batchParam.put("rcmmdPreferGenreSimilarTrackId", r.getRcmmdPreferGenreSimilarTrackId());
                                             batchParam.put("trackId", s.getSimilarTrackIds().get(index));
                                             batchParam.put("dispSn", index);
+                                            log.info("recommendPreferGenreSimilarTrackDtoList batchParam : " + batchParam.toString());
                                             sqlSession.update("insertRcmmdPreferGenreSimilarTrackList", batchParam);
                                         }
                                 );
@@ -459,8 +465,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             sqlSession.flushStatements();
             sqlSession.commit();
         } catch(Exception e) {
-            log.error("Recommend :: recommend artist :: Error Message", e.getMessage());
-            throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
+            log.error("Recommend :: recommend Genre :: Error Message", e.getMessage());
+            throw new CommonBusinessException(PersonalErrorDomain.PREFER_GENRE_PANEL_FAIL);
         }
 	}
 
@@ -542,9 +548,35 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     }
 
     private void addSimilarArtist(int count, List<RecommendArtistListDto> recommendArtistListDto, List<Long> ids) {
-        List<SimilarArtistDto> similarArtistDtoList = recommendMapper.selectSimilarArtistGroupByPerCount(ids, count);
+        List<SimilarArtistDto> similarArtistDtoList = recommendMapper.selectSimilarArtistByIdList(ids);
+        Long beforeArtistId = null;
+        int checkCount = 0;
         if (!CollectionUtils.isEmpty(similarArtistDtoList)) {
-            for (SimilarArtistDto s : similarArtistDtoList) {
+            for (int i = 0; i < similarArtistDtoList.size(); i++) {
+                if (beforeArtistId == null) beforeArtistId = similarArtistDtoList.get(i).getArtistId();
+                if (!beforeArtistId.equals(similarArtistDtoList.get(i).getArtistId())) {
+                    checkCount = 0;
+                    beforeArtistId = similarArtistDtoList.get(i).getArtistId();
+                }
+                if (checkCount < count && !ids.contains(similarArtistDtoList.get(i).getSimilarArtistId())) {
+                    recommendArtistListDto.add(RecommendArtistListDto.builder()
+                            .artistId(similarArtistDtoList.get(i).getSimilarArtistId())
+                            .artistType(ArtistType.SIMILAR).build());
+                    ids.add(similarArtistDtoList.get(i).getSimilarArtistId());
+                    checkCount++;
+                }
+            }
+        }
+    }
+
+    private void fillSimilarArtist(int count, List<RecommendArtistListDto> recommendArtistListDto, List<Long> ids) {
+        List<SimilarArtistDto> similaArtistList = recommendMapper.selectSimilarArtistByIdList(ids);
+
+        if (!CollectionUtils.isEmpty(similaArtistList)) {
+            Collections.shuffle(similaArtistList);
+            for (SimilarArtistDto s : similaArtistList) {
+                if (count++ > 4) break;
+
                 recommendArtistListDto.add(RecommendArtistListDto.builder()
                         .artistId(s.getSimilarArtistId())
                         .artistType(ArtistType.SIMILAR).build());
@@ -552,23 +584,4 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             }
         }
     }
-
-    private void fillSimilarArtist(int count, List<RecommendArtistListDto> recommendArtistListDto, List<Long> ids) {
-        // 선호 아티스트가 3, 4명일 경우 유사 아티스트로 5명까지 채움
-        if (recommendArtistListDto.size() >= 2 && recommendArtistListDto.size() < 5) {
-            List<SimilarArtistDto> similaArtistList = recommendMapper.selectSimilarArtistByIdList(ids);
-
-            if (!CollectionUtils.isEmpty(similaArtistList)) {
-                Collections.shuffle(similaArtistList);
-                for (SimilarArtistDto s : similaArtistList) {
-                    recommendArtistListDto.add(RecommendArtistListDto.builder()
-                            .artistId(s.getSimilarArtistId())
-                            .artistType(ArtistType.SIMILAR).build());
-                    ids.add(s.getSimilarArtistId());
-                    if (count > 4) break;
-                }
-            }
-        }
-    }
-
 }
