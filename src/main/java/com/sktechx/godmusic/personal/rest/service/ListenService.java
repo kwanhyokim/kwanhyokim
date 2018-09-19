@@ -4,6 +4,8 @@ import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenTrackRequest;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * Created by Kobe.
  *
@@ -14,5 +16,5 @@ import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenTrackRequest;
 public interface ListenService {
 	void addListenHistByChannel(ListenRequest request, Long memberNo, Long characterNo);
 
-	void addListenHistByTrack(ListenTrackRequest request, GMContext currentContext);
+	void addListenHistByTrack(ListenTrackRequest request, GMContext currentContext, HttpServletRequest httpServletRequest);
 }
