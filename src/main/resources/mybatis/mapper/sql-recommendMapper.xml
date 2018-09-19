@@ -637,10 +637,9 @@
         SELECT
             CHARACTER_NO
             , ARTIST_ID
-            , GENRE_ID
-            , GENRE_TYPE
         FROM TB_CHARACTER_PREFER_ARTIST
         WHERE CHARACTER_NO = #{characterNo}
+        GROUP BY CHARACTER_NO, ARTIST_ID
         ORDER BY ARTIST_ID
     </select>
 
@@ -657,31 +656,7 @@
             <foreach item="artistId" index="index" collection="artistIdList" open="(" separator="," close=")">
                 #{artistId}
             </foreach>
-    </select>
-
-    <select id="selectSimilarArtistGroupByPerCount" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.SimilarArtistDto">
-        SELECT
-            A.ARTIST_ID
-            , A.SIMILAR_ARTIST_ID
-        FROM TB_SIMILAR_ARTIST A INNER JOIN (
-                                                SELECT
-                                                    ARTIST_ID
-                                                    , group_concat(SIMILAR_ARTIST_ID) GROUP_SIMILAR_ARTIST_ID
-                                                FROM (
-                                                         SELECT *
-                                                         FROM TB_SIMILAR_ARTIST
-                                                         WHERE ARTIST_ID IN
-                                                <foreach item="artistId" index="index" collection="artistIdList" open="(" separator="," close=")">
-                                                    #{artistId}
-                                                </foreach>
-                                                AND SIMILAR_ARTIST_ID NOT IN
-                                                <foreach item="artistId" index="index" collection="artistIdList" open="(" separator="," close=")">
-                                                    #{artistId}
-                                                </foreach>
-                                                         ORDER BY rand()) I
-                                                GROUP BY ARTIST_ID) B
-                ON A.ARTIST_ID = B.ARTIST_ID
-                   AND find_in_set(A.SIMILAR_ARTIST_ID, B.GROUP_SIMILAR_ARTIST_ID) BETWEEN 1 AND #{perCount}
+        ORDER BY ARTIST_ID, rand()
     </select>
 
     <select id="selectSimilarArtistTrack" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistTrackListDto">

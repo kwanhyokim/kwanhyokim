@@ -62,8 +62,6 @@ public interface RecommendMapper {
 
     List<SimilarArtistDto> selectSimilarArtistByIdList(@Param("artistIdList") List<Long> artistIdList);
 
-    List<SimilarArtistDto> selectSimilarArtistGroupByPerCount(@Param("artistIdList") List<Long> artistIdList, @Param("perCount") int perCount);
-
     List<RecommendArtistTrackListDto> selectSimilarArtistTrack(@Param("artistIdList") List<Long> artistIdList);
 
     void updateRcmmdArtistDispStdEndDt(@Param("characterNo") Long characterNo);
