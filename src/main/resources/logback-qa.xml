@@ -15,7 +15,7 @@
     ​
     <!--<springProperty scope="context" name="springAppName" source="spring.application.name"/>-->
 
-    <property name="LOG_FILE" value="${catalina.home}/logs/service/api.${HOSTNAME}.log"/>​
+    <property name="LOG_FILE" value="${catalina.home}/logs/service/api.${hostname}.log"/>​
     <property name="LOG_PATTERN"
               value="%X{hostName} | %d{${datestamp}} | ${LOG_LEVEL_PATTERN:-%5p} | %X{transactionId} | %X{resCode} | %X{memberNo} | %X{characterNo} | %msg%n"/>
 
