@@ -62,6 +62,9 @@ public class TrackListen {
 	@JsonProperty("chnl_id")
 	private Long				chnlId;
 
+	@JsonProperty("chnl_type")
+	private String				chnlType;
+
 	@JsonProperty("member_rcmd_id")
 	private Long				memberRcmdId;
 
