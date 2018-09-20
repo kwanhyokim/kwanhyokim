@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -73,6 +74,7 @@ public class ListenServiceImpl implements ListenService {
 		String bitrate = request.getBitrate() != null ? request.getBitrate().getCode() : "";
 		String osType = request.getOsType() != null ? request.getOsType().getCode() : "";
 		String clientIp = httpServletRequest.getHeader("client_ip") != null ? httpServletRequest.getHeader("client_ip") : "";
+		String chnlType = StringUtils.isEmpty(request.getChannelType()) ? null : request.getChannelType();
 
 		TrackListen trackListen = TrackListen.builder()
 				.playChnl(playChannel)
@@ -87,6 +89,7 @@ public class ListenServiceImpl implements ListenService {
 				.dvcId(deviceId)
 				.albumId(request.getAlbumId())
 				.chnlId(request.getChannelId())
+				.chnlType(chnlType)
 				.memberRcmdId(request.getRecommendTrackId())
 				.addTm(request.getAddDateTime())
 				.sessionToken("")

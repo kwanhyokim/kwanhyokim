@@ -63,6 +63,9 @@ public class ListenTrackRequest {
 	@ApiModelProperty(name = "channelId", value = "채널 ID")
 	private Long channelId;
 
+	@ApiModelProperty(name = "channelType", value = "채널 Type")
+	private String channelType;
+
 	@ApiModelProperty(name = "recommendTrackId", value = "추천곡 ID")
 	private Long recommendTrackId;
 
