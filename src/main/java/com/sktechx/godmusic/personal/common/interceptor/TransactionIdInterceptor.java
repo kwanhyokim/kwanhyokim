@@ -39,7 +39,7 @@ public class TransactionIdInterceptor extends HandlerInterceptorAdapter implemen
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        MDC.put("hostName", InetAddress.getLocalHost().getHostName());
+//        MDC.put("hostName", InetAddress.getLocalHost().getHostName());
 
         Enumeration<String> idEnum = request.getHeaders(CommonConstant.X_GM_TRANSACTION_ID);
         if (idEnum.hasMoreElements()) {
