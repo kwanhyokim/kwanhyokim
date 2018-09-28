@@ -50,7 +50,14 @@ public class RecommendConstant {
     //노출 가능한 최소 개수
     public static final int SIMILAR_TRACK_DISP_STANDARD_COUNT = 15;
     public static final int PREFER_GENRE_SIMILAR_TRACK_DISP_STANDARD_COUNT = 15;
-    public static final int ARTIST_POPULAR_TRACK_DISP_STANDARD_COUNT = 15;
+
+
+    public static final int ARTIST_POPULAR_TRACK_DISP_STANDARD_COUNT = 30;
+    public static final int ARTIST_POPULAR_TRACK_DISP_ONE_ARTIST_COUNT = 12;
+    public static final int ARTIST_POPULAR_TRACK_DISP_TWO_ARTIST_COUNT = 24;
+    public static final int ARTIST_POPULAR_ARTIST_NAME_COUNT = 5;
+
+
     public static final int RCMMD_CF_TRACK_DISP_STANDARD_COUNT = 50;
 
     public static final String ARTIST_PANEL_TITLE = "Musician focus";
