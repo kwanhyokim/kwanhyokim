@@ -352,13 +352,16 @@
               AND LIKE_TYPE = #{likeType}
     </select>
 
+    <update id="updateLikeDispSn">
+        UPDATE TB_CHARACTER_LIKE
+        SET DISP_SN = DISP_SN + 1
+        WHERE CHARACTER_NO = #{characterNo}
+        AND LIKE_TYPE = #{likeType}
+    </update>
+
     <insert id="insertLike">
         INSERT INTO TB_CHARACTER_LIKE (CHARACTER_NO, LIKE_TYPE, LIKE_TYPE_ID, DISP_SN, CREATE_DTIME, UPDATE_DTIME)
-        VALUES (#{characterNo}, #{likeType}, #{likeTypeId}, ( SELECT DISP_SN
-                                                              FROM ( SELECT IFNULL(MAX( DISP_SN ) + 1 ,1) as DISP_SN
-                                                                     FROM TB_CHARACTER_LIKE
-                                                                     WHERE CHARACTER_NO = #{characterNo}
-                                                                      AND LIKE_TYPE = #{likeType}) TMP ), now(), now())
+        VALUES (#{characterNo}, #{likeType}, #{likeTypeId}, 1, now(), now())
     </insert>
 
     <delete id="deleteLike">

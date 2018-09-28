@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
@@ -119,8 +120,11 @@ public class LikeServiceImpl implements LikeService {
 	}
 
 	@Override
+	@Transactional
 	public void addLike(LikeRequest request, Long characterNo) {
 		validCheckAddLike(request, characterNo);
+
+		likeMapper.updateLikeDispSn(request.getLikeType(), characterNo);
 
 		likeMapper.insertLike(request.getLikeType(), request.getLikeTypeId(), characterNo);
 	}
