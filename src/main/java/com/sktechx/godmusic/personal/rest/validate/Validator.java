@@ -4,6 +4,7 @@ import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.domain.exception.LoginValidationException;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -13,6 +14,7 @@ import org.springframework.util.ObjectUtils;
  * @date 2018. 8. 2.
  * @time AM 11:50
  */
+@Slf4j
 public class Validator {
 	public static void requestValidate(Long memberNo) {
 		requestValidate(memberNo, null);
@@ -20,8 +22,12 @@ public class Validator {
 
 	public static void loginValidate(GMContext context) {
 		try {
-			if(ObjectUtils.isEmpty(context.getMemberNo()) || ObjectUtils.isEmpty(context.getCharacterNo())) throw new LoginValidationException(PersonalErrorDomain.GM_CONTEXT_MEMBER_NO_NOT_EXIST);
+			if(ObjectUtils.isEmpty(context.getMemberNo()) || ObjectUtils.isEmpty(context.getCharacterNo())) {
+				log.info(context.toString());
+				throw new LoginValidationException(PersonalErrorDomain.GM_CONTEXT_MEMBER_NO_NOT_EXIST);
+			}
 		} catch (NullPointerException e) {
+			log.info("GMcontext is null");
 			throw new LoginValidationException(PersonalErrorDomain.GM_CONTEXT_MEMBER_NO_NOT_EXIST);
 		}
 	}

@@ -37,7 +37,8 @@ public class LikeController {
 	@Autowired
 	private LikeService likeService;
 
-	@ApiOperation(value = "좋아요 플레이리스트 목록 by Kobe ( 기존 /v2/my/channel/like/list GET )", response = LikePlaylistListResponse.class)
+	@ApiOperation(value = "좋아요 플레이리스트 목록 by Kobe ( 기존 /v2/my/channel/like/list GET )", response = LikePlaylistListResponse.class
+			, httpMethod = "GET", notes = "My > 좋아요 > 플레이 리스트 목록")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "page", required = false, dataType = "int", paramType = "query", value = "페이지", defaultValue = "1"),
 			@ApiImplicitParam(name = "size", required = false, dataType = "int", paramType = "query", value = "사이즈", defaultValue = "1000")
@@ -53,7 +54,8 @@ public class LikeController {
 		return new CommonApiResponse(likeService.getPlayListLikeListByLikeType(currentContext.getCharacterNo(), pageable));
 	}
 
-	@ApiOperation(value = "좋아요 앨범 목록 by Kobe ( 기존 /v2/my/album/like/list GET )", response = LikeAlbumListResponse.class)
+	@ApiOperation(value = "좋아요 앨범 목록 by Kobe ( 기존 /v2/my/album/like/list GET )", response = LikeAlbumListResponse.class
+			, httpMethod = "GET", notes = "My > 좋아요 > 앨범 리스트 목록")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "page", required = false, dataType = "int", paramType = "query", value = "페이지", defaultValue = "1"),
 			@ApiImplicitParam(name = "size", required = false, dataType = "int", paramType = "query", value = "사이즈", defaultValue = "1000")
@@ -69,7 +71,8 @@ public class LikeController {
 		return new CommonApiResponse(likeService.getAlbumLikeListByLikeType(currentContext.getCharacterNo(), pageable));
 	}
 
-	@ApiOperation(value = "좋아요 아티스트 목록 by Kobe ( 기존 /v2/my/artist/like/list GET )", response = LikeArtistListResponse.class)
+	@ApiOperation(value = "좋아요 아티스트 목록 by Kobe ( 기존 /v2/my/artist/like/list GET )", response = LikeArtistListResponse.class
+			, httpMethod = "GET", notes = "My > 좋아요 > 아티스트 리스트 목록")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "page", required = false, dataType = "int", paramType = "query", value = "페이지", defaultValue = "1"),
 			@ApiImplicitParam(name = "size", required = false, dataType = "int", paramType = "query", value = "사이즈", defaultValue = "1000")
@@ -85,7 +88,8 @@ public class LikeController {
 		return new CommonApiResponse(likeService.getArtistLikeListByLikeType(currentContext.getCharacterNo(), pageable));
 	}
 
-	@ApiOperation(value = "좋아요 트랙별 목록 by Kobe ( 기존 /v2/my/track/like/list GET )", response = LikeTrackListResponse.class)
+	@ApiOperation(value = "좋아요 트랙별 목록 by Kobe ( 기존 /v2/my/track/like/list GET )", response = LikeTrackListResponse.class
+			, httpMethod = "GET", notes = "My > 좋아요 > 곡 리스트 목록")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "page", required = false, dataType = "int", paramType = "query", value = "페이지", defaultValue = "1"),
 			@ApiImplicitParam(name = "size", required = false, dataType = "int", paramType = "query", value = "사이즈", defaultValue = "1000")
@@ -101,7 +105,8 @@ public class LikeController {
 		return new CommonApiResponse(likeService.getTrackLikeListByLikeType(currentContext.getCharacterNo(), pageable));
 	}
 
-	@ApiOperation(value = "좋아요 여부 확인 by Kobe")
+	@ApiOperation(value = "좋아요 여부 확인 by Kobe"
+			, httpMethod = "GET", notes = "사용자가 좋아요 한것(타입별)이 맞는지 확인")
 	@GetMapping("/type/{likeType}/ids/{likeTypeId}")
 	public CommonApiResponse<LikeYnResponse> getLikeYn(
 			@ApiParam(defaultValue = "ALBUM",
@@ -116,7 +121,8 @@ public class LikeController {
 		return new CommonApiResponse(likeService.getLikeYn(likeType, likeTypeId, currentContext.getCharacterNo()));
 	}
 
-	@ApiOperation(value = "좋아요 추가 by Kobe ( 기존 /v2/my/album/like , /v2/my/track/like , /v2/my/channel/like, /v2/my/artist/like POST )")
+	@ApiOperation(value = "좋아요 추가 by Kobe ( 기존 /v2/my/album/like , /v2/my/track/like , /v2/my/channel/like, /v2/my/artist/like POST )"
+			, httpMethod = "POST", notes = "타입별 좋아요 추가")
 	@PostMapping("")
 	public CommonApiResponse addLike(
 			@RequestBody LikeRequest request
@@ -129,7 +135,8 @@ public class LikeController {
 		return CommonApiResponse.emptySuccess();
 	}
 
-	@ApiOperation(value = "좋아요 삭제 by Kobe ( 기존 /v2/my/album/like , /v2/my/track/like , /v2/my/channel/like, /v2/my/artist/like DELETE )")
+	@ApiOperation(value = "좋아요 삭제 by Kobe ( 기존 /v2/my/album/like , /v2/my/track/like , /v2/my/channel/like, /v2/my/artist/like DELETE )"
+			, httpMethod = "DELETE", notes = "타입별 좋아요 삭제")
 	@DeleteMapping("")
 	public CommonApiResponse deleteLike(
 			@RequestBody LikeTypeIdListRequest request
@@ -142,7 +149,8 @@ public class LikeController {
 		return CommonApiResponse.emptySuccess();
 	}
 
-	@ApiOperation(value = "좋아요 정렬 수정 by Kobe ( 기존 /v2/my/album/like , /v2/my/track/like , /v2/my/channel/like, /v2/my/artist/like PUT )")
+	@ApiOperation(value = "좋아요 정렬 수정 by Kobe ( 기존 /v2/my/album/like , /v2/my/track/like , /v2/my/channel/like, /v2/my/artist/like PUT )"
+			, httpMethod = "PUT", notes = "타입별 좋아요 정렬 순서 수정")
 	@PutMapping("")
 	public CommonApiResponse updateLike(
 			@RequestBody LikeTypeIdListRequest request

@@ -31,7 +31,8 @@ public class ListenController {
 	@Autowired
 	ListenService listenService;
 
-	@ApiOperation(value = "채널 청취 로그 by Kobe ( 기존 /v2/user/log/channel POST )")
+	@ApiOperation(value = "채널 청취 로그 by Kobe ( 기존 /v2/user/log/channel POST )"
+			, httpMethod = "POST", notes = "채널 전체 재생시 로그를 DB 로 남김")
 	@PostMapping("/channel")
 	public CommonApiResponse addListenHistByChannel(
 			@RequestBody ListenRequest request
@@ -44,7 +45,8 @@ public class ListenController {
 		return CommonApiResponse.emptySuccess();
 	}
 
-	@ApiOperation(value = "곡 청취 로그 by Kobe ( 기존 /v2/user/log/track POST )")
+	@ApiOperation(value = "곡 청취 로그 by Kobe ( 기존 /v2/user/log/track POST )"
+			, httpMethod = "POST", notes = "곡 재생시점에 따른 재생 로그를 MQ 로 남김")
 	@PostMapping("/track")
 	public CommonApiResponse addListenHistByTrack(
 			HttpServletRequest httpServletRequest,

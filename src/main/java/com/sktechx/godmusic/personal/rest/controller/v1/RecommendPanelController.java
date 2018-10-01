@@ -127,7 +127,8 @@ public class RecommendPanelController {
 		return new CommonApiResponse(response);
 	}
 
-	@ApiOperation(value = "Discovery Flow 2-C 선호/유사 아티스트 인기곡 by Kobe")
+	@ApiOperation(value = "Discovery Flow 2-C 선호/유사 아티스트 인기곡 by Kobe", httpMethod = "POST",
+			notes = "사용자가 선호/유사 아티스트 변경시 아티스트의 유사 아티스트들의 인기곡 30곡중 랜덤하게 2곡을 뽑아 리스팅해서 저장")
 	@PostMapping("/prefer/artist/panel")
 	public CommonApiResponse addPreferArtistPanel() {
 		GMContext currentContext = GMContext.getContext();
@@ -139,7 +140,8 @@ public class RecommendPanelController {
 		return CommonApiResponse.emptySuccess();
 	}
 
-	@ApiOperation(value = "Discovery Flow 2-A` 선호 장르 유사곡 by Kobe")
+	@ApiOperation(value = "Discovery Flow 2-A` 선호 장르 유사곡 by Kobe", httpMethod = "POST",
+			notes = "사용자가 선호하는 장르 변경시 장르의 대표 아티스트들과 그 아티스트의 유사아티스트 들의 인기곡을 리스팅해서 저장")
 	@PostMapping("/prefer/genre/panel")
 	public CommonApiResponse addPreferGenrePanel() {
 		GMContext currentContext = GMContext.getContext();
