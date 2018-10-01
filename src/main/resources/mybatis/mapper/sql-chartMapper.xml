@@ -76,7 +76,7 @@
                   SELECT
                         a.chart_id,
                         a.music_content_cnt,
-                        a.chart_disp_nm,
+                        c.prefer_disp_nm chart_disp_nm,
                         a.create_dtime,
                         a.update_dtime,
                         a.disp_start_dtime,
@@ -98,6 +98,7 @@
                             AND b.dfk_type = 'EVERY'
                             AND b.img_disp_type = 'MAIN_TOP'
                             AND b.os_type = #{osType}
+                  LEFT OUTER JOIN tb_prefer_disp c ON b.img_content_id = c.prefer_disp_id
                   WHERE
                         a.svc_content_type = #{chartPanelType.svcContentType}
                             AND a.chart_type = #{chartPanelType.chartType}
