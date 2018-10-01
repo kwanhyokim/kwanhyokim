@@ -66,10 +66,10 @@ public class RecommendConstant {
     public static final String PREFER_GENRE_SIMILAR_TRACK_PANEL_TITLE = "Mix Tape";
     public static final String PREFER_GENRE_SIMILAR_TRACK_PANEL_SUB_TITLE = "내가 많이 들은 곡과\n비슷한 노래";
     public static final String RCMMD_TRACK_PANEL_TITLE = "Made for U";
-    public static final String RCMMD_TRACK_PANEL_SUB_TITLE = "내가 많이 들은\n 장르의 추천 노래";
+    public static final String RCMMD_TRACK_PANEL_SUB_TITLE = "내가 많이 들은\n장르의 추천 노래";
 
     public static final String SIMILAR_TRACK_PANEL_TITLE = "Like U";
-    public static final String SIMILAR_TRACK_PANEL_SUB_TITLE = "많이 들었던 노래와\n 유사한 선곡";
+    public static final String SIMILAR_TRACK_PANEL_SUB_TITLE = "많이 들었던 노래와\n유사한 선곡";
 
 }
 
