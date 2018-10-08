@@ -21,10 +21,10 @@ import com.sktechx.godmusic.lib.mybatis.code.CodeEnum;
  * @date 2018. 8. 1.
  */
 public enum PinType implements CodeEnum {
-    RC_SML_TR("RC_SML_TR", "Like U(2-A)"),
-    RC_GR_TR("RC_GR_TR", "Mix Tape(2-A')"),
-    RC_ATST_TR("RC_ATST_TR", "Musician focus(2-C)"),
-    RC_CF_TR("RC_CF_TR", "Made for U(3-A)"),
+    RC_SML_TR("RC_SML_TR", "Like U"),
+    RC_GR_TR("RC_GR_TR", "Mix Tape"),
+    RC_ATST_TR("RC_ATST_TR", "Musician focus"),
+    RC_CF_TR("RC_CF_TR", "Made for U"),
     CHNL("CHNL", "채널"),
     MY_CHNL("MY_CHNL", "마이 채널");
 //    CHART("CHART" , "차트");

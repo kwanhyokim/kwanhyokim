@@ -64,7 +64,14 @@ public class RecommendPanelController {
 		return new CommonApiResponse<>(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(ctx.getCharacterNo(),ctx.getOsType()));
 	}
 
-    @ApiOperation(value = "추천 홈 패널 조회 ( New )", httpMethod = "GET", notes = "추천 패널 조회 API" , response = RecommendPanelResponse.class)
+    @ApiOperation(value = "추천 홈 패널 조회 ( New )", httpMethod = "GET",response = RecommendPanelResponse.class,
+			notes = "사용자 별 추천 단계에 따른 추천 데이터를 조회 하는 API \r\n" +
+					"\r\n" +
+					"0단계 : 비로그인 단계 ( 1-A : 인기채널 , 실시간 차트 ) \r\n" +
+					"1단계 : 방문 단계 ( 1-A : 인기채널 , 1-A' : 선호장르 인기 채널, 2-C : 선호/유사아티스트 인기곡 , 차트 ) \r\n" +
+					"2단계 : 청취 단계 ( 2-A : 유사곡 , 2-A' : 선호장르 유사곡 , 2-C : 선호/유사아티스트 인기곡 , 2-B : 청취무드 인기채널 , 차트) \r\n" +
+					"3단계 : 추천 단계 ( 3-A : 청취CF, 2-A : 유사곡 , 2-A' : 선호장르 유사곡 , 2-C : 선호/유사아티스트 인기곡, 차트 )"
+	)
     @GetMapping(value = "/home/panels")
     public CommonApiResponse<RecommendPanelResponse> recommendHomePanels(@ApiIgnore @RequestGMContext GMContext ctx){
 		RecommendPanelResponse recommendPanelResponse = new RecommendPanelResponse();

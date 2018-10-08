@@ -152,6 +152,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
             trackIdList = trackMapper.selectRecommendPanelCfTrackList(characterNo, pinId);
 
         } if (PinType.RC_ATST_TR == pinType) {
+            memberChannelName = pinType.getTitle();
             trackIdList = trackMapper.selectRecommendPanelPopularTrackList(characterNo, pinId);
         }
         /*} else if (PinType.CHART == pinType) {

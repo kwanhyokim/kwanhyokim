@@ -29,6 +29,13 @@
               b.use_yn = 'Y'
             AND
               a.character_no = #{characterNo}
+            UNION ALL
+            SELECT a.character_no,
+              b.prefer_disp_id,
+              b.prefer_disp_nm
+            FROM tb_character_prefer_disp A INNER JOIN tb_prefer_disp b ON a.prefer_disp_id = b.prefer_disp_id
+            WHERE a.character_no = #{characterNo}
+            AND b.use_yn = 'Y'
         ]]>
     </select>
     <select id="selectCharacterPreferDispList" resultMap="characterPreferDispResultMap" parameterType="Long">

@@ -19,8 +19,13 @@ import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
-import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.ARTIST_PANEL_TITLE;
+import java.util.List;
+import java.util.StringJoiner;
+import java.util.stream.IntStream;
+
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
 /**
  * 설명 : 아티스트형 추천 패널
  *
@@ -44,7 +49,9 @@ public class ArtistPanel extends Panel{
         ArtistDto representationArtist = neverNullArtist(recommendArtistDto);
 
         this.title = ARTIST_PANEL_TITLE;
-        this.subTitle = representationArtist.getArtistName();
+
+        this.subTitle = getArtistSubTitle(recommendArtistDto);
+
         this.imgList = representationArtist.getImgList();
         this.content = createPanelContent();
 
@@ -64,11 +71,36 @@ public class ArtistPanel extends Panel{
         return content;
     }
 
+
+    private String getArtistSubTitle(RecommendArtistDto recommendArtistDto){
+        List<ArtistDto> artistList = recommendArtistDto.getArtistList();
+        StringJoiner joiner = new StringJoiner(",");
+
+        IntStream.range(0, getArtistNameDispCount(artistList.size()))
+                .forEach(index ->{
+                    ArtistDto artist = artistList.get(index);
+                    if(!StringUtils.isEmpty(artist.getArtistName())){
+                        if(index == 0){
+                            joiner.add(artist.getArtistName());
+                        }else{
+                            joiner.add(" " +artist.getArtistName());
+                        }
+                    }
+                });
+
+        return joiner.toString();
+    }
+
+    private int getArtistNameDispCount(int artistListSize ){
+        if( artistListSize < ARTIST_POPULAR_ARTIST_NAME_COUNT ){
+            return artistListSize;
+        }
+        return ARTIST_POPULAR_ARTIST_NAME_COUNT;
+    }
     private static ArtistDto neverNullArtist(RecommendArtistDto recommendArtist) throws CommonBusinessException {
         if(recommendArtist == null || CollectionUtils.isEmpty(recommendArtist.getArtistList())){
             throw new CommonBusinessException("artist is null.");
         }
-
 
         ArtistDto artist = recommendArtist.getArtistList()
                 .stream()

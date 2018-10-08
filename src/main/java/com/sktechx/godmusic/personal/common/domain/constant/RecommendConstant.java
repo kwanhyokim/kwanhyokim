@@ -50,7 +50,14 @@ public class RecommendConstant {
     //노출 가능한 최소 개수
     public static final int SIMILAR_TRACK_DISP_STANDARD_COUNT = 15;
     public static final int PREFER_GENRE_SIMILAR_TRACK_DISP_STANDARD_COUNT = 15;
-    public static final int ARTIST_POPULAR_TRACK_DISP_STANDARD_COUNT = 15;
+
+
+    public static final int ARTIST_POPULAR_TRACK_DISP_STANDARD_COUNT = 30;
+    public static final int ARTIST_POPULAR_TRACK_DISP_ONE_ARTIST_COUNT = 12;
+    public static final int ARTIST_POPULAR_TRACK_DISP_TWO_ARTIST_COUNT = 24;
+    public static final int ARTIST_POPULAR_ARTIST_NAME_COUNT = 5;
+
+
     public static final int RCMMD_CF_TRACK_DISP_STANDARD_COUNT = 50;
 
     public static final String ARTIST_PANEL_TITLE = "Musician focus";
@@ -59,10 +66,10 @@ public class RecommendConstant {
     public static final String PREFER_GENRE_SIMILAR_TRACK_PANEL_TITLE = "Mix Tape";
     public static final String PREFER_GENRE_SIMILAR_TRACK_PANEL_SUB_TITLE = "내가 많이 들은 곡과\n비슷한 노래";
     public static final String RCMMD_TRACK_PANEL_TITLE = "Made for U";
-    public static final String RCMMD_TRACK_PANEL_SUB_TITLE = "내가 많이 들은\n 장르의 추천 노래";
+    public static final String RCMMD_TRACK_PANEL_SUB_TITLE = "내가 많이 들은\n장르의 추천 노래";
 
     public static final String SIMILAR_TRACK_PANEL_TITLE = "Like U";
-    public static final String SIMILAR_TRACK_PANEL_SUB_TITLE = "많이 들었던 노래와\n 유사한 선곡";
+    public static final String SIMILAR_TRACK_PANEL_SUB_TITLE = "많이 들었던 노래와\n유사한 선곡";
 
 }
 

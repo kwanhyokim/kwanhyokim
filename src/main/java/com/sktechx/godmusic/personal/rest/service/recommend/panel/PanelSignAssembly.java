@@ -13,6 +13,7 @@ package com.sktechx.godmusic.personal.rest.service.recommend.panel;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.PreferPropsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlDto;
@@ -105,18 +106,52 @@ public abstract class PanelSignAssembly extends PanelAssembly {
 
         if (rcmmdId != null) {
             RecommendArtistDto recommendArtistDto = recommendMapper.selectRecommendArtistById(rcmmdId);
-            if (recommendArtistDto != null) {
+
+            if (recommendArtistDto != null && !CollectionUtils.isEmpty(recommendArtistDto.getArtistList())) {
+
                 try {
 
-                    if(recommendArtistDto.getTrackCount()>= ARTIST_POPULAR_TRACK_DISP_STANDARD_COUNT){
+                    if(isArtistPopularTrackPanelAppend(recommendArtistDto)){
                         panelList.add(new ArtistPanel(recommendArtistDto));
                     }
+
                 } catch (Exception e) {
                     log.error("PanelSignAssembly appendPreferArtistPanel artistPanel create error : {}", e.getMessage());
                 }
             }
         }
     }
+
+    private boolean isArtistPopularTrackPanelAppend(RecommendArtistDto recommendArtistDto){
+
+        List<ArtistDto> artistList = recommendArtistDto.getArtistList();
+
+        long representationArtistCount = artistList.stream().filter(artistDto -> {
+            if("REPRSNT".equals(artistDto.getArtistType())){
+                return true;
+            }
+            return false;
+        }).count();
+
+        long trackCount = recommendArtistDto.getTrackCount();
+
+        if(representationArtistCount == 1){
+            if(trackCount >= ARTIST_POPULAR_TRACK_DISP_ONE_ARTIST_COUNT){
+                return true;
+            }
+        }else if(representationArtistCount == 2){
+            if(trackCount >= ARTIST_POPULAR_TRACK_DISP_TWO_ARTIST_COUNT){
+                return true;
+            }
+        }else if(representationArtistCount >= 3){
+            if(trackCount >= ARTIST_POPULAR_TRACK_DISP_STANDARD_COUNT){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 
     protected void appendListenMoodPopularChanelPanelList(final PersonalPhaseMeta personalPhaseMeta,
                                                           final List<Panel> panelList,

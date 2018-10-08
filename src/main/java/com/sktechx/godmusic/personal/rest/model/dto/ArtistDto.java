@@ -71,4 +71,6 @@ public class ArtistDto {
     }
 
     List<ImageInfo> imgList;
+
+    private String artistType;
 }
