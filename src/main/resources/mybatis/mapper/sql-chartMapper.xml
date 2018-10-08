@@ -179,6 +179,27 @@
                     JOIN tb_chart c ON b.disp_id = c.chart_id
                   WHERE a.character_no = #{characterNo}
                         AND b.use_yn = 'Y'
+                  UNION ALL
+                  SELECT
+                    g.chart_id,
+                    g.chart_type,
+                    g.chart_nm,
+                    g.svc_content_id,
+                    3 ord,
+                    g.update_dtime
+                  FROM tb_character_prefer_disp a
+                    JOIN tb_prefer_disp b ON a.prefer_disp_id = b.prefer_disp_id
+                    JOIN tb_map_prefer_genre_prefer_disp c ON b.prefer_disp_id = c.prefer_disp_id
+                    JOIN tb_prefer_genre d ON c.prefer_genre_id = d.prefer_genre_id
+                    JOIN tb_map_prefer_genre_svc_genre e ON d.prefer_genre_id = e.prefer_genre_id
+                    JOIN tb_svc_genre f ON e.svc_genre_id = f.svc_genre_id
+                    JOIN tb_chart g ON f.svc_genre_id = g.svc_content_id
+                  WHERE a.character_no = #{characterNo}
+                        AND d.use_yn = 'Y'
+                        AND d.disp_yn = 'N'
+                        AND g.chart_type IN ('HOURLY', 'NEW')
+                        AND g.svc_content_id = 'GENRE'
+                        AND g.music_content_TYPE = 'TRACK'
                 ) a
            ORDER BY ord, update_dtime DESC
            LIMIT 12
