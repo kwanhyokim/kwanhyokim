@@ -64,7 +64,7 @@ public class LikeServiceImpl implements LikeService {
 
 		for (PlayListDto p : playListDtos) {
 			p.setRenewYn(YnType.N);
-			if (p.getPlayListType().equals(LikeConstant.LIKE_CHANNEL) && p.getRenewDateTime() != null) {
+			if (p.getPlayListType().getCode().equals(LikeConstant.LIKE_CHANNEL) && p.getRenewDateTime() != null) {
 				Calendar c = Calendar.getInstance();
 				c.setTime(new Date());
 				c.add(Calendar.DATE , -1);
