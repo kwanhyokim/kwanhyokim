@@ -303,14 +303,15 @@
                  a.last_listen_dtime,
                  d.album_img_size as size,
                  CONCAT(d.album_img_url, '?updateDate=', UNIX_TIMESTAMP(d.update_dtime)) AS url
-            FROM ( SELECT *
+            FROM ( SELECT listen_type, listen_type_id, character_no, last_listen_dtime
                      FROM tb_member_last_listen_hist
-                    WHERE character_no = #{characterNo}
+                    WHERE member_no = #{memberNo}
+                      AND character_no = #{characterNo}
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN tb_member_chnl b
               ON a.listen_type_id = b.member_chnl_id
-             AND a.member_no = b.member_no
+             AND a.character_no = b.character_no
              AND a.listen_type = 'MY_CHNL'
             LEFT JOIN ted_album c
               ON b.album_id = c.album_id
@@ -327,9 +328,10 @@
                  a.last_listen_dtime,
                  e.size,
                  CONCAT(e.url, '?updateDate=', UNIX_TIMESTAMP(e.create_dtime)) AS url
-            FROM ( SELECT *
+            FROM ( SELECT listen_type, listen_type_id, last_listen_dtime
                      FROM tb_member_last_listen_hist
-                    WHERE character_no = #{characterNo}
+                    WHERE member_no = #{memberNo}
+                      AND character_no = #{characterNo}
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN tb_chart b
@@ -355,9 +357,10 @@
                  a.last_listen_dtime,
                  c.img_size AS size,
                  CONCAT(c.img_url, '?updateDate=', UNIX_TIMESTAMP(c.create_dtime)) AS url
-            FROM ( SELECT *
+            FROM ( SELECT listen_type, listen_type_id, last_listen_dtime
                      FROM tb_member_last_listen_hist
-                    WHERE character_no = #{characterNo}
+                    WHERE member_no = #{memberNo}
+                      AND character_no = #{characterNo}
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN tb_chart b
@@ -380,9 +383,10 @@
                  a.last_listen_dtime,
                  c.img_size AS size,
                  CONCAT(c.img_url, '?updateDate=', UNIX_TIMESTAMP(c.create_dtime)) AS url
-            FROM ( SELECT *
+            FROM ( SELECT listen_type, listen_type_id, character_no, last_listen_dtime, create_dtime
                      FROM tb_member_last_listen_hist
-                    WHERE character_no = #{characterNo}
+                    WHERE member_no = #{memberNo}
+                      AND character_no = #{characterNo}
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN tb_rcmmd_similar_track b
@@ -408,9 +412,10 @@
                  a.last_listen_dtime,
                  c.img_size,
                  CONCAT(c.img_url, '?updateDate=', UNIX_TIMESTAMP(c.create_dtime)) AS url
-            FROM ( SELECT *
+            FROM ( SELECT listen_type, listen_type_id, character_no, last_listen_dtime, create_dtime
                      FROM tb_member_last_listen_hist
-                    WHERE character_no = #{characterNo}
+                    WHERE member_no = #{memberNo}
+                      AND character_no = #{characterNo}
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN tb_rcmmd_prefer_genre_similar_track b
@@ -435,9 +440,10 @@
                  a.last_listen_dtime,
                  e.size,
                  CONCAT(e.url, '?updateDate=', UNIX_TIMESTAMP(e.update_dtime)) AS url
-            FROM ( SELECT *
+            FROM ( SELECT listen_type, listen_type_id, character_no, last_listen_dtime, create_dtime
                      FROM tb_member_last_listen_hist
-                    WHERE character_no = #{characterNo}
+                    WHERE member_no = #{memberNo}
+                      AND character_no = #{characterNo}
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN tb_rcmmd_artist b
@@ -445,7 +451,7 @@
              AND a.character_no = b.character_no
              AND a.listen_type = 'RC_ATST_TR'
             JOIN tb_rcmmd_artist_list c
-              ON b.rcmmd_artist_id = c.artist_id
+              ON b.rcmmd_artist_id = c.rcmmd_artist_id
             JOIN ted_artist d
               ON c.artist_id = d.artist_id
             LEFT JOIN ted_artistimage e
@@ -461,9 +467,10 @@
                  a.last_listen_dtime,
                  c.img_size AS size,
                  CONCAT(c.img_url, '?updateDate=', UNIX_TIMESTAMP(c.create_dtime)) AS url
-            FROM ( SELECT *
+            FROM ( SELECT listen_type, listen_type_id, character_no, last_listen_dtime, create_dtime
                      FROM tb_member_last_listen_hist
-                    WHERE character_no = #{characterNo}
+                    WHERE member_no = #{memberNo}
+                      AND character_no = #{characterNo}
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN tb_rcmmd_mforu b
@@ -491,9 +498,10 @@
                CONCAT(d.album_img_url, '?updateDate=', UNIX_TIMESTAMP(d.update_dtime)) AS url,
                b.renew_track_cnt,
                b.renew_dtime
-          FROM ( SELECT *
+          FROM ( SELECT listen_type, listen_type_id, last_listen_dtime
                    FROM tb_member_last_listen_hist
-                  WHERE character_no = #{characterNo}
+                  WHERE member_no = #{memberNo}
+                    AND character_no = #{characterNo}
                   ORDER BY last_listen_dtime DESC
                   LIMIT 300 ) a
           JOIN tb_chnl b

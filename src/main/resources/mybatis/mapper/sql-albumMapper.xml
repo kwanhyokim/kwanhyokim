@@ -58,9 +58,10 @@
                d.artist_nm albumArtistName,
                h.artist_id albumRepArtistId,
                h.artist_nm albumRepArtistName
-          FROM ( SELECT *
+          FROM ( SELECT listen_type, listen_type_id, last_listen_dtime
                    FROM tb_member_last_listen_hist
-                  WHERE character_no = #{characterNo}
+                  WHERE member_no = #{memberNo}
+                    AND character_no = #{characterNo}
                   ORDER BY last_listen_dtime DESC
                   LIMIT 1000 ) a
           JOIN ted_album b

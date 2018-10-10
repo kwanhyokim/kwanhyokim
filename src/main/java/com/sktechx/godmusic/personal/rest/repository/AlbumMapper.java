@@ -24,5 +24,5 @@ import java.util.List;
  */
 @BaseMapper
 public interface AlbumMapper {
-    List<LastListenHistoryDto> selectLastListenHistory(@Param("characterNo") long characterNo);
+    List<LastListenHistoryDto> selectLastListenHistory(@Param("memberNo") Long memberNo, @Param("characterNo") Long characterNo);
 }

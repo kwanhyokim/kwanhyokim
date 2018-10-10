@@ -33,5 +33,5 @@ public interface ChannelService {
     List<ChnlDto> getPopularChannelList(int channelLimitSize,int trackLimitSize, OsType osType,List<Long> filterChnlIdList);
     List<PreferGenrePopularChnlDto> getPreferGenrePopularChannelList(List<Long> preferGenreIdList, int trackLimitSize, OsType osType);
     List<MoodPopularChnlDto> getListenMoodPopularChannelIdList(List<Long> moodIdList , int trackLimitSize , OsType osType);
-    List<LastListenHistoryDto> getLastListenHistory(long characterNo, DayType dayType, OsType osType);
+    List<LastListenHistoryDto> getLastListenHistory(Long memberNo, Long characterNo, DayType dayType, OsType osType);
 }

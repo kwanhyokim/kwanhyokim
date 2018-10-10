@@ -49,7 +49,7 @@ public class ChannelController {
 
         DayType dayType = DayType.findDayOfWeek(LocalDate.now().getDayOfWeek());
 
-        List<LastListenHistoryDto> lastListenHistory = channelService.getLastListenHistory(ctx.getCharacterNo(), dayType, ctx.getOsType());
+        List<LastListenHistoryDto> lastListenHistory = channelService.getLastListenHistory(ctx.getMemberNo(), ctx.getCharacterNo(), dayType, ctx.getOsType());
         if(CollectionUtils.isEmpty(lastListenHistory)) throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
 
         int start = pageable.getPageNumber() * pageable.getPageSize();
