@@ -58,7 +58,7 @@ public class RecommendConstant {
     public static final int ARTIST_POPULAR_ARTIST_NAME_COUNT = 5;
 
 
-    public static final int RCMMD_CF_TRACK_DISP_STANDARD_COUNT = 50;
+    public static final int RCMMD_CF_TRACK_DISP_STANDARD_COUNT = 15;
 
     public static final String ARTIST_PANEL_TITLE = "Musician focus";
     public static final String CHART_PANEL_HOURLY_BASIS_PHRASES = "시 기준";
