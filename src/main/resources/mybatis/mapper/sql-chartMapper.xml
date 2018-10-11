@@ -129,7 +129,7 @@
            FROM tb_svc_genre a
              JOIN tb_chart b ON a.svc_genre_id = b.svc_content_id
            WHERE a.main_disp_std_yn = 'Y'
-                 AND b.chart_type IN ('HOURLY', 'NEW')
+                 AND b.chart_type IN ('DAILY', 'NEW')
                  AND b.svc_content_type = 'GENRE'
                  AND b.music_content_type = 'TRACK'
            /*AND b.disp_start_dtime <= now()*/
@@ -161,7 +161,7 @@
                     JOIN tb_chart e ON d.svc_genre_id = e.svc_content_id
                   WHERE a.character_no = #{characterNo}
                         AND b.use_yn = 'Y'
-                        AND e.chart_type IN ('HOURLY', 'NEW')
+                        AND e.chart_type IN ('DAILY', 'NEW')
                         AND e.svc_content_type = 'GENRE'
                         AND e.music_content_type = 'TRACK'
                   /*AND f.disp_start_dtime <= now()*/
@@ -197,7 +197,7 @@
                   WHERE a.character_no = #{characterNo}
                         AND d.use_yn = 'Y'
                         AND d.disp_yn = 'N'
-                        AND g.chart_type IN ('HOURLY', 'NEW')
+                        AND g.chart_type IN ('DAILY', 'NEW')
                         AND g.svc_content_id = 'GENRE'
                         AND g.music_content_TYPE = 'TRACK'
                 ) a
