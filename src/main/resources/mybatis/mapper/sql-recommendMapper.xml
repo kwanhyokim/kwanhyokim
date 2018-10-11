@@ -634,11 +634,15 @@
     </select>
 
     <select id="selectCharacterPreferArtist" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.CharacterPreferArtistDto">
-        SELECT
-            CHARACTER_NO
-            , ARTIST_ID
+        SELECT CHARACTER_NO, GENRE_TYPE, GENRE_ID, ARTIST_ID
         FROM TB_CHARACTER_PREFER_ARTIST
-        WHERE CHARACTER_NO = #{characterNo}
+        WHERE CHARACTER_NO = #{characterNo} AND GENRE_ID = (
+                                                    SELECT GENRE_ID
+                                                    FROM TB_CHARACTER_PREFER_ARTIST
+                                                    WHERE CHARACTER_NO = #{characterNo}
+                                                    GROUP BY GENRE_ID
+                                                    ORDER BY count(GENRE_ID) DESC, rand()
+                                                    LIMIT 1)
         GROUP BY CHARACTER_NO, ARTIST_ID
         ORDER BY ARTIST_ID
     </select>
