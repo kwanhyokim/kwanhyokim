@@ -320,58 +320,70 @@
 
            UNION ALL
 
-        ( SELECT CONCAT(a.listen_type, a.listen_type_id) as listen_id,
+        ( SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
                  a.listen_type,
                  a.listen_type_id,
-                 b.chart_disp_nm AS content_title,
-                 b.music_content_cnt as track_count,
+                 c.prefer_disp_nm AS content_title,
+                 b.music_content_cnt AS track_count,
                  a.last_listen_dtime,
-                 e.size,
-                 CONCAT(e.url, '?updateDate=', UNIX_TIMESTAMP(e.create_dtime)) AS url
+                 d.img_size,
+                 CONCAT(d.img_url, '?updateDate=', UNIX_TIMESTAMP(d.create_dtime)) AS url
             FROM ( SELECT listen_type, listen_type_id, last_listen_dtime
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
                     ORDER BY last_listen_dtime DESC
-                    LIMIT 300 ) a
-            JOIN tb_chart b
+                    LIMIT 20 ) a
+            JOIN ( SELECT chart_id, music_content_cnt
+                     FROM tb_chart
+                    WHERE svc_content_type IN ('ALL', 'KIDS')
+                      AND music_content_type = 'TRACK'
+                      AND chart_type = 'HOURLY') b
               ON a.listen_type_id = b.chart_id
              AND a.listen_type = 'CHART'
-             AND b.svc_content_type IN ('ALL', 'KIDS')
-             AND b.music_content_type = 'TRACK'
-            JOIN tb_chart_music_content c
-              ON b.chart_id = c.chart_id
-             AND c.disp_sn = 1
-            JOIN tb_track d
-              ON c.music_content_id = d.track_id
-            JOIN ted_albumimage e
-              ON d.album_id = e.album_id )
+            JOIN tb_prefer_disp c
+              ON b.chart_id = c.disp_id
+            JOIN ( SELECT img_content_id, img_size, img_url, create_dtime
+                     FROM tb_img_mang
+                    WHERE img_content_type = 'DISP'
+                      AND img_disp_type = 'RCT_DTL'
+                      AND os_type IN ('ALL', #{osType}) ) d
+              ON c.prefer_disp_id = d.img_content_id )
 
            UNION ALL
 
-        ( SELECT CONCAT(a.listen_type, a.listen_type_id) as listen_id,
+        ( SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
                  a.listen_type,
                  a.listen_type_id,
                  b.chart_disp_nm AS content_title,
-                 b.music_content_cnt as track_count,
+                 b.music_content_cnt AS track_count,
                  a.last_listen_dtime,
-                 c.img_size AS size,
+                 c.img_size,
                  CONCAT(c.img_url, '?updateDate=', UNIX_TIMESTAMP(c.create_dtime)) AS url
             FROM ( SELECT listen_type, listen_type_id, last_listen_dtime
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
                     ORDER BY last_listen_dtime DESC
-                    LIMIT 300 ) a
-            JOIN tb_chart b
+                    LIMIT 20 ) a
+            JOIN ( SELECT chart_id, svc_content_id, chart_disp_nm, music_content_cnt,
+                          CASE WHEN chart_type = 'NEW' THEN 'RECENT'
+                               WHEN chart_type = 'DAILY' THEN 'POPULARITY'
+                               ELSE NULL END AS chart_type
+                     FROM tb_chart t
+                    WHERE svc_content_type = 'GENRE'
+                      AND music_content_type = 'TRACK'
+                      AND chart_type IN ('NEW','DAILY') ) b
               ON a.listen_type_id = b.chart_id
              AND a.listen_type = 'CHART'
-             AND b.svc_content_type = 'GENRE'
-            LEFT JOIN ( SELECT *
-                          FROM tb_img_mang
-                         WHERE img_content_type = 'GENRE'
-                           AND os_type IN ( #{osType}, 'ALL') ) c
-              ON b.svc_content_id = c.img_content_id )
+            JOIN ( SELECT img_content_id, img_size, img_url, shortcut_type, create_dtime
+                     FROM tb_img_mang
+                    WHERE img_content_type = 'GENRE'
+                      AND img_disp_type = 'RCT_DTL'
+                      AND shortcut_type IN ('RECENT','POPULARITY')
+                      AND os_type IN ('ALL', #{osType}) ) c
+              ON b.svc_content_id = c.img_content_id
+             AND b.chart_type = c.shortcut_type )
 
            UNION ALL
 
