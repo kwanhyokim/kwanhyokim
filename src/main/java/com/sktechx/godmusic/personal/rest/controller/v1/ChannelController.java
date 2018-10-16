@@ -1,5 +1,6 @@
 package com.sktechx.godmusic.personal.rest.controller.v1;
 
+import com.google.common.primitives.Ints;
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.RequestGMContext;
@@ -49,11 +50,14 @@ public class ChannelController {
 
         DayType dayType = DayType.findDayOfWeek(LocalDate.now().getDayOfWeek());
 
+        int start = Ints.checkedCast(pageable.getOffset());
+        int end = Ints.checkedCast(pageable.getOffset()) + pageable.getPageSize();
+
         List<LastListenHistoryDto> lastListenHistory = channelService.getLastListenHistory(ctx.getMemberNo(), ctx.getCharacterNo(), dayType, ctx.getOsType());
         if(CollectionUtils.isEmpty(lastListenHistory)) throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
 
-        int start = pageable.getPageNumber() * pageable.getPageSize();
-        int end = (pageable.getPageNumber() + 1) * pageable.getPageSize();
+        if(start >= lastListenHistory.size() || start >= end) throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
+
         if(end > lastListenHistory.size()) end = lastListenHistory.size();
 
         return new CommonApiResponse<>(new ListResponse(new PageImpl<>(lastListenHistory.subList(start, end), pageable, lastListenHistory.size())));
