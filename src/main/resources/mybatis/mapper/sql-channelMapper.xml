@@ -464,6 +464,7 @@
              AND a.listen_type = 'RC_ATST_TR'
             JOIN tb_rcmmd_artist_list c
               ON b.rcmmd_artist_id = c.rcmmd_artist_id
+             AND c.disp_sn = 1
             JOIN ted_artist d
               ON c.artist_id = d.artist_id
             LEFT JOIN ted_artistimage e
