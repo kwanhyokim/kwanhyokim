@@ -48,8 +48,8 @@ public class RecommendConstant {
     public static final int PREFER_DISP_CHART_TRACK_LIMIT_SIZE = 12;
 
     //노출 가능한 최소 개수
-    public static final int SIMILAR_TRACK_DISP_STANDARD_COUNT = 15;
-    public static final int PREFER_GENRE_SIMILAR_TRACK_DISP_STANDARD_COUNT = 15;
+    public static final int SIMILAR_TRACK_DISP_STANDARD_COUNT = 5;
+    public static final int PREFER_GENRE_SIMILAR_TRACK_DISP_STANDARD_COUNT = 5;
 
 
     public static final int ARTIST_POPULAR_TRACK_DISP_STANDARD_COUNT = 30;
