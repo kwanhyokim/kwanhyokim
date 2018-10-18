@@ -15,6 +15,7 @@ package com.sktechx.godmusic.personal.rest.service.impl;
 import com.sktechx.godmusic.personal.common.domain.domain.HomeContentType;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
+import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferDispDto;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageManagementDto;
@@ -61,13 +62,16 @@ public class PreferenceServiceImpl implements PreferenceService {
     @Override
     public ChartResponse getPreferenceGenreList(Long characterNo) {
         List<CharacterPreferGenreDto> characterPreferGenreList = Collections.EMPTY_LIST;
+        List<CharacterPreferDispDto> characterPreferDispList = Collections.EMPTY_LIST;
         List<ChartDto> chartDtoList;
 
         if (characterNo != null) {
             characterPreferGenreList = characterPreferGenreMapper.selectCharacterPreferGenreList(characterNo);
+            characterPreferDispList = characterPreferGenreMapper.selectCharacterPreferDispList(characterNo);
         }
 
-        if (characterNo == null || CollectionUtils.isEmpty(characterPreferGenreList)) {
+        if (characterNo == null
+                || (CollectionUtils.isEmpty(characterPreferGenreList) && CollectionUtils.isEmpty(characterPreferDispList))) {
             chartDtoList = chartMapper.selectChartListByDefaultGenre();
         } else {
             chartDtoList = chartMapper.selectChartListByPreferGenre(characterNo);
