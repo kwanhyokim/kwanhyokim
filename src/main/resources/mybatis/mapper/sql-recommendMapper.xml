@@ -696,6 +696,7 @@
                                     <foreach item="artistId" index="index" collection="artistIdList" open="(" separator="," close=")">
                                         #{artistId}
                                     </foreach>
+                                  AND A.DISP_STATUS_YN = 'Y'
                                   ORDER BY A.REPRSNT_ARTIST_ID, A.TRACK_POPULARITY DESC
                               ) C
                          WHERE RNUM <![CDATA[<]]> 31
@@ -758,13 +759,16 @@
     </select>
 
     <select id="selectSimilarTrackListByIdList" resultMap="similarTrackResultMap">
-        SELECT TRACK_ID, SIMILAR_TRACK_ID
-        FROM TB_SIMILAR_TRACK
-        WHERE TRACK_ID IN
+        SELECT T1.TRACK_ID, T1.SIMILAR_TRACK_ID
+        FROM TB_SIMILAR_TRACK T1
+        INNER JOIN TB_TRACK T2
+        ON T1.TRACK_ID = T2.TRACK_ID
+        AND T2.DISP_STATUS_YN = 'Y'
+        WHERE T1.TRACK_ID IN
         <foreach item="trackId" index="index" collection="trackIds" open="(" separator="," close=")">
             #{trackId}
         </foreach>
-        ORDER BY TRACK_ID, DISP_SN
+        ORDER BY T1.TRACK_ID, T1.DISP_SN
     </select>
 
     <update id="insertRcmmdPreferGenreSimilarTrack" parameterType="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPreferGenreSimilarTrackDto"
