@@ -336,9 +336,8 @@
                     LIMIT 20 ) a
             JOIN ( SELECT chart_id, music_content_cnt
                      FROM tb_chart
-                    WHERE svc_content_type IN ('ALL', 'KIDS')
-                      AND music_content_type = 'TRACK'
-                      AND chart_type = 'HOURLY') b
+                    WHERE (svc_content_type,chart_type) IN (('ALL', 'HOURLY'), ('KIDS','DAILY'))
+                      AND music_content_type = 'TRACK' ) b
               ON a.listen_type_id = b.chart_id
              AND a.listen_type = 'CHART'
             JOIN tb_prefer_disp c
