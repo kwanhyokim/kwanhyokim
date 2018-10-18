@@ -333,7 +333,7 @@
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
                     ORDER BY last_listen_dtime DESC
-                    LIMIT 20 ) a
+                    LIMIT 300 ) a
             JOIN ( SELECT chart_id, music_content_cnt
                      FROM tb_chart
                     WHERE (svc_content_type,chart_type) IN (('ALL', 'HOURLY'), ('KIDS','DAILY'))
@@ -354,7 +354,7 @@
         ( SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
                  a.listen_type,
                  a.listen_type_id,
-                 b.chart_disp_nm AS content_title,
+                 b.chart_nm AS content_title,
                  b.music_content_cnt AS track_count,
                  a.last_listen_dtime,
                  c.img_size,
@@ -364,8 +364,8 @@
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
                     ORDER BY last_listen_dtime DESC
-                    LIMIT 20 ) a
-            JOIN ( SELECT chart_id, svc_content_id, chart_disp_nm, music_content_cnt,
+                    LIMIT 300 ) a
+            JOIN ( SELECT chart_id, svc_content_id, chart_nm, music_content_cnt,
                           CASE WHEN chart_type = 'NEW' THEN 'RECENT'
                                WHEN chart_type = 'DAILY' THEN 'POPULARITY'
                                ELSE NULL END AS chart_type
