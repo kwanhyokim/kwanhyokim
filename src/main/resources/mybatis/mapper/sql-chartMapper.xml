@@ -201,7 +201,7 @@
                         AND g.svc_content_id = 'GENRE'
                         AND g.music_content_TYPE = 'TRACK'
                 ) a
-           ORDER BY ord, update_dtime DESC
+           ORDER BY ord, svc_content_id, chart_type
            LIMIT 12
         ]]>
     </select>
