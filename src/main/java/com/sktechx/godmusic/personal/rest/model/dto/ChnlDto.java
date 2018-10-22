@@ -20,6 +20,7 @@ import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.domain.type.ChannelType;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import lombok.Data;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -71,6 +72,15 @@ public class ChnlDto {
     //채널 용 별도 이미지
     private List<ImageInfo> imgList;
 
+
+    public List<TrackDto> getTrackList(){
+        if(!CollectionUtils.isEmpty(trackList)){
+            for(TrackDto track : trackList){
+                track.setChnlRenewDtime(renewDtime);
+            }
+        }
+        return trackList;
+    }
     public YnType getRenewYn(){
         if(renewDtime!= null){
             Calendar cal = Calendar.getInstance();

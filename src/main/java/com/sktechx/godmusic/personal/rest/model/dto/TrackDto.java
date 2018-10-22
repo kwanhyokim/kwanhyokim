@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sktechx.godmusic.lib.domain.code.YnType;
@@ -72,7 +73,9 @@ public class TrackDto {
     private YnType displayYn;
 
     public YnType getRenewYn(){
-        if(renewDtime!= null){
+        if(renewDtime!= null &&
+                chnlRenewDtime!=null &&
+                    renewDtime.compareTo(chnlRenewDtime) == 0 ){
             Calendar cal = Calendar.getInstance();
             cal.setTime(renewDtime);
             cal.add(Calendar.DATE, 1);
@@ -82,6 +85,10 @@ public class TrackDto {
         }
         return YnType.N;
     }
+
+
+    @JsonIgnore
+    private Date chnlRenewDtime;
 
 }
 
