@@ -307,6 +307,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN tb_member_chnl b
@@ -332,6 +333,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN ( SELECT chart_id, music_content_cnt
@@ -363,6 +365,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN ( SELECT chart_id, svc_content_id, chart_nm, music_content_cnt,
@@ -398,6 +401,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN tb_rcmmd_similar_track b
@@ -427,6 +431,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN tb_rcmmd_prefer_genre_similar_track b
@@ -455,6 +460,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN tb_rcmmd_artist b
@@ -483,6 +489,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN tb_rcmmd_mforu b
@@ -514,6 +521,7 @@
                    FROM tb_member_last_listen_hist
                   WHERE member_no = #{memberNo}
                     AND character_no = #{characterNo}
+                    AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
                   ORDER BY last_listen_dtime DESC
                   LIMIT 300 ) a
           JOIN tb_chnl b
