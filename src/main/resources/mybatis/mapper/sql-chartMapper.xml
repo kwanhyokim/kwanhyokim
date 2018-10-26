@@ -166,19 +166,6 @@
                         AND e.music_content_type = 'TRACK'
                   /*AND f.disp_start_dtime <= now()*/
                   /*AND f.disp_end_dtime >= now()*/
-                  /*UNION ALL
-                  SELECT
-                    c.chart_id,
-                    c.chart_type,
-                    c.chart_nm,
-                    c.svc_content_id,
-                    2 ord,
-                    a.update_dtime
-                  FROM tb_character_prefer_disp a
-                    JOIN tb_prefer_disp b ON a.prefer_disp_id = b.prefer_disp_id
-                    JOIN tb_chart c ON b.disp_id = c.chart_id
-                  WHERE a.character_no = #{characterNo}
-                        AND b.use_yn = 'Y'*/
                   UNION ALL
                   SELECT
                     g.chart_id,
