@@ -198,7 +198,7 @@
                         AND d.use_yn = 'Y'
                         AND d.disp_yn = 'N'
                         AND g.chart_type IN ('DAILY', 'NEW')
-                        AND g.svc_content_id = 'GENRE'
+                        AND g.svc_content_type = 'GENRE'
                         AND g.music_content_TYPE = 'TRACK'
                 ) a
            ORDER BY ord, svc_content_id, chart_type
