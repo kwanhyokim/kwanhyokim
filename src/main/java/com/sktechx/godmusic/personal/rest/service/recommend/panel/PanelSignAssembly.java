@@ -210,29 +210,32 @@ public abstract class PanelSignAssembly extends PanelAssembly {
                                                           final List<Panel> panelList,
                                                           int panelLimitSize) {
 
-        List<Long> rcmmdIdList = personalPhaseMeta.getRecommendPersonalPanelRcmmdIdList(RC_GR_TR);
+        List<Long> preferGenreIdList =  personalPhaseMeta.getPreferGenreAllIdList();
+        if(!CollectionUtils.isEmpty(preferGenreIdList)){
+            List<Long> rcmmdIdList = personalPhaseMeta.getRecommendPersonalPanelRcmmdIdList(RC_GR_TR);
 
-        if (!CollectionUtils.isEmpty(rcmmdIdList)) {
+            if (!CollectionUtils.isEmpty(rcmmdIdList)) {
 
-            List<RecommendTrackDto> preferGenreSimilarTrackList =
-                    recommendMapper.selectRecommendPreferGenreSimilarTrackListByIdList(rcmmdIdList, panelLimitSize,
-                            PREFER_GENRE_SIMILAR_TRACK_LIMIT_SIZE, personalPhaseMeta.getOsType());
+                List<RecommendTrackDto> preferGenreSimilarTrackList =
+                        recommendMapper.selectRecommendPreferGenreSimilarTrackListByIdList(rcmmdIdList, panelLimitSize,
+                                PREFER_GENRE_SIMILAR_TRACK_LIMIT_SIZE, personalPhaseMeta.getOsType());
 
-            if(!CollectionUtils.isEmpty(preferGenreSimilarTrackList)){
-                preferGenreSimilarTrackList
-                    .stream()
-                    .filter(Objects::nonNull)
-                    .forEach(preferGenreSimilarTrack ->{
-                        try {
-                            if(preferGenreSimilarTrack.getTrackCount() >= PREFER_GENRE_SIMILAR_TRACK_DISP_STANDARD_COUNT){
-                                panelList.add(createPreferGenreSimilarTrackPanel(personalPhaseMeta,preferGenreSimilarTrack));
+                if(!CollectionUtils.isEmpty(preferGenreSimilarTrackList)){
+                    preferGenreSimilarTrackList
+                        .stream()
+                        .filter(Objects::nonNull)
+                        .forEach(preferGenreSimilarTrack ->{
+                            try {
+                                if(preferGenreSimilarTrack.getTrackCount() >= PREFER_GENRE_SIMILAR_TRACK_DISP_STANDARD_COUNT){
+                                    panelList.add(createPreferGenreSimilarTrackPanel(personalPhaseMeta,preferGenreSimilarTrack));
+                                }
+                            } catch (Exception e) {
+                                log.error("appendPreferGenreSimilarTrackPanelList error : {}", e.getMessage());
                             }
-                        } catch (Exception e) {
-                            log.error("appendPreferGenreSimilarTrackPanelList error : {}", e.getMessage());
-                        }
-                    });
-            }
+                        });
+                }
 
+            }
         }
     }
 

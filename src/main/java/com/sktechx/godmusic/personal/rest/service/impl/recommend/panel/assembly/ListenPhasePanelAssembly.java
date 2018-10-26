@@ -42,8 +42,6 @@ public class ListenPhasePanelAssembly extends PanelSignAssembly {
 
         if( isAppendSimilarTrackPanel(panelList.size()) ){
             appendSimilarTrackPanelList(personalPhaseMeta , panelList ,PREFER_GENRE_SIMILAR_PANEL_SIZE - panelList.size() );
-
-
         }
         appendListenMoodPopularChanelPanelList(personalPhaseMeta, panelList,LISTEN_MOOD_POPULAR_PANEL_SIZE);
 
