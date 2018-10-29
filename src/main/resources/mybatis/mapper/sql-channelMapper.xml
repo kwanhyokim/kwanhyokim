@@ -470,7 +470,7 @@
             LEFT JOIN (SELECT img_size, img_url, create_dtime
                          FROM tb_rcmmd_img_mang
                         WHERE rcmmd_type_id = 'RC_ATST_TR'
-                          AND img_disp_type = 'MAIN_SRT'
+                          AND img_disp_type = 'RCT_DTL'
                           AND os_type IN ('ALL', #{osType})
                         LIMIT 1 ) c
               ON 1=1 )
