@@ -76,29 +76,20 @@
                   SELECT
                         a.chart_id,
                         a.music_content_cnt,
-                        c.prefer_disp_nm chart_disp_nm,
+                        b.prefer_disp_nm chart_nm,
                         a.create_dtime,
                         a.update_dtime,
                         a.disp_start_dtime,
-                        b.img_size,
-                        b.img_url
+                        c.img_size,
+                        c.img_url
                   FROM
                         tb_chart a
-                  LEFT OUTER JOIN tb_img_mang b
-                    ON b.img_content_id = (
-                                            SELECT
-                                              prefer_disp_id
-                                            FROM
-                                              tb_prefer_disp
-                                            WHERE
-                                              disp_props_type = #{chartPanelType.dispPropsType}
-                                            AND disp_type = 'CHART'
-                                          )
-                  AND b.img_content_type = 'DISP'
-                            AND b.dfk_type = 'EVERY'
-                            AND b.img_disp_type = 'MAIN_TOP'
-                            AND b.os_type = #{osType}
-                  LEFT OUTER JOIN tb_prefer_disp c ON b.img_content_id = c.prefer_disp_id
+                  LEFT OUTER JOIN tb_prefer_disp b ON a.chart_id = b.disp_id
+                  LEFT OUTER JOIN tb_img_mang c ON b.prefer_disp_id = c.img_content_id
+                    AND c.img_content_type = 'DISP'
+                    AND c.dfk_type = 'EVERY'
+                    AND c.img_disp_type = 'MAIN_TOP'
+                    AND c.os_type = #{osType}
                   WHERE
                         a.svc_content_type = #{chartPanelType.svcContentType}
                             AND a.chart_type = #{chartPanelType.chartType}
