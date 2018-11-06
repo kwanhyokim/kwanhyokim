@@ -103,6 +103,18 @@ public class PersonalPhaseMeta {
         return null;
     }
 
+    public List<Long> getPreferGenreAllIdList(){
+
+        if(!CollectionUtils.isEmpty(preferGenreList)){
+            return preferGenreList
+                    .stream()
+                    .filter(Objects::nonNull)
+                    .map(CharacterPreferGenreDto::getPreferGenreId)
+                    .distinct()
+                    .collect(Collectors.toList());
+        }
+        return null;
+    }
     public List<Long> getPreferGenreIdList(int limitSize){
         if(!CollectionUtils.isEmpty(preferGenreList)){
             return preferGenreList
