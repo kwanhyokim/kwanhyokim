@@ -42,4 +42,20 @@ public enum RecommendChartPanelType {
             super(RecommendChartPanelType.class);
         }
     }
+
+    public SvcContentType getSvcContentType() {
+        return svcContentType;
+    }
+
+    public ChartType getChartType() {
+        return chartType;
+    }
+
+    public MusicContentType getMusicContentType() {
+        return musicContentType;
+    }
+
+    public PreferPropsType getDispPropsType() {
+        return dispPropsType;
+    }
 }

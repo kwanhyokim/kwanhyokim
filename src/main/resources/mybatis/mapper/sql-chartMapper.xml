@@ -95,7 +95,9 @@
                         a.svc_content_type = #{chartPanelType.svcContentType}
                             AND a.chart_type = #{chartPanelType.chartType}
                             AND a.music_content_type = #{chartPanelType.musicContentType}
-                            AND b.prefer_disp_nm IS NOT NULL
+                            <if test="chartPanelType != null and chartPanelType.dispPropsType.getCode() == 'KIDS100'">
+                                AND a.svc_content_id =23
+                            </if>
                 ) chart_img_table
                 INNER JOIN
                   tb_chart_music_content b ON chart_img_table.chart_id = b.chart_id
