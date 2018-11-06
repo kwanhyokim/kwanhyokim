@@ -121,7 +121,11 @@ public abstract class PanelAssembly {
             chart = chartService.getKidsChart(osType,trackLimitSize);
         }
         if(chart != null){
-            return new ChartPanel(recommendPanelType, chart, getDefaultBgImageList(chart.getImgList(),osType));
+            try{
+                return new ChartPanel(recommendPanelType, chart, getDefaultBgImageList(chart.getImgList(),osType));
+            }catch(Exception e){
+                log.error("create chart panel failed.");
+            }
         }
         return null;
     }

@@ -30,10 +30,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
 import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.PERSONAL_RECOMMEND_PHASE_KEY;
@@ -102,16 +99,25 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
         return personalPhaseMeta;
     }
 
-    private void fillCharacterPreferGenre(final List<CharacterPreferGenreDto> characterPreferGenreList , Long characterNo){
-        if(!CollectionUtils.isEmpty(characterPreferGenreList)
-                && CHARACTER_PREFER_GENRE_VIEW_LIMIT_SIZE > characterPreferGenreList.size()){
-            List<CharacterPreferGenreDto> fillPreferGenreList =  characterPreferGenreMapper.selectCharacterPreferDispMapGenre(characterNo);
+    private void fillCharacterPreferGenre(List<CharacterPreferGenreDto> characterPreferGenreList , Long characterNo){
+
+        if(CollectionUtils.isEmpty(characterPreferGenreList)){
+            characterPreferGenreList = new ArrayList<CharacterPreferGenreDto>();
+            List<CharacterPreferGenreDto> fillPreferGenreList =  selectFillPreferGenreList(characterNo);
+            if(!CollectionUtils.isEmpty(fillPreferGenreList)){
+                characterPreferGenreList.addAll(fillPreferGenreList);
+            }
+        }else if( CHARACTER_PREFER_GENRE_VIEW_LIMIT_SIZE > characterPreferGenreList.size()){
+            List<CharacterPreferGenreDto> fillPreferGenreList =  selectFillPreferGenreList(characterNo);
             if(!CollectionUtils.isEmpty(fillPreferGenreList)){
                 characterPreferGenreList.addAll(fillPreferGenreList);
             }
         }
-
     }
+    private List<CharacterPreferGenreDto> selectFillPreferGenreList(Long characterNo){
+        return characterPreferGenreMapper.selectCharacterPreferDispMapGenre(characterNo);
+    }
+
     private long hourlyRemainMillisecond(){
         Calendar cal = Calendar.getInstance();
 

@@ -35,7 +35,7 @@
         SELECT
             chart_track_table.chart_id,
             chart_track_table.music_content_cnt,
-            chart_track_table.chart_disp_nm,
+            chart_track_table.chart_nm,
             chart_track_table.create_dtime,
             chart_track_table.update_dtime,
             chart_track_table.track_nm,
@@ -58,7 +58,7 @@
             SELECT
                 chart_img_table.chart_id,
                 chart_img_table.music_content_cnt,
-                chart_img_table.chart_disp_nm,
+                chart_img_table.chart_nm,
                 chart_img_table.create_dtime,
                 chart_img_table.update_dtime,
                 chart_img_table.disp_start_dtime,
@@ -76,7 +76,7 @@
                   SELECT
                         a.chart_id,
                         a.music_content_cnt,
-                        c.prefer_disp_nm chart_disp_nm,
+                        c.prefer_disp_nm chart_nm,
                         a.create_dtime,
                         a.update_dtime,
                         a.disp_start_dtime,
@@ -168,19 +168,6 @@
                   /*AND f.disp_end_dtime >= now()*/
                   UNION ALL
                   SELECT
-                    c.chart_id,
-                    c.chart_type,
-                    c.chart_nm,
-                    c.svc_content_id,
-                    2 ord,
-                    a.update_dtime
-                  FROM tb_character_prefer_disp a
-                    JOIN tb_prefer_disp b ON a.prefer_disp_id = b.prefer_disp_id
-                    JOIN tb_chart c ON b.disp_id = c.chart_id
-                  WHERE a.character_no = #{characterNo}
-                        AND b.use_yn = 'Y'
-                  UNION ALL
-                  SELECT
                     g.chart_id,
                     g.chart_type,
                     g.chart_nm,
@@ -198,7 +185,7 @@
                         AND d.use_yn = 'Y'
                         AND d.disp_yn = 'N'
                         AND g.chart_type IN ('DAILY', 'NEW')
-                        AND g.svc_content_id = 'GENRE'
+                        AND g.svc_content_type = 'GENRE'
                         AND g.music_content_TYPE = 'TRACK'
                 ) a
            ORDER BY ord, svc_content_id, chart_type

@@ -37,8 +37,6 @@ public class ChartDto {
 
     private Long svcContentId;
 
-    private String chartDispNm;
-
     private ChartType chartType;
 
     private List<TrackDto> trackList;
