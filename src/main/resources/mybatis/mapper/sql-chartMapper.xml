@@ -77,6 +77,7 @@
                         a.chart_id,
                         a.music_content_cnt,
                         b.prefer_disp_nm chart_nm,
+                        b.prefer_disp_nm chart_disp_nm,
                         a.create_dtime,
                         a.update_dtime,
                         a.disp_start_dtime,
@@ -94,6 +95,7 @@
                         a.svc_content_type = #{chartPanelType.svcContentType}
                             AND a.chart_type = #{chartPanelType.chartType}
                             AND a.music_content_type = #{chartPanelType.musicContentType}
+                            AND b.prefer_disp_nm IS NOT NULL
                 ) chart_img_table
                 INNER JOIN
                   tb_chart_music_content b ON chart_img_table.chart_id = b.chart_id
