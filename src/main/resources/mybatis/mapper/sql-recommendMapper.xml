@@ -1,0 +1,890 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2018 SK TECHX.
+  ~ All right reserved.
+  ~
+  ~ This software is the confidential and proprietary information of SK TECHX.
+  ~ You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with SK TECHX.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.RecommendMapper" >
+
+
+    <resultMap id="personalPanelResultMap" type="com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel" autoMapping="true"/>
+
+    <resultMap id="rcmmdTrackResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto" autoMapping="true">
+        <id property="rcmmdId" column="rcmmd_id"></id>
+        <result property="dispSn" column="rcmmd_disp_sn"></result>
+        <result property="rcmmdCreateDtime" column="rcmmdCreateDtime"></result>
+
+        <association property="svcGenreDto" javaType="com.sktechx.godmusic.personal.rest.model.dto.ServiceGenreDto" autoMapping="true"/>
+        <collection property="imgList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" autoMapping="true">
+            <id property="size" column="img_size"/>
+            <id property="url" column="img_url"/>
+            <id property="dispSn" column="img_disp_sn"/>
+        </collection>
+        <collection property="trackList" resultMap="com.sktechx.godmusic.personal.rest.repository.TrackMapper.trackResultMap" autoMapping="true">
+        </collection>
+    </resultMap>
+
+    <resultMap id="rcmmdArtistResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto" autoMapping="true">
+        <id property="rcmmdArtistId" column="rcmmd_artist_id"/>
+        <collection property="artistList" resultMap="com.sktechx.godmusic.personal.rest.repository.ArtistMapper.artistResultMap" autoMapping="true">
+        </collection>
+    </resultMap>
+
+    <resultMap id="similarTrackResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.recommend.SimilarTrackDto">
+        <id property="trackId" column="track_id"/>
+        <collection property="similarTrackIds" ofType="java.lang.Long" javaType="list">
+            <result column="similar_track_id" />
+        </collection>
+    </resultMap>
+
+    <select id="selectPersonalRecommendPanelMeta" resultMap="personalPanelResultMap" >
+        <![CDATA[
+            SELECT
+                'RC_CF_TR' as recommendPanelContentType,
+                a.rcmmd_mforu_id as recommendId,
+                a.disp_std_end_dt as avaliableDateTime,
+                a.disp_sn as dispSn,
+                0 as moodId,
+                count(a.rcmmd_mforu_id) contentCount
+            FROM
+                tb_rcmmd_mforu a INNER JOIN tb_rcmmd_mforu_list b ON a.rcmmd_mforu_id = b.rcmmd_mforu_id
+                INNER JOIN tb_track c ON b.track_id = c.track_id
+            WHERE
+                a.character_no = #{characterNo}
+            AND
+                a.disp_std_start_dt <= NOW()
+            AND
+                a.disp_std_end_dt >= NOW()
+            AND
+                c.disp_status_yn = 'Y'
+            AND a.create_std_dtime = ( SELECT
+                                        create_std_dtime
+                                    FROM
+                                        tb_rcmmd_mforu
+                                    WHERE
+                                        character_no =  #{characterNo}
+                                    AND
+                                        disp_std_start_dt <= NOW()
+                                    AND
+                                        disp_std_end_dt >= NOW()
+                                    GROUP BY create_std_dtime
+                                    ORDER BY create_std_dtime DESC
+                                )
+            GROUP BY a.rcmmd_mforu_id
+            HAVING contentCount >= #{rcmmdCfTrackDispStandardCount}
+            UNION ALL
+            SELECT
+                'RC_SML_TR' as recommendPanelContentType,
+                a.rcmmd_similar_track_id as recommendId,
+                a.disp_std_end_dt as avaliableDateTime,
+                a.disp_sn as dispSn,
+                0 as moodId,
+                count(b.rcmmd_similar_track_id) contentCount
+            FROM
+                tb_rcmmd_similar_track a INNER JOIN tb_rcmmd_similar_track_list b ON a.rcmmd_similar_track_id = b.rcmmd_similar_track_id
+                INNER JOIN tb_track c ON b.track_id = c.track_id
+            WHERE
+                a.character_no =#{characterNo}
+            AND
+                a.disp_std_start_dt <= NOW()
+            AND
+                a.disp_std_end_dt >= NOW()
+            AND
+                c.disp_status_yn = 'Y'
+            GROUP BY a.rcmmd_similar_track_id
+            HAVING contentCount >= #{similarTrackDispStandardCount}
+            UNION ALL
+            SELECT
+                'RC_ATST_TR' as recommendPanelContentType,
+                rcmmd_artist_id as recommendId,
+                disp_std_end_dt as avaliableDateTime,
+                disp_sn as dispSn,
+                0 as moodId,
+                0 as contentCount
+            FROM
+                tb_rcmmd_artist
+            WHERE
+                character_no = #{characterNo}
+            AND
+                disp_std_start_dt <= NOW()
+            AND
+                disp_std_end_dt >= NOW()
+            UNION ALL
+            SELECT
+                'RC_MD_CN' as recommendPanelContentType,
+                rcmmd_listen_mood_id as recommendId,
+                disp_std_end_dt as avaliableDateTime,
+                disp_sn as dispSn,
+                category_id as moodId,
+                0 as contentCount
+            FROM
+                tb_rcmmd_listen_mood
+            WHERE
+                character_no = #{characterNo}
+            AND
+                disp_std_start_dt <= NOW()
+            AND
+                disp_std_end_dt >= NOW()
+            UNION ALL
+            SELECT
+                'RC_GR_TR' as recommendPanelContentType,
+                rcmmd_prefer_genre_similar_track_id as recommendId,
+                disp_std_end_dt as avaliableDateTime,
+                disp_sn as dispSn,
+                0 as moodId,
+                0 as contentCount
+            FROM
+                tb_rcmmd_prefer_genre_similar_track
+            WHERE
+                character_no = #{characterNo}
+            AND
+                disp_std_start_dt <= NOW()
+            AND
+                disp_std_end_dt >= NOW()
+         ]]>
+    </select>
+
+    <select id="selectRecommendPreferGenreSimilarTrackListByIdList" resultMap="rcmmdTrackResultMap">
+        SELECT
+            rcmmd_track_rank_table.rcmmd_id,
+            rcmmd_track_rank_table.rcmmd_disp_sn,
+            rcmmd_track_rank_table.track_id,
+            rcmmd_track_rank_table.track_nm,
+            rcmmd_track_rank_table.disp_sn,
+            rcmmd_track_rank_table.reprsnt_artist_id,
+            rcmmd_track_rank_table.agency_id,
+            rcmmd_track_rank_table.create_dtime,
+            rcmmd_track_rank_table.update_dtime,
+            rcmmd_track_rank_table.img_size,
+            rcmmd_track_rank_table.img_url,
+            rcmmd_track_rank_table.rcmmdCreateDtime,
+            rcmmd_track_rank_table.svc_genre_id,
+            rcmmd_track_rank_table.svc_genre_nm,
+            rcmmd_track_rank_table.trackCount,
+            d.artist_id,
+            d.artist_nm,
+            a.album_id,
+            b.album_img_size size,
+            CONCAT(b.album_img_url,'?updateDate=',UNIX_TIMESTAMP(b.update_dtime)) url,
+            e.artist_id reqArtistId,
+            e.artist_nm reqArtistNm,
+            rank
+        FROM
+        (
+            -- 4. rcmmd_rank_table start
+            SELECT
+                @curRank:=IF(@prevRcmmdId = rcmmd_track_table.rcmmd_id, @curRank + 1, 1) AS rank,
+                @prevRcmmdId:=rcmmd_track_table.rcmmd_id,
+                rcmmd_track_table.rcmmd_id,
+                rcmmd_track_table.rcmmd_disp_sn,
+                rcmmd_track_table.track_id,
+                rcmmd_track_table.track_nm,
+                rcmmd_track_table.disp_sn,
+                rcmmd_track_table.album_id,
+                rcmmd_track_table.reprsnt_artist_id,
+                rcmmd_track_table.agency_id,
+                rcmmd_track_table.create_dtime,
+                rcmmd_track_table.update_dtime,
+                rcmmd_track_table.img_size,
+                rcmmd_track_table.img_url,
+                rcmmd_track_table.rcmmdCreateDtime,
+                rcmmd_track_table.svc_genre_id,
+                rcmmd_track_table.svc_genre_nm,
+                rcmmd_track_table.trackCount
+            FROM
+            (
+                -- 3. rcmmd_track_table start
+                SELECT
+                    rcmmd_img_table.rcmmd_id,
+                    rcmmd_img_table.svc_genre_id,
+                    rcmmd_img_table.svc_genre_nm,
+                    rcmmd_img_table.disp_sn rcmmd_disp_sn,
+                    rcmmd_img_table.img_size,
+                    rcmmd_img_table.img_url,
+                    rcmmd_img_table.rcmmdCreateDtime,
+                    rcmmd_img_table.trackCount,
+                    b.track_id,
+                    b.disp_sn,
+                    c.album_id,
+                    c.track_nm,
+                    c.reprsnt_artist_id,
+                    c.agency_id,
+                    c.create_dtime,
+                    c.update_dtime
+                FROM
+                (
+                    -- 2. rcmmd_img_table start
+                    SELECT
+                        rcmmd_table.rcmmd_id,
+                        rcmmd_table.svc_genre_id,
+                        rcmmd_table.svc_genre_nm,
+                        rcmmd_table.disp_sn,
+                        rcmmd_table.rcmmdCreateDtime,
+                        rcmmd_table.trackCount,
+                        b.img_size,
+                        b.img_url
+                    FROM
+                    (
+                    -- 1. rcmmd_table start
+                        SELECT
+                            rcmmd_prefer_genre_similar_track_id rcmmd_id,
+                            a.svc_genre_id,
+                            b.svc_genre_nm,
+                            disp_sn,
+                            CASE DAYOFWEEK(NOW())
+                                WHEN '1' THEN 'SUN'
+                                WHEN '2' THEN 'MON'
+                                WHEN '3' THEN 'TUE'
+                                WHEN '4' THEN 'WED'
+                                WHEN '5' THEN 'THU'
+                                WHEN '6' THEN 'FRI'
+                                WHEN '7' THEN 'SAT'
+                            END AS week,
+                          a.create_dtime rcmmdCreateDtime,
+                          (
+                            SELECT
+                              COUNT(*)
+                            FROM
+                              tb_rcmmd_prefer_genre_similar_track_list
+                            WHERE
+                              rcmmd_prefer_genre_similar_track_id = a.rcmmd_prefer_genre_similar_track_id
+                          ) trackCount
+                        FROM
+                          tb_rcmmd_prefer_genre_similar_track a INNER JOIN tb_svc_genre b ON a.svc_genre_id = b.svc_genre_id
+                        WHERE
+                            rcmmd_prefer_genre_similar_track_id IN
+                            <foreach item="rcmmdId" index="index" collection="recommendIdList" open="(" separator="," close=")">
+                                #{rcmmdId}
+                            </foreach>
+                        ORDER BY FIELD(rcmmd_id,
+                            <foreach item="rcmmdId" index="index" collection="recommendIdList" open="" separator="," close="">
+                                #{rcmmdId}
+                            </foreach> ), disp_sn
+                        LIMIT #{recommendLimitSize}
+                    -- 1. rcmmd_table end
+                    ) rcmmd_table
+                    LEFT OUTER JOIN tb_map_img_rcmmd_img b ON rcmmd_table.svc_genre_id = b.img_content_id
+                        AND b.img_content_type = 'GENRE'
+                        AND b.rcmmd_type_id = 'RC_GR_TR'
+                        AND b.os_type = #{osType}
+                        AND b.dfk_type = rcmmd_table.week
+                        AND b.img_disp_type = 'MAIN_TOP'
+                    ORDER BY rcmmd_table.disp_sn
+
+                -- 2. rcmmd_img_table end
+                ) rcmmd_img_table
+                INNER JOIN tb_rcmmd_prefer_genre_similar_track_list b ON rcmmd_img_table.rcmmd_id = b.rcmmd_prefer_genre_similar_track_id
+                INNER JOIN tb_track c ON b.track_id = c.track_id
+                JOIN (SELECT @curRank:=0, @prevRcmmdId:=0) r
+                WHERE
+                  c.disp_status_yn = 'Y'
+                ORDER BY rcmmd_img_table.rcmmd_id , b.disp_sn
+                -- 3. rcmmd_track_table end
+            )
+            rcmmd_track_table
+            -- 4. rcmmd_tank_table end
+        ) rcmmd_track_rank_table
+            LEFT OUTER JOIN ted_album a ON rcmmd_track_rank_table.album_id = a.album_id
+            LEFT OUTER JOIN tb_album_img b ON a.album_id = b.album_id
+            LEFT OUTER JOIN ted_trackartist c ON rcmmd_track_rank_table.track_id =c.track_id
+            LEFT OUTER JOIN ted_artist d ON c.artist_id = d.artist_id
+            LEFT OUTER JOIN ted_artist e ON e.artist_id = rcmmd_track_rank_table.reprsnt_artist_id
+        WHERE
+          rank <![CDATA[<=]]> #{trackLimitSize}
+    </select>
+
+    <select id="selectRecommendSimilarTrackListByIdList" resultMap="rcmmdTrackResultMap">
+        SELECT
+            rcmmd_track_rank_table.rcmmd_id,
+            rcmmd_track_rank_table.rcmmd_disp_sn,
+            rcmmd_track_rank_table.track_id,
+            rcmmd_track_rank_table.track_nm,
+            rcmmd_track_rank_table.disp_sn,
+            rcmmd_track_rank_table.reprsnt_artist_id,
+            rcmmd_track_rank_table.agency_id,
+            rcmmd_track_rank_table.create_dtime,
+            rcmmd_track_rank_table.update_dtime,
+            rcmmd_track_rank_table.img_size,
+            rcmmd_track_rank_table.img_url,
+            rcmmd_track_rank_table.rcmmdCreateDtime,
+            rcmmd_track_rank_table.svc_genre_id,
+            rcmmd_track_rank_table.svc_genre_nm,
+            rcmmd_track_rank_table.trackCount,
+            d.artist_id,
+            d.artist_nm,
+            a.album_id,
+            b.album_img_size size,
+            CONCAT(b.album_img_url,'?updateDate=',UNIX_TIMESTAMP(b.update_dtime)) url,
+            e.artist_id reqArtistId,
+            e.artist_nm reqArtistNm,
+            rank
+        FROM
+            (
+            -- 4. rcmmd_rank_table start
+            SELECT
+                @curRank:=IF(@prevRcmmdId = rcmmd_track_table.rcmmd_id, @curRank + 1, 1) AS rank,
+                @prevRcmmdId:=rcmmd_track_table.rcmmd_id,
+                rcmmd_track_table.rcmmd_id,
+                rcmmd_track_table.rcmmd_disp_sn,
+                rcmmd_track_table.track_id,
+                rcmmd_track_table.track_nm,
+                rcmmd_track_table.disp_sn,
+                rcmmd_track_table.album_id,
+                rcmmd_track_table.reprsnt_artist_id,
+                rcmmd_track_table.agency_id,
+                rcmmd_track_table.create_dtime,
+                rcmmd_track_table.update_dtime,
+                rcmmd_track_table.img_size,
+                rcmmd_track_table.img_url,
+                rcmmd_track_table.rcmmdCreateDtime,
+                rcmmd_track_table.svc_genre_id,
+                rcmmd_track_table.svc_genre_nm,
+                rcmmd_track_table.trackCount
+              FROM
+                (
+                    -- 3. rcmmd_track_table start
+                    SELECT
+                        rcmmd_img_table.rcmmd_id,
+                        rcmmd_img_table.svc_genre_id,
+                        rcmmd_img_table.svc_genre_nm,
+                        rcmmd_img_table.disp_sn rcmmd_disp_sn,
+                        rcmmd_img_table.img_size,
+                        rcmmd_img_table.img_url,
+                        rcmmd_img_table.rcmmdCreateDtime,
+                        rcmmd_img_table.trackCount,
+                        b.track_id,
+                        b.disp_sn,
+                        c.album_id,
+                        c.track_nm,
+                        c.reprsnt_artist_id,
+                        c.agency_id,
+                        c.create_dtime,
+                        c.update_dtime
+                    FROM
+                    (
+                        -- 2. rcmmd_img_table start
+                        SELECT
+                            rcmmd_table.rcmmd_id,
+                            rcmmd_table.svc_genre_id,
+                            rcmmd_table.svc_genre_nm,
+                            rcmmd_table.disp_sn,
+                            rcmmd_table.rcmmdCreateDtime,
+                            rcmmd_table.trackCount,
+                            b.img_size,
+                            b.img_url
+                        FROM
+                        (
+                        -- 1. rcmmd_table start
+                        SELECT
+                            rcmmd_similar_track_id rcmmd_id,
+                            a.svc_genre_id,
+                            b.svc_genre_nm,
+                            disp_sn,
+                            CASE DAYOFWEEK(NOW())
+                                WHEN '1' THEN 'SUN'
+                                WHEN '2' THEN 'MON'
+                                WHEN '3' THEN 'TUE'
+                                WHEN '4' THEN 'WED'
+                                WHEN '5' THEN 'THU'
+                                WHEN '6' THEN 'FRI'
+                                WHEN '7' THEN 'SAT'
+                                END AS week,
+                            a.create_dtime rcmmdCreateDtime,
+                            a.disp_sn panel_disp_sn,
+                            (
+                                SELECT
+                                  COUNT(*)
+                                FROM
+                                  tb_rcmmd_similar_track_list
+                                WHERE
+                                  rcmmd_similar_track_id = a.rcmmd_similar_track_id
+                            ) trackCount
+                        FROM
+                          tb_rcmmd_similar_track a INNER JOIN tb_svc_genre b ON a.svc_genre_id = b.svc_genre_id
+                        WHERE
+                            rcmmd_similar_track_id IN
+                            <foreach item="rcmmdId" index="index" collection="recommendIdList" open="(" separator="," close=")">
+                                #{rcmmdId}
+                            </foreach>
+                            ORDER BY FIELD(rcmmd_id,
+                            <foreach item="rcmmdId" index="index" collection="recommendIdList" open="" separator="," close="">
+                                #{rcmmdId}
+                            </foreach>
+                            ), disp_sn
+                            LIMIT #{recommendLimitSize}
+                            -- 1. rcmmd_table end;
+                        ) rcmmd_table
+                        LEFT OUTER JOIN tb_rcmmd_img_mang b ON rcmmd_table.week = b.dfk_type
+                        AND rcmmd_table.panel_disp_sn = b.disp_sn
+                        AND b.rcmmd_type_id = 'RC_SML_TR'
+                        AND b.img_disp_type = 'MAIN_TOP'
+                        AND b.os_type = #{osType}
+                        ORDER BY rcmmd_table.disp_sn
+
+                        -- 2. rcmmd_img_table end
+                    ) rcmmd_img_table
+                    INNER JOIN tb_rcmmd_similar_track_list b ON rcmmd_img_table.rcmmd_id = b.rcmmd_similar_track_id
+                    INNER JOIN tb_track c ON b.track_id = c.track_id
+                    JOIN (SELECT @curRank:=0, @prevRcmmdId:=0) r
+                    WHERE
+                      c.disp_status_yn = 'Y'
+                    ORDER BY rcmmd_img_table.rcmmd_id , b.disp_sn
+                    -- 3. rcmmd_track_table end
+                ) rcmmd_track_table
+            -- 4. rcmmd_tank_table end
+            ) rcmmd_track_rank_table
+        LEFT OUTER JOIN ted_album a ON rcmmd_track_rank_table.album_id = a.album_id
+        LEFT OUTER JOIN tb_album_img b ON a.album_id = b.album_id
+        LEFT OUTER JOIN ted_trackartist c ON rcmmd_track_rank_table.track_id =c.track_id
+        LEFT OUTER JOIN ted_artist d ON c.artist_id = d.artist_id
+        LEFT OUTER JOIN ted_artist e ON e.artist_id = rcmmd_track_rank_table.reprsnt_artist_id
+        WHERE
+          rank <![CDATA[<=]]> #{trackLimitSize}
+    </select>
+
+    <select id="selectRecommendCfTrackListByIdList" resultMap="rcmmdTrackResultMap">
+        SELECT
+            rcmmd_track_rank_table.rcmmd_id,
+            rcmmd_track_rank_table.rcmmd_disp_sn,
+            rcmmd_track_rank_table.track_id,
+            rcmmd_track_rank_table.track_nm,
+            rcmmd_track_rank_table.disp_sn,
+            rcmmd_track_rank_table.reprsnt_artist_id,
+            rcmmd_track_rank_table.agency_id,
+            rcmmd_track_rank_table.create_dtime,
+            rcmmd_track_rank_table.update_dtime,
+            rcmmd_track_rank_table.img_size,
+            rcmmd_track_rank_table.img_url,
+            rcmmd_track_rank_table.svc_genre_id,
+            rcmmd_track_rank_table.svc_genre_nm,
+            rcmmd_track_rank_table.trackCount,
+            rcmmd_track_rank_table.rcmmdCreateDtime,
+            d.artist_id,
+            d.artist_nm,
+            a.album_id,
+            b.album_img_size size,
+            CONCAT(b.album_img_url,'?updateDate=',UNIX_TIMESTAMP(b.update_dtime)) url,
+            e.artist_id reqArtistId,
+            e.artist_nm reqArtistNm,
+            rank
+        FROM
+        (
+            -- 4. rcmmd_rank_table start
+            SELECT
+                @curRank:=IF(@prevRcmmdId = rcmmd_track_table.rcmmd_id, @curRank + 1, 1) AS rank,
+                @prevRcmmdId:=rcmmd_track_table.rcmmd_id,
+                rcmmd_track_table.rcmmd_id,
+                rcmmd_track_table.rcmmd_disp_sn,
+                rcmmd_track_table.track_id,
+                rcmmd_track_table.track_nm,
+                rcmmd_track_table.disp_sn,
+                rcmmd_track_table.album_id,
+                rcmmd_track_table.reprsnt_artist_id,
+                rcmmd_track_table.agency_id,
+                rcmmd_track_table.create_dtime,
+                rcmmd_track_table.update_dtime,
+                rcmmd_track_table.img_size,
+                rcmmd_track_table.img_url,
+                rcmmd_track_table.svc_genre_id,
+                rcmmd_track_table.svc_genre_nm,
+                rcmmd_track_table.trackCount,
+                rcmmd_track_table.rcmmdCreateDtime
+            FROM
+            (
+                SELECT
+                    -- 3. rcmmd_track_table starSELECT
+                    rcmmd_img_table.rcmmd_id,
+                    rcmmd_img_table.svc_genre_id,
+                    rcmmd_img_table.svc_genre_nm,
+                    rcmmd_img_table.disp_sn rcmmd_disp_sn,
+                    rcmmd_img_table.img_size,
+                    rcmmd_img_table.img_url,
+                    rcmmd_img_table.trackCount,
+                    rcmmd_img_table.rcmmdCreateDtime,
+                    b.track_id,
+                    b.disp_sn,
+                    c.track_nm,
+                    c.album_id,
+                    c.reprsnt_artist_id,
+                    c.agency_id,
+                    c.create_dtime,
+                    c.update_dtime
+                FROM
+                (
+                    -- 2. rcmmd_img_table start
+                    SELECT
+                        rcmmd_table.rcmmd_id,
+                        rcmmd_table.svc_genre_id,
+                        rcmmd_table.svc_genre_nm,
+                        rcmmd_table.disp_sn,
+                        rcmmd_table.trackCount,
+                        rcmmd_table.rcmmdCreateDtime,
+                        b.img_size,
+                        b.img_url
+                    FROM
+                    (
+                        -- 1. rcmmd_table start
+                        SELECT
+                            rcmmd_mforu_id rcmmd_id,
+                            a.svc_genre_id,
+                            b.svc_genre_nm,
+                            disp_sn,
+                            (
+                                SELECT
+                                  COUNT(*)
+                                FROM
+                                  tb_rcmmd_mforu_list
+                                WHERE
+                                  rcmmd_mforu_id = a.rcmmd_mforu_id
+                            ) trackCount,
+                            a.create_dtime rcmmdCreateDtime
+                        FROM
+                          tb_rcmmd_mforu a INNER JOIN tb_svc_genre b ON a.svc_genre_id = b.svc_genre_id
+                        WHERE
+                          rcmmd_mforu_id IN
+                        <foreach item="rcmmdId" index="index" collection="recommendIdList" open="(" separator="," close=")">
+                            #{rcmmdId}
+                        </foreach>
+                        ORDER BY FIELD(rcmmd_id,
+                        <foreach item="rcmmdId" index="index" collection="recommendIdList" open="" separator="," close="">
+                            #{rcmmdId}
+                        </foreach>
+                        ), disp_sn
+                        LIMIT #{recommendLimitSize}
+                        -- 1. rcmmd_table end;
+                    ) rcmmd_table
+                    LEFT OUTER JOIN tb_map_img_rcmmd_img b ON rcmmd_table.svc_genre_id = b.img_content_id
+                    AND b.rcmmd_type_id = 'RC_CF_TR'
+                    AND b.os_type = #{osType}
+                    AND b.img_disp_type = 'MAIN_TOP'
+                    AND b.img_content_type = 'GENRE'
+
+                    ORDER BY rcmmd_table.disp_sn
+                    -- 2. rcmmd_img_table end
+                ) rcmmd_img_table
+                INNER JOIN tb_rcmmd_mforu_list b ON rcmmd_img_table.rcmmd_id = b.rcmmd_mforu_id
+                INNER JOIN tb_track c ON b.track_id = c.track_id
+                JOIN (SELECT @curRank:=0, @prevRcmmdId:=0) r
+                WHERE
+                c.disp_status_yn = 'Y'
+                ORDER BY rcmmd_img_table.rcmmd_id , b.disp_sn
+                -- 3. rcmmd_track_table end
+            ) rcmmd_track_table
+            -- 4. rcmmd_tank_table end
+        ) rcmmd_track_rank_table
+        LEFT OUTER JOIN ted_album a ON rcmmd_track_rank_table.album_id = a.album_id
+        LEFT OUTER JOIN tb_album_img b ON a.album_id = b.album_id
+        LEFT OUTER JOIN ted_trackartist c ON rcmmd_track_rank_table.track_id =c.track_id
+        LEFT OUTER JOIN ted_artist d ON c.artist_id = d.artist_id
+        LEFT OUTER JOIN ted_artist e ON e.artist_id = rcmmd_track_rank_table.reprsnt_artist_id
+        WHERE
+          rank <![CDATA[<=]]> #{trackLimitSize};
+    </select>
+    <select id="selectRecommendArtistById" resultMap="rcmmdArtistResultMap">
+      SELECT
+          a.rcmmd_artist_id,
+          b.artist_id ,
+          b.artist_type,
+          c.artist_nm,
+          d.size,
+          d.url,
+          a.create_dtime,
+          (
+            SELECT
+              COUNT(*)
+            FROM
+              tb_rcmmd_artist_track_list
+            WHERE
+              rcmmd_artist_id = a.rcmmd_artist_id
+          ) trackCount
+      FROM
+        tb_rcmmd_artist a
+            INNER JOIN
+        tb_rcmmd_artist_list b ON a.rcmmd_artist_id = b.rcmmd_artist_id
+            INNER JOIN
+        ted_artist c ON b.artist_id = c.artist_id
+            LEFT OUTER JOIN
+        ted_artistimage d ON c.artist_id = d.artist_id
+      WHERE
+          a.rcmmd_artist_id = #{recommendArtistId}
+      ORDER BY
+         b.disp_sn ASC
+    </select>
+    <select id="selectRecommendPanelDefaultImageList" resultType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo">
+        SELECT
+           os_type,
+           img_size size,
+           img_url url,
+           disp_sn
+        FROM
+            tb_rcmmd_img_mang
+        WHERE
+            rcmmd_type_id = 'ALL'
+        AND dfk_type = 'EVERY'
+        AND img_disp_type = 'DEFAULT'
+    </select>
+
+    <select id="selectCharacterPreferArtist" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.CharacterPreferArtistDto">
+        SELECT CHARACTER_NO, GENRE_TYPE, GENRE_ID, ARTIST_ID
+        FROM TB_CHARACTER_PREFER_ARTIST
+        WHERE CHARACTER_NO = #{characterNo} AND GENRE_ID = (
+                                                    SELECT GENRE_ID
+                                                    FROM TB_CHARACTER_PREFER_ARTIST
+                                                    WHERE CHARACTER_NO = #{characterNo}
+                                                    GROUP BY GENRE_ID
+                                                    ORDER BY count(GENRE_ID) DESC, rand()
+                                                    LIMIT 1)
+        GROUP BY CHARACTER_NO, ARTIST_ID
+        ORDER BY ARTIST_ID
+    </select>
+
+    <select id="selectSimilarArtistByIdList" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.SimilarArtistDto">
+        SELECT
+            ARTIST_ID
+            , SIMILAR_ARTIST_ID
+        FROM TB_SIMILAR_ARTIST
+        WHERE ARTIST_ID IN
+            <foreach item="artistId" index="index" collection="artistIdList" open="(" separator="," close=")">
+                #{artistId}
+            </foreach>
+              AND SIMILAR_ARTIST_ID NOT IN
+            <foreach item="artistId" index="index" collection="artistIdList" open="(" separator="," close=")">
+                #{artistId}
+            </foreach>
+        ORDER BY ARTIST_ID, rand()
+    </select>
+
+    <select id="selectSimilarArtistTrack" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistTrackListDto">
+        SELECT
+            TT.REPRSNT_ARTIST_ID AS ARTIST_ID
+            , TT.TRACK_ID
+        FROM TB_TRACK TT INNER JOIN
+            (
+                SELECT
+                    REPRSNT_ARTIST_ID
+                    , group_concat(TRACK_ID) AS GROUP_TRACK_ID
+                FROM (
+                         SELECT
+                             TRACK_ID
+                             , TRACK_NM
+                             , TRACK_POPULARITY
+                             , REPRSNT_ARTIST_ID
+                             , RNUM
+                         FROM (
+                                  SELECT
+                                      A.*
+                                      , (CASE @VARTISTID
+                                         WHEN A.REPRSNT_ARTIST_ID
+                                             THEN @ROWNUM := @ROWNUM + 1
+                                         ELSE @ROWNUM := 1 END)             AS RNUM
+                                      , (@VARTISTID := A.REPRSNT_ARTIST_ID) AS VJOB
+                                  FROM TB_TRACK A, (
+                                                       SELECT
+                                                           @VARTISTID := ''
+                                                           , @ROWNUM := 0
+                                                       FROM DUAL) B
+                                  WHERE REPRSNT_ARTIST_ID IN
+                                    <foreach item="artistId" index="index" collection="artistIdList" open="(" separator="," close=")">
+                                        #{artistId}
+                                    </foreach>
+                                  AND A.DISP_STATUS_YN = 'Y'
+                                  ORDER BY A.REPRSNT_ARTIST_ID, A.TRACK_POPULARITY DESC
+                              ) C
+                         WHERE RNUM <![CDATA[<]]> 31
+                         ORDER BY rand()) D
+                GROUP BY REPRSNT_ARTIST_ID) I
+                ON TT.REPRSNT_ARTIST_ID = I.REPRSNT_ARTIST_ID
+                   AND find_in_set(TT.TRACK_ID, I.GROUP_TRACK_ID) BETWEEN 1 AND 2
+    </select>
+    
+    <update id="updateRcmmdArtistDispStdEndDt">
+        UPDATE TB_RCMMD_ARTIST
+        SET DISP_STD_END_DT = now()
+        WHERE CHARACTER_NO = #{characterNo}
+              AND now() BETWEEN DISP_STD_START_DT AND DISP_STD_END_DT
+    </update>
+
+    <update id="insertRcmmdArtist" parameterType="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto"
+            useGeneratedKeys="true" keyProperty="recommendArtistDto.rcmmdArtistId">
+        INSERT INTO TB_RCMMD_ARTIST (CHARACTER_NO, DISP_STD_START_DT, DISP_STD_END_DT, DISP_SN, CREATE_DTIME, CREATE_STD_DTIME, DEL_TARGET_YN)
+        VALUES (#{recommendArtistDto.characterNo}, now(), addtime(adddate(curdate(), - weekday(curdate()) + 6), '23:59:59'), #{recommendArtistDto.dispSn}, now(), now(), 'Y')
+    </update>
+
+    <update id="insertRcmmdArtistList">
+        INSERT INTO TB_RCMMD_ARTIST_LIST (rcmmd_artist_id, artist_id, artist_type, disp_sn)
+        VALUES (#{rcmmdArtistId}, #{artistId}, #{artistType}, #{dispSn})
+    </update>
+
+    <update id="insertRcmmdArtistTrackList">
+        INSERT INTO TB_RCMMD_ARTIST_TRACK_LIST (rcmmd_artist_id, track_id, disp_sn)
+        VALUES (#{rcmmdArtistId}, #{trackId}, #{dispSn})
+    </update>
+
+    <select id="selectPreferGenreTrack" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenreTrackDto">
+        SELECT B.SVC_GENRE_ID, C.TRACK_ID
+        FROM (
+             SELECT * FROM TB_CHARACTER_PREFER_GENRE WHERE CHARACTER_NO = #{characterNo}) A
+                 INNER JOIN TB_MAP_PREFER_GENRE_SVC_GENRE B ON A.PREFER_GENRE_ID = B.PREFER_GENRE_ID
+                 INNER JOIN TB_MAP_SVC_GENRE_TRACK C ON B.SVC_GENRE_ID = C.SVC_GENRE_ID
+                 INNER JOIN (
+                            SELECT CHARACTER_NO, TRACK_ID, TOTAL_LIST_CNT
+                            FROM (
+                                 SELECT I.CHARACTER_NO, I.TRACK_ID, CASE WHEN LIKE_TYPE IS NOT NULL
+                                                                              THEN I.TOTAL_LISTEN_CNT + 10
+                                                                         ELSE I.TOTAL_LISTEN_CNT END AS TOTAL_LIST_CNT
+                                 FROM (
+                                      SELECT CHARACTER_NO, TRACK_ID, sum(LISTEN_CNT) AS TOTAL_LISTEN_CNT
+                                      FROM TB_MOST_LISTEN_TRACK_BYDAY
+                                      WHERE CHARACTER_NO = #{characterNo} AND adddate(curdate(), -7) <![CDATA[<=]]> LISTEN_DT
+                                      GROUP BY CHARACTER_NO, TRACK_ID) I
+                                          LEFT OUTER JOIN (
+                                                          SELECT *
+                                                          FROM TB_CHARACTER_LIKE
+                                                          WHERE CHARACTER_NO = #{characterNo} AND
+                                                                  addtime(adddate(curdate(), -7), '00:00:00') <![CDATA[<=]]> UPDATE_DTIME) TCL
+                                              ON TCL.LIKE_TYPE = 'TRACK'
+                                                     AND
+                                                 I.TRACK_ID = TCL.LIKE_TYPE_ID) J
+                            WHERE TOTAL_LIST_CNT <![CDATA[>=]]> 3) D ON C.TRACK_ID = D.TRACK_ID
+        ORDER BY D.TOTAL_LIST_CNT DESC
+    </select>
+
+    <select id="selectSimilarTrackListByIdList" resultMap="similarTrackResultMap">
+        SELECT T1.TRACK_ID, T1.SIMILAR_TRACK_ID
+        FROM TB_SIMILAR_TRACK T1
+        INNER JOIN TB_TRACK T2
+        ON T1.TRACK_ID = T2.TRACK_ID
+        AND T2.DISP_STATUS_YN = 'Y'
+        WHERE T1.TRACK_ID IN
+        <foreach item="trackId" index="index" collection="trackIds" open="(" separator="," close=")">
+            #{trackId}
+        </foreach>
+        ORDER BY T1.TRACK_ID, T1.DISP_SN
+    </select>
+
+    <update id="insertRcmmdPreferGenreSimilarTrack" parameterType="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPreferGenreSimilarTrackDto"
+            useGeneratedKeys="true" keyProperty="similarTrack.rcmmdPreferGenreSimilarTrackId" keyColumn="rcmmd_prefer_genre_similar_track_id">
+        INSERT INTO TB_RCMMD_PREFER_GENRE_SIMILAR_TRACK (CHARACTER_NO, DISP_STD_START_DT, DISP_STD_END_DT, SVC_GENRE_ID, DISP_SN, CREATE_DTIME, CREATE_STD_DTIME, DEL_TARGET_YN)
+        VALUES (#{similarTrack.characterNo}, now(), date_add(CURDATE(), interval 24*60*60 - 1 second), #{similarTrack.svcGenreId}, #{similarTrack.dispSn}, now(), now(), 'Y')
+    </update>
+
+    <update id="updateRcmmdPreferGenreSimilarTrack">
+        UPDATE TB_RCMMD_PREFER_GENRE_SIMILAR_TRACK
+        SET DISP_STD_END_DT = now()
+        WHERE CHARACTER_NO = #{characterNo}
+                AND now() BETWEEN DISP_STD_START_DT AND DISP_STD_END_DT
+    </update>
+
+    <insert id="insertRcmmdPreferGenreSimilarTrackList">
+        INSERT INTO TB_RCMMD_PREFER_GENRE_SIMILAR_TRACK_LIST (rcmmd_prefer_genre_similar_track_id, track_id, disp_sn)
+        VALUES (#{rcmmdPreferGenreSimilarTrackId}, #{trackId}, #{dispSn})
+    </insert>
+
+    <update id="updateRecommendDataRemovePrevent">
+      UPDATE
+        <if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_ATST_TR'">
+            tb_rcmmd_artist
+        </if>
+        <if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_SML_TR'">
+            tb_rcmmd_similar_track
+        </if>
+        <if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_GR_TR'">
+            tb_rcmmd_prefer_genre_similar_track
+        </if>
+        <if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_CF_TR'">
+            tb_rcmmd_mforu
+        </if>
+      SET
+        del_target_yn = 'N'
+      WHERE
+        character_no = #{characterNo}
+        <if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_ATST_TR'">
+          AND
+            rcmmd_artist_id = #{rcmmdId}
+        </if>
+        <if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_SML_TR'">
+          AND
+            rcmmd_similar_track_id = #{rcmmdId}
+        </if>
+        <if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_GR_TR'">
+          AND
+            rcmmd_prefer_genre_similar_track_id = #{rcmmdId}
+        </if>
+        <if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_CF_TR'">
+          AND
+            rcmmd_mforu_id = #{rcmmdId}
+        </if>
+    </update>
+
+    <select id="selectRecommendPanelInfoBgImageUrl" resultType="String">
+        SELECT
+        c.img_url
+        FROM
+        <if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_SML_TR'">
+            tb_rcmmd_img_mang c
+        WHERE
+            c.dfk_type = CASE DAYOFWEEK(NOW())
+                WHEN '1' THEN 'SUN'
+                WHEN '2' THEN 'MON'
+                WHEN '3' THEN 'TUE'
+                WHEN '4' THEN 'WED'
+                WHEN '5' THEN 'THU'
+                WHEN '6' THEN 'FRI'
+                WHEN '7' THEN 'SAT'
+            END
+            AND c.rcmmd_type_id = 'RC_SML_TR'
+            AND c.img_disp_type = 'MAIN_TOP'
+            AND c.os_type = #{osType}
+        ORDER BY c.disp_sn
+        LIMIT 1
+        </if>
+        <if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_GR_TR'">
+            tb_rcmmd_prefer_genre_similar_track a
+            INNER JOIN
+              tb_svc_genre b ON a.svc_genre_id = b.svc_genre_id
+            LEFT OUTER JOIN
+              tb_map_img_rcmmd_img c ON b.svc_genre_id = c.img_content_id
+            AND c.img_content_type = 'GENRE'
+            AND c.rcmmd_type_id = 'RC_GR_TR'
+            AND c.os_type = #{osType}
+            AND c.dfk_type = CASE DAYOFWEEK(NOW())
+              WHEN '1' THEN 'SUN'
+              WHEN '2' THEN 'MON'
+              WHEN '3' THEN 'TUE'
+              WHEN '4' THEN 'WED'
+              WHEN '5' THEN 'THU'
+              WHEN '6' THEN 'FRI'
+              WHEN '7' THEN 'SAT'
+              END
+            AND c.img_disp_type = 'MAIN_TOP'
+            WHERE
+            a.rcmmd_prefer_genre_similar_track_id = #{rcmmdId}
+
+            LIMIT 1
+        </if>
+        <if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_CF_TR'">
+            tb_rcmmd_mforu a
+            INNER JOIN
+              tb_svc_genre b ON a.svc_genre_id = b.svc_genre_id
+            LEFT OUTER JOIN
+              tb_map_img_rcmmd_img c ON b.svc_genre_id = c.img_content_id
+            AND c.rcmmd_type_id = 'RC_CF_TR'
+            AND c.os_type = #{osType}
+            AND c.img_disp_type = 'MAIN_TOP'
+            AND c.img_content_type = 'GENRE'
+
+            WHERE
+            rcmmd_mforu_id = #{rcmmdId}
+        </if>
+    </select>
+
+</mapper>

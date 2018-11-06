@@ -1,0 +1,536 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2018 SK TECHX.
+  ~ All right reserved.
+  ~
+  ~ This software is the confidential and proprietary information of SK TECHX.
+  ~ You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with SK TECHX.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.ChannelMapper" >
+
+    <resultMap type="com.sktechx.godmusic.personal.rest.model.dto.ChnlDto" id="channelResultMap" autoMapping="true">
+        <id property="chnlId" column="chnl_id" />
+        <id property="chnlNm" column="chnl_nm"/>
+        <collection property="trackList" resultMap="popularChannelTrackResultMap">
+        </collection>
+        <collection property="imgList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" autoMapping="true">
+            <id property="size" column="img_size"/>
+            <id property="url" column="img_url"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="popularChannelTrackResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.TrackDto" extends="com.sktechx.godmusic.personal.rest.repository.TrackMapper.trackResultMap" autoMapping="true">
+
+        <result property="createDtime" column="trackCreateDtime"  />
+        <result property="updateDtime" column="trackUpdateDtime" />
+        <result property="renewDtime" column="trackRenewDtime" />
+    </resultMap>
+
+    <resultMap id="preferGenrePopularChnlResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlListDto" autoMapping="true">
+        <id property="svcGenreId" column="svc_genre_id"/>
+        <collection property="chnlIdList" ofType="Long">
+            <result column="chnl_id"/>
+        </collection>
+    </resultMap>
+    <resultMap id="moodPopularChnlResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlListDto" autoMapping="true">
+        <id property="categoryId" column="category_id"/>
+        <collection property="chnlIdList" ofType="Long">
+            <result column="chnl_id"/>
+        </collection>
+
+    </resultMap>
+
+    <resultMap id="lastListenHistoryResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto" autoMapping="true">
+        <id property="listenId" column="listen_id"/>
+        <collection property="imgList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" column="listen_id" autoMapping="true">
+            <result property="size" column="size" />
+            <result property="url" column="url" />
+        </collection>
+    </resultMap>
+
+    <select id="selectChannelById" resultMap="channelResultMap">
+        SELECT
+            a.chnl_id,
+            a.chnl_disp_nm,
+            a.renew_track_cnt,
+            a.renew_dtime,
+            a.chnl_nm,
+            a.track_cnt,
+            a.create_dtime,
+            a.update_dtime,
+            d.track_id,
+            d.track_nm,
+            d.agency_id,
+            d.album_id,
+            d.reprsnt_artist_id,
+            d.create_dtime trackCreateDtime,
+            d.update_dtime trackUpdateDtime,
+            c.create_dtime trackRenewDtime,
+            c.track_sn
+        FROM
+          tb_chnl a INNER JOIN tb_map_chnl_track c ON a.chnl_id = c.chnl_id
+                    INNER JOIN tb_track d ON c.track_id = d.track_id
+        WHERE a.chnl_id = #{channelId}
+            AND d.disp_status_yn = 'Y'
+        ORDER BY c.track_sn ASC
+    </select>
+
+    <select id="selectChannelListByIdList" resultMap="channelResultMap">
+        SELECT
+            a.chnl_id,
+            a.chnl_nm,
+            a.chnl_disp_nm,
+            a.track_id,
+            a.track_nm,
+            f.artist_id reqArtistId,
+            f.artist_nm reqArtsitNm,
+            a.agency_id,
+            b.album_id,
+            e.artist_id,
+            e.artist_nm,
+            c.album_img_size size,
+            CONCAT(c.album_img_url,'?updateDate=',UNIX_TIMESTAMP(c.update_dtime)) url,
+            a.create_dtime,
+            a.update_dtime,
+            a.track_cnt trackCount,
+            a.img_size,
+            a.img_url,
+            a.track_sn,
+            a.renew_track_cnt,
+            a.renew_dtime,
+            a.trackCreateDtime,
+            a.trackUpdateDtime,
+            a.trackRenewDtime,
+            a.rank
+        FROM (
+            SELECT
+                a.chnl_id,
+                a.chnl_nm,
+                a.chnl_disp_nm,
+                a.renew_track_cnt,
+                a.renew_dtime,
+                a.track_id,
+                a.track_nm,
+                a.agency_id,
+                a.album_id,
+                a.create_dtime,
+                a.update_dtime,
+                a.track_cnt,
+                a.track_sn,
+                a.reprsnt_artist_id,
+                a.img_size,
+                a.img_url,
+                a.trackCreateDtime trackCreateDtime,
+                a.trackUpdateDtime trackUpdateDtime,
+                a.trackRenewDtime trackRenewDtime,
+                @curRank:=IF(@prevChnlId = a.chnl_id,@curRank + 1,1) AS rank,
+                @prevChnlId:=a.chnl_id
+            FROM
+            (
+                SELECT
+                    chnl.chnl_id,
+                    chnl.renew_track_cnt,
+                    chnl.renew_dtime,
+                    chnl.chnl_nm,
+                    chnl.chnl_disp_nm,
+                    chnl.track_cnt,
+                    chnl.create_dtime,
+                    chnl.update_dtime,
+                    chnl.img_url,
+                    chnl.img_size,
+                    c.track_id,
+                    c.track_nm,
+                    c.agency_id,
+                    c.album_id,
+                    c.reprsnt_artist_id,
+                    c.create_dtime trackCreateDtime,
+                    c.update_dtime trackUpdateDtime,
+                    b.create_dtime trackRenewDtime,
+                    b.track_sn
+                FROM
+                (
+                  SELECT
+                    a.*,
+                    b.category_id,
+                    c.img_url,
+                    c.img_size
+                  FROM
+                  tb_chnl a
+                    LEFT OUTER JOIN tb_map_category_chnl b ON a.chnl_id = b.chnl_id
+                    LEFT OUTER JOIN  ( SELECT * FROM tb_img_mang WHERE img_content_type IN ('MOOD', 'SITTN') ) AS c
+                  ON b.category_id = c.img_content_id
+                    AND c.img_disp_type = 'CHNL_MAIN'
+                    AND c.dfk_type = 'EVERY'
+                    AND c.os_type = #{osType}
+                  WHERE
+                    a.chnl_id IN
+                <foreach item="channelId" index="index" collection="channelIdList" open="(" separator="," close=")">
+                    #{channelId}
+                </foreach>
+                  AND a.disp_status_type = 'Y'
+                  GROUP BY a.chnl_id
+                ) chnl
+                INNER JOIN
+                  tb_map_chnl_track b ON chnl.chnl_id = b.chnl_id
+                INNER JOIN
+                  tb_track c ON b.track_id = c.track_id
+                ORDER BY FIELD(chnl.chnl_id,
+                <foreach item="channelId" index="index" collection="channelIdList" open="" separator="," close="">
+                    #{channelId}
+                </foreach>
+                ) , b.track_sn ASC
+            ) a
+        ) a
+        LEFT OUTER JOIN ted_album b ON a.album_id = b.album_id
+        LEFT OUTER JOIN tb_album_img c ON b.album_id = c.album_id
+        LEFT OUTER JOIN ted_trackartist d ON a.track_id =d.track_id
+        LEFT OUTER JOIN ted_artist e ON d.artist_id = e.artist_id
+        LEFT OUTER JOIN ted_artist f ON f.artist_id = a.reprsnt_artist_id
+        , (SELECT @curRank:=0, @prevChnlId:=0) r
+        WHERE
+          a.rank  <![CDATA[<=]]> #{trackLimitSize}
+        AND
+          b.disp_status_yn = 'Y'
+    </select>
+
+    <select id="selectPopularChannelIdList" resultType="Long">
+       SELECT
+            b.chnl_id
+        FROM
+            (SELECT
+                b.music_content_id,
+                b.disp_sn,
+                c.chnl_id,
+                c.category_id
+            FROM
+                tb_chart a
+            INNER JOIN tb_chart_music_content b ON a.chart_id = b.chart_id
+            INNER JOIN tb_map_category_chnl c ON b.music_content_id = c.chnl_id
+            INNER JOIN tb_category d ON c.category_id = d.category_id
+            WHERE
+                a.chart_type = 'WEEKLY'
+                    AND a.svc_content_type = 'ALL'
+                    AND a.music_content_type = 'CHNL'
+            GROUP BY b.music_content_id
+            ORDER BY b.disp_sn) a INNER JOIN tb_chnl b ON a.music_content_id = b.chnl_id
+        WHERE
+            b.disp_status_type = 'Y'
+        AND
+              category_id IS NOT NULL
+        GROUP BY category_id
+        ORDER BY disp_sn
+    </select>
+
+    <select id="selectAllPreferGenrePopularChannelIdList" resultMap="preferGenrePopularChnlResultMap">
+        SELECT
+            a.svc_genre_id,
+            a.prefer_genre_id,
+            b.chart_id,
+            c.music_content_id chnl_id,
+            c.disp_sn
+        FROM
+            (
+                SELECT
+                    prefer_genre_id,
+                    svc_genre_id,
+                    @curRank:=IF(@prevChnlId = prefer_genre_id, @curRank + 1, 1) AS rank,
+                    @prevChnlId:=prefer_genre_id
+                FROM
+                  tb_map_prefer_genre_svc_genre, (SELECT @curRank:=0, @prevChnlId:=0) r
+                ORDER BY prefer_genre_id , disp_sn
+            ) a
+            INNER JOIN
+              tb_chart b ON a.svc_genre_id = b.svc_content_id
+            INNER JOIN
+              tb_chart_music_content c ON b.chart_id = c.chart_id
+            INNER JOIN
+              tb_chnl e ON e.chnl_id = c.music_content_id
+			INNER JOIN
+			  tb_map_category_chnl f ON e.chnl_id = f.chnl_id
+        WHERE
+                b.chart_type = 'WEEKLY'
+            AND b.svc_content_type = 'GENRE'
+            AND b.music_content_type = 'CHNL'
+            AND e.disp_status_type = 'Y'
+            AND a.rank <![CDATA[<=]]> 1
+        GROUP BY a.svc_genre_id , a.prefer_genre_id , b.chart_id ,e.chnl_id, c.disp_sn
+        ORDER BY b.chart_id , c.disp_sn
+    </select>
+
+    <select id="selectAllMoodPopularChannelIdList" resultMap="moodPopularChnlResultMap">
+        SELECT
+            category.category_id,
+            b.music_content_id chnl_id,
+            b.disp_sn
+        FROM (
+                SELECT
+                    category_id
+                FROM
+                    tb_category
+                WHERE
+                    category_type = 'MOOD'
+                AND disp_status_type = 'Y'
+          ) category
+          INNER JOIN tb_chart a ON category.category_id = a.svc_content_id
+          INNER JOIN tb_chart_music_content b ON a.chart_id = b.chart_id
+          INNER JOIN tb_chnl c ON b.music_content_id = c.chnl_id
+          INNER JOIN tb_map_category_chnl d ON c.chnl_id = d.chnl_id
+        WHERE
+            a.chart_type = 'WEEKLY'
+        AND
+            a.svc_content_type = 'MOOD'
+        AND
+            a.music_content_type = 'CHNL'
+        AND
+            c.disp_status_type = 'Y'
+        GROUP BY category.category_id , a.chart_id, b.disp_sn
+        ORDER BY a.chart_id , b.disp_sn
+    </select>
+
+    <select id = "selectLastListenHistory" resultMap="lastListenHistoryResultMap">
+        ( SELECT CONCAT(a.listen_type, a.listen_type_id) as listen_id,
+                 a.listen_type,
+                 a.listen_type_id,
+                 b.member_chnl_nm as content_title,
+                 b.track_cnt as track_count,
+                 a.last_listen_dtime,
+                 d.album_img_size as size,
+                 CONCAT(d.album_img_url, '?updateDate=', UNIX_TIMESTAMP(d.update_dtime)) AS url
+            FROM ( SELECT listen_type, listen_type_id, character_no, last_listen_dtime
+                     FROM tb_member_last_listen_hist
+                    WHERE member_no = #{memberNo}
+                      AND character_no = #{characterNo}
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
+                    ORDER BY last_listen_dtime DESC
+                    LIMIT 300 ) a
+            JOIN tb_member_chnl b
+              ON a.listen_type_id = b.member_chnl_id
+             AND a.character_no = b.character_no
+             AND a.listen_type = 'MY_CHNL'
+            LEFT JOIN ted_album c
+              ON b.album_id = c.album_id
+            LEFT JOIN tb_album_img d
+              ON c.album_id = d.album_id )
+
+           UNION ALL
+
+        ( SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
+                 a.listen_type,
+                 a.listen_type_id,
+                 c.prefer_disp_nm AS content_title,
+                 b.music_content_cnt AS track_count,
+                 a.last_listen_dtime,
+                 d.img_size,
+                 CONCAT(d.img_url, '?updateDate=', UNIX_TIMESTAMP(d.create_dtime)) AS url
+            FROM ( SELECT listen_type, listen_type_id, last_listen_dtime
+                     FROM tb_member_last_listen_hist
+                    WHERE member_no = #{memberNo}
+                      AND character_no = #{characterNo}
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
+                    ORDER BY last_listen_dtime DESC
+                    LIMIT 300 ) a
+            JOIN ( SELECT chart_id, music_content_cnt
+                     FROM tb_chart
+                    WHERE (svc_content_type,chart_type) IN (('ALL', 'HOURLY'), ('KIDS','DAILY'))
+                      AND music_content_type = 'TRACK' ) b
+              ON a.listen_type_id = b.chart_id
+             AND a.listen_type = 'CHART'
+            JOIN tb_prefer_disp c
+              ON b.chart_id = c.disp_id
+            JOIN ( SELECT img_content_id, img_size, img_url, create_dtime
+                     FROM tb_img_mang
+                    WHERE img_content_type = 'DISP'
+                      AND img_disp_type = 'RCT_DTL'
+                      AND os_type IN ('ALL', #{osType}) ) d
+              ON c.prefer_disp_id = d.img_content_id )
+
+           UNION ALL
+
+        ( SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
+                 a.listen_type,
+                 a.listen_type_id,
+                 b.chart_nm AS content_title,
+                 b.music_content_cnt AS track_count,
+                 a.last_listen_dtime,
+                 c.img_size,
+                 CONCAT(c.img_url, '?updateDate=', UNIX_TIMESTAMP(c.create_dtime)) AS url
+            FROM ( SELECT listen_type, listen_type_id, last_listen_dtime
+                     FROM tb_member_last_listen_hist
+                    WHERE member_no = #{memberNo}
+                      AND character_no = #{characterNo}
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
+                    ORDER BY last_listen_dtime DESC
+                    LIMIT 300 ) a
+            JOIN ( SELECT chart_id, svc_content_id, chart_nm, music_content_cnt,
+                          CASE WHEN chart_type = 'NEW' THEN 'RECENT'
+                               WHEN chart_type = 'DAILY' THEN 'POPULARITY'
+                               ELSE NULL END AS chart_type
+                     FROM tb_chart t
+                    WHERE svc_content_type = 'GENRE'
+                      AND music_content_type = 'TRACK'
+                      AND chart_type IN ('NEW','DAILY') ) b
+              ON a.listen_type_id = b.chart_id
+             AND a.listen_type = 'CHART'
+            JOIN ( SELECT img_content_id, img_size, img_url, shortcut_type, create_dtime
+                     FROM tb_img_mang
+                    WHERE img_content_type = 'GENRE'
+                      AND img_disp_type = 'RCT_DTL'
+                      AND shortcut_type IN ('RECENT','POPULARITY')
+                      AND os_type IN ('ALL', #{osType}) ) c
+              ON b.svc_content_id = c.img_content_id
+             AND b.chart_type = c.shortcut_type )
+
+           UNION ALL
+
+        ( SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
+                 a.listen_type,
+                 a.listen_type_id,
+                 CONCAT('Like You', ' ', DATE_FORMAT(a.create_dtime, '%m.%d')) AS content_title,
+                 ( SELECT COUNT(*) FROM tb_rcmmd_similar_track_list WHERE rcmmd_similar_track_id = b.rcmmd_similar_track_id) AS track_count,
+                 a.last_listen_dtime,
+                 c.img_size AS size,
+                 CONCAT(c.img_url, '?updateDate=', UNIX_TIMESTAMP(c.create_dtime)) AS url
+            FROM ( SELECT listen_type, listen_type_id, character_no, last_listen_dtime, create_dtime
+                     FROM tb_member_last_listen_hist
+                    WHERE member_no = #{memberNo}
+                      AND character_no = #{characterNo}
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
+                    ORDER BY last_listen_dtime DESC
+                    LIMIT 300 ) a
+            JOIN tb_rcmmd_similar_track b
+              ON a.listen_type_id = b.rcmmd_similar_track_id
+             AND a.character_no = b.character_no
+             AND a.listen_type = 'RC_SML_TR'
+            LEFT JOIN (SELECT *
+                         FROM tb_rcmmd_img_mang
+                        WHERE rcmmd_type_id = 'RC_SML_TR'
+                          AND img_disp_type = 'RCT_DTL'
+                          AND dfk_type = #{dayType}
+                          AND os_type IN ('ALL', #{osType})
+                        LIMIT 1 ) c
+              ON 1=1 )
+
+           UNION ALL
+
+        ( SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
+                 a.listen_type,
+                 a.listen_type_id,
+                 CONCAT('Mix Tape', ' ', DATE_FORMAT(a.create_dtime, '%m.%d')) AS content_title,
+                 ( SELECT COUNT(*) FROM tb_rcmmd_prefer_genre_similar_track_list WHERE rcmmd_prefer_genre_similar_track_id = b.rcmmd_prefer_genre_similar_track_id) AS track_count,
+                 a.last_listen_dtime,
+                 c.img_size,
+                 CONCAT(c.img_url, '?updateDate=', UNIX_TIMESTAMP(c.create_dtime)) AS url
+            FROM ( SELECT listen_type, listen_type_id, character_no, last_listen_dtime, create_dtime
+                     FROM tb_member_last_listen_hist
+                    WHERE member_no = #{memberNo}
+                      AND character_no = #{characterNo}
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
+                    ORDER BY last_listen_dtime DESC
+                    LIMIT 300 ) a
+            JOIN tb_rcmmd_prefer_genre_similar_track b
+              ON a.listen_type_id = b.rcmmd_prefer_genre_similar_track_id
+             AND a.character_no = b.character_no
+             AND a.listen_type = 'RC_GR_TR'
+            JOIN ( SELECT *
+                     FROM tb_map_img_rcmmd_img
+                    WHERE rcmmd_type_id = 'RC_GR_TR'
+                      AND img_disp_type = 'RCT_DTL'
+                      AND dfk_type = #{dayType}
+                      AND os_type IN ('ALL', #{osType}) ) c
+              ON b.svc_genre_id = c.img_content_id )
+
+           UNION ALL
+
+        ( SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
+                 a.listen_type,
+                 a.listen_type_id,
+                 CONCAT('Musician Focus', ' ', DATE_FORMAT(a.create_dtime, '%m.%d')) AS content_title,
+                 ( SELECT COUNT(*) FROM tb_rcmmd_artist_list WHERE rcmmd_artist_id = b.rcmmd_artist_id) AS track_count,
+                 a.last_listen_dtime,
+                 e.size,
+                 CONCAT(e.url, '?updateDate=', UNIX_TIMESTAMP(e.update_dtime)) AS url
+            FROM ( SELECT listen_type, listen_type_id, character_no, last_listen_dtime, create_dtime
+                     FROM tb_member_last_listen_hist
+                    WHERE member_no = #{memberNo}
+                      AND character_no = #{characterNo}
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
+                    ORDER BY last_listen_dtime DESC
+                    LIMIT 300 ) a
+            JOIN tb_rcmmd_artist b
+              ON a.listen_type_id = b.rcmmd_artist_id
+             AND a.character_no = b.character_no
+             AND a.listen_type = 'RC_ATST_TR'
+            JOIN tb_rcmmd_artist_list c
+              ON b.rcmmd_artist_id = c.rcmmd_artist_id
+             AND c.disp_sn = 1
+            JOIN ted_artist d
+              ON c.artist_id = d.artist_id
+            LEFT JOIN ted_artistimage e
+              ON d.artist_id = e.artist_id )
+
+           UNION ALL
+
+        ( SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
+                 a.listen_type,
+                 a.listen_type_id,
+                 CONCAT('Made for U', ' ', DATE_FORMAT(a.create_dtime, '%m.%d')) AS content_title,
+                 ( SELECT COUNT(*) FROM tb_rcmmd_mforu_list WHERE rcmmd_mforu_id = b.rcmmd_mforu_id) AS track_count,
+                 a.last_listen_dtime,
+                 c.img_size AS size,
+                 CONCAT(c.img_url, '?updateDate=', UNIX_TIMESTAMP(c.create_dtime)) AS url
+            FROM ( SELECT listen_type, listen_type_id, character_no, last_listen_dtime, create_dtime
+                     FROM tb_member_last_listen_hist
+                    WHERE member_no = #{memberNo}
+                      AND character_no = #{characterNo}
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
+                    ORDER BY last_listen_dtime DESC
+                    LIMIT 300 ) a
+            JOIN tb_rcmmd_mforu b
+              ON a.listen_type_id = b.rcmmd_mforu_id
+             AND a.character_no = b.character_no
+             AND a.listen_type = 'RC_CF_TR'
+            JOIN ( SELECT *
+                     FROM tb_map_img_rcmmd_img
+                    WHERE rcmmd_type_id = 'RC_CF_TR'
+                      AND img_disp_type = 'RCT_DTL'
+                      AND os_type IN ('ALL', #{osType}) ) c
+              ON b.svc_genre_id = c.img_content_id )
+
+         ORDER BY last_listen_dtime DESC
+    </select>
+
+    <select id = "selectLastListenHistoryByChannel" resultMap="lastListenHistoryResultMap">
+        SELECT CONCAT(a.listen_type, a.listen_type_id) as listen_id,
+               a.listen_type,
+               a.listen_type_id,
+               b.chnl_nm as content_title,
+               b.track_cnt as track_count,
+               a.last_listen_dtime,
+               d.album_img_size as size,
+               CONCAT(d.album_img_url, '?updateDate=', UNIX_TIMESTAMP(d.update_dtime)) AS url,
+               b.renew_track_cnt,
+               b.renew_dtime
+          FROM ( SELECT listen_type, listen_type_id, last_listen_dtime
+                   FROM tb_member_last_listen_hist
+                  WHERE member_no = #{memberNo}
+                    AND character_no = #{characterNo}
+                    AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
+                  ORDER BY last_listen_dtime DESC
+                  LIMIT 300 ) a
+          JOIN tb_chnl b
+            ON a.listen_type_id = b.chnl_id
+           AND a.listen_type = 'CHNL'
+          LEFT JOIN ted_album c
+            ON b.album_id = c.album_id
+          LEFT JOIN tb_album_img d
+            ON c.album_id = d.album_id
+    </select>
+
+</mapper>

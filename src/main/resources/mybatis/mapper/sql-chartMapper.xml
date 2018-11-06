@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ /*
+  ~  * Copyright (c) 2018 SK TECHX.
+  ~  * All right reserved.
+  ~  *
+  ~  * This software is the confidential and proprietary information of SK TECHX.
+  ~  * You shall not disclose such Confidential Information and
+  ~  * shall use it only in accordance with the terms of the license agreement
+  ~  * you entered into with SK TECHX.
+  ~  */
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.ChartMapper">
+
+    <resultMap type="com.sktechx.godmusic.personal.rest.model.dto.ChartDto" id="chartListResultMap" autoMapping="true">
+        <!--<id property="chartId" column="chart_id" />-->
+        <!--<collection property="trackList" resultMap="com.sktechx.godmusic.personal.rest.repository.TrackMapper.trackResultMap" column="chart_id" autoMapping="true" />-->
+    </resultMap>
+
+    <resultMap id="chartResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.ChartDto" autoMapping="true">
+        <id property="chartId" column="chart_id" />
+        <result property="trackCount" column="music_content_cnt" />
+        <collection property="trackList" resultMap="com.sktechx.godmusic.personal.rest.repository.TrackMapper.trackResultMap">
+        </collection>
+        <collection property="imgList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" autoMapping="true">
+            <result property="size" column="img_size" />
+            <result property="url" column="img_url" />
+        </collection>
+    </resultMap>
+
+    <select id="selectPreferDispChart" resultMap="chartResultMap">
+        SELECT
+            chart_track_table.chart_id,
+            chart_track_table.music_content_cnt,
+            chart_track_table.chart_nm,
+            chart_track_table.create_dtime,
+            chart_track_table.update_dtime,
+            chart_track_table.track_nm,
+            chart_track_table.disp_start_dtime,
+            chart_track_table.img_size,
+            chart_track_table.img_url,
+            chart_track_table.disp_sn trackSn,
+            chart_track_table.bf_disp_sn trackBfSn,
+            CONVERT (chart_track_table.disp_sn , SIGNED )- CONVERT (chart_track_table.bf_disp_sn , SIGNED )AS rankBadge,
+            CASE WHEN chart_track_table.bf_disp_sn = 0 THEN 'Y' ELSE 'N' END AS newYn,
+            c.track_id,
+            a.album_id,
+            d.artist_id,
+            d.artist_nm,
+            b.album_img_size size,
+            CONCAT(b.album_img_url,'?updateDate=',UNIX_TIMESTAMP(b.update_dtime)) url,
+            e.artist_id reqArtistId,
+            e.artist_nm reqArtistNm
+        FROM (
+            SELECT
+                chart_img_table.chart_id,
+                chart_img_table.music_content_cnt,
+                chart_img_table.chart_nm,
+                chart_img_table.create_dtime,
+                chart_img_table.update_dtime,
+                chart_img_table.disp_start_dtime,
+                chart_img_table.img_size,
+                chart_img_table.img_url,
+                b.music_content_id,
+                b.disp_sn,
+                b.bf_disp_sn,
+                c.track_id,
+                c.track_nm,
+                c.album_id,
+                c.reprsnt_artist_id
+            FROM
+                (
+                  SELECT
+                        a.chart_id,
+                        a.music_content_cnt,
+                        c.prefer_disp_nm chart_nm,
+                        a.create_dtime,
+                        a.update_dtime,
+                        a.disp_start_dtime,
+                        b.img_size,
+                        b.img_url
+                  FROM
+                        tb_chart a
+                  LEFT OUTER JOIN tb_img_mang b
+                    ON b.img_content_id = (
+                                            SELECT
+                                              prefer_disp_id
+                                            FROM
+                                              tb_prefer_disp
+                                            WHERE
+                                              disp_props_type = #{chartPanelType.dispPropsType}
+                                            AND disp_type = 'CHART'
+                                          )
+                  AND b.img_content_type = 'DISP'
+                            AND b.dfk_type = 'EVERY'
+                            AND b.img_disp_type = 'MAIN_TOP'
+                            AND b.os_type = #{osType}
+                  LEFT OUTER JOIN tb_prefer_disp c ON b.img_content_id = c.prefer_disp_id
+                  WHERE
+                        a.svc_content_type = #{chartPanelType.svcContentType}
+                            AND a.chart_type = #{chartPanelType.chartType}
+                            AND a.music_content_type = #{chartPanelType.musicContentType}
+                ) chart_img_table
+                INNER JOIN
+                  tb_chart_music_content b ON chart_img_table.chart_id = b.chart_id
+                INNER JOIN
+                  tb_track c ON b.music_content_id = c.track_id
+                WHERE c.disp_status_yn = 'Y'
+                ORDER BY b.disp_sn
+            LIMIT #{trackLimitSize} ) chart_track_table
+        LEFT OUTER JOIN ted_album a ON chart_track_table.album_id = a.album_id
+            LEFT OUTER JOIN tb_album_img b ON a.album_id = b.album_id
+            LEFT OUTER JOIN ted_trackartist c ON chart_track_table.track_id =c.track_id
+            LEFT OUTER JOIN ted_artist d ON c.artist_id = d.artist_id
+            LEFT OUTER JOIN ted_artist e ON e.artist_id = chart_track_table.reprsnt_artist_id
+        WHERE a.disp_status_yn = 'Y'
+    </select>
+
+    <select id="selectChartListByDefaultGenre" resultMap="chartListResultMap">
+        <![CDATA[
+           SELECT
+             b.chart_id,
+             b.chart_type,
+             b.chart_nm,
+             b.svc_content_id
+           FROM tb_svc_genre a
+             JOIN tb_chart b ON a.svc_genre_id = b.svc_content_id
+           WHERE a.main_disp_std_yn = 'Y'
+                 AND b.chart_type IN ('DAILY', 'NEW')
+                 AND b.svc_content_type = 'GENRE'
+                 AND b.music_content_type = 'TRACK'
+           /*AND b.disp_start_dtime <= now()*/
+           /*AND b.disp_end_dtime >= now()*/
+           ORDER BY a.main_disp_sn, b.update_dtime DESC
+           LIMIT 12
+        ]]>
+    </select>
+
+    <select id="selectChartListByPreferGenre" resultMap="chartListResultMap">
+        <![CDATA[
+           SELECT
+             a.chart_id,
+             a.chart_type,
+             a.chart_nm,
+             a.svc_content_id
+           FROM (
+                  SELECT
+                    e.chart_id,
+                    e.chart_type,
+                    e.chart_nm,
+                    e.svc_content_id,
+                    1 ord,
+                    a.update_dtime
+                  FROM tb_character_prefer_genre a
+                    JOIN tb_prefer_genre b ON a.prefer_genre_id = b.prefer_genre_id
+                    JOIN tb_map_prefer_genre_svc_genre c ON b.prefer_genre_id = c.prefer_genre_id
+                    JOIN tb_svc_genre d ON c.svc_genre_id = d.svc_genre_id
+                    JOIN tb_chart e ON d.svc_genre_id = e.svc_content_id
+                  WHERE a.character_no = #{characterNo}
+                        AND b.use_yn = 'Y'
+                        AND e.chart_type IN ('DAILY', 'NEW')
+                        AND e.svc_content_type = 'GENRE'
+                        AND e.music_content_type = 'TRACK'
+                  /*AND f.disp_start_dtime <= now()*/
+                  /*AND f.disp_end_dtime >= now()*/
+                  UNION ALL
+                  SELECT
+                    g.chart_id,
+                    g.chart_type,
+                    g.chart_nm,
+                    g.svc_content_id,
+                    3 ord,
+                    g.update_dtime
+                  FROM tb_character_prefer_disp a
+                    JOIN tb_prefer_disp b ON a.prefer_disp_id = b.prefer_disp_id
+                    JOIN tb_map_prefer_genre_prefer_disp c ON b.prefer_disp_id = c.prefer_disp_id
+                    JOIN tb_prefer_genre d ON c.prefer_genre_id = d.prefer_genre_id
+                    JOIN tb_map_prefer_genre_svc_genre e ON d.prefer_genre_id = e.prefer_genre_id
+                    JOIN tb_svc_genre f ON e.svc_genre_id = f.svc_genre_id
+                    JOIN tb_chart g ON f.svc_genre_id = g.svc_content_id
+                  WHERE a.character_no = #{characterNo}
+                        AND d.use_yn = 'Y'
+                        AND d.disp_yn = 'N'
+                        AND g.chart_type IN ('DAILY', 'NEW')
+                        AND g.svc_content_type = 'GENRE'
+                        AND g.music_content_TYPE = 'TRACK'
+                ) a
+           ORDER BY ord, svc_content_id, chart_type
+           LIMIT 12
+        ]]>
+    </select>
+
+</mapper>

@@ -1,0 +1,56 @@
+#
+# Copyright (c) 2018 SK TECHX.
+# All right reserved.
+#
+# This software is the confidential and proprietary information of SK TECHX.
+# You shall not disclose such Confidential Information and
+# shall use it only in accordance with the terms of the license agreement
+# you entered into with SK TECHX.
+#
+
+spring.application.name: personal-api
+server.port: 80
+
+spring:
+  profiles:
+    active: dev
+  cloud:
+    config:
+      name: personal-api,lib-module
+    refresh:
+      extra-refreshable: javax.sql.DataSource
+
+---
+spring:
+  profiles: local
+  cloud:
+      config:
+        uri: http://172.21.112.94:8888
+        label: develop
+
+---
+spring:
+  profiles: dev
+  cloud:
+      config:
+        uri: http://172.21.112.94:8888
+        label: develop
+
+---
+spring:
+  profiles: qa
+  cloud:
+    config:
+      uri: http://172.21.100.178:8888
+      label: develop
+server:
+  port: 8080
+
+
+---
+spring:
+  profiles: prod
+  cloud:
+    config:
+      uri: http://TBD
+      label: master

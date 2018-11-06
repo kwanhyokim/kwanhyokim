@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ /*
+  ~  * Copyright (c) 2018 SK TECHX.
+  ~  * All right reserved.
+  ~  *
+  ~  * This software is the confidential and proprietary information of SK TECHX.
+  ~  * You shall not disclose such Confidential Information and
+  ~  * shall use it only in accordance with the terms of the license agreement
+  ~  * you entered into with SK TECHX.
+  ~  */
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.MemberChannelMapper">
+
+    <resultMap id="memberChannelResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.MemberChannelDto" autoMapping="true">
+        <id property="memberChannelId" column="memberChannelId"/>
+        <collection property="album" resultMap="com.sktechx.godmusic.personal.rest.repository.AlbumMapper.albumResultMap"/>
+    </resultMap>
+
+    <select id="selectMemberChannelIdList" resultType="java.lang.Long">
+		SELECT
+			member_chnl_id
+		FROM
+			TB_MEMBER_CHNL
+		<trim prefix="WHERE" prefixOverrides="AND | OR ">
+			AND character_no = #{characterNo}
+			AND member_no = #{memberNo}
+			<if test="excludeChannelId != null">
+				AND member_chnl_id != #{excludeChannelId}
+			</if>
+		</trim>
+		ORDER BY member_chnl_sn ASC
+		<if test="pageable != null">
+			LIMIT #{pageable.offset}, #{pageable.pageSize}
+		</if>
+    </select>
+
+	<select id="selectMemberChannelList" resultMap="memberChannelResultMap">
+		SELECT
+			C.member_chnl_id 						AS memberChannelId,
+			C.member_chnl_nm 						AS memberChannelName,
+			C.member_chnl_sn 						AS channelPriority,
+			C.album_id 								AS albumId,
+ 			IFNULL(C.track_cnt, 0) 					AS trackCount,
+ 			IFNULL(C.chnl_play_tm, 0)				AS channelPlayTime,
+			C.create_dtime							AS createDateTime,
+			C.update_dtime 							AS updateDateTime,
+ 			D.ALBUM_IMG_SIZE						AS size,
+			CONCAT(D.album_img_url, '?updateDate=', unix_timestamp(D.update_dtime)) AS url,
+			D.update_dtime 							AS albumImgUpdateDateTime,
+ 			E.TITLE									AS albumTitle
+		FROM
+			TB_MEMBER_CHNL AS C
+			LEFT JOIN TB_ALBUM_IMG D ON C.ALBUM_ID = D.ALBUM_ID
+			LEFT JOIN TED_ALBUM E ON C.ALBUM_ID = E.ALBUM_ID
+		WHERE
+			C.member_chnl_id IN
+			<foreach collection="channelIdList" item="channelId" index="index" open="(" separator="," close=")">
+				#{channelId}
+			</foreach>
+		ORDER BY channelPriority ASC
+	</select>
+
+	<select id="selectMemberChannelTotalCount" resultType ="int">
+		SELECT
+		COUNT(member_chnl_id)
+		FROM
+		tb_member_chnl
+		<trim prefix="WHERE" prefixOverrides="AND | OR ">
+			AND character_no = #{characterNo}
+			AND member_no = #{memberNo}
+		</trim>
+	</select>
+
+    <select id="selectMemberChannel" resultMap="memberChannelResultMap">
+		SELECT
+			C.member_chnl_id 						AS memberChannelId,
+			C.member_chnl_nm 						AS memberChannelName,
+			C.member_chnl_sn 						AS channelPriority,
+			C.album_id 								AS albumId,
+			IFNULL(C.track_cnt, 0) 					AS trackCount,
+			IFNULL(C.chnl_play_tm, 0)				AS channelPlayTime,
+			C.update_dtime 							AS updateDateTime,
+			C.create_dtime                   		AS createDateTime,
+			D.ALBUM_IMG_SIZE						AS size,
+			CONCAT(D.album_img_url, '?updateDate=', unix_timestamp(D.update_dtime)) AS url,
+			D.update_dtime 							AS albumImgUpdateDateTime,
+			E.TITLE									AS albumTitle
+		FROM
+			TB_MEMBER_CHNL AS C
+			LEFT JOIN TB_ALBUM_IMG D ON C.ALBUM_ID = D.ALBUM_ID
+			LEFT JOIN TED_ALBUM E ON C.ALBUM_ID = E.ALBUM_ID
+		WHERE character_no = #{characterNo}
+		AND member_no = #{memberNo}
+		AND member_chnl_id = #{channelId}
+		ORDER BY channelPriority ASC
+	</select>
+
+    <select id="selectMemberChannelCount" resultType="int">
+		SELECT
+			COUNT(member_chnl_id)
+		FROM
+			TB_MEMBER_CHNL
+		<trim prefix="WHERE" prefixOverrides="AND | OR ">
+			AND character_no = #{characterNo}
+			AND member_no = #{memberNo}
+		</trim>
+	</select>
+
+    <select id="selectMemberChannelEqualsName" resultType="int">
+		SELECT
+			count(*)
+		FROM
+			tb_member_chnl
+		WHERE character_no = #{characterNo}
+		AND member_no = #{memberNo}
+		AND member_chnl_nm = #{channelName}
+	</select>
+
+
+	<select id="selectMemberChannelLikeNameList" resultType="String">
+		SELECT
+			member_chnl_nm
+		FROM
+			tb_member_chnl
+		WHERE character_no = #{characterNo}
+		AND member_no = #{memberNo}
+		AND member_chnl_nm like #{channelName}
+	</select>
+
+	<update id="insertMemberChannel" parameterType="com.sktechx.godmusic.personal.rest.model.dto.MemberChannelDto"
+			useGeneratedKeys="true" keyProperty="memberChannelDto.memberChannelId">
+		INSERT INTO TB_MEMBER_CHNL (
+				CHARACTER_NO
+				, MEMBER_NO
+				, MEMBER_CHNL_NM
+				, MEMBER_CHNL_SN
+				, TRACK_CNT
+				, CHNL_PLAY_TM
+				, ALBUM_ID
+				, CREATE_DTIME
+				, UPDATE_DTIME
+
+		) VALUES (
+				#{characterNo}
+				, #{memberNo}
+				, #{memberChannelDto.memberChannelName}
+				, #{memberChannelDto.channelPriority}
+				, #{memberChannelDto.trackCount}
+				, #{memberChannelDto.channelPlayTime}
+				, #{memberChannelDto.album.albumId}
+				, now()
+				, now()
+		)
+	</update>
+
+	<update id="updateMemberChannel">
+		UPDATE TB_MEMBER_CHNL
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="channelName != null">MEMBER_CHNL_NM = #{channelName},  </if>
+			update_Dtime = now(),
+		</trim>
+		<trim prefix="WHERE" prefixOverrides="AND | OR ">
+			AND MEMBER_CHNL_ID = #{channelId}
+			AND CHARACTER_NO = #{characterNo}
+			AND MEMBER_NO = #{memberNo}
+		</trim>
+	</update>
+
+	<update id="deleteMemberChannel">
+		DELETE
+		FROM
+			tb_member_chnl
+		WHERE
+			member_chnl_id IN
+			<foreach collection="channelIdList" item="channelId" index="index" open="(" separator="," close=")">
+				#{channelId}
+			</foreach>
+			AND character_no = #{characterNo}
+			AND member_no = #{memberNo}
+	</update>
+
+	<update id="updateMemberChannelList">
+		UPDATE TB_MEMBER_CHNL A
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="albumId != null">
+				ALBUM_ID = #{albumId},
+			</if>
+			<if test="viewPriority != null">
+				MEMBER_CHNL_SN = #{viewPriority},
+			</if>
+			<if test="updateTrackCount == true">
+			<![CDATA[
+				TRACK_CNT = IFNULL((SELECT
+								COUNT(B.TRACK_ID)
+							FROM
+								TB_MAP_MEMBER_CHNL_TRACK B
+							WHERE
+								A.MEMBER_CHNL_ID = B.MEMBER_CHNL_ID
+							GROUP BY A.MEMBER_CHNL_ID),
+						0),
+			]]>
+			</if>
+			<if test="updatePlayTime == true">
+			<![CDATA[
+				CHNL_PLAY_TM = IFNULL((SELECT
+								SUM(CASE
+										WHEN LENGTH(C.TRACK_PLAY_TM) > 5 THEN CAST(SUBSTR(C.TRACK_PLAY_TM, 1, 3) AS UNSIGNED)
+										ELSE CAST(SUBSTR(C.TRACK_PLAY_TM, 1, 2) AS UNSIGNED)
+									END) + TRUNCATE(SUM(CAST(SUBSTR(C.TRACK_PLAY_TM, 4, 2) AS UNSIGNED)) / 60,
+										0)
+							FROM
+								TB_MAP_MEMBER_CHNL_TRACK D
+								JOIN TB_TRACK C ON D.TRACK_ID = C.TRACK_ID
+							WHERE
+								A.MEMBER_CHNL_ID = D.MEMBER_CHNL_ID
+							GROUP BY A.MEMBER_CHNL_ID),
+						0),
+			]]>
+			</if>
+			<if test="updateDateTime != null">UPDATE_DTIME = #{updateDateTime}</if>
+		</trim>
+		<trim prefix="WHERE" prefixOverrides="AND | OR ">
+			AND MEMBER_CHNL_ID = #{channelId}
+			AND CHARACTER_NO = #{characterNo}
+			AND MEMBER_NO = #{memberNo}
+		</trim>
+	</update>
+
+	<select id="selectMemberChannelAlbumId" resultType="java.lang.Long">
+		SELECT
+			b.album_id
+		FROM tb_map_member_chnl_track a
+		JOIN tb_track b ON a.track_id = b.track_id
+		WHERE a.member_chnl_id = #{channelId}
+        ORDER BY a.update_dtime DESC, a.track_sn ASC
+        LIMIT 1;
+	</select>
+
+	<update id="updateMemberChannelImg">
+		update    tb_member_chnl a
+			left outer join (
+				select mt.member_chnl_id, tt.album_id
+				from
+					tb_map_member_chnl_track mt
+				join tb_track tt on tt.track_id = mt.track_id
+				where
+					tt.disp_status_yn ='Y'
+					and mt.member_chnl_id = #{channelId}
+				order by mt.update_dtime DESC, mt.track_sn ASC
+				limit 1) b
+			on a.member_chnl_id = b.member_chnl_id
+		set
+			a.album_id = ifnull(b.album_id,0)
+		where
+			a.member_chnl_id = #{channelId}
+	</update>
+
+</mapper>

@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2018 SK TECHX.
+  ~ All right reserved.
+  ~
+  ~ This software is the confidential and proprietary information of SK TECHX.
+  ~ You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with SK TECHX.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.TrackMapper" >
+
+    <resultMap id="trackResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.TrackDto" autoMapping="true">
+        <id property="trackId" column="track_id"/>
+        <collection property="album" resultMap="com.sktechx.godmusic.personal.rest.repository.AlbumMapper.albumResultMap"/>
+
+        <collection property="artistList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" column="artist_id">
+            <result property="artistId" column="artist_id"></result>
+            <result property="artistName" column="artist_nm"></result>
+        </collection>
+
+        <collection property="artist" ofType="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" column="repArtistId">
+            <result property="artistId" column="repArtistId"></result>
+            <result property="artistName" column="repArtistNm"></result>
+        </collection>
+
+        <collection property="rank" javaType="com.sktechx.godmusic.personal.rest.model.dto.RankDto">
+            <result property="rankBadge" column="rankBadge"/>
+            <result property="newYn" column="newYn"/>
+        </collection>
+
+    </resultMap>
+
+    <resultMap id="mostListenedTrackResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.MostListenedTrackDto" extends="trackResultMap" autoMapping="true">
+        <result property="memberNo" column="memberNo" />
+        <result property="characterNo" column="characterNo" />
+        <result property="listenCount" column="listenCount" />
+        <result property="lastListenDateTime" column="lastListenDateTime" />
+        <result property="likeYn" column="likeYn" />
+    </resultMap>
+
+
+    <select id="selectTrackList" resultMap="trackResultMap">
+        SELECT
+            a.track_id,
+            a.track_nm,
+            a.album_id,
+            f.artist_id repArtistId,
+            f.artist_nm repArtistNm,
+            a.agency_id,
+            if(a.streaming_premium_yn = 'Y' OR a.pps_yn = 'Y', 'Y', 'N') holdbackYn,
+            a.create_dtime,
+            a.update_dtime,
+            d.artist_id,
+            d.artist_nm,
+            b.album_img_size size,
+            CONCAT(b.album_img_url, '?updateDate=', unix_timestamp(b.update_dtime)) url
+        FROM
+          tb_track a
+        LEFT OUTER JOIN	tb_album_img b
+          ON a.album_id = b.album_id
+        LEFT OUTER JOIN	ted_trackartist as c
+          ON a.track_id = c.track_id AND c.rp_yn = 'Y' and c.db_sts = 'A'
+        LEFT OUTER JOIN	ted_artist d
+          ON c.artist_id = d.artist_id
+        LEFT OUTER JOIN ted_album e
+          ON a.album_id = e.album_id
+        LEFT OUTER JOIN ted_artist f
+          ON a.reprsnt_artist_id = f.artist_id
+      WHERE
+        a.track_id IN
+        <foreach collection="trackIdList" item="trackId"  open="("  index="index" separator="," close=")">
+            #{trackId}
+        </foreach>
+        AND a.disp_status_yn = 'Y'
+    </select>
+
+    <select id="selectRecommendPanelPopularTrackList" resultType="Long">
+        SELECT
+            track_id
+        FROM
+            tb_rcmmd_artist_track_list
+        WHERE
+            rcmmd_artist_id = (SELECT
+                    rcmmd_artist_id
+                FROM
+                    tb_rcmmd_artist
+                WHERE
+                    rcmmd_artist_id = #{rcmmdArtistId}
+                    )
+        ORDER BY disp_sn ASC
+
+    </select>
+    <select id="selectRecommendPanelSimilarTrackList" resultType="Long">
+        SELECT
+            track_id
+        FROM
+            tb_rcmmd_similar_track_list
+        WHERE
+            rcmmd_similar_track_id = (SELECT
+                    rcmmd_similar_track_id
+                FROM
+                    tb_rcmmd_similar_track
+                WHERE
+                    rcmmd_similar_track_id = #{rcmmdTrackId}
+                    )
+        ORDER BY disp_sn ASC
+
+    </select>
+    <select id="selectRecommendPanelGenreTrackList" resultType="Long">
+        SELECT
+            track_id
+        FROM
+            tb_rcmmd_prefer_genre_similar_track_list
+        WHERE
+            rcmmd_prefer_genre_similar_track_id = (SELECT
+                    rcmmd_prefer_genre_similar_track_id
+                FROM
+                    tb_rcmmd_prefer_genre_similar_track
+                WHERE
+                    rcmmd_prefer_genre_similar_track_id = #{rcmmdGenreId}
+                    )
+        ORDER BY disp_sn ASC
+    </select>
+    <select id="selectRecommendPanelCfTrackList" resultType="Long">
+        SELECT
+            track_id
+        FROM
+            tb_rcmmd_mforu_list
+        WHERE
+            rcmmd_mforu_id = (SELECT
+                    rcmmd_mforu_id
+                FROM
+                    tb_rcmmd_mforu
+                WHERE
+                    rcmmd_mforu_id = #{rcmmdMforuId}
+                )
+        ORDER BY disp_sn ASC
+
+    </select>
+
+    <select id="selectMostListenedTrackList" resultMap="mostListenedTrackResultMap">
+		<![CDATA[
+			SELECT
+				a.member_no memberNo,
+				a.character_no characterNo,
+				a.last_listen_dtime lastListenDateTime,
+				a.listen_cnt listenCount,
+				a.create_dtime createDateTime,
+			    a.update_dtime updateDateTime,
+				b.track_id,
+			    b.track_nm trackNm,
+                IF(f.like_type_id is null, 'N', 'Y') likeYn,
+			    b.track_play_tm playTime,
+			    b.adult_auth_need_track_yn adultAuthYn,
+			    b.track_subtrct_qty subtractQty,
+			    IF(b.title_yn = 'Y' , 'Y', 'N') titleYn,
+			    IF(b.streaming_premium_yn = 'Y' OR b.pps_yn = 'Y', 'Y', 'N') holdbackYn,
+			    b.agency_id agencyId,
+			    c.album_id,
+			    c.album_img_size size,
+			    CONCAT(c.album_img_url, '?updateDate=', unix_timestamp(c.update_dtime)) AS url,
+			    c.update_dtime albumImgUpdateDateTime,
+			    e.artist_id,
+			    e.artist_nm,
+			    b.disp_status_yn displayYn,
+			    g.title albumTitle,
+			    h.artist_id repArtistId,
+				h.artist_nm repArtistNm
+			FROM
+				(
+				    SELECT
+				    	member_no member_no,
+				    	character_no character_no,
+						track_id track_id,
+						last_listen_dtime last_listen_dtime,
+						listen_cnt listen_cnt,
+						create_dtime,
+						update_dtime
+					FROM
+						tb_most_listen_track
+					WHERE
+						character_no = #{characterNo}
+                    ORDER BY listen_cnt DESC, last_listen_dtime DESC
+					LIMIT
+						#{pageable.offset} ,
+						#{pageable.pageSize}
+				) a
+			INNER JOIN	tb_track b
+				ON a.track_id = b.track_id
+			LEFT OUTER JOIN tb_character_like f
+				ON a.track_id = f.like_type_id AND a.character_no = f.character_no AND like_type = 'TRACK'
+			LEFT OUTER JOIN	tb_album_img c
+				ON b.album_id = c.album_id
+			LEFT OUTER JOIN	ted_trackartist as d
+				ON b.track_id = d.track_id AND d.rp_yn = 'Y' and d.db_sts = 'A'
+			LEFT OUTER JOIN	ted_artist e
+				ON d.artist_id = e.artist_id
+			LEFT OUTER JOIN ted_album g
+				ON b.album_id = g.album_id
+			LEFT OUTER JOIN ted_artist h
+				ON b.reprsnt_artist_id = h.artist_id
+			WHERE
+				b.disp_status_yn ='Y'
+			ORDER BY listenCount DESC, lastListenDateTime DESC, d.listorder
+		]]>
+	</select>
+
+    <select id="selectMostListenedTrackTotalCount" resultType="long">
+		 SELECT
+		 	count(*)
+		 FROM
+		 	tb_most_listen_track
+		 WHERE
+			character_no = #{characterNo}
+	</select>
+
+    <select id="selectMyRecentTrackList" resultMap="mostListenedTrackResultMap">
+        SELECT a.member_no AS memberNo,
+               a.character_no AS characterNo,
+               b.track_id,
+               b.track_nm,
+               b.track_play_tm AS playTime,
+               IF(b.title_yn = 'Y' , 'Y', 'N') AS titleYn,
+               b.adult_auth_need_track_yn AS adultAuthYn,
+               b.track_subtrct_qty AS subtractQty,
+               IF(b.streaming_premium_yn = 'Y' OR b.pps_yn = 'Y', 'Y', 'N') AS holdbackYn,
+               b.agency_id,
+               b.create_dtime AS createDateTime,
+               b.update_dtime AS updateDateTime,
+               c.album_id,
+               c.album_img_size size,
+               CONCAT(c.album_img_url, '?updateDate=', unix_timestamp(c.update_dtime)) AS url,
+               a.last_listen_dtime AS lastListenDateTime,
+               e.artist_id,
+               e.artist_nm,
+               b.disp_status_yn AS displayYn,
+               IF(f.track_id is null, 'N', 'Y') AS likeYn,
+               g.title AS albumTitle,
+               h.artist_id AS repArtistId,
+               h.artist_nm AS repArtistNm
+          FROM ( SELECT member_no,
+                        character_no,
+                        track_id,
+                        last_listen_dtime
+                   FROM tb_member_track_listen_hist
+                  WHERE character_no = #{characterNo}
+                  ORDER BY last_listen_dtime DESC
+                  LIMIT 500 ) a
+          JOIN tb_track b
+            ON a.track_id = b.track_id
+          LEFT JOIN	tb_album_img c
+            ON b.album_id = c.album_id
+          LEFT JOIN	ted_trackartist as d
+            ON b.track_id = d.track_id AND d.rp_yn = 'Y' and d.db_sts = 'A'
+          LEFT JOIN	ted_artist e
+            ON d.artist_id = e.artist_id
+          LEFT JOIN tb_map_track_like f
+            ON a.track_id = f.track_id AND a.member_no = f.member_no
+          LEFT JOIN ted_album g
+            ON b.album_id = g.album_id
+          LEFT JOIN ted_artist h
+            ON b.reprsnt_artist_id = h.artist_id
+         WHERE b.disp_status_yn ='Y'
+         ORDER BY lastListenDateTime DESC, d.listorder ASC
+    </select>
+    <select id="selectMyRecentTrackTotalCount" resultType="long">
+        SELECT COUNT(*)
+          FROM tb_member_track_listen_hist
+         WHERE character_no = #{characterNo}
+    </select>
+</mapper>

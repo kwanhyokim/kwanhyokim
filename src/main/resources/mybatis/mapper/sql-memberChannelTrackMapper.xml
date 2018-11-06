@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ /*
+  ~  * Copyright (c) 2018 SK TECHX.
+  ~  * All right reserved.
+  ~  *
+  ~  * This software is the confidential and proprietary information of SK TECHX.
+  ~  * You shall not disclose such Confidential Information and
+  ~  * shall use it only in accordance with the terms of the license agreement
+  ~  * you entered into with SK TECHX.
+  ~  */
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.MemberChannelTrackMapper">
+
+	<resultMap type="com.sktechx.godmusic.personal.rest.model.dto.TrackDto" id="memberChannelTrackResultMap" autoMapping="true">
+		<id property="trackId" column="trackId" />
+		<collection property="album" resultMap="com.sktechx.godmusic.personal.rest.repository.AlbumMapper.albumResultMap"/>
+		<collection property="artistList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" column="artistId">
+			<result property="artistId" column="artistId"></result>
+			<result property="artistName" column="artistNm"></result>
+		</collection>
+		<collection property="artist" ofType="com.sktechx.godmusic.personal.rest.model.dto.ArtistDto" column="repArtistId">
+			<result property="artistId" column="repArtistId"></result>
+			<result property="artistName" column="repArtistNm"></result>
+		</collection>
+	</resultMap>
+
+	<select id="selectMemberChannelTrackList" resultMap="memberChannelTrackResultMap">
+		SELECT
+			b.track_id trackId,
+		    a.track_sn trackSn,
+		    b.track_nm trackNm,
+		    b.album_id album_id,
+		    b.disp_status_yn displayYn,
+		    b.agency_id agencyId,
+		    IF(b.title_yn = 'Y' , 'Y', 'N') titleYn,
+		    b.create_dtime createDateTime,
+		    b.update_dtime updateDateTime,
+		    f.album_img_size size,
+			CONCAT(f.album_img_url, '?updateDate=', unix_timestamp(f.update_dtime)) AS url,
+			f.update_dtime albumImgUpdateDateTime,
+		    IF(e.like_type_id is not null, 'Y', 'N') likeYn,
+		    IF(b.streaming_premium_yn = 'Y' OR b.pps_yn = 'Y', 'Y', 'N') holdbackYn,
+		    IF(b.adult_auth_need_track_yn = 'Y', 'Y', 'N') adultAuthYn,
+		    d.artist_id artistId,
+		    d.artist_nm artistNm,
+		    g.title albumTitle,
+		    h.artist_id repArtistId,
+		    h.artist_nm repArtistNm
+		FROM
+			(
+				SELECT
+					mmct.track_id track_id,
+		            mmct.update_dtime update_dtime,
+		            mmct.track_sn track_sn
+				FROM
+					tb_member_chnl mmc INNER JOIN tb_map_member_chnl_track mmct
+					ON mmc.member_chnl_id = mmct.member_chnl_id
+		        WHERE
+					mmc.member_no = #{memberNo}
+				AND
+					mmc.character_no = #{characterNo}
+				AND
+					mmc.member_chnl_id = #{channelId}
+				ORDER BY
+					mmct.update_dtime DESC,
+		            mmct.track_sn ASC
+		      	<if test="pageable != null">
+					LIMIT
+							#{pageable.offset} ,
+							#{pageable.pageSize}
+				</if>
+		    ) a
+			INNER JOIN tb_track b
+				ON a.track_id = b.track_id
+			LEFT OUTER JOIN ted_trackartist c
+				ON b.track_id = c.track_id AND c.rp_yn = 'Y' AND c.db_sts = 'A'
+			LEFT OUTER JOIN ted_artist d
+				ON c.artist_id = d.artist_id
+			LEFT OUTER JOIN tb_character_like e
+				ON b.track_id = e.like_type_id AND e.character_no = #{characterNo} AND e.like_type = 'TRACK'
+			LEFT OUTER JOIN tb_album_img f
+				ON b.album_id = f.album_id
+			LEFT OUTER JOIN ted_album g
+				ON b.album_id = g.album_id
+			LEFT OUTER JOIN ted_artist h
+				ON b.reprsnt_artist_id = h.artist_id
+			WHERE
+				b.disp_status_yn = 'Y'
+		    ORDER BY a.update_dtime DESC , a.track_sn ASC, c.listorder ASC
+	</select>
+
+	<select id="selectMemberChannelTrackListCount" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM
+			tb_member_chnl a INNER JOIN tb_map_member_chnl_track b
+				ON a.member_chnl_id =b.member_chnl_id
+        WHERE a.character_no = #{characterNo}
+		AND a.member_no = #{memberNo}
+		AND a.member_chnl_id = #{channelId}
+	</select>
+
+	<update id="deleteMapMemberChannelTrack">
+		DELETE MCT
+		FROM
+			tb_member_chnl AS MC
+			JOIN tb_map_member_chnl_track AS MCT ON MCT.member_chnl_id = MC.member_chnl_id
+		WHERE
+			MC.member_chnl_id IN
+			<foreach collection="channelIdList" item="channelId" index="index" open="(" separator="," close=")">
+				#{channelId}
+			</foreach>
+			AND MC.character_no = #{characterNo}
+			AND MC.member_no = #{memberNo}
+	</update>
+
+
+	<delete id="deleteTrack" >
+		DELETE
+		FROM
+			TB_MAP_MEMBER_CHNL_TRACK
+		WHERE
+			member_chnl_id = #{channelId}
+			AND track_id IN
+		<foreach collection="trackIdList" item="trackId" index="index" open="(" separator="," close=")">
+			#{trackId}
+		</foreach>
+	</delete>
+
+	<select id="selectTrackTotalCount" resultType="int">
+		SELECT
+			COUNT(MMCT.member_chnl_id)
+		FROM
+			tb_map_member_chnl_track MMCT
+		WHERE
+			member_chnl_id = #{channelId}
+	</select>
+
+	<select id="selectMaxTrackViewPriority" resultType ="int">
+		SELECT IFNULL(MAX(TRACK_SN), 0) AS TRACK_SN FROM TB_MAP_MEMBER_CHNL_TRACK
+		<trim prefix="WHERE" prefixOverrides="AND | OR ">
+			AND MEMBER_CHNL_ID = #{channelId}
+		</trim>
+	</select>
+
+	<update id="insertTrackMemberChannel" >
+		INSERT INTO TB_MAP_MEMBER_CHNL_TRACK (
+			MEMBER_CHNL_ID
+			, TRACK_ID
+			, TRACK_SN
+			, CREATE_DTIME
+			, UPDATE_DTIME
+		) VALUES (
+			#{channelId}
+			, #{trackId}
+			, #{viewPriority}
+			, now()
+			, now()
+		)
+	</update>
+
+	<select id="selectMemberChannelTrackIdList" resultType="Long">
+		SELECT
+			b.track_id
+		FROM
+			tb_member_chnl a INNER JOIN tb_map_member_chnl_track b
+			ON a.member_chnl_id = b.member_chnl_id
+		WHERE a.member_chnl_id = #{channelId}
+		AND	a.character_no = #{characterNo}
+		AND a.member_no = #{memberNo}
+		ORDER BY b.update_dtime DESC, b.track_sn
+	</select>
+
+	<update id="updateTrack" >
+		UPDATE TB_MAP_MEMBER_CHNL_TRACK
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="viewPriority != null">track_sn = #{viewPriority},  </if>
+			<if test="updateDateTime != null">update_dtime = #{updateDateTime},  </if>
+		</trim>
+
+		<trim prefix="WHERE" prefixOverrides="AND | OR ">
+			AND member_chnl_id = #{channelId}
+			AND track_id = #{trackId}
+		</trim>
+	</update>
+
+</mapper>
