@@ -79,7 +79,7 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
 
             //선호 장르 리스트
             List<CharacterPreferGenreDto> characterPreferGenreList = characterPreferGenreMapper.selectCharacterPreferGenreList(characterNo);
-            fillCharacterPreferGenre(characterPreferGenreList , characterNo);
+            characterPreferGenreList = fillCharacterPreferGenre(characterPreferGenreList , characterNo);
             personalPhaseMeta.setPreferGenreList(characterPreferGenreList);
 
             //선호 노출 리스트
@@ -99,7 +99,7 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
         return personalPhaseMeta;
     }
 
-    private void fillCharacterPreferGenre(List<CharacterPreferGenreDto> characterPreferGenreList , Long characterNo){
+    private List<CharacterPreferGenreDto> fillCharacterPreferGenre(List<CharacterPreferGenreDto> characterPreferGenreList , Long characterNo){
 
         if(CollectionUtils.isEmpty(characterPreferGenreList)){
             characterPreferGenreList = new ArrayList<CharacterPreferGenreDto>();
@@ -113,6 +113,8 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
                 characterPreferGenreList.addAll(fillPreferGenreList);
             }
         }
+
+        return characterPreferGenreList;
     }
     private List<CharacterPreferGenreDto> selectFillPreferGenreList(Long characterNo){
         return characterPreferGenreMapper.selectCharacterPreferDispMapGenre(characterNo);
