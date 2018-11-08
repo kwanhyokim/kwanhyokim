@@ -49,8 +49,20 @@ server:
 
 ---
 spring:
+  profiles: perf
+  cloud:
+    config:
+      uri: http://172.21.100.210:8888
+      label: develop
+server:
+  port: 8080
+
+---
+spring:
   profiles: prod
   cloud:
     config:
-      uri: http://TBD
+      uri: http://172.21.100.210:8888
       label: master
+server:
+  port: 8080
