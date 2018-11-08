@@ -13,13 +13,18 @@ package com.sktechx.godmusic.personal.rest.service.impl.recommend.phase;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferDispDto;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.repository.CharacterPreferGenreMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
+import com.sktechx.godmusic.personal.rest.service.impl.recommend.RecommendPanelAssemblyFactory;
+import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +36,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
 import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.PERSONAL_RECOMMEND_PHASE_KEY;
@@ -43,7 +49,8 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConst
 @Service
 @Slf4j
 public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhaseService {
-
+    @Autowired
+    private RecommendPanelAssemblyFactory recommendPanelAssemblyFactory;
 
     @Autowired
     private CharacterPreferGenreMapper characterPreferGenreMapper;
@@ -90,8 +97,18 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
             List<PersonalPanel> rcmmdPanelList = recommendMapper.selectPersonalRecommendPanelMeta(characterNo, SIMILAR_TRACK_DISP_STANDARD_COUNT , RCMMD_CF_TRACK_DISP_STANDARD_COUNT);
             personalPhaseMeta.setRcmmdPanelList(rcmmdPanelList);
 
-            redisService.setWithPrefix(personalRecommendPhaseKey, personalPhaseMeta, "NX", "PX", hourlyRemainMillisecond());
 
+            //현재 노출 되는 패널 정보 입력
+            if(isRcmmdUsageChannelIdFilter(personalPhaseMeta.getFirstPhaseType())){
+                PanelAssembly panelAssembly = recommendPanelAssemblyFactory.getRecommendPanelAssembly(personalPhaseMeta.getFirstPhaseType());
+                List<Panel> panelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
+                List<Long> filterChnlIdList =  getRcmmdUsageChannelIdList(panelList);
+                if(!CollectionUtils.isEmpty(filterChnlIdList)){
+                    personalPhaseMeta.setRcmmdPanelDispChnlIdList(filterChnlIdList);
+                }
+            }
+
+            redisService.setWithPrefix(personalRecommendPhaseKey, personalPhaseMeta, "NX", "PX", hourlyRemainMillisecond());
         }catch(Exception ex){
             log.error("getPersonalRecommendPhaseMeta not catched exception : {}",ex.getMessage());
             personalPhaseMeta = getGuestPhaseMeta(osType);
@@ -99,6 +116,36 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
         return personalPhaseMeta;
     }
 
+    private boolean isRcmmdUsageChannelIdFilter(PersonalPhaseType personalPhaseType){
+
+        if(PersonalPhaseType.VISIT.equals(personalPhaseType)  ||
+                PersonalPhaseType.LISTEN.equals(personalPhaseType) ||
+                    PersonalPhaseType.RECOMMEND.equals(personalPhaseType) ){
+            return true;
+        }
+        return false;
+    }
+    private List<Long> getRcmmdUsageChannelIdList(List<Panel> panelList){
+        if(CollectionUtils.isEmpty(panelList)){
+            return null;
+        }
+        return panelList.stream()
+                .filter(panel->{
+                    RecommendPanelType recommendPanelType = panel.getType();
+            if(RecommendPanelType.POPULAR_CHANNEL.equals(recommendPanelType)
+                    || RecommendPanelType.LISTEN_MOOD_POPULAR_CHANNEL.equals(recommendPanelType)
+                        || RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL.equals(recommendPanelType)){
+                return true;
+            }
+            return false;
+        }).map(panel->{
+            PanelContentVo content = panel.getContent();
+            if(content != null && content.getId() != null){
+                return content.getId();
+            }
+            return null;
+        }).collect(Collectors.toList());
+    }
     private void fillCharacterPreferGenre(List<CharacterPreferGenreDto> characterPreferGenreList , Long characterNo){
 
         if(CollectionUtils.isEmpty(characterPreferGenreList)){
