@@ -12,6 +12,7 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl;
 
+import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.domain.HomeContentType;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
@@ -32,11 +33,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.PERSONAL_RREFERENCE_ARTIST_KEY;
 
 /**
  * 설명 :
@@ -58,6 +63,9 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     @Autowired
     private ImageManagementMapper imageManagementMapper;
+
+    @Autowired
+    RedisService redisService;
 
     @Override
     public ChartResponse getPreferenceGenreList(Long characterNo) {
@@ -106,7 +114,21 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     @Override
     public ChartResponse getPreferenceArtistList(Long characterNo) {
-        List<ArtistDto> artistDtoList = artistMapper.selectArtistListByPreferArtist(characterNo);
+        String personalPreferenceArtistKey = String.format(PERSONAL_RREFERENCE_ARTIST_KEY, characterNo);
+        List<ArtistDto> artistDtoList = redisService.getListWithPrefix(personalPreferenceArtistKey, ArtistDto.class);
+
+        if (CollectionUtils.isEmpty(artistDtoList)) {
+            artistDtoList = artistMapper.selectArtistListByPreferArtist(characterNo);
+
+            if (!CollectionUtils.isEmpty(artistDtoList)) {
+                LocalTime nowTime = LocalTime.now();
+                LocalTime endTime = LocalTime.MAX;
+
+                long expireSeconds =  nowTime.until(endTime, ChronoUnit.SECONDS);
+
+                redisService.setWithPrefix(personalPreferenceArtistKey, artistDtoList, (int) expireSeconds);
+            }
+        }
 
         return new ChartResponse<>(preferenceArtistListConvert(artistDtoList), HomeContentType.ARTIST);
     }
