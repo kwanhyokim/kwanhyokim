@@ -13,6 +13,7 @@
 package com.sktechx.godmusic.personal.rest.service.impl;
 
 import com.sktechx.godmusic.lib.domain.GMContext;
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
@@ -22,17 +23,26 @@ import com.sktechx.godmusic.personal.common.amqp.domain.UserEventType;
 import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
 import com.sktechx.godmusic.personal.common.domain.type.AppNameType;
 import com.sktechx.godmusic.personal.common.domain.type.FixedSize;
+import com.sktechx.godmusic.personal.common.domain.type.ImageDisplayType;
 import com.sktechx.godmusic.personal.common.domain.type.PinType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.rest.model.dto.AlbumDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ImageManagementDto;
 import com.sktechx.godmusic.personal.rest.model.dto.MemberChannelDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistRetriveAllResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistTrackCreateResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistTrackRetrieveAllResponse;
-import com.sktechx.godmusic.personal.rest.repository.*;
+import com.sktechx.godmusic.personal.rest.repository.ChannelMapper;
+import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
+import com.sktechx.godmusic.personal.rest.repository.MemberChannelMapper;
+import com.sktechx.godmusic.personal.rest.repository.MemberChannelTrackMapper;
+import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
 import com.sktechx.godmusic.personal.rest.service.MemberChannelService;
+import com.sktechx.godmusic.personal.rest.service.recommend.RecommendImageManagementService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
@@ -49,7 +59,14 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -84,6 +101,9 @@ public class MemberChannelServiceImpl implements MemberChannelService {
     TrackMapper trackMapper;
 
     @Autowired
+    RecommendImageManagementService recommendImageManagementService;
+
+    @Autowired
     AmqpService amqpService;
 
     @Autowired
@@ -100,6 +120,14 @@ public class MemberChannelServiceImpl implements MemberChannelService {
 
         List<MemberChannelDto> list = memberChannelMapper.selectMemberChannelList(idList);
         int totalCount = memberChannelMapper.selectMemberChannelTotalCount(memberNo, characterNo);
+
+        for (MemberChannelDto memberChannelDto : list) {
+            List<ImageInfo> recommendImageList = getRecommendImageList(ImageDisplayType.RCT_DTL, memberChannelDto);
+
+            if (!CollectionUtils.isEmpty(recommendImageList)) {
+                memberChannelDto.getAlbum().setImgList(recommendImageList);
+            }
+        }
 
         return new MyPlaylistRetriveAllResponse(new PageImpl<>(list, pageable, totalCount));
     }
@@ -121,11 +149,19 @@ public class MemberChannelServiceImpl implements MemberChannelService {
     @Override
     @Transactional(readOnly = true)
     public MemberChannelDto getMemberChannel(Long memberNo, Long characterNo, Long memberChannelId) {
+        MemberChannelDto memberChannelDto = memberChannelMapper.selectMemberChannel(memberNo, characterNo, memberChannelId);
+
+        List<ImageInfo> recommendImageList = getRecommendImageList(ImageDisplayType.MAIN_TOP, memberChannelDto);
+
+        if (!CollectionUtils.isEmpty(recommendImageList)) {
+            memberChannelDto.getAlbum().setImgList(recommendImageList);
+        }
+
         return memberChannelMapper.selectMemberChannel(memberNo, characterNo, memberChannelId);
     }
 
     @Override
-    public MyPlaylistTrackCreateResponse pinMemberChannel(Long memberNo, Long characterNo, PinType pinType, Long pinId) {
+    public MyPlaylistTrackCreateResponse pinMemberChannel(Long memberNo, Long characterNo, PinType pinType, Long pinTypeId) {
         // 1000 채널 초과 체크
         if (memberChannelMapper.selectMemberChannelCount(memberNo, characterNo) >= FixedSize.MY_CHANNEL.getSize()) {
             throw new CommonBusinessException(PersonalErrorDomain.MY_CHANNEL_OVER_CREATE);
@@ -135,25 +171,25 @@ public class MemberChannelServiceImpl implements MemberChannelService {
         List<Long> trackIdList = null;
 
         if (PinType.CHNL == pinType || PinType.MY_CHNL == pinType) {
-            ChnlDto chnlDto = channelMapper.selectChannelById(pinId);
+            ChnlDto chnlDto = channelMapper.selectChannelById(pinTypeId);
             memberChannelName = chnlDto.getChnlNm(); // TODO : chnlDispNm?
             trackIdList = chnlDto.getTrackList().stream().map(x -> x.getTrackId()).collect(Collectors.toList());
 
         } if (PinType.RC_SML_TR == pinType) {
             memberChannelName = pinType.getTitle();
-            trackIdList = trackMapper.selectRecommendPanelSimilarTrackList(characterNo, pinId);
+            trackIdList = trackMapper.selectRecommendPanelSimilarTrackList(characterNo, pinTypeId);
 
         } if (PinType.RC_GR_TR == pinType) {
             memberChannelName = pinType.getTitle();
-            trackIdList = trackMapper.selectRecommendPanelGenreTrackList(characterNo, pinId);
+            trackIdList = trackMapper.selectRecommendPanelGenreTrackList(characterNo, pinTypeId);
 
         } if (PinType.RC_CF_TR == pinType) {
             memberChannelName = pinType.getTitle();
-            trackIdList = trackMapper.selectRecommendPanelCfTrackList(characterNo, pinId);
+            trackIdList = trackMapper.selectRecommendPanelCfTrackList(characterNo, pinTypeId);
 
         } if (PinType.RC_ATST_TR == pinType) {
             memberChannelName = pinType.getTitle();
-            trackIdList = trackMapper.selectRecommendPanelPopularTrackList(characterNo, pinId);
+            trackIdList = trackMapper.selectRecommendPanelPopularTrackList(characterNo, pinTypeId);
         }
         /*} else if (PinType.CHART == pinType) {
             ChartDto chartDto = chartMapper.selectChartMusicContentList(pinId);
@@ -168,18 +204,25 @@ public class MemberChannelServiceImpl implements MemberChannelService {
         String appName = GMContext.getContext().getAppName();
         AppNameType appNameType = AppNameType.fromCode(appName);
 
-        MemberChannelDto memberChannelDto = createMemberChannel(memberNo, characterNo, memberChannelName);
+        MemberChannelDto memberChannelDto = createMemberChannel(memberNo, characterNo, memberChannelName, pinType, pinTypeId);
         return addTrackList(appNameType, memberNo, characterNo, memberChannelDto.getMemberChannelId(), trackIdList);
     }
 
     @Override
     public MemberChannelDto createMemberChannel(Long memberNo, Long characterNo, String memberChannelName) {
+        return createMemberChannel(memberNo, characterNo, memberChannelName, null, null);
+    }
+
+    @Override
+    public MemberChannelDto createMemberChannel(Long memberNo, Long characterNo, String memberChannelName, PinType pinType, Long pinTypeId) {
         // 1000 채널 초과 체크
         if (memberChannelMapper.selectMemberChannelCount(memberNo, characterNo) >= FixedSize.MY_CHANNEL.getSize()) {
             throw new CommonBusinessException(PersonalErrorDomain.MY_CHANNEL_OVER_CREATE);
         }
 
         MemberChannelDto memberChannel = new MemberChannelDto();
+        memberChannel.setPinType(pinType);
+        memberChannel.setPinTypeId(pinTypeId);
 
         int duplicateChannelNameCount = memberChannelMapper.selectMemberChannelEqualsName(memberNo, characterNo, memberChannelName);
 
@@ -434,5 +477,27 @@ public class MemberChannelServiceImpl implements MemberChannelService {
             }
         }
         return numberArray.get(numberArray.size()-1)+1;
+    }
+
+    private List<ImageInfo> getRecommendImageList(ImageDisplayType imageDisplayType, MemberChannelDto memberChannelDto) {
+        List<ImageInfo> recommendImageList = Collections.EMPTY_LIST;
+        Long recommendId = memberChannelDto.getPinTypeId();
+
+        if (recommendId != null) {
+            RecommendPanelContentType recommendType = RecommendPanelContentType.fromCode(memberChannelDto.getPinType().getCode());
+
+            if (recommendType != null) {
+                OsType personalOsType = GMContext.getContext().getOsType();
+                com.sktechx.godmusic.personal.common.domain.type.OsType osType = com.sktechx.godmusic.personal.common.domain.type.OsType.fromCode(personalOsType.getCode());
+
+                List<ImageManagementDto> imageList = recommendImageManagementService.getRecommendImageList(recommendType, recommendId, imageDisplayType, osType);
+
+                if (!CollectionUtils.isEmpty(imageList)) {
+                    recommendImageList = imageList.stream().map(x -> new ImageInfo(x.getImgSize(), x.getImgUrl())).collect(Collectors.toList());
+                }
+            }
+        }
+
+        return recommendImageList;
     }
 }

@@ -38,7 +38,9 @@ public interface MemberChannelService {
 
     MyPlaylistTrackCreateResponse pinMemberChannel(Long memberNo, Long characterNo, PinType pinType, Long pinId);
 
-    MemberChannelDto createMemberChannel(Long memberNo, Long characterNo, String memberChannelName);
+    MemberChannelDto createMemberChannel(Long memberNo, Long characterNo, String memberChannelNames);
+
+    MemberChannelDto createMemberChannel(Long memberNo, Long characterNo, String memberChannelName, PinType pinType, Long pinTypeId);
 
     void modifyMemberChannelList(Long memberNo, Long characterNo, List<Long> viewPriorityChannelIdList);
 

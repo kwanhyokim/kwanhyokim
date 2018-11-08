@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sktechx.godmusic.personal.common.domain.type.ChannelCreatorType;
+import com.sktechx.godmusic.personal.common.domain.type.PinType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -42,6 +43,12 @@ public class MemberChannelDto {
 
     @JsonProperty("name")
     private String memberChannelName;
+
+    @JsonProperty("pinType")
+    private PinType pinType;
+
+    @JsonProperty("pinTypeId")
+    private Long pinTypeId;
 
     @JsonProperty("priority")
     private Integer channelPriority;

@@ -43,6 +43,8 @@
 			C.member_chnl_id 						AS memberChannelId,
 			C.member_chnl_nm 						AS memberChannelName,
 			C.member_chnl_sn 						AS channelPriority,
+			C.pin_type								AS pinType,
+			C.pin_type_id							AS pinTypeId,
 			C.album_id 								AS albumId,
  			IFNULL(C.track_cnt, 0) 					AS trackCount,
  			IFNULL(C.chnl_play_tm, 0)				AS channelPlayTime,
@@ -80,6 +82,8 @@
 			C.member_chnl_id 						AS memberChannelId,
 			C.member_chnl_nm 						AS memberChannelName,
 			C.member_chnl_sn 						AS channelPriority,
+			C.pin_type								AS pinType,
+			C.pin_type_id							AS pinTypeId,
 			C.album_id 								AS albumId,
 			IFNULL(C.track_cnt, 0) 					AS trackCount,
 			IFNULL(C.chnl_play_tm, 0)				AS channelPlayTime,
@@ -136,6 +140,8 @@
 		INSERT INTO TB_MEMBER_CHNL (
 				CHARACTER_NO
 				, MEMBER_NO
+				, PIN_TYPE
+				, PIN_TYPE_ID
 				, MEMBER_CHNL_NM
 				, MEMBER_CHNL_SN
 				, TRACK_CNT
@@ -147,6 +153,8 @@
 		) VALUES (
 				#{characterNo}
 				, #{memberNo}
+				, #{memberChannelDto.pinType}
+				, #{memberChannelDto.pinTypeId}
 				, #{memberChannelDto.memberChannelName}
 				, #{memberChannelDto.channelPriority}
 				, #{memberChannelDto.trackCount}
