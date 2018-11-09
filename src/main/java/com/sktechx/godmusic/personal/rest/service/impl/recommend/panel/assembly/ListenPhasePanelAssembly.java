@@ -50,7 +50,10 @@ public class ListenPhasePanelAssembly extends PanelSignAssembly {
 
             if( isAppendDefaultPanel(panelList.size()) ){
                 List filterChnlIdList = panelList.stream()
-                        .filter(panel -> RecommendPanelType.LISTEN_MOOD_POPULAR_CHANNEL.equals(panel.getType()) && panel.getContent() != null)
+                        .filter(panel -> (
+                                    RecommendPanelType.LISTEN_MOOD_POPULAR_CHANNEL.equals(panel.getType())
+                                            || RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL.equals(panel.getType())
+                        ) && panel.getContent() != null)
                         .map(panel-> {
                             return panel.getContent().getId();
                         })
