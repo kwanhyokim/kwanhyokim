@@ -55,14 +55,8 @@ public class TrackServiceImpl implements TrackService {
             throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
         }
 
-        int start = pageable.getPageNumber() * pageable.getPageSize();
-        int end = (pageable.getPageNumber() + 1) * pageable.getPageSize();
-
         long totalCount = trackMapper.selectMyRecentTrackTotalCount(characterNo);
-        if(totalCount > 500) totalCount = 500;
-        if(end > 500) end = 500;
-        if(end > totalCount) end = Ints.checkedCast(totalCount);
 
-        return new PageImpl<>(recentListenedTrackList.subList(start, end), pageable, totalCount);
+        return new PageImpl<>(recentListenedTrackList, pageable, totalCount);
     }
 }

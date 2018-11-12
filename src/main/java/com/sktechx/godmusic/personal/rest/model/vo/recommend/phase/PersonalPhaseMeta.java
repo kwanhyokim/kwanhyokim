@@ -46,6 +46,8 @@ public class PersonalPhaseMeta {
     private List<PersonalPhase> personalPhaseList;
     //개인화 추천 패널
     private List<PersonalPanel> rcmmdPanelList;
+    //추천 패널에 노출되는 채널 아이디 리스트
+    private List<Long> rcmmdPanelDispChnlIdList;
 
     public void setRcmmdPanelList(List<PersonalPanel> rcmmdPanelList){
         this.rcmmdPanelList = rcmmdPanelList;
