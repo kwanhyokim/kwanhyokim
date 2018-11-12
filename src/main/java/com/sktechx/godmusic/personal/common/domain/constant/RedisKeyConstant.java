@@ -28,8 +28,12 @@ public class RedisKeyConstant {
 
 	//선호
 	public static final String PERSONAL_PREFERENCE_GENRE_DEFAULT_KEY = "godmusic.personalapi.preference.genre.default";
+	public static final String PERSONAL_RREFERENCE_ARTIST_KEY = "godmusic.personalapi.perference.artist:%s";
 
 	//이미지관리
 	public static final String PERSONAL_IMAGE_MANAGEMENT_KEY = "godmusic.personalapi.image.management:{}.{}.{}";
+
+	//추천이미지관리
+	public static final String RECOMMEND_IMAGE_MANAGEMENT_KEY = "godmusic.personalapi.recommend.image:{}.{}.{}.{}";
 
 }

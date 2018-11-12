@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ /*
+  ~  * Copyright (c) 2018 SK TECHX.
+  ~  * All right reserved.
+  ~  *
+  ~  * This software is the confidential and proprietary information of SK TECHX.
+  ~  * You shall not disclose such Confidential Information and
+  ~  * shall use it only in accordance with the terms of the license agreement
+  ~  * you entered into with SK TECHX.
+  ~  */
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.RecommendImageManagementMapper">
+
+    <resultMap id="recommendImageResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.ImageManagementDto" />
+
+	<select id="selectRecommendImageManagementList" resultMap="recommendImageResultMap">
+		SELECT
+		  b.img_size,
+		  b.img_url
+		FROM tb_rcmmd_similar_track a
+		  JOIN tb_rcmmd_img_mang b
+			ON a.disp_sn = b.disp_sn
+			   AND a.rcmmd_similar_track_id = #{recommendId}
+			   AND b.rcmmd_type_id = #{recommendType} /* only RC_SML_TR */
+			   AND b.img_disp_type = #{imageType}
+			   AND b.os_type = #{osType}
+		  JOIN (
+				 SELECT CASE DAYOFWEEK(NOW())
+						WHEN '1'
+						  THEN 'SUN'
+						WHEN '2'
+						  THEN 'MON'
+						WHEN '3'
+						  THEN 'TUE'
+						WHEN '4'
+						  THEN 'WED'
+						WHEN '5'
+						  THEN 'THU'
+						WHEN '6'
+						  THEN 'FRI'
+						WHEN '7'
+						  THEN 'SAT'
+						END AS dfk_type
+				 UNION
+				 SELECT 'EVERY'
+			   ) c
+			ON b.dfk_type = c.dfk_type
+		ORDER BY a.disp_sn
+	</select>
+
+	<select id="selectMappingImageRecommendImageList" resultMap="recommendImageResultMap">
+		SELECT
+		  b.img_size,
+		  b.img_url
+		<if test="recommendType.getCode() == 'RC_GR_TR'">
+		FROM tb_rcmmd_prefer_genre_similar_track a
+		  JOIN tb_map_img_rcmmd_img b
+			ON a.svc_genre_id = b.img_content_id AND a.disp_sn = b.disp_sn
+			   AND a.rcmmd_prefer_genre_similar_track_id = #{recommendId}
+		</if>
+		<if test="recommendType.getCode() == 'RC_CF_TR'">
+		FROM tb_rcmmd_mforu a
+		  JOIN tb_map_img_rcmmd_img b
+			ON a.svc_genre_id = b.img_content_id AND a.disp_sn = b.disp_sn
+			   AND a.rcmmd_mforu_id = #{recommendId}
+		</if>
+			   AND b.img_content_type = 'GENRE'
+			   AND b.rcmmd_type_id = #{recommendType}
+			   AND b.os_type = #{osType}
+			   AND b.img_disp_type = #{imageType}
+		  JOIN (
+				 SELECT CASE DAYOFWEEK(NOW())
+						WHEN '1'
+						  THEN 'SUN'
+						WHEN '2'
+						  THEN 'MON'
+						WHEN '3'
+						  THEN 'TUE'
+						WHEN '4'
+						  THEN 'WED'
+						WHEN '5'
+						  THEN 'THU'
+						WHEN '6'
+						  THEN 'FRI'
+						WHEN '7'
+						  THEN 'SAT'
+						END AS dfk_type
+				 UNION
+				 SELECT 'EVERY'
+			   ) c ON b.dfk_type = c.dfk_type
+		ORDER BY a.disp_sn
+	</select>
+
+
+
+</mapper>

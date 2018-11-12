@@ -86,7 +86,7 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
 
             //선호 장르 리스트
             List<CharacterPreferGenreDto> characterPreferGenreList = characterPreferGenreMapper.selectCharacterPreferGenreList(characterNo);
-            fillCharacterPreferGenre(characterPreferGenreList , characterNo);
+            characterPreferGenreList = fillCharacterPreferGenre(characterPreferGenreList , characterNo);
             personalPhaseMeta.setPreferGenreList(characterPreferGenreList);
 
             //선호 노출 리스트
@@ -96,7 +96,6 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
             //개인화 추천 패널
             List<PersonalPanel> rcmmdPanelList = recommendMapper.selectPersonalRecommendPanelMeta(characterNo, SIMILAR_TRACK_DISP_STANDARD_COUNT , RCMMD_CF_TRACK_DISP_STANDARD_COUNT);
             personalPhaseMeta.setRcmmdPanelList(rcmmdPanelList);
-
 
             //현재 노출 되는 패널 정보 입력
             if(isRcmmdUsageChannelIdFilter(personalPhaseMeta.getFirstPhaseType())){
@@ -146,7 +145,7 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
             return null;
         }).collect(Collectors.toList());
     }
-    private void fillCharacterPreferGenre(List<CharacterPreferGenreDto> characterPreferGenreList , Long characterNo){
+    private List<CharacterPreferGenreDto> fillCharacterPreferGenre(List<CharacterPreferGenreDto> characterPreferGenreList , Long characterNo){
 
         if(CollectionUtils.isEmpty(characterPreferGenreList)){
             characterPreferGenreList = new ArrayList<CharacterPreferGenreDto>();
@@ -160,6 +159,8 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
                 characterPreferGenreList.addAll(fillPreferGenreList);
             }
         }
+
+        return characterPreferGenreList;
     }
     private List<CharacterPreferGenreDto> selectFillPreferGenreList(Long characterNo){
         return characterPreferGenreMapper.selectCharacterPreferDispMapGenre(characterNo);

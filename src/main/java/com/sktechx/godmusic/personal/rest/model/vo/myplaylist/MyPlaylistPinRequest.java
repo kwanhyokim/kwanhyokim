@@ -37,5 +37,5 @@ public class MyPlaylistPinRequest {
 
     @NotNull
     @JsonProperty("id")
-    private Long pinId;
+    private Long pinTypeId;
 }

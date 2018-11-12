@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.repository;
 
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
+import com.sktechx.godmusic.lib.mybatis.annotation.ReadOnlyMapper;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import org.apache.ibatis.annotations.Param;
 
@@ -22,7 +23,7 @@ import java.util.List;
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 19.
  */
-@BaseMapper
+@ReadOnlyMapper
 public interface ArtistMapper {
     //TODO : 추후 meta api 호출
     List<ArtistDto> getArtistList(@Param("artistIdList") List<Long> artistIdList);

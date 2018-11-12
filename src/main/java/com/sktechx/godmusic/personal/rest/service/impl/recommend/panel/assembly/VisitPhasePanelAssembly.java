@@ -43,7 +43,10 @@ public class VisitPhasePanelAssembly extends PanelSignAssembly {
             if(isDefaultPanelAppend(panelList.size())){
 
                 List filterChnlIdList = panelList.stream()
-                        .filter(panel -> RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL.equals(panel.getType()) && panel.getContent() != null)
+                        .filter(panel ->
+                                ( RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL.equals(panel.getType())
+                                || RecommendPanelType.LISTEN_MOOD_POPULAR_CHANNEL.equals(panel.getType()) )
+                                        && panel.getContent() != null)
                         .map(panel-> {
                             return panel.getContent().getId();
                         })

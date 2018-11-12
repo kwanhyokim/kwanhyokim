@@ -23,6 +23,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
 import static com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType.RC_CF_TR;
@@ -57,8 +58,18 @@ public class RecommendPhasePanelAssembly extends PanelSignAssembly {
             appendSimilarTrackPanelList(personalPhaseMeta , panelList ,panelDefaultSize  - panelList.size() );
             if(panelDefaultSize > panelList.size()){
                 appendPreferGenreChannelPanelList(personalPhaseMeta, panelList, panelDefaultSize - panelList.size() );
+                List filterChnlIdList = panelList.stream()
+                        .filter(panel -> (
+                                RecommendPanelType.LISTEN_MOOD_POPULAR_CHANNEL.equals(panel.getType())
+                                        || RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL.equals(panel.getType())
+                        ) && panel.getContent() != null)
+                        .map(panel-> {
+                            return panel.getContent().getId();
+                        })
+                        .collect(Collectors.toList());
+
                 if(panelDefaultSize > panelList.size()){
-                    appendDefaultPopularChannelPanel(personalPhaseMeta , panelList ,panelDefaultSize - panelList.size() , null);
+                    appendDefaultPopularChannelPanel(personalPhaseMeta , panelList ,panelDefaultSize - panelList.size() , filterChnlIdList);
                 }
             }
         }else{
@@ -71,8 +82,18 @@ public class RecommendPhasePanelAssembly extends PanelSignAssembly {
                     if(panelDefaultSize >= panelList.size()){
                         appendPreferGenreChannelPanelList(personalPhaseMeta, panelList, panelAppendCount );
 
+                        List filterChnlIdList = panelList.stream()
+                                .filter(panel -> (
+                                        RecommendPanelType.LISTEN_MOOD_POPULAR_CHANNEL.equals(panel.getType())
+                                                || RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL.equals(panel.getType())
+                                ) && panel.getContent() != null)
+                                .map(panel-> {
+                                    return panel.getContent().getId();
+                                })
+                                .collect(Collectors.toList());
+
                         if(panelDefaultSize >= panelList.size()){
-                            appendDefaultPopularChannelPanel(personalPhaseMeta , panelList ,panelAppendCount , null);
+                            appendDefaultPopularChannelPanel(personalPhaseMeta , panelList ,panelAppendCount , filterChnlIdList);
                         }
                     }
                 }
