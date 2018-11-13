@@ -65,6 +65,9 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
     public PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType){
         PersonalPhaseMeta personalPhaseMeta = null;
 
+        long startTime = System.currentTimeMillis();
+        long elapsed = 0;
+
         if(characterNo == null){
             return getGuestPhaseMeta(osType);
         }
@@ -74,11 +77,18 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
             String personalRecommendPhaseKey = String.format(PERSONAL_RECOMMEND_PHASE_KEY, characterNo);
 
             if (redisService.exists(personalRecommendPhaseKey)) {
+
                 PersonalPhaseMeta cachePersonalPhaseMeta = redisService.get(personalRecommendPhaseKey, PersonalPhaseMeta.class);
 
                 cachePersonalPhaseMeta.setOsType(osType);
+
+                elapsed = System.currentTimeMillis() - startTime;
+                log.info("getPersonalRecommendPhaseMeta , getCachePersonPhaseMeta : {}",elapsed);
                 return cachePersonalPhaseMeta;
             }
+
+            startTime = System.currentTimeMillis();
+
             personalPhaseMeta = new PersonalPhaseMeta();
 
             personalPhaseMeta.setCharacterNo(characterNo);
@@ -108,6 +118,10 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
             }
 
             redisService.setWithPrefix(personalRecommendPhaseKey, personalPhaseMeta, "NX", "PX", hourlyRemainMillisecond());
+
+            elapsed = System.currentTimeMillis() - startTime;
+            log.info("getPersonalRecommendPhaseMeta , end : {}",elapsed);
+
         }catch(Exception ex){
             log.error("getPersonalRecommendPhaseMeta not catched exception : {}",ex.getMessage());
             personalPhaseMeta = getGuestPhaseMeta(osType);

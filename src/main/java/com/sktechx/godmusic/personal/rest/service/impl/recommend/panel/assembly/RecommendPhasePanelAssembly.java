@@ -42,22 +42,46 @@ public class RecommendPhasePanelAssembly extends PanelSignAssembly {
     private RecommendPhasePanelAssembly(){}
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
+
+        long startTime = System.currentTimeMillis();
+        long elapsed = 0;
+
         final List<Panel> panelList = new ArrayList();
 
         appendRecommendCfTrackPanelList(personalPhaseMeta, panelList, RCMMD_CF_PANEL_DEFAULT_SIZE);
+        elapsed = System.currentTimeMillis() - startTime;
+        log.info("defaultPanelSetting appendRecommendCfTrackPanelList  : {}",elapsed);
 
         boolean isFillRecommendPanel = false;
         if(RCMMD_CF_PANEL_DEFAULT_SIZE > panelList.size()){
             isFillRecommendPanel = true;
         }
+
+        startTime = System.currentTimeMillis();
         appendPreferGenreSimilarTrackPanelList(personalPhaseMeta, panelList, PREFER_GENRE_SIMILAR_TRACK_PANEL_APPEND_SIZE);
+        elapsed = System.currentTimeMillis() - startTime;
+        log.info("defaultPanelSetting appendPreferGenreSimilarTrackPanelList  : {}",elapsed);
 
         int panelDefaultSize = RCMMD_CF_PANEL_DEFAULT_SIZE+SIMILAR_TRACK_PANEL_APPEND_SIZE;
 
         if( panelDefaultSize > panelList.size()){
+
+            startTime = System.currentTimeMillis();
+
             appendSimilarTrackPanelList(personalPhaseMeta , panelList ,panelDefaultSize  - panelList.size() );
+            elapsed = System.currentTimeMillis() - startTime;
+            log.info("panelDefaultSize appendSimilarTrackPanelList  : {}",elapsed);
+
             if(panelDefaultSize > panelList.size()){
+
+                startTime = System.currentTimeMillis();
+
                 appendPreferGenreChannelPanelList(personalPhaseMeta, panelList, panelDefaultSize - panelList.size() );
+                elapsed = System.currentTimeMillis() - startTime;
+                log.info("panelDefaultSize panelList.size appendSimilarTrackPanelList  : {}",elapsed);
+
+
+                startTime = System.currentTimeMillis();
                 List filterChnlIdList = panelList.stream()
                         .filter(panel -> (
                                 RecommendPanelType.LISTEN_MOOD_POPULAR_CHANNEL.equals(panel.getType())
@@ -71,9 +95,14 @@ public class RecommendPhasePanelAssembly extends PanelSignAssembly {
                 if(panelDefaultSize > panelList.size()){
                     appendDefaultPopularChannelPanel(personalPhaseMeta , panelList ,panelDefaultSize - panelList.size() , filterChnlIdList);
                 }
+                elapsed = System.currentTimeMillis() - startTime;
+                log.info("panelDefaultSize end  : {}",elapsed);
             }
         }else{
             if(isFillRecommendPanel){
+
+                startTime = System.currentTimeMillis();
+
                 int mforuPanelCount = panelCount(RecommendPanelType.RCMMD_TRACK,panelList);
                 int panelAppendCount = RCMMD_CF_PANEL_DEFAULT_SIZE - mforuPanelCount;
                 if(panelAppendCount > 0){
@@ -97,19 +126,35 @@ public class RecommendPhasePanelAssembly extends PanelSignAssembly {
                         }
                     }
                 }
+
+                elapsed = System.currentTimeMillis() - startTime;
+                log.info("isFillRecommendPanel end  : {}",elapsed);
             }
         }
-
 
         return panelList;
     }
 
     @Override
     protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList) {
-        appendPreferArtistPopularTrackPanel(personalPhaseMeta,panelList);
-        appendPreferenceChartPanel(personalPhaseMeta,panelList);
 
+        long startTime = System.currentTimeMillis();
+        long elapsed = 0;
+
+        appendPreferArtistPopularTrackPanel(personalPhaseMeta,panelList);
+        elapsed = System.currentTimeMillis() - startTime;
+        log.info("appendPreferencePanel  appendPreferencePanel : {}",elapsed);
+
+        startTime = System.currentTimeMillis();
+        appendPreferenceChartPanel(personalPhaseMeta,panelList);
+        elapsed = System.currentTimeMillis() - startTime;
+        log.info("appendPreferencePanel  appendPreferenceChartPanel : {}",elapsed);
+
+
+        startTime = System.currentTimeMillis();
         sort(personalPhaseMeta, panelList);
+        elapsed = System.currentTimeMillis() - startTime;
+        log.info("appendPreferencePanel  sort : {}",elapsed);
     }
 
     private void appendRecommendCfTrackPanelList(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int panelLimitSize) {

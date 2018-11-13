@@ -78,6 +78,7 @@
                                         disp_std_end_dt >= NOW()
                                     GROUP BY create_std_dtime
                                     ORDER BY create_std_dtime DESC
+                                    LIMIT 1
                                 )
             GROUP BY a.rcmmd_mforu_id
             HAVING contentCount >= #{rcmmdCfTrackDispStandardCount}

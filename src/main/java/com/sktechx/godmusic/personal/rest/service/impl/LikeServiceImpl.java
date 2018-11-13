@@ -109,12 +109,23 @@ public class LikeServiceImpl implements LikeService {
 	@Override
 	public LikeTrackListResponse getTrackLikeListByLikeType(Long characterNo, Pageable pageable) {
 		int totalCount = 0;
+		long startTime = System.currentTimeMillis();
 
 		List<TrackDto> trackDtos = likeMapper.getLikeTrackByLikeType(characterNo, pageable);
+
+		long elapsed = System.currentTimeMillis() - startTime;
+
+		log.info("getTrackLikeListByLikeType:: " + elapsed);
+
+		startTime = System.currentTimeMillis();
 
 		if (CollectionUtils.isEmpty(trackDtos)) return null;
 
 		totalCount = likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_TRACK, characterNo);
+
+		elapsed = System.currentTimeMillis() - startTime;
+
+		log.info("getTrackLikeListByLikeType2:: " + elapsed);
 
 		return new LikeTrackListResponse(new PageImpl(trackDtos, pageable, totalCount));
 	}
