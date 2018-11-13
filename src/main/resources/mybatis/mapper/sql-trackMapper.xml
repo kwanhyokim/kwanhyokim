@@ -263,7 +263,8 @@
                         b.update_dtime
                    FROM tb_most_listen_track a INNER JOIN tb_track b
                    ON a.track_id = b.track_id
-                  WHERE a.character_no = #{characterNo}
+                  WHERE a.member_no = #{memberNo}
+                    AND a.character_no = #{characterNo}
                     AND b.disp_status_yn = 'Y'
                   ORDER BY a.last_listen_dtime DESC
                   LIMIT
@@ -292,7 +293,8 @@
             a.track_id
         FROM tb_most_listen_track a INNER JOIN tb_track b
           ON a.track_id = b.track_id
-         WHERE
+         WHERE a.member_no = #{memberNo}
+        AND
             a.character_no = #{characterNo}
         AND
             b.disp_status_yn = 'Y'

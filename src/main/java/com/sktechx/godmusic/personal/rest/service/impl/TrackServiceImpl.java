@@ -47,15 +47,15 @@ public class TrackServiceImpl implements TrackService {
     }
 
     @Override
-    public PageImpl<?> getMyRecentTrackList(Long characterNo, Pageable pageable){
+    public PageImpl<?> getMyRecentTrackList(Long memberNo, Long characterNo, Pageable pageable){
 
-        List<MostListenedTrackDto> recentListenedTrackList = trackMapper.selectMyRecentTrackList(characterNo, pageable);
+        List<MostListenedTrackDto> recentListenedTrackList = trackMapper.selectMyRecentTrackList(memberNo, characterNo, pageable);
 
         if(CollectionUtils.isEmpty(recentListenedTrackList)){
             throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
         }
 
-        long totalCount = trackMapper.selectMyRecentTrackTotalCount(characterNo);
+        long totalCount = trackMapper.selectMyRecentTrackTotalCount(memberNo, characterNo);
 
         return new PageImpl<>(recentListenedTrackList, pageable, totalCount);
     }
