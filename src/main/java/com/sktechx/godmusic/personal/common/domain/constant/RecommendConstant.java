@@ -60,16 +60,17 @@ public class RecommendConstant {
 
     public static final int RCMMD_CF_TRACK_DISP_STANDARD_COUNT = 15;
 
-    public static final String ARTIST_PANEL_TITLE = "Musician focus";
+    public static final String ARTIST_PANEL_TITLE = "아티스트 FLO";
     public static final String CHART_PANEL_HOURLY_BASIS_PHRASES = "시 기준";
 
-    public static final String PREFER_GENRE_SIMILAR_TRACK_PANEL_TITLE = "Mix Tape";
-    public static final String PREFER_GENRE_SIMILAR_TRACK_PANEL_SUB_TITLE = "내가 많이 들은 곡과\n비슷한 노래";
-    public static final String RCMMD_TRACK_PANEL_TITLE = "Made for U";
-    public static final String RCMMD_TRACK_PANEL_SUB_TITLE = "내가 많이 들은\n장르의 추천 노래";
+    public static final String RCMMD_TRACK_PANEL_TITLE = "너를 위한 FLO";
+    public static final String RCMMD_TRACK_PANEL_SUB_TITLE = "많이 들은\n%s 장르의 추천 음악";
 
-    public static final String SIMILAR_TRACK_PANEL_TITLE = "Like U";
-    public static final String SIMILAR_TRACK_PANEL_SUB_TITLE = "많이 들었던 노래와\n유사한 선곡";
+    public static final String PREFER_GENRE_SIMILAR_TRACK_PANEL_TITLE = "오늘의 FLO";
+    public static final String PREFER_GENRE_SIMILAR_TRACK_PANEL_SUB_TITLE = "많이 들은 곡과\n비슷한 음악";
+
+    public static final String SIMILAR_TRACK_PANEL_TITLE = "오늘의 FLO";
+    public static final String SIMILAR_TRACK_PANEL_SUB_TITLE = "많이 들은 곡과\n비슷한 음악";
 
 }
 

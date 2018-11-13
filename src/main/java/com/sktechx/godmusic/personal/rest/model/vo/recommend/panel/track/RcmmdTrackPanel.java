@@ -25,6 +25,10 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
  */
 public class RcmmdTrackPanel extends TrackPanel {
     public RcmmdTrackPanel( RecommendTrackDto recommendTrackDto, List<ImageInfo> bgImgList )throws CommonBusinessException {
-        super(RecommendPanelType.RCMMD_TRACK , RCMMD_TRACK_PANEL_TITLE , neverRecommdnTrackNull(recommendTrackDto).getSvcGenreDto().getSvcGenreNm(),recommendTrackDto ,bgImgList);
+        super(RecommendPanelType.RCMMD_TRACK ,
+                RCMMD_TRACK_PANEL_TITLE ,
+                String.format(RCMMD_TRACK_PANEL_SUB_TITLE,neverRecommdnTrackNull(recommendTrackDto).getSvcGenreDto().getSvcGenreNm()),
+                recommendTrackDto,
+                bgImgList);
     }
 }
