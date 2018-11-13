@@ -244,32 +244,32 @@
                g.title AS albumTitle,
                h.artist_id AS repArtistId,
                h.artist_nm AS repArtistNm
-          FROM ( SELECT a.member_no,
-                        a.character_no,
-                        a.track_id,
-                        a.last_listen_dtime,
-                        b.track_nm,
-                        b.track_play_tm,
-                        b.title_yn,
-                        b.adult_auth_need_track_yn,
-                        b.track_subtrct_qty,
-                        b.streaming_premium_yn,
-                        b.disp_status_yn,
-                        b.pps_yn,
-                        b.agency_id,
-                        b.album_id,
-                        b.reprsnt_artist_id,
-                        b.create_dtime,
-                        b.update_dtime
-                   FROM tb_most_listen_track a INNER JOIN tb_track b
-                   ON a.track_id = b.track_id
-                  WHERE a.member_no = #{memberNo}
-                    AND a.character_no = #{characterNo}
-                    AND b.disp_status_yn = 'Y'
-                  ORDER BY a.last_listen_dtime DESC
-                  LIMIT
-					#{pageable.offset} ,
-					#{pageable.pageSize}
+          FROM ( SELECT *
+                   FROM ( SELECT a.member_no,
+                                 a.character_no,
+                                 a.track_id,
+                                 a.last_listen_dtime,
+                                 b.track_nm,
+                                 b.track_play_tm,
+                                 b.title_yn,
+                                 b.adult_auth_need_track_yn,
+                                 b.track_subtrct_qty,
+                                 b.streaming_premium_yn,
+                                 b.disp_status_yn,
+                                 b.pps_yn,
+                                 b.agency_id,
+                                 b.album_id,
+                                 b.reprsnt_artist_id,
+                                 b.create_dtime,
+                                 b.update_dtime
+                            FROM tb_most_listen_track a INNER JOIN tb_track b
+                              ON a.track_id = b.track_id
+                           WHERE a.member_no = #{memberNo}
+                             AND a.character_no = #{characterNo}
+                             AND b.disp_status_yn = 'Y'
+                           ORDER BY a.last_listen_dtime DESC
+                           LIMIT 500 ) aa
+                  LIMIT #{pageable.offset}, #{pageable.pageSize}
                 ) a
           LEFT JOIN	tb_album_img c
             ON a.album_id = c.album_id
@@ -298,7 +298,7 @@
             a.character_no = #{characterNo}
         AND
             b.disp_status_yn = 'Y'
-         LIMIT 300
+         LIMIT 500
       ) a
     </select>
 </mapper>
