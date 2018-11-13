@@ -43,10 +43,8 @@
         </encoder>
     </appender>
 
-    <!--<logger name="org.springframework" level="info" />-->
-    <logger name="org.springframework" level="error" />
-    <logger name="org.springframework.jdbc" level="error" />
-    <!--<logger name="org.springframework.jdbc" level="info" />-->
+    <logger name="org.springframework" level="info" />
+    <logger name="org.springframework.jdbc" level="info" />
 
     <logger name="java.sql" level="off" />
     <logger name="com.spring.ibatis" level="off" />
@@ -57,11 +55,9 @@
     <logger name="springfox.documentation" level="off" />
     <logger name="io.swagger.models.parameters.AbstractSerializableParameter" level="error" />
 
-    <logger name="com.sktechx" level="error" />
-    <!--<logger name="com.sktechx" level="info" />-->
+    <logger name="com.sktechx" level="info" />
 
-    <root level="error">
-    <!--<root level="info">-->
+    <root level="info">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
     </root>
