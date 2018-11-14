@@ -769,7 +769,7 @@
         <foreach item="trackId" index="index" collection="trackIds" open="(" separator="," close=")">
             #{trackId}
         </foreach>
-        ORDER BY T1.TRACK_ID, T1.DISP_SN
+        ORDER BY T1.TRACK_ID, T1.RANK
     </select>
 
     <update id="insertRcmmdPreferGenreSimilarTrack" parameterType="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPreferGenreSimilarTrackDto"
