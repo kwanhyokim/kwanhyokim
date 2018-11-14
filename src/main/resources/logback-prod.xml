@@ -44,18 +44,18 @@
     </appender>
 
     <logger name="org.springframework" level="info" />
-    <logger name="org.springframework.jdbc" level="info" />
+    <logger name="org.springframework.jdbc" level="trace" />
 
-    <logger name="java.sql" level="off" />
-    <logger name="com.spring.ibatis" level="off" />
-    <logger name="org.apache.ibatis" level="off" />
-    <logger name="org.mybatis.spring" level="off" />
+    <logger name="java.sql" level="trace" />
+    <logger name="com.spring.ibatis" level="trace" />
+    <logger name="org.apache.ibatis" level="trace" />
+    <logger name="org.mybatis.spring" level="trace" />
     <logger name="com.netflix.discovery" level="off" />
 
     <logger name="springfox.documentation" level="off" />
     <logger name="io.swagger.models.parameters.AbstractSerializableParameter" level="error" />
 
-    <logger name="com.sktechx" level="info" />
+    <logger name="com.sktechx" level="trace" />
 
     <root level="info">
         <appender-ref ref="CONSOLE" />
