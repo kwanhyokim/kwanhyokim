@@ -86,6 +86,7 @@
                   FROM
                         tb_chart a
                   LEFT OUTER JOIN tb_prefer_disp b ON a.chart_id = b.disp_id
+                    AND b.disp_type = 'CHART' AND b.disp_props_type = #{chartPanelType.dispPropsType}
                   LEFT OUTER JOIN tb_img_mang c ON b.prefer_disp_id = c.img_content_id
                     AND c.img_content_type = 'DISP'
                     AND c.dfk_type = 'EVERY'
