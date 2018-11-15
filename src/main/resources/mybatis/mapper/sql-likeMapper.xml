@@ -278,8 +278,6 @@
                                  ON A.CHART_ID = B.CHART_ID
                              LEFT OUTER JOIN TB_TRACK C
                                  ON B.MUSIC_CONTENT_ID = C.TRACK_ID AND B.DISP_SN = 1
-                         WHERE
-                             MUSIC_CONTENT_TYPE = 'TRACK'
                      ) CL
                      INNER JOIN TED_ALBUMIMAGE I
                          ON CL.ALBUM_ID = I.ALBUM_ID
