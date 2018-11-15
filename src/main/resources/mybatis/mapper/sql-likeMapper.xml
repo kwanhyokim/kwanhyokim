@@ -323,18 +323,6 @@
         <!--#{pageable.pageSize}-->
     </select>
 
-    <select id="getLikeByLikeType" resultType="com.sktechx.godmusic.personal.rest.model.vo.like.LikeVo">
-        SELECT
-            CHARACTER_NO
-            , LIKE_TYPE
-            , LIKE_TYPE_ID
-            , DISP_SN
-        FROM MMATE.TB_CHARACTER_LIKE
-        WHERE CHARACTER_NO = #{characterNo}
-              AND LIKE_TYPE = #{likeType}
-        ORDER BY DISP_SN ASC
-    </select>
-
     <select id="getLikeCountByLikeTypeAndLikeTypeId" resultType="int">
         SELECT
             COUNT(*)
