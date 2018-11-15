@@ -56,7 +56,7 @@ public class LikeServiceImpl implements LikeService {
 
 	@Override
 	public LikePlaylistListResponse getPlayListLikeListByLikeType(Long characterNo, Pageable pageable) {
-		int totalCount = 0;
+//		int totalCount = 0;
 
 		List<PlayListDto> playListDtos = likeMapper.getLikePlaylistByLikeType(characterNo, pageable);
 
@@ -74,60 +74,54 @@ public class LikeServiceImpl implements LikeService {
 			}
 		}
 
-		totalCount = likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_CHANNEL, characterNo);
-		totalCount += likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_CHART, characterNo);
+//		totalCount = likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_CHANNEL, characterNo);
+//		totalCount += likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_CHART, characterNo);
 
-		return new LikePlaylistListResponse(new PageImpl(playListDtos, pageable, totalCount));
+		return new LikePlaylistListResponse(new PageImpl(playListDtos, pageable, playListDtos.size()));
 	}
 
 	@Override
 	public LikeAlbumListResponse getAlbumLikeListByLikeType(Long characterNo, Pageable pageable) {
-		int totalCount = 0;
+//		int totalCount = 0;
 
 		List<AlbumDto> albumDtos = likeMapper.getLikeAlbumByLikeType(characterNo, pageable);
 
 		if (CollectionUtils.isEmpty(albumDtos)) return null;
 
-		totalCount = likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_ALBUM, characterNo);
+//		totalCount = likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_ALBUM, characterNo);
 
-		return new LikeAlbumListResponse(new PageImpl(albumDtos, pageable, totalCount));
+		return new LikeAlbumListResponse(new PageImpl(albumDtos, pageable, albumDtos.size()));
 	}
 
 	@Override
 	public LikeArtistListResponse getArtistLikeListByLikeType(Long characterNo, Pageable pageable) {
-		int totalCount = 0;
+//		int totalCount = 0;
 
 		List<ArtistDto> artistDtos = likeMapper.getLikeArtistByLikeType(characterNo, pageable);
 
 		if (CollectionUtils.isEmpty(artistDtos)) return null;
 
-		totalCount = likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_ARTIST, characterNo);
+//		totalCount = likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_ARTIST, characterNo);
 
-		return new LikeArtistListResponse(new PageImpl(artistDtos, pageable, totalCount));
+		return new LikeArtistListResponse(new PageImpl(artistDtos, pageable, artistDtos.size()));
 	}
 
 	@Override
 	public LikeTrackListResponse getTrackLikeListByLikeType(Long characterNo, Pageable pageable) {
-		int totalCount = 0;
+//		int totalCount = 0;
 		long startTime = System.currentTimeMillis();
 
 		List<TrackDto> trackDtos = likeMapper.getLikeTrackByLikeType(characterNo, pageable);
 
 		long elapsed = System.currentTimeMillis() - startTime;
 
-		log.info("getTrackLikeListByLikeType:: " + elapsed);
-
-		startTime = System.currentTimeMillis();
+		log.debug("getTrackLikeListByLikeType:: " + elapsed);
 
 		if (CollectionUtils.isEmpty(trackDtos)) return null;
 
-		totalCount = likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_TRACK, characterNo);
+//		totalCount = likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_TRACK, characterNo);
 
-		elapsed = System.currentTimeMillis() - startTime;
-
-		log.info("getTrackLikeListByLikeType2:: " + elapsed);
-
-		return new LikeTrackListResponse(new PageImpl(trackDtos, pageable, totalCount));
+		return new LikeTrackListResponse(new PageImpl(trackDtos, pageable, trackDtos.size()));
 	}
 
 	@Override

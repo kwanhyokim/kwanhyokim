@@ -41,7 +41,9 @@ public class TrackServiceImpl implements TrackService {
             throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
         }
 
-        long totalCount = trackMapper.selectMostListenedTrackTotalCount(characterNo);
+//        long totalCount = trackMapper.selectMostListenedTrackTotalCount(characterNo);
+        // 1000곡 노출 (pagination 처리 하면 달라져야 함)
+        long totalCount = mostTrackList.size() == pageable.getPageSize() ? pageable.getPageSize() : mostTrackList.size();
 
         return new PageImpl<>(mostTrackList, pageable, totalCount);
     }

@@ -278,8 +278,6 @@
                                  ON A.CHART_ID = B.CHART_ID
                              LEFT OUTER JOIN TB_TRACK C
                                  ON B.MUSIC_CONTENT_ID = C.TRACK_ID AND B.DISP_SN = 1
-                         WHERE
-                             MUSIC_CONTENT_TYPE = 'TRACK'
                      ) CL
                      INNER JOIN TED_ALBUMIMAGE I
                          ON CL.ALBUM_ID = I.ALBUM_ID
@@ -323,21 +321,9 @@
         <!--#{pageable.pageSize}-->
     </select>
 
-    <select id="getLikeByLikeType" resultType="com.sktechx.godmusic.personal.rest.model.vo.like.LikeVo">
-        SELECT
-            CHARACTER_NO
-            , LIKE_TYPE
-            , LIKE_TYPE_ID
-            , DISP_SN
-        FROM MMATE.TB_CHARACTER_LIKE
-        WHERE CHARACTER_NO = #{characterNo}
-              AND LIKE_TYPE = #{likeType}
-        ORDER BY DISP_SN ASC
-    </select>
-
     <select id="getLikeCountByLikeTypeAndLikeTypeId" resultType="int">
         SELECT
-            COUNT(1)
+            COUNT(*)
         FROM TB_CHARACTER_LIKE
         WHERE CHARACTER_NO = #{characterNo}
               AND LIKE_TYPE = #{likeType}
@@ -346,7 +332,7 @@
 
     <select id="getLikeCountByLikeType" resultType="int">
         SELECT
-            COUNT(1)
+            COUNT(*)
         FROM TB_CHARACTER_LIKE
         WHERE CHARACTER_NO = #{characterNo}
               AND LIKE_TYPE = #{likeType}
