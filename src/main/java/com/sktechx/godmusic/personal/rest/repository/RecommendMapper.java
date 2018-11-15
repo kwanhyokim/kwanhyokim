@@ -91,4 +91,5 @@ public interface RecommendMapper {
             , @Param("rcmmdId") Long rcmmdId
             , @Param("osType") OsType osType);
 
+    String selectRecommendGenreByRcmmdId(@Param("rcmmdId") Long rcmmdId);
 }
