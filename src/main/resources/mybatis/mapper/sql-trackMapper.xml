@@ -213,11 +213,38 @@
 
     <select id="selectMostListenedTrackTotalCount" resultType="long">
 		 SELECT
-		 	count(*)
-		 FROM
-		 	tb_most_listen_track
-		 WHERE
-			character_no = #{characterNo}
+				count(DISCONNECT  a.track_id)
+			FROM
+				(
+				    SELECT
+				    	member_no member_no,
+				    	character_no character_no,
+						track_id track_id,
+						last_listen_dtime last_listen_dtime,
+						listen_cnt listen_cnt,
+						create_dtime,
+						update_dtime
+					FROM
+						tb_most_listen_track
+					WHERE
+						character_no = #{characterNo}
+				) a
+			INNER JOIN	tb_track b
+				ON a.track_id = b.track_id
+			LEFT OUTER JOIN tb_character_like f
+				ON a.track_id = f.like_type_id AND a.character_no = f.character_no AND like_type = 'TRACK'
+			LEFT OUTER JOIN	tb_album_img c
+				ON b.album_id = c.album_id
+			LEFT OUTER JOIN	ted_trackartist as d
+				ON b.track_id = d.track_id AND d.rp_yn = 'Y' and d.db_sts = 'A'
+			LEFT OUTER JOIN	ted_artist e
+				ON d.artist_id = e.artist_id
+			LEFT OUTER JOIN ted_album g
+				ON b.album_id = g.album_id
+			LEFT OUTER JOIN ted_artist h
+				ON b.reprsnt_artist_id = h.artist_id
+			WHERE
+				b.disp_status_yn ='Y'
 	</select>
 
     <select id="selectMyRecentTrackList" resultMap="mostListenedTrackResultMap">
