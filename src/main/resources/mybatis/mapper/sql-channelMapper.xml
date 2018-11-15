@@ -191,6 +191,7 @@
         LEFT OUTER JOIN ted_album b ON a.album_id = b.album_id
         LEFT OUTER JOIN tb_album_img c ON b.album_id = c.album_id
         LEFT OUTER JOIN ted_trackartist d ON a.track_id =d.track_id
+                    AND d.rp_yn = 'Y' AND d.db_sts = 'A'
         LEFT OUTER JOIN ted_artist e ON d.artist_id = e.artist_id
         LEFT OUTER JOIN ted_artist f ON f.artist_id = a.reprsnt_artist_id
         , (SELECT @curRank:=0, @prevChnlId:=0) r
