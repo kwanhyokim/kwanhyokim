@@ -337,7 +337,7 @@
 
     <select id="getLikeCountByLikeTypeAndLikeTypeId" resultType="int">
         SELECT
-            COUNT(1)
+            COUNT(*)
         FROM TB_CHARACTER_LIKE
         WHERE CHARACTER_NO = #{characterNo}
               AND LIKE_TYPE = #{likeType}
@@ -346,7 +346,7 @@
 
     <select id="getLikeCountByLikeType" resultType="int">
         SELECT
-            COUNT(1)
+            COUNT(*)
         FROM TB_CHARACTER_LIKE
         WHERE CHARACTER_NO = #{characterNo}
               AND LIKE_TYPE = #{likeType}
