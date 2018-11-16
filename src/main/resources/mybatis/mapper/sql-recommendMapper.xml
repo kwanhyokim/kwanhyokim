@@ -633,17 +633,18 @@
         AND dfk_type = 'EVERY'
         AND img_disp_type = 'DEFAULT'
     </select>
+    
+    <select id="selectCharacterPreferArtistGenre" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.CharacterPreferArtistGenreDto">
+        SELECT GENRE_ID, count(*) AS GENRE_CNT
+        FROM TB_CHARACTER_PREFER_ARTIST
+        WHERE CHARACTER_NO = #{characterNo}
+        GROUP BY GENRE_ID
+    </select>
 
     <select id="selectCharacterPreferArtist" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.CharacterPreferArtistDto">
         SELECT CHARACTER_NO, GENRE_TYPE, GENRE_ID, ARTIST_ID
         FROM TB_CHARACTER_PREFER_ARTIST
-        WHERE CHARACTER_NO = #{characterNo} AND GENRE_ID = (
-                                                    SELECT GENRE_ID
-                                                    FROM TB_CHARACTER_PREFER_ARTIST
-                                                    WHERE CHARACTER_NO = #{characterNo}
-                                                    GROUP BY GENRE_ID
-                                                    ORDER BY count(GENRE_ID) DESC, rand()
-                                                    LIMIT 1)
+        WHERE CHARACTER_NO = #{characterNo} AND GENRE_ID = #{genreId}
         GROUP BY CHARACTER_NO, ARTIST_ID
         ORDER BY ARTIST_ID
     </select>
@@ -661,7 +662,6 @@
             <foreach item="artistId" index="index" collection="artistIdList" open="(" separator="," close=")">
                 #{artistId}
             </foreach>
-        ORDER BY ARTIST_ID, rand()
     </select>
 
     <select id="selectSimilarArtistTrack" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistTrackListDto">
@@ -731,31 +731,31 @@
     </update>
 
     <select id="selectPreferGenreTrack" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenreTrackDto">
-        SELECT B.SVC_GENRE_ID, C.TRACK_ID
-        FROM (
-             SELECT * FROM TB_CHARACTER_PREFER_GENRE WHERE CHARACTER_NO = #{characterNo}) A
-                 INNER JOIN TB_MAP_PREFER_GENRE_SVC_GENRE B ON A.PREFER_GENRE_ID = B.PREFER_GENRE_ID
-                 INNER JOIN TB_MAP_SVC_GENRE_TRACK C ON B.SVC_GENRE_ID = C.SVC_GENRE_ID
+        SELECT MSGT.SVC_GENRE_ID
+             , MSGT.TRACK_ID
+        FROM TB_CHARACTER_PREFER_GENRE CPG
+                 INNER JOIN TB_MAP_PREFER_GENRE_SVC_GENRE MPGSG ON CPG.PREFER_GENRE_ID = MPGSG.PREFER_GENRE_ID
+                 INNER JOIN TB_MAP_SVC_GENRE_TRACK MSGT ON MPGSG.SVC_GENRE_ID = MSGT.SVC_GENRE_ID
                  INNER JOIN (
                             SELECT CHARACTER_NO, TRACK_ID, TOTAL_LIST_CNT
                             FROM (
-                                 SELECT I.CHARACTER_NO, I.TRACK_ID, CASE WHEN LIKE_TYPE IS NOT NULL
-                                                                              THEN I.TOTAL_LISTEN_CNT + 10
-                                                                         ELSE I.TOTAL_LISTEN_CNT END AS TOTAL_LIST_CNT
+                                 SELECT LISTEN_CNT.CHARACTER_NO, LISTEN_CNT.TRACK_ID, CASE WHEN CL.LIKE_TYPE IS NOT NULL
+                                                                                                THEN LISTEN_CNT.TOTAL_LISTEN_CNT + 10
+                                                                                           ELSE LISTEN_CNT.TOTAL_LISTEN_CNT
+                                         END AS TOTAL_LIST_CNT
                                  FROM (
-                                      SELECT CHARACTER_NO, TRACK_ID, sum(LISTEN_CNT) AS TOTAL_LISTEN_CNT
+                                      SELECT CHARACTER_NO, TRACK_ID, SUM(LISTEN_CNT) AS TOTAL_LISTEN_CNT
                                       FROM TB_MOST_LISTEN_TRACK_BYDAY
-                                      WHERE CHARACTER_NO = #{characterNo} AND adddate(curdate(), -7) <![CDATA[<=]]> LISTEN_DT
-                                      GROUP BY CHARACTER_NO, TRACK_ID) I
-                                          LEFT OUTER JOIN (
-                                                          SELECT *
-                                                          FROM TB_CHARACTER_LIKE
-                                                          WHERE CHARACTER_NO = #{characterNo} AND
-                                                                  addtime(adddate(curdate(), -7), '00:00:00') <![CDATA[<=]]> UPDATE_DTIME) TCL
-                                              ON TCL.LIKE_TYPE = 'TRACK'
-                                                     AND
-                                                 I.TRACK_ID = TCL.LIKE_TYPE_ID) J
-                            WHERE TOTAL_LIST_CNT <![CDATA[>=]]> 3) D ON C.TRACK_ID = D.TRACK_ID
+                                      WHERE CHARACTER_NO = #{characterNo} AND LISTEN_DT <![CDATA[>=]]> ADDDATE(CURDATE(), -7)
+                                      GROUP BY CHARACTER_NO, TRACK_ID
+                                      ORDER BY NULL) LISTEN_CNT
+                                          LEFT JOIN TB_CHARACTER_LIKE CL ON LISTEN_CNT.TRACK_ID = CL.LIKE_TYPE_ID
+                                                                                AND CL.LIKE_TYPE = 'TRACK'
+                                                                                AND CL.UPDATE_DTIME <![CDATA[>=]]>
+                                                                                    date_format(ADDDATE(CURDATE(), -7), '%Y-%m-%d 00:00:00')
+                                                                                AND CL.CHARACTER_NO = 7000001) J
+                            WHERE J.TOTAL_LIST_CNT <![CDATA[>=]]> 3) D ON MSGT.TRACK_ID = D.TRACK_ID
+        WHERE CPG.CHARACTER_NO = #{characterNo}
         ORDER BY D.TOTAL_LIST_CNT DESC
     </select>
 
