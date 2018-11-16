@@ -354,8 +354,25 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     @Override
     @Transactional(MyBatisDatasourceConfig.SERVICE_SQL_TRANSACTION_BEAN_NAME)
     public void addPreferArtistPanel(Long characterNo) {
+        List<CharacterPreferArtistGenreDto> characterPreferArtistGenreDtos = recommendMapper.selectCharacterPreferArtistGenre(characterNo);
+
+        if (CollectionUtils.isEmpty(characterPreferArtistGenreDtos)) throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
+
+        Collections.sort(characterPreferArtistGenreDtos, new GenreCountCompare());
+
+        List<CharacterPreferArtistGenreDto> genreDtos = new ArrayList<>();
+        int genreCnt = 0;
+
+        for (CharacterPreferArtistGenreDto c : characterPreferArtistGenreDtos) {
+            if (genreCnt == 0) genreCnt = c.getGenreCnt();
+            if (genreCnt > c.getGenreCnt()) break;
+            if (genreCnt == c.getGenreCnt()) genreDtos.add(c);
+        }
+
+        Collections.shuffle(genreDtos);
+
         // 캐릭터가 선정한 아티스트 목록
-        List<CharacterPreferArtistDto> characterPreferArtistDtoList = recommendMapper.selectCharacterPreferArtist(characterNo);
+        List<CharacterPreferArtistDto> characterPreferArtistDtoList = recommendMapper.selectCharacterPreferArtist(characterNo, genreDtos.get(0).getGenreId());
 
         if (CollectionUtils.isEmpty(characterPreferArtistDtoList)) throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
 
@@ -557,6 +574,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         Long beforeArtistId = null;
         int checkCount = 0;
         if (!CollectionUtils.isEmpty(similarArtistDtoList)) {
+            Collections.shuffle(similarArtistDtoList);
+
             for (int i = 0; i < similarArtistDtoList.size(); i++) {
                 if (beforeArtistId == null) beforeArtistId = similarArtistDtoList.get(i).getArtistId();
                 if (!beforeArtistId.equals(similarArtistDtoList.get(i).getArtistId())) {
@@ -587,6 +606,13 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                         .artistType(ArtistType.SIMILAR).build());
                 ids.add(s.getSimilarArtistId());
             }
+        }
+    }
+
+    class GenreCountCompare implements Comparator<CharacterPreferArtistGenreDto> {
+        @Override
+        public int compare(CharacterPreferArtistGenreDto arg0, CharacterPreferArtistGenreDto arg1) {
+            return Integer.compare(arg1.getGenreCnt(), arg0.getGenreCnt());
         }
     }
 }
