@@ -80,6 +80,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
     @Autowired
     private RecommendMapper recommendMapper;
+    @Autowired
+    private RecommendReadMapper recommendReadMapper;
 
     @Autowired
     RestTemplate restTemplate;
@@ -203,7 +205,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
 	private List<ImageInfo> getRecommendPanelInfoBgImage(RecommendPanelContentType recommendPanelContentType,Long panelContentId, OsType osType){
 
-        String imgUrl = recommendMapper.selectRecommendPanelInfoBgImageUrl(recommendPanelContentType, panelContentId, osType);
+        String imgUrl = recommendReadMapper.selectRecommendPanelInfoBgImageUrl(recommendPanelContentType, panelContentId, osType);
 
         if(StringUtils.isEmpty(imgUrl)) {
             List<ImageInfo> imageInfoList = getRecommendPanelDefaultImageList(osType);
@@ -234,7 +236,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             // 아티스트
             case RC_ATST_TR:
 
-                RecommendArtistDto recommendArtistDto= recommendMapper.selectRecommendArtistById(panelContentId);
+                RecommendArtistDto recommendArtistDto= recommendReadMapper.selectRecommendArtistById(panelContentId);
 
                 List<ArtistDto> artistDtoList;
 
@@ -283,7 +285,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             // 추천
 
             case RC_CF_TR:
-	            String genreNm = recommendMapper.selectRecommendGenreByRcmmdId(panelContentId);
+	            String genreNm = recommendReadMapper.selectRecommendGenreByRcmmdId(panelContentId);
                 panel = new RecommendPanelInfoDto.Builder()
                         .title(RecommendConstant.RCMMD_TRACK_PANEL_TITLE)
                         .subTitle(String.format(RCMMD_TRACK_PANEL_SUB_TITLE,(genreNm == null ? "" : genreNm)))
@@ -309,7 +311,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             log.error("getRecommendPanelDefaultImageList error : {}",e.getMessage());
         }finally {
             if(CollectionUtils.isEmpty(imgList)){
-                imgList = recommendMapper.selectRecommendPanelDefaultImageList();
+                imgList = recommendReadMapper.selectRecommendPanelDefaultImageList();
                 if(!CollectionUtils.isEmpty(imgList)){
                     redisService.setWithPrefix(RedisKeyConstant.RECOMMEND_PANEL_DEFAULT_IMGLIST_KEY, imgList);
                 }
@@ -354,7 +356,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     @Override
     @Transactional(MyBatisDatasourceConfig.SERVICE_SQL_TRANSACTION_BEAN_NAME)
     public void addPreferArtistPanel(Long characterNo) {
-        List<CharacterPreferArtistGenreDto> characterPreferArtistGenreDtos = recommendMapper.selectCharacterPreferArtistGenre(characterNo);
+        List<CharacterPreferArtistGenreDto> characterPreferArtistGenreDtos = recommendReadMapper.selectCharacterPreferArtistGenre(characterNo);
 
         if (CollectionUtils.isEmpty(characterPreferArtistGenreDtos)) throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
 
@@ -372,7 +374,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         Collections.shuffle(genreDtos);
 
         // 캐릭터가 선정한 아티스트 목록
-        List<CharacterPreferArtistDto> characterPreferArtistDtoList = recommendMapper.selectCharacterPreferArtist(characterNo, genreDtos.get(0).getGenreId());
+        List<CharacterPreferArtistDto> characterPreferArtistDtoList = recommendReadMapper.selectCharacterPreferArtist(characterNo, genreDtos.get(0).getGenreId());
 
         if (CollectionUtils.isEmpty(characterPreferArtistDtoList)) throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
 
@@ -396,7 +398,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         addSimilarArtist(count, recommendArtistListDto, ids);
 
         // 전체 곡 각 2곡씩 꺼내기
-        List<RecommendArtistTrackListDto> recommendArtistTrackListDto = recommendMapper.selectSimilarArtistTrack(ids);
+        List<RecommendArtistTrackListDto> recommendArtistTrackListDto = recommendReadMapper.selectSimilarArtistTrack(ids);
 
         if (CommonUtils.empty(recommendArtistTrackListDto)) return;
         // 모든 곡의 아티스트가 연달아 나오지 않게 정렬
@@ -509,7 +511,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     }
 
     private List<SimilarTrackDto> getSimilarTrackDtoList(List<Long> ids) {
-        List<SimilarTrackDto> similarTrackDtoList = recommendMapper.selectSimilarTrackListByIdList(ids);
+        List<SimilarTrackDto> similarTrackDtoList = recommendReadMapper.selectSimilarTrackListByIdList(ids);
 
         similarTrackDtoList.removeIf((SimilarTrackDto s) -> CollectionUtils.isEmpty(s.getSimilarTrackIds()) || s.getSimilarTrackIds().size() < 15);
 
@@ -530,7 +532,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     }
 
     private List<PreferGenreTrackDto> getPreferGenreTrackDtos(Long characterNo) {
-        List<PreferGenreTrackDto> metaPreferGenreTrackDtoList = recommendMapper.selectPreferGenreTrack(characterNo);
+        List<PreferGenreTrackDto> metaPreferGenreTrackDtoList = recommendReadMapper.selectPreferGenreTrack(characterNo);
 
         if (CollectionUtils.isEmpty(metaPreferGenreTrackDtoList)) throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
 
@@ -570,7 +572,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     }
 
     private void addSimilarArtist(int count, List<RecommendArtistListDto> recommendArtistListDto, List<Long> ids) {
-        List<SimilarArtistDto> similarArtistDtoList = recommendMapper.selectSimilarArtistByIdList(ids);
+        List<SimilarArtistDto> similarArtistDtoList = recommendReadMapper.selectSimilarArtistByIdList(ids);
         Long beforeArtistId = null;
         int checkCount = 0;
         if (!CollectionUtils.isEmpty(similarArtistDtoList)) {
@@ -594,7 +596,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     }
 
     private void fillSimilarArtist(int count, List<RecommendArtistListDto> recommendArtistListDto, List<Long> ids) {
-        List<SimilarArtistDto> similaArtistList = recommendMapper.selectSimilarArtistByIdList(ids);
+        List<SimilarArtistDto> similaArtistList = recommendReadMapper.selectSimilarArtistByIdList(ids);
 
         if (!CollectionUtils.isEmpty(similaArtistList)) {
             Collections.shuffle(similaArtistList);

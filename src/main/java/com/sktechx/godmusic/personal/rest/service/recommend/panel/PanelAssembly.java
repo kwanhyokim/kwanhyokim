@@ -19,10 +19,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.PopularChannelPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.chart.ChartPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
-import com.sktechx.godmusic.personal.rest.repository.ChannelMapper;
-import com.sktechx.godmusic.personal.rest.repository.CharacterPreferGenreMapper;
-import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
-import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
+import com.sktechx.godmusic.personal.rest.repository.*;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import com.sktechx.godmusic.personal.rest.service.ChartService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
@@ -54,6 +51,9 @@ public abstract class PanelAssembly {
     protected ChannelMapper channelMapper;
     @Autowired
     protected RecommendMapper recommendMapper;
+
+    @Autowired
+    public RecommendReadMapper recommendReadMapper;
 
     @Autowired
     protected ChartMapper chartMapper;
