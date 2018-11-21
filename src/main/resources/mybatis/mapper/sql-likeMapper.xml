@@ -68,20 +68,20 @@
 
     <select id="getLikeTrackByLikeType" resultMap="trackResultMap">
         SELECT
-              B.TRACK_ID                                                                AS trackId
+              A.TRACK_ID                                                                AS trackId
             , A.DISP_SN
-            , B.TRACK_NM
-            , B.ALBUM_ID
-            , B.DISP_STATUS_YN                                                           AS displayYn
-            , B.AGENCY_ID
-            , IF(B.TITLE_YN = 'Y', 'Y', 'N')                                             AS titleYn
-            , B.CREATE_DTIME
-            , B.UPDATE_DTIME
+            , A.TRACK_NM
+            , A.ALBUM_ID
+            , A.DISP_STATUS_YN                                                           AS displayYn
+            , A.AGENCY_ID
+            , IF(A.TITLE_YN = 'Y', 'Y', 'N')                                             AS titleYn
+            , A.CREATE_DTIME
+            , A.UPDATE_DTIME
             , E.ALBUM_IMG_SIZE                                                           AS size
             , CONCAT(E.ALBUM_IMG_URL, '?updateDate=', unix_timestamp(E.UPDATE_DTIME))    AS url
             , 'Y'                                                                        AS likeYn
-            , IF(B.STREAMING_PREMIUM_YN = 'Y' OR B.PPS_YN = 'Y', 'Y', 'N')               AS holdbackYn
-            , IF(B.ADULT_AUTH_NEED_TRACK_YN = 'Y', 'Y', 'N')                             AS adultAuthYn
+            , IF(A.STREAMING_PREMIUM_YN = 'Y' OR A.PPS_YN = 'Y', 'Y', 'N')               AS holdbackYn
+            , IF(A.ADULT_AUTH_NEED_TRACK_YN = 'Y', 'Y', 'N')                             AS adultAuthYn
             , D.ARTIST_ID                                                                AS artistId
             , D.ARTIST_NM                                                                AS artistNm
             , F.TITLE                                                                    AS albumTitle
@@ -90,12 +90,28 @@
         FROM
             (
                 SELECT
-                    LIKE_TYPE_ID
-                    , DISP_SN
-                    , UPDATE_DTIME
-                FROM TB_CHARACTER_LIKE
-                WHERE CHARACTER_NO = #{characterNo}
-                      AND LIKE_TYPE = 'TRACK'
+                      SUB1.LIKE_TYPE_ID
+                    , SUB1.DISP_SN
+--                     , SUB1.UPDATE_DTIME
+                    , SUB2.TRACK_ID
+                    , SUB2.TRACK_NM
+                    , SUB2.ALBUM_ID
+                    , SUB2.DISP_STATUS_YN
+                    , SUB2.AGENCY_ID
+                    , SUB2.TITLE_YN
+                    , SUB2.CREATE_DTIME
+                    , SUB2.UPDATE_DTIME
+                    , SUB2.STREAMING_PREMIUM_YN
+                    , SUB2.PPS_YN
+                    , SUB2.ADULT_AUTH_NEED_TRACK_YN
+                    , SUB2.REPRSNT_ARTIST_ID
+                FROM TB_CHARACTER_LIKE SUB1
+                JOIN TB_TRACK SUB2 ON SUB1.LIKE_TYPE_ID = SUB2.TRACK_ID
+                WHERE SUB1.CHARACTER_NO = #{characterNo}
+                      AND SUB1.LIKE_TYPE = 'TRACK'
+                      AND SUB2.DISP_STATUS_YN = 'Y'
+                ORDER BY SUB1.DISP_SN ASC, SUB1.UPDATE_DTIME ASC
+                LIMIT 50
             <!--<if test="pageable != null">-->
                 <!--ORDER BY DISP_SN ASC,-->
                     <!--UPDATE_DTIME ASC-->
@@ -104,21 +120,21 @@
                     <!--#{pageable.pageSize}-->
             <!--</if>-->
             ) A
-            INNER JOIN TB_TRACK B
-                ON A.LIKE_TYPE_ID = B.TRACK_ID
+--             INNER JOIN TB_TRACK B
+--                 ON A.LIKE_TYPE_ID = B.TRACK_ID
             LEFT OUTER JOIN TED_TRACKARTIST C
-                ON B.TRACK_ID = C.TRACK_ID AND C.RP_YN = 'Y' AND C.DB_STS = 'A'
+                ON A.TRACK_ID = C.TRACK_ID AND C.RP_YN = 'Y' AND C.DB_STS = 'A'
             LEFT OUTER JOIN TED_ARTIST D
                 ON C.ARTIST_ID = D.ARTIST_ID
             LEFT OUTER JOIN TB_ALBUM_IMG E
-                ON B.ALBUM_ID = E.ALBUM_ID
+                ON A.ALBUM_ID = E.ALBUM_ID
             LEFT OUTER JOIN TED_ALBUM F
-                ON B.ALBUM_ID = F.ALBUM_ID
+                ON A.ALBUM_ID = F.ALBUM_ID
             LEFT OUTER JOIN TED_ARTIST G
-                ON B.REPRSNT_ARTIST_ID = G.ARTIST_ID
-        WHERE
-            B.DISP_STATUS_YN = 'Y'
-        ORDER BY A.DISP_SN ASC, A.UPDATE_DTIME ASC, C.LISTORDER ASC
+                ON A.REPRSNT_ARTIST_ID = G.ARTIST_ID
+--         WHERE
+--             B.DISP_STATUS_YN = 'Y'
+--         ORDER BY A.DISP_SN ASC, A.UPDATE_DTIME ASC, C.LISTORDER ASC
     </select>
 
     <select id="getLikeAlbumByLikeType" resultMap="albumResultMap">
