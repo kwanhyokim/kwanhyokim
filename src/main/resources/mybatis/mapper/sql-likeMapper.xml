@@ -122,11 +122,11 @@
     </select>
 
     <select id="getLikeAlbumByLikeType" resultMap="albumResultMap">
-        SELECT
-              A.ALBUM_ID                                                                                              AS  albumId
-            , A.TITLE                                                                                                 AS  albumTitle
-            , A.RELEASE_YMD                                                                                           AS  releaseYmd
-            , IF(A.ALBUM_TP = 'MF', '', A.ALBUM_TP)                                                                   AS  albumType
+         SELECT
+              L.ALBUM_ID                                                                                              AS  albumId
+            , L.TITLE                                                                                                 AS  albumTitle
+            , L.RELEASE_YMD                                                                                           AS  releaseYmd
+            , IF(L.ALBUM_TP = 'MF', '', L.ALBUM_TP)                                                                   AS  albumType
             , C.ARTIST_ID                                                                                             AS  albumArtistId
             , C.ARTIST_NM                                                                                             AS  albumArtistName
             , IFNULL(GROUP_CONCAT(DISTINCT (F.STYLE_NM) ORDER BY F.STYLE_ID ASC SEPARATOR ','), '앨범 유형 정보가 없습니다.') AS genreStyle
@@ -138,12 +138,19 @@
         FROM
             (
                 SELECT
-                    LIKE_TYPE_ID
-                    , DISP_SN
-                    , UPDATE_DTIME
-                FROM TB_CHARACTER_LIKE
+                    SUB1.LIKE_TYPE_ID
+                    , SUB1.DISP_SN
+                    , SUB1.UPDATE_DTIME
+                    , SUB2.ALBUM_ID
+                    , SUB2.TITLE
+                    , SUB2.RELEASE_YMD
+                    , SUB2.ALBUM_TP
+                    , SUB2.ARTIST_ID
+                FROM TB_CHARACTER_LIKE SUB1
+                INNER JOIN TED_ALBUM SUB2 ON SUB1.LIKE_TYPE_ID = SUB2.ALBUM_ID AND SUB2.DISP_STATUS_YN = 'Y'
                 WHERE CHARACTER_NO = #{characterNo}
                       AND LIKE_TYPE = 'ALBUM'
+                LIMIT 50
             <!--<if test="pageable != null">-->
                 <!--ORDER BY DISP_SN ASC,-->
                     <!--UPDATE_DTIME ASC-->
@@ -152,22 +159,22 @@
                     <!--#{pageable.pageSize}-->
             <!--</if>-->
             ) L
-            INNER JOIN TED_ALBUM A
-                ON L.LIKE_TYPE_ID = A.ALBUM_ID
+--             INNER JOIN TED_ALBUM A
+--                 ON L.LIKE_TYPE_ID = A.ALBUM_ID
             LEFT OUTER JOIN TED_ALBUMARTIST B
-                ON A.ALBUM_ID = B.ALBUM_ID
+                ON L.ALBUM_ID = B.ALBUM_ID
             LEFT OUTER JOIN TED_ARTIST C
                 ON B.ARTIST_ID = C.ARTIST_ID
             LEFT OUTER JOIN TB_ALBUM_IMG D
-                ON A.ALBUM_ID = D.ALBUM_ID
+                ON L.ALBUM_ID = D.ALBUM_ID
             LEFT OUTER JOIN TED_ALBUMSTYLE E
-                ON A.ALBUM_ID = E.ALBUM_ID
+                ON L.ALBUM_ID = E.ALBUM_ID
             LEFT OUTER JOIN TED_STYLE F
                 ON E.STYLE_ID = F.STYLE_ID
             LEFT OUTER JOIN TED_ARTIST G
-                ON G.ARTIST_ID = A.ARTIST_ID
-        WHERE
-            A.DISP_STATUS_YN = 'Y'
+                ON G.ARTIST_ID = L.ARTIST_ID
+--         WHERE
+--             A.DISP_STATUS_YN = 'Y'
         GROUP BY ALBUMID, ALBUMARTISTID, SIZE, ALBUMTITLE, RELEASEYMD, ALBUMTYPE, ALBUMARTISTNAME, URL, LIKEYN,
             ALBUMREPARTISTID, ALBUMREPARTISTNAME
         ORDER BY L.DISP_SN ASC, L.UPDATE_DTIME ASC
