@@ -118,7 +118,6 @@
                 ON B.REPRSNT_ARTIST_ID = G.ARTIST_ID
         WHERE
             B.DISP_STATUS_YN = 'Y'
-        ORDER BY A.DISP_SN ASC, A.UPDATE_DTIME ASC, C.LISTORDER ASC
     </select>
 
     <select id="getLikeAlbumByLikeType" resultMap="albumResultMap">
@@ -170,7 +169,6 @@
             A.DISP_STATUS_YN = 'Y'
         GROUP BY ALBUMID, ALBUMARTISTID, SIZE, ALBUMTITLE, RELEASEYMD, ALBUMTYPE, ALBUMARTISTNAME, URL, LIKEYN,
             ALBUMREPARTISTID, ALBUMREPARTISTNAME
-        ORDER BY L.DISP_SN ASC, L.UPDATE_DTIME ASC
     </select>
 
     <select id="getLikeArtistByLikeType" resultMap="artistResultMap">
@@ -210,7 +208,6 @@
             LEFT OUTER JOIN TED_STYLE D
                 ON C.STYLE_ID = D.STYLE_ID
         GROUP BY ARTISTID, ARTISTNAME, GENDERCD, ARTISTGROUPTYPE, SIZE, URL, ACTSTARTYMD, LIKEYN
-        ORDER BY L.DISP_SN ASC, L.UPDATE_DTIME ASC
     </select>
 
     <select id="getLikePlaylistByLikeType" resultMap="playlistResultMap">
@@ -315,7 +312,6 @@
                          ON A.ALBUM_ID = I.ALBUM_ID
                  WHERE
                      A.DISP_STATUS_TYPE = 'Y') AA
-        ORDER BY AA.DISPSN ASC, AA.LIKEUPDATEDTIME ASC
         <!--LIMIT-->
         <!--#{pageable.offset} ,-->
         <!--#{pageable.pageSize}-->
