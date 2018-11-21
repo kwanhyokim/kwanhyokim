@@ -150,6 +150,7 @@
                 INNER JOIN TED_ALBUM SUB2 ON SUB1.LIKE_TYPE_ID = SUB2.ALBUM_ID AND SUB2.DISP_STATUS_YN = 'Y'
                 WHERE CHARACTER_NO = #{characterNo}
                       AND LIKE_TYPE = 'ALBUM'
+                ORDER BY SUB2.DISP_SN ASC
                 LIMIT 50
             <!--<if test="pageable != null">-->
                 <!--ORDER BY DISP_SN ASC,-->
@@ -177,7 +178,7 @@
 --             A.DISP_STATUS_YN = 'Y'
         GROUP BY ALBUMID, ALBUMARTISTID, SIZE, ALBUMTITLE, RELEASEYMD, ALBUMTYPE, ALBUMARTISTNAME, URL, LIKEYN,
             ALBUMREPARTISTID, ALBUMREPARTISTNAME
-        ORDER BY L.DISP_SN ASC, L.UPDATE_DTIME ASC
+--         ORDER BY L.DISP_SN ASC, L.UPDATE_DTIME ASC
     </select>
 
     <select id="getLikeArtistByLikeType" resultMap="artistResultMap">
