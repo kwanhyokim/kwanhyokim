@@ -175,6 +175,11 @@ public class PreferenceServiceImpl implements PreferenceService {
 			if(CollectionUtils.isEmpty(totalSeedArtistList)) {
 				return null;
 			}
+			Random rand = new Random();
+
+			totalSeedArtistList = rand.ints(20,0,totalSeedArtistList.size()).mapToObj(
+					totalSeedArtistList::get).limit(20).collect(
+					Collectors.toList());
 
 			List<Long> totalPreferSimilarSeedArtistIdList = totalSeedArtistList.stream().map(x -> x.getArtistId()).collect(
 					Collectors.toList());
@@ -189,7 +194,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 			}
 
 			// 시드 아티스트 아이디 2개를 랜덤으로 추출
-			// 1. 쿼리에서 이미 랜덤 처리함
+			//
 
 			Iterator preferSimilarArtistDtoListIterator = preferSimilarArtistDtoList.iterator();
 
@@ -198,8 +203,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 			while(preferSimilarArtistDtoListIterator.hasNext()) {
 
 				PreferSimilarArtistDto preferSimilarArtistDto = (PreferSimilarArtistDto) preferSimilarArtistDtoListIterator.next();
-				log.debug("QQQQQQQQQQQQQQ");
-				log.debug(preferSimilarArtistDto.getArtistName() + ":" + preferSimilarArtistDto.getArtistId() + " : " + preferSimilarArtistDto.getSeedArtistId());
 				if(seedArtistIdList.contains(preferSimilarArtistDto.getSeedArtistId())){
 					continue;
 				}
@@ -243,7 +246,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 				while(iterator.hasNext()){
 
 					ArtistDto tempArtistDto = iterator.next();
-					log.debug("XXXXXXXXXXX " + tempArtistDto.toString());
 
 					resultArtistDtoList[resultIndex].add(tempArtistDto);
 					resultCnt++;
