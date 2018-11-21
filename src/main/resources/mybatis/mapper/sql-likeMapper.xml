@@ -128,7 +128,7 @@
             , IF(A.ALBUM_TP = 'MF', '', A.ALBUM_TP)                                                                   AS  albumType
             , C.ARTIST_ID                                                                                             AS  albumArtistId
             , C.ARTIST_NM                                                                                             AS  albumArtistName
-            , IFNULL(GROUP_CONCAT(DISTINCT (F.STYLE_NM) ORDER BY F.STYLE_ID ASC SEPARATOR ','), '앨범 유형 정보가 없습니다.') AS genreStyle
+            , '앨범 유형 정보가 없습니다.' AS genreStyle
             , D.ALBUM_IMG_SIZE                                                                                        AS  size
             , CONCAT(D.ALBUM_IMG_URL, '?updateDate=', unix_timestamp(D.UPDATE_DTIME))                                 AS  url
             , G.ARTIST_ID                                                                                             AS  albumRepArtistId
@@ -169,6 +169,7 @@
             A.DISP_STATUS_YN = 'Y'
         GROUP BY ALBUMID, ALBUMARTISTID, SIZE, ALBUMTITLE, RELEASEYMD, ALBUMTYPE, ALBUMARTISTNAME, URL, LIKEYN,
             ALBUMREPARTISTID, ALBUMREPARTISTNAME
+        ORDER BY NULL
     </select>
 
     <select id="getLikeArtistByLikeType" resultMap="artistResultMap">
@@ -180,7 +181,7 @@
             , B.SIZE                                                                                  AS size
             , CONCAT(B.URL, '?updateDate=', unix_timestamp(B.UPDATE_DTIME))                           AS url
             , IFNULL(SUBSTR(A.ACT_START_YMD, 1, 4), NULL)                                             AS actStartYmd
-            , IFNULL(GROUP_CONCAT(DISTINCT (D.STYLE_NM) ORDER BY D.STYLE_ID ASC SEPARATOR ','), NULL) AS artistStyle
+            , NULL AS artistStyle
             , 'Y'                                                                                     AS likeYn
         FROM
             (
@@ -208,6 +209,7 @@
             LEFT OUTER JOIN TED_STYLE D
                 ON C.STYLE_ID = D.STYLE_ID
         GROUP BY ARTISTID, ARTISTNAME, GENDERCD, ARTISTGROUPTYPE, SIZE, URL, ACTSTARTYMD, LIKEYN
+        ORDER BY NULL
     </select>
 
     <select id="getLikePlaylistByLikeType" resultMap="playlistResultMap">
