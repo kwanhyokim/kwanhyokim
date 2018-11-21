@@ -201,6 +201,8 @@
                 FROM TB_CHARACTER_LIKE
                 WHERE CHARACTER_NO = #{characterNo}
                       AND LIKE_TYPE = 'ARTIST'
+                ORDER BY DISP_SN ASC, UPDATE_DTIME ASC
+                LIMIT 50
             <!--<if test="pageable != null">-->
                 <!--ORDER BY DISP_SN ASC,-->
                     <!--UPDATE_DTIME ASC-->
@@ -218,7 +220,7 @@
             LEFT OUTER JOIN TED_STYLE D
                 ON C.STYLE_ID = D.STYLE_ID
         GROUP BY ARTISTID, ARTISTNAME, GENDERCD, ARTISTGROUPTYPE, SIZE, URL, ACTSTARTYMD, LIKEYN
-        ORDER BY L.DISP_SN ASC, L.UPDATE_DTIME ASC
+--         ORDER BY L.DISP_SN ASC, L.UPDATE_DTIME ASC
     </select>
 
     <select id="getLikePlaylistByLikeType" resultMap="playlistResultMap">
