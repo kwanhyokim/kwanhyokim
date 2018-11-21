@@ -63,7 +63,7 @@ public class RecommendConstant {
     public static final String ARTIST_PANEL_TITLE = "아티스트 FLO";
     public static final String CHART_PANEL_HOURLY_BASIS_PHRASES = "시 기준";
 
-    public static final String RCMMD_TRACK_PANEL_TITLE = "너를 위한 FLO";
+    public static final String RCMMD_TRACK_PANEL_TITLE = "나를 위한 FLO";
     public static final String RCMMD_TRACK_PANEL_SUB_TITLE = "많이 들은\n%s 장르의 추천 음악";
 
     public static final String PREFER_GENRE_SIMILAR_TRACK_PANEL_TITLE = "오늘의 FLO";
