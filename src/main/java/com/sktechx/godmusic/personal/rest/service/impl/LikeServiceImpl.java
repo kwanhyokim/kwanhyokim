@@ -56,7 +56,7 @@ public class LikeServiceImpl implements LikeService {
 
 	@Override
 	public LikePlaylistListResponse getPlayListLikeListByLikeType(Long characterNo, Pageable pageable) {
-//		int totalCount = 0;
+		int totalCount = 0;
 
 		List<PlayListDto> playListDtos = likeMapper.getLikePlaylistByLikeType(characterNo, pageable);
 
@@ -74,41 +74,41 @@ public class LikeServiceImpl implements LikeService {
 			}
 		}
 
-//		totalCount = likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_CHANNEL, characterNo);
-//		totalCount += likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_CHART, characterNo);
+		totalCount = getLikeTotalCount(LikeConstant.LIKE_CHANNEL, characterNo);
+		totalCount += getLikeTotalCount(LikeConstant.LIKE_CHART, characterNo);
 
-		return new LikePlaylistListResponse(new PageImpl(playListDtos, pageable, playListDtos.size()));
+		return new LikePlaylistListResponse(new PageImpl(playListDtos, pageable, totalCount));
 	}
 
 	@Override
 	public LikeAlbumListResponse getAlbumLikeListByLikeType(Long characterNo, Pageable pageable) {
-//		int totalCount = 0;
+		int totalCount = 0;
 
 		List<AlbumDto> albumDtos = likeMapper.getLikeAlbumByLikeType(characterNo, pageable);
 
 		if (CollectionUtils.isEmpty(albumDtos)) return null;
 
-//		totalCount = likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_ALBUM, characterNo);
+		totalCount = getLikeTotalCount(LikeConstant.LIKE_ALBUM, characterNo);
 
-		return new LikeAlbumListResponse(new PageImpl(albumDtos, pageable, albumDtos.size()));
+		return new LikeAlbumListResponse(new PageImpl(albumDtos, pageable, totalCount));
 	}
 
 	@Override
 	public LikeArtistListResponse getArtistLikeListByLikeType(Long characterNo, Pageable pageable) {
-//		int totalCount = 0;
+		int totalCount = 0;
 
 		List<ArtistDto> artistDtos = likeMapper.getLikeArtistByLikeType(characterNo, pageable);
 
 		if (CollectionUtils.isEmpty(artistDtos)) return null;
 
-//		totalCount = likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_ARTIST, characterNo);
+		totalCount = getLikeTotalCount(LikeConstant.LIKE_ARTIST, characterNo);
 
-		return new LikeArtistListResponse(new PageImpl(artistDtos, pageable, artistDtos.size()));
+		return new LikeArtistListResponse(new PageImpl(artistDtos, pageable, totalCount));
 	}
 
 	@Override
 	public LikeTrackListResponse getTrackLikeListByLikeType(Long characterNo, Pageable pageable) {
-//		int totalCount = 0;
+		int totalCount = 0;
 		long startTime = System.currentTimeMillis();
 
 		List<TrackDto> trackDtos = likeMapper.getLikeTrackByLikeType(characterNo, pageable);
@@ -119,9 +119,9 @@ public class LikeServiceImpl implements LikeService {
 
 		if (CollectionUtils.isEmpty(trackDtos)) return null;
 
-//		totalCount = likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_TRACK, characterNo);
+		totalCount = getLikeTotalCount(LikeConstant.LIKE_TRACK, characterNo);
 
-		return new LikeTrackListResponse(new PageImpl(trackDtos, pageable, trackDtos.size()));
+		return new LikeTrackListResponse(new PageImpl(trackDtos, pageable, totalCount));
 	}
 
 	@Override
@@ -196,16 +196,33 @@ public class LikeServiceImpl implements LikeService {
 			throw new CommonBusinessException(getLikeTypeDuplicated(request.getLikeType()));
 		}
 
-		int likeTotalCnt = likeMapper.getLikeCountByLikeType(request.getLikeType(), characterNo);
+		int likeTotalCnt = getLikeTotalCount(request.getLikeType(), characterNo);
 
 		if(LikeConstant.LIKE_CHANNEL.equals(request.getLikeType())) {
-			likeTotalCnt += likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_CHART, characterNo);
+			likeTotalCnt += getLikeTotalCount(LikeConstant.LIKE_CHART, characterNo);
 		} else if(LikeConstant.LIKE_CHART.equals(request.getLikeType())) {
-			likeTotalCnt += likeMapper.getLikeCountByLikeType(LikeConstant.LIKE_CHANNEL, characterNo);
+			likeTotalCnt += getLikeTotalCount(LikeConstant.LIKE_CHANNEL, characterNo);
 		}
 
 		if(likeTotalCnt >= 1000){
 			throw new CommonBusinessException(getLikeTypeOverAdd(request.getLikeType()));
+		}
+	}
+
+	private int getLikeTotalCount(String likeType, Long characterNo) {
+		switch (likeType) {
+			case LikeConstant.LIKE_CHANNEL :
+				return likeMapper.getLikeChannelCountByLikeType(characterNo);
+			case LikeConstant.LIKE_ALBUM :
+				return likeMapper.getLikeAlbumCountByLikeType(characterNo);
+			case LikeConstant.LIKE_CHART :
+				return likeMapper.getLikeChartCountByLikeType(characterNo);
+			case LikeConstant.LIKE_ARTIST :
+				return likeMapper.getLikeArtistCountByLikeType(characterNo);
+			case LikeConstant.LIKE_TRACK :
+				return likeMapper.getLikeTrackCountByLikeType(characterNo);
+			default :
+				throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
 		}
 	}
 
