@@ -478,7 +478,7 @@
         ( SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
                  a.listen_type,
                  a.listen_type_id,
-                 CONCAT(DATE_FORMAT(a.create_dtime, '%c월 %e일'), ' 너를 위한 FLO') AS content_title,
+                 CONCAT('나를 위한 FLO', ' ', DATE_FORMAT(a.create_dtime, '%m.%d')) AS content_title,
                  ( SELECT COUNT(*) FROM tb_rcmmd_mforu_list WHERE rcmmd_mforu_id = b.rcmmd_mforu_id) AS track_count,
                  a.last_listen_dtime,
                  c.img_size AS size,
