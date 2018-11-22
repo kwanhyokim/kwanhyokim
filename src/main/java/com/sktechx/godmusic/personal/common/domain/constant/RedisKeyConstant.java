@@ -36,4 +36,8 @@ public class RedisKeyConstant {
 	//추천이미지관리
 	public static final String RECOMMEND_IMAGE_MANAGEMENT_KEY = "godmusic.personalapi.recommend.image:{}.{}.{}.{}";
 
+	//유사
+	public static final String PERSONAL_SIMILAR_ARTIST_KEY = "godmusic.personalapi.similar.artist%d:%s";
+	//유사이력
+	public static final String PERSONAL_SIMILAR_ARTIST_HISTORY_KEY = "godmusic.personalapi.similar.artist.history:%s";
 }
