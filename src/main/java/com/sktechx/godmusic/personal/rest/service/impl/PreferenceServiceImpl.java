@@ -12,6 +12,8 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl;
 
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
+import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.common.domain.domain.HomeContentType;
@@ -75,6 +77,7 @@ public class PreferenceServiceImpl implements PreferenceService {
         List<CharacterPreferGenreDto> characterPreferGenreList = Collections.EMPTY_LIST;
         List<CharacterPreferDispDto> characterPreferDispList = Collections.EMPTY_LIST;
         List<ChartDto> chartDtoList;
+        List<Chart> chartList;
 
         if (characterNo != null) {
             characterPreferGenreList = characterPreferGenreMapper.selectCharacterPreferGenreList(characterNo);
@@ -88,29 +91,36 @@ public class PreferenceServiceImpl implements PreferenceService {
             chartDtoList = chartMapper.selectChartListByPreferGenre(characterNo);
         }
 
-        List<Chart> chartList = new ArrayList<>();
-        for (ChartDto chartDto : chartDtoList) {
-            String shortcutType = chartDto.getChartType() == ChartType.NEW ? "RECENT" : "POPULARITY";
-            List<ImageManagementDto> imgMangList =  imageManagementMapper.selectImageManagementList(HomeContentType.GENRE.getCode(), chartDto.getSvcContentId(), shortcutType);
+        if (CollectionUtils.isEmpty(chartDtoList) || chartDtoList.size() < 2) {
+            throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
 
-            if (!CollectionUtils.isEmpty(imgMangList)) { // 쇼컷 이미지가 없는 경우 목록에서 제외
-                List<Chart.AlbumImg> albumImgList = new ArrayList<>();
-                albumImgList.addAll(imgMangList.stream()
-                        .map(imgMang -> Chart.AlbumImg.builder()
-                                .size(imgMang.getImgSize())
-                                .url(imgMang.getImgUrl())
-                                .build())
-                        .collect(Collectors.toList()));
+        } else {
+            chartList = new ArrayList<>(); // 최소 2개 이상 노출
 
-                Chart chart = Chart.builder()
-                        .chartId(chartDto.getChartId())
-                        .chartNm(chartDto.getChartNm())
-                        .albumImgList(albumImgList)
-                        .build();
+            for (ChartDto chartDto : chartDtoList) {
+                String shortcutType = chartDto.getChartType() == ChartType.NEW ? "RECENT" : "POPULARITY";
+                List<ImageManagementDto> imgMangList =  imageManagementMapper.selectImageManagementList(HomeContentType.GENRE.getCode(), chartDto.getSvcContentId(), shortcutType);
 
-                chartList.add(chart);
+                if (!CollectionUtils.isEmpty(imgMangList)) { // 쇼컷 이미지가 없는 경우 목록에서 제외
+                    List<Chart.AlbumImg> albumImgList = new ArrayList<>();
+                    albumImgList.addAll(imgMangList.stream()
+                            .map(imgMang -> Chart.AlbumImg.builder()
+                                    .size(imgMang.getImgSize())
+                                    .url(imgMang.getImgUrl())
+                                    .build())
+                            .collect(Collectors.toList()));
+
+                    Chart chart = Chart.builder()
+                            .chartId(chartDto.getChartId())
+                            .chartNm(chartDto.getChartNm())
+                            .albumImgList(albumImgList)
+                            .build();
+
+                    chartList.add(chart);
+                }
             }
         }
+
 
         return new ChartResponse<>(chartList, HomeContentType.CHART);
     }
@@ -123,14 +133,20 @@ public class PreferenceServiceImpl implements PreferenceService {
         if (CollectionUtils.isEmpty(artistDtoList)) {
             artistDtoList = artistMapper.selectArtistListByPreferArtist(characterNo);
 
-            if (!CollectionUtils.isEmpty(artistDtoList)) {
-                LocalTime nowTime = LocalTime.now();
-                LocalTime endTime = LocalTime.MAX;
+            if (CollectionUtils.isEmpty(artistDtoList) || artistDtoList.size() < 2) { // 최소 2개 이상 노출
+                throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
 
-                long expireSeconds =  nowTime.until(endTime, ChronoUnit.SECONDS);
+            } else {
+                if (!CollectionUtils.isEmpty(artistDtoList)) {
+                    LocalTime nowTime = LocalTime.now();
+                    LocalTime endTime = LocalTime.MAX;
 
-                redisService.setWithPrefix(personalPreferenceArtistKey, artistDtoList, (int) expireSeconds);
+                    long expireSeconds =  nowTime.until(endTime, ChronoUnit.SECONDS);
+
+                    redisService.setWithPrefix(personalPreferenceArtistKey, artistDtoList, (int) expireSeconds);
+                }
             }
+
         }
 
         return new ChartResponse<>(preferenceArtistListConvert(artistDtoList), HomeContentType.ARTIST);
@@ -209,13 +225,15 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 				seedArtistIdList.add(preferSimilarArtistDto.getSeedArtistId());
 
-				if(seedArtistIdList.size() >= 2){
+				if(seedArtistIdList.size() == 2){
 					break;
 				}
 			}
 			// 2. 결과 처리를 위한 시드 아티스트 DTO 추출
 			List<ArtistDto> seedArtistList = totalSeedArtistList.stream().filter(x -> seedArtistIdList.contains(x.getArtistId())).collect(
 					Collectors.toList());
+
+			seedArtistList = seedArtistList.stream().distinct().collect(Collectors.toList());
 
 			seedArtistList.forEach(x -> log.debug("seed artist name" + x.getArtistName()));
 			// 3. 유사 아티스트 목록 추출

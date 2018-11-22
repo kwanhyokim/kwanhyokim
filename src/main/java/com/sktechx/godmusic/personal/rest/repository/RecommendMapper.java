@@ -29,42 +29,42 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel
  */
 @BaseMapper
 public interface RecommendMapper {
-    List<PersonalPanel> selectPersonalRecommendPanelMeta(@Param("characterNo") Long characterNo ,
-                                                         @Param("similarTrackDispStandardCount") int similarTrackDispStandardCount,
-                                                         @Param("rcmmdCfTrackDispStandardCount") int rcmmdCfTrackDispStandardCount);
-
-    // 2-A' 선호장르 유사곡 패널
-    List<RecommendTrackDto> selectRecommendPreferGenreSimilarTrackListByIdList(@Param("recommendIdList") List<Long> recommendIdList ,
-                                                                               @Param("recommendLimitSize") int recommendLimitSize,
-                                                                               @Param("trackLimitSize") int trackLimitSize,
-                                                                               @Param("osType") OsType osType);
-
-    // 2-A 유사곡 패널
-    List<RecommendTrackDto> selectRecommendSimilarTrackListByIdList(@Param("recommendIdList") List<Long> recommendIdList ,
-                                                                    @Param("recommendLimitSize") int recommendLimitSize,
-                                                                    @Param("trackLimitSize") int trackLimitSiz,
-                                                                    @Param("osType") OsType osType);
-    // 3-A 청취 CF 패널
-    List<RecommendTrackDto> selectRecommendCfTrackListByIdList(@Param("recommendIdList") List<Long> recommendIdList ,
-                                                               @Param("recommendLimitSize") int recommendLimitSize,
-                                                               @Param("trackLimitSize") int trackLimitSiz,
-                                                               @Param("osType") OsType osType);
-
-
-    // 2-C 선호 아티스트 인기곡
-    RecommendArtistDto selectRecommendArtistById(@Param("recommendArtistId") Long recommendArtistId);
-
-
-    // 추천 패널 기본 이미지
-    List<ImageInfo> selectRecommendPanelDefaultImageList();
-
-	List<CharacterPreferArtistDto> selectCharacterPreferArtist(@Param("characterNo") Long characterNo, @Param("genreId") Long genreId);
-
-	List<CharacterPreferArtistGenreDto> selectCharacterPreferArtistGenre(@Param("characterNo") Long characterNo);
-
-    List<SimilarArtistDto> selectSimilarArtistByIdList(@Param("artistIdList") List<Long> artistIdList);
-
-    List<RecommendArtistTrackListDto> selectSimilarArtistTrack(@Param("artistIdList") List<Long> artistIdList);
+//    List<PersonalPanel> selectPersonalRecommendPanelMeta(@Param("characterNo") Long characterNo ,
+//                                                         @Param("similarTrackDispStandardCount") int similarTrackDispStandardCount,
+//                                                         @Param("rcmmdCfTrackDispStandardCount") int rcmmdCfTrackDispStandardCount);
+//
+//    // 2-A' 선호장르 유사곡 패널
+//    List<RecommendTrackDto> selectRecommendPreferGenreSimilarTrackListByIdList(@Param("recommendIdList") List<Long> recommendIdList ,
+//                                                                               @Param("recommendLimitSize") int recommendLimitSize,
+//                                                                               @Param("trackLimitSize") int trackLimitSize,
+//                                                                               @Param("osType") OsType osType);
+//
+//    // 2-A 유사곡 패널
+//    List<RecommendTrackDto> selectRecommendSimilarTrackListByIdList(@Param("recommendIdList") List<Long> recommendIdList ,
+//                                                                    @Param("recommendLimitSize") int recommendLimitSize,
+//                                                                    @Param("trackLimitSize") int trackLimitSiz,
+//                                                                    @Param("osType") OsType osType);
+//    // 3-A 청취 CF 패널
+//    List<RecommendTrackDto> selectRecommendCfTrackListByIdList(@Param("recommendIdList") List<Long> recommendIdList ,
+//                                                               @Param("recommendLimitSize") int recommendLimitSize,
+//                                                               @Param("trackLimitSize") int trackLimitSiz,
+//                                                               @Param("osType") OsType osType);
+//
+//
+//    // 2-C 선호 아티스트 인기곡
+//    RecommendArtistDto selectRecommendArtistById(@Param("recommendArtistId") Long recommendArtistId);
+//
+//
+//    // 추천 패널 기본 이미지
+//    List<ImageInfo> selectRecommendPanelDefaultImageList();
+//
+//	List<CharacterPreferArtistDto> selectCharacterPreferArtist(@Param("characterNo") Long characterNo, @Param("genreId") Long genreId);
+//
+//	List<CharacterPreferArtistGenreDto> selectCharacterPreferArtistGenre(@Param("characterNo") Long characterNo);
+//
+//    List<SimilarArtistDto> selectSimilarArtistByIdList(@Param("artistIdList") List<Long> artistIdList);
+//
+//    List<RecommendArtistTrackListDto> selectSimilarArtistTrack(@Param("artistIdList") List<Long> artistIdList);
 
     void updateRcmmdArtistDispStdEndDt(@Param("characterNo") Long characterNo);
 
@@ -73,10 +73,10 @@ public interface RecommendMapper {
     void insertRcmmdArtistList(@Param("rcmmdArtistId") Long rcmmdArtistId, @Param("artistId") Long artistId, @Param("artistType") String artistType, @Param("dispSn") int dispSn);
 
     void insertRcmmdArtistTrackList(@Param("rcmmdArtistId") Long rcmmdArtistId, @Param("trackId") Long trackId, @Param("dispSn") int dispSn);
-
-	List<PreferGenreTrackDto> selectPreferGenreTrack(@Param("characterNo") Long characterNo);
-
-    List<SimilarTrackDto> selectSimilarTrackListByIdList(@Param("trackIds") List<Long> trackIds);
+//
+//	List<PreferGenreTrackDto> selectPreferGenreTrack(@Param("characterNo") Long characterNo);
+//
+//    List<SimilarTrackDto> selectSimilarTrackListByIdList(@Param("trackIds") List<Long> trackIds);
 
     void insertRcmmdPreferGenreSimilarTrack(@Param("similarTrack") RecommendPreferGenreSimilarTrackDto recommendPreferGenreSimilarTrackDto);
 
@@ -89,9 +89,9 @@ public interface RecommendMapper {
             , @Param("rcmmdId") Long rcmmdId
             , @Param("characterNo") Long characterNo);
 
-    String selectRecommendPanelInfoBgImageUrl(@Param("recommendPanelContentType") RecommendPanelContentType recommendPanelContentType
-            , @Param("rcmmdId") Long rcmmdId
-            , @Param("osType") OsType osType);
-
-    String selectRecommendGenreByRcmmdId(@Param("rcmmdId") Long rcmmdId);
+//    String selectRecommendPanelInfoBgImageUrl(@Param("recommendPanelContentType") RecommendPanelContentType recommendPanelContentType
+//            , @Param("rcmmdId") Long rcmmdId
+//            , @Param("osType") OsType osType);
+//
+//    String selectRecommendGenreByRcmmdId(@Param("rcmmdId") Long rcmmdId);
 }

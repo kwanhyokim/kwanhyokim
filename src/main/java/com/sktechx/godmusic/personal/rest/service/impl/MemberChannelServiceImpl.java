@@ -59,6 +59,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -199,6 +200,8 @@ public class MemberChannelServiceImpl implements MemberChannelService {
 
         if (StringUtils.isEmpty(memberChannelName) || CollectionUtils.isEmpty(trackIdList)) {
             throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
+        } else {
+            memberChannelName = memberChannelName + " " + LocalDate.now().getMonthValue() + "." + LocalDate.now().getDayOfMonth();
         }
 
         String appName = GMContext.getContext().getAppName();

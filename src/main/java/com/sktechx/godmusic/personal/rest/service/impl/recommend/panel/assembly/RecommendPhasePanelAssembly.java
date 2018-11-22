@@ -162,7 +162,7 @@ public class RecommendPhasePanelAssembly extends PanelSignAssembly {
 
         if(!CollectionUtils.isEmpty(rcmmdIdList)){
             List<RecommendTrackDto> recommendCfTrackList =
-                    recommendMapper.selectRecommendCfTrackListByIdList(rcmmdIdList, panelLimitSize, RCMMD_CF_TRACK_LIMIT_SIZE, personalPhaseMeta.getOsType());
+                    recommendReadMapper.selectRecommendCfTrackListByIdList(rcmmdIdList, panelLimitSize, RCMMD_CF_TRACK_LIMIT_SIZE, personalPhaseMeta.getOsType());
 
             if (!CollectionUtils.isEmpty(recommendCfTrackList)) {
                 recommendCfTrackList
