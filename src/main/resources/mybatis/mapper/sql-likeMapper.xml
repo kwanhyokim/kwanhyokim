@@ -166,7 +166,7 @@
                 INNER JOIN TED_ALBUM SUB2 ON SUB1.LIKE_TYPE_ID = SUB2.ALBUM_ID AND SUB2.DISP_STATUS_YN = 'Y'
                 WHERE CHARACTER_NO = #{characterNo}
                       AND LIKE_TYPE = 'ALBUM'
-                ORDER BY SUB2.DISP_SN ASC
+                ORDER BY SUB1.DISP_SN ASC
                 LIMIT 50
             <!--<if test="pageable != null">-->
                 <!--ORDER BY DISP_SN ASC,-->
