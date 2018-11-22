@@ -194,7 +194,7 @@
          WHERE character_no = #{characterNo}
     </select>
     <insert id="insertTpoRecommendData">
-        INSERT INTO tb_rcmmd_tpo
+        INSERT INTO tb_rcmmd_tpo (character_no, disp_std_start_dt, disp_std_end_dt, category_id, chnl_id, weekend_yn, tm_cd, sittn_disp_sn, chnl_disp_sn)
         SELECT #{characterNo},
                date_add(now(), INTERVAL -10 DAY),
                date_add(now(), INTERVAL 30 DAY),
