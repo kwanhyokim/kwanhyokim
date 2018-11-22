@@ -209,13 +209,15 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 				seedArtistIdList.add(preferSimilarArtistDto.getSeedArtistId());
 
-				if(seedArtistIdList.size() >= 2){
+				if(seedArtistIdList.size() == 2){
 					break;
 				}
 			}
 			// 2. 결과 처리를 위한 시드 아티스트 DTO 추출
-			List<ArtistDto> seedArtistList = totalSeedArtistList.stream().filter(x -> seedArtistIdList.contains(x.getArtistId())).limit(2).collect(
+			List<ArtistDto> seedArtistList = totalSeedArtistList.stream().filter(x -> seedArtistIdList.contains(x.getArtistId())).collect(
 					Collectors.toList());
+
+			seedArtistList = seedArtistList.stream().distinct().collect(Collectors.toList());
 
 			seedArtistList.forEach(x -> log.debug("seed artist name" + x.getArtistName()));
 			// 3. 유사 아티스트 목록 추출
