@@ -214,7 +214,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 				}
 			}
 			// 2. 결과 처리를 위한 시드 아티스트 DTO 추출
-			List<ArtistDto> seedArtistList = totalSeedArtistList.stream().filter(x -> seedArtistIdList.contains(x.getArtistId())).collect(
+			List<ArtistDto> seedArtistList = totalSeedArtistList.stream().filter(x -> seedArtistIdList.contains(x.getArtistId())).limit(2).collect(
 					Collectors.toList());
 
 			seedArtistList.forEach(x -> log.debug("seed artist name" + x.getArtistName()));
