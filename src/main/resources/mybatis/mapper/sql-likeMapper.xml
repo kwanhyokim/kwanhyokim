@@ -67,148 +67,108 @@
     </resultMap>
 
     <select id="getLikeTrackByLikeType" resultMap="trackResultMap">
-        SELECT
-              B.TRACK_ID                                                                AS trackId
-            , A.DISP_SN
-            , B.TRACK_NM
-            , B.ALBUM_ID
-            , B.DISP_STATUS_YN                                                           AS displayYn
-            , B.AGENCY_ID
-            , IF(B.TITLE_YN = 'Y', 'Y', 'N')                                             AS titleYn
-            , B.CREATE_DTIME
-            , B.UPDATE_DTIME
-            , E.ALBUM_IMG_SIZE                                                           AS size
-            , CONCAT(E.ALBUM_IMG_URL, '?updateDate=', unix_timestamp(E.UPDATE_DTIME))    AS url
-            , 'Y'                                                                        AS likeYn
-            , IF(B.STREAMING_PREMIUM_YN = 'Y' OR B.PPS_YN = 'Y', 'Y', 'N')               AS holdbackYn
-            , IF(B.ADULT_AUTH_NEED_TRACK_YN = 'Y', 'Y', 'N')                             AS adultAuthYn
-            , D.ARTIST_ID                                                                AS artistId
-            , D.ARTIST_NM                                                                AS artistNm
-            , F.TITLE                                                                    AS albumTitle
-            , G.ARTIST_ID                                                                AS repArtistId
-            , G.ARTIST_NM                                                                AS repArtistNm
-        FROM
-            (
-                SELECT
-                    LIKE_TYPE_ID
-                    , DISP_SN
-                    , UPDATE_DTIME
-                FROM TB_CHARACTER_LIKE
-                WHERE CHARACTER_NO = #{characterNo}
-                      AND LIKE_TYPE = 'TRACK'
-            <!--<if test="pageable != null">-->
-                <!--ORDER BY DISP_SN ASC,-->
-                    <!--UPDATE_DTIME ASC-->
-                    <!--LIMIT-->
-                    <!--#{pageable.offset} ,-->
-                    <!--#{pageable.pageSize}-->
-            <!--</if>-->
-            ) A
-            INNER JOIN TB_TRACK B
-                ON A.LIKE_TYPE_ID = B.TRACK_ID
-            LEFT OUTER JOIN TED_TRACKARTIST C
-                ON B.TRACK_ID = C.TRACK_ID AND C.RP_YN = 'Y' AND C.DB_STS = 'A'
-            LEFT OUTER JOIN TED_ARTIST D
-                ON C.ARTIST_ID = D.ARTIST_ID
-            LEFT OUTER JOIN TB_ALBUM_IMG E
-                ON B.ALBUM_ID = E.ALBUM_ID
-            LEFT OUTER JOIN TED_ALBUM F
-                ON B.ALBUM_ID = F.ALBUM_ID
-            LEFT OUTER JOIN TED_ARTIST G
-                ON B.REPRSNT_ARTIST_ID = G.ARTIST_ID
-        WHERE
-            B.DISP_STATUS_YN = 'Y'
-        ORDER BY A.DISP_SN ASC, A.UPDATE_DTIME ASC, C.LISTORDER ASC
+        SELECT A.LIKE_TYPE_ID                                                          AS trackId
+             , A.DISP_SN
+             , A.TRACK_NM
+             , A.ALBUM_ID
+             , A.DISP_STATUS_YN                                                        AS displayYn
+             , A.AGENCY_ID
+             , IF(A.TITLE_YN = 'Y', 'Y', 'N')                                          AS titleYn
+             , A.CREATE_DTIME
+             , A.UPDATE_DTIME
+             , E.ALBUM_IMG_SIZE                                                        AS size
+             , CONCAT(E.ALBUM_IMG_URL, '?updateDate=', unix_timestamp(E.UPDATE_DTIME)) AS url
+             , 'Y'                                                                     AS likeYn
+             , IF(A.STREAMING_PREMIUM_YN = 'Y' OR A.PPS_YN = 'Y', 'Y', 'N')            AS holdbackYn
+             , IF(A.ADULT_AUTH_NEED_TRACK_YN = 'Y', 'Y', 'N')                          AS adultAuthYn
+             , D.ARTIST_ID                                                             AS artistId
+             , D.ARTIST_NM                                                             AS artistNm
+             , F.TITLE                                                                 AS albumTitle
+             , G.ARTIST_ID                                                             AS repArtistId
+             , G.ARTIST_NM                                                             AS repArtistNm
+        FROM (
+             SELECT T1.LIKE_TYPE_ID
+                  , T1.DISP_SN
+                  , T1.UPDATE_DTIME AS LIKE_UPDATE_DTIME
+                  , T2.ALBUM_ID
+                  , T2.REPRSNT_ARTIST_ID
+                  , T2.TRACK_NM
+                  , T2.DISP_STATUS_YN
+                  , T2.AGENCY_ID
+                  , T2.TITLE_YN
+                  , T2.CREATE_DTIME
+                  , T2.UPDATE_DTIME
+                  , T2.STREAMING_PREMIUM_YN
+                  , T2.ADULT_AUTH_NEED_TRACK_YN
+                  , T2.PPS_YN
+             FROM TB_CHARACTER_LIKE T1
+                    INNER JOIN TB_TRACK T2 ON T1.LIKE_TYPE_ID = T2.TRACK_ID
+             WHERE T1.CHARACTER_NO = #{characterNo} AND T1.LIKE_TYPE = 'TRACK' AND T2.DISP_STATUS_YN = 'Y'
+                ORDER BY T1.DISP_SN ASC, T1.UPDATE_DTIME ASC
+                    LIMIT
+                    #{pageable.offset} ,
+                    #{pageable.pageSize}
+             ) A
+               LEFT OUTER JOIN TED_TRACKARTIST C ON A.LIKE_TYPE_ID = C.TRACK_ID AND C.RP_YN = 'Y' AND C.DB_STS = 'A'
+               LEFT OUTER JOIN TED_ARTIST D ON C.ARTIST_ID = D.ARTIST_ID
+               LEFT OUTER JOIN TB_ALBUM_IMG E ON A.ALBUM_ID = E.ALBUM_ID
+               LEFT OUTER JOIN TED_ALBUM F ON A.ALBUM_ID = F.ALBUM_ID
+               LEFT OUTER JOIN TED_ARTIST G ON A.REPRSNT_ARTIST_ID = G.ARTIST_ID
+        ORDER BY A.DISP_SN ASC, A.LIKE_UPDATE_DTIME ASC, C.LISTORDER ASC
     </select>
 
     <select id="getLikeAlbumByLikeType" resultMap="albumResultMap">
-        SELECT
-              A.ALBUM_ID                                                                                              AS  albumId
-            , A.TITLE                                                                                                 AS  albumTitle
-            , A.RELEASE_YMD                                                                                           AS  releaseYmd
-            , IF(A.ALBUM_TP = 'MF', '', A.ALBUM_TP)                                                                   AS  albumType
-            , C.ARTIST_ID                                                                                             AS  albumArtistId
-            , C.ARTIST_NM                                                                                             AS  albumArtistName
-            , IFNULL(GROUP_CONCAT(DISTINCT (F.STYLE_NM) ORDER BY F.STYLE_ID ASC SEPARATOR ','), '앨범 유형 정보가 없습니다.') AS genreStyle
-            , D.ALBUM_IMG_SIZE                                                                                        AS  size
-            , CONCAT(D.ALBUM_IMG_URL, '?updateDate=', unix_timestamp(D.UPDATE_DTIME))                                 AS  url
-            , G.ARTIST_ID                                                                                             AS  albumRepArtistId
-            , G.ARTIST_NM                                                                                             AS  albumRepArtistName
-            , 'Y'                                                                                                     AS  likeYn
-        FROM
-            (
-                SELECT
-                    LIKE_TYPE_ID
-                    , DISP_SN
-                    , UPDATE_DTIME
-                FROM TB_CHARACTER_LIKE
-                WHERE CHARACTER_NO = #{characterNo}
-                      AND LIKE_TYPE = 'ALBUM'
-            <!--<if test="pageable != null">-->
-                <!--ORDER BY DISP_SN ASC,-->
-                    <!--UPDATE_DTIME ASC-->
-                    <!--LIMIT-->
-                    <!--#{pageable.offset} ,-->
-                    <!--#{pageable.pageSize}-->
-            <!--</if>-->
-            ) L
-            INNER JOIN TED_ALBUM A
-                ON L.LIKE_TYPE_ID = A.ALBUM_ID
-            LEFT OUTER JOIN TED_ALBUMARTIST B
-                ON A.ALBUM_ID = B.ALBUM_ID
-            LEFT OUTER JOIN TED_ARTIST C
-                ON B.ARTIST_ID = C.ARTIST_ID
-            LEFT OUTER JOIN TB_ALBUM_IMG D
-                ON A.ALBUM_ID = D.ALBUM_ID
-            LEFT OUTER JOIN TED_ALBUMSTYLE E
-                ON A.ALBUM_ID = E.ALBUM_ID
-            LEFT OUTER JOIN TED_STYLE F
-                ON E.STYLE_ID = F.STYLE_ID
-            LEFT OUTER JOIN TED_ARTIST G
-                ON G.ARTIST_ID = A.ARTIST_ID
-        WHERE
-            A.DISP_STATUS_YN = 'Y'
-        GROUP BY ALBUMID, ALBUMARTISTID, SIZE, ALBUMTITLE, RELEASEYMD, ALBUMTYPE, ALBUMARTISTNAME, URL, LIKEYN,
-            ALBUMREPARTISTID, ALBUMREPARTISTNAME
+        SELECT L.LIKE_TYPE_ID                                                          AS albumId
+             , L.TITLE                                                                 AS albumTitle
+             , L.RELEASE_YMD                                                           AS releaseYmd
+             , IF(L.ALBUM_TP = 'MF', '', L.ALBUM_TP)                                   AS albumType
+             , C.ARTIST_ID                                                             AS albumArtistId
+             , C.ARTIST_NM                                                             AS albumArtistName
+             , IFNULL(GROUP_CONCAT(DISTINCT (F.STYLE_NM) ORDER BY F.STYLE_ID ASC SEPARATOR ','),
+                      '앨범 유형 정보가 없습니다.')                                               AS genreStyle
+             , D.ALBUM_IMG_SIZE                                                        AS size
+             , CONCAT(D.ALBUM_IMG_URL, '?updateDate=', unix_timestamp(D.UPDATE_DTIME)) AS url
+             , G.ARTIST_ID                                                             AS albumRepArtistId
+             , G.ARTIST_NM                                                             AS albumRepArtistName
+             , 'Y'                                                                     AS likeYn
+        FROM (
+             SELECT T1.LIKE_TYPE_ID, T1.DISP_SN, T1.UPDATE_DTIME, T2.TITLE, T2.RELEASE_YMD, T2.ALBUM_TP
+             FROM TB_CHARACTER_LIKE T1
+                    INNER JOIN TED_ALBUM T2 ON T1.LIKE_TYPE_ID = T2.ALBUM_ID
+             WHERE T1.CHARACTER_NO = #{characterNo} AND T1.LIKE_TYPE = 'ALBUM' AND T2.DISP_STATUS_YN = 'Y'
+             ORDER BY T1.DISP_SN ASC, T1.UPDATE_DTIME ASC
+             LIMIT #{pageable.offset}, #{pageable.pageSize}) L
+               LEFT OUTER JOIN TED_ALBUMARTIST B ON L.LIKE_TYPE_ID = B.ALBUM_ID
+               LEFT OUTER JOIN TED_ARTIST C ON B.ARTIST_ID = C.ARTIST_ID
+               LEFT OUTER JOIN TB_ALBUM_IMG D ON L.LIKE_TYPE_ID = D.ALBUM_ID
+               LEFT OUTER JOIN TED_ALBUMSTYLE E ON L.LIKE_TYPE_ID = E.ALBUM_ID
+               LEFT OUTER JOIN TED_STYLE F ON E.STYLE_ID = F.STYLE_ID
+               LEFT OUTER JOIN TED_ARTIST G ON G.ARTIST_ID = L.LIKE_TYPE_ID
+        GROUP BY ALBUMID, ALBUMARTISTID, SIZE, ALBUMTITLE, RELEASEYMD, ALBUMTYPE, ALBUMARTISTNAME, URL, LIKEYN, ALBUMREPARTISTID
+               , ALBUMREPARTISTNAME
         ORDER BY L.DISP_SN ASC, L.UPDATE_DTIME ASC
     </select>
 
     <select id="getLikeArtistByLikeType" resultMap="artistResultMap">
-        SELECT
-              A.ARTIST_ID                                                                             AS artistId
-            , A.ARTIST_NM                                                                             AS artistName
-            , A.SEX_CD                                                                                AS genderCd
-            , A.GRP_CD                                                                                AS artistGroupType
-            , B.SIZE                                                                                  AS size
-            , CONCAT(B.URL, '?updateDate=', unix_timestamp(B.UPDATE_DTIME))                           AS url
-            , IFNULL(SUBSTR(A.ACT_START_YMD, 1, 4), NULL)                                             AS actStartYmd
-            , IFNULL(GROUP_CONCAT(DISTINCT (D.STYLE_NM) ORDER BY D.STYLE_ID ASC SEPARATOR ','), NULL) AS artistStyle
-            , 'Y'                                                                                     AS likeYn
-        FROM
-            (
-                SELECT
-                    LIKE_TYPE_ID
-                    , DISP_SN
-                    , UPDATE_DTIME
-                FROM TB_CHARACTER_LIKE
-                WHERE CHARACTER_NO = #{characterNo}
-                      AND LIKE_TYPE = 'ARTIST'
-            <!--<if test="pageable != null">-->
-                <!--ORDER BY DISP_SN ASC,-->
-                    <!--UPDATE_DTIME ASC-->
-                    <!--LIMIT-->
-                    <!--#{pageable.offset} ,-->
-                    <!--#{pageable.pageSize}-->
-            <!--</if>-->
-            ) L
-            INNER JOIN TED_ARTIST A
-                ON L.LIKE_TYPE_ID = A.ARTIST_ID
-            LEFT OUTER JOIN TED_ARTISTIMAGE B
-                ON A.ARTIST_ID = B.ARTIST_ID
-            LEFT OUTER JOIN TED_ARTISTSTYLE C
-                ON A.ARTIST_ID = C.ARTIST_ID
-            LEFT OUTER JOIN TED_STYLE D
-                ON C.STYLE_ID = D.STYLE_ID
+        SELECT L.LIKE_TYPE_ID                                                                          AS artistId
+             , L.ARTIST_NM                                                                             AS artistName
+             , L.SEX_CD                                                                                AS genderCd
+             , L.GRP_CD                                                                                AS artistGroupType
+             , B.SIZE                                                                                  AS size
+             , CONCAT(B.URL, '?updateDate=', unix_timestamp(B.UPDATE_DTIME))                           AS url
+             , IFNULL(SUBSTR(L.ACT_START_YMD, 1, 4), NULL)                                             AS actStartYmd
+             , IFNULL(GROUP_CONCAT(DISTINCT (D.STYLE_NM) ORDER BY D.STYLE_ID ASC SEPARATOR ','), NULL) AS artistStyle
+             , 'Y'                                                                                     AS likeYn
+        FROM (
+             SELECT T1.LIKE_TYPE_ID, T1.DISP_SN, T1.UPDATE_DTIME, T2.ARTIST_NM, T2.SEX_CD, T2.GRP_CD, T2.ACT_START_YMD
+             FROM TB_CHARACTER_LIKE T1
+                    INNER JOIN TED_ARTIST T2 ON T1.LIKE_TYPE_ID = T2.ARTIST_ID
+             WHERE T1.CHARACTER_NO = #{characterNo} AND T1.LIKE_TYPE = 'ARTIST'
+             ORDER BY T1.DISP_SN ASC, T1.UPDATE_DTIME ASC
+             LIMIT #{pageable.offset}, #{pageable.pageSize}) L
+               LEFT OUTER JOIN TED_ARTISTIMAGE B ON L.LIKE_TYPE_ID = B.ARTIST_ID
+               LEFT OUTER JOIN TED_ARTISTSTYLE C ON L.LIKE_TYPE_ID = C.ARTIST_ID
+               LEFT OUTER JOIN TED_STYLE D ON C.STYLE_ID = D.STYLE_ID
         GROUP BY ARTISTID, ARTISTNAME, GENDERCD, ARTISTGROUPTYPE, SIZE, URL, ACTSTARTYMD, LIKEYN
         ORDER BY L.DISP_SN ASC, L.UPDATE_DTIME ASC
     </select>
@@ -274,10 +234,10 @@
                                  WHERE CHARACTER_NO = #{characterNo}
                                        AND LIKE_TYPE = 'CHART') L INNER JOIN TB_CHART A
                                  ON L.LIKE_TYPE_ID = A.CHART_ID
-                             LEFT OUTER JOIN TB_CHART_MUSIC_CONTENT B
-                                 ON A.CHART_ID = B.CHART_ID
-                             LEFT OUTER JOIN TB_TRACK C
-                                 ON B.MUSIC_CONTENT_ID = C.TRACK_ID AND B.DISP_SN = 1
+                             INNER JOIN TB_CHART_MUSIC_CONTENT B
+                                 ON A.CHART_ID = B.CHART_ID AND B.DISP_SN = 1
+                             INNER JOIN TB_TRACK C
+                                 ON B.MUSIC_CONTENT_ID = C.TRACK_ID
                      ) CL
                      INNER JOIN TED_ALBUMIMAGE I
                          ON CL.ALBUM_ID = I.ALBUM_ID
@@ -316,9 +276,9 @@
                  WHERE
                      A.DISP_STATUS_TYPE = 'Y') AA
         ORDER BY AA.DISPSN ASC, AA.LIKEUPDATEDTIME ASC
-        <!--LIMIT-->
-        <!--#{pageable.offset} ,-->
-        <!--#{pageable.pageSize}-->
+        LIMIT
+        #{pageable.offset} ,
+        #{pageable.pageSize}
     </select>
 
     <select id="getLikeCountByLikeTypeAndLikeTypeId" resultType="int">
@@ -330,12 +290,63 @@
               AND LIKE_TYPE_ID = #{likeTypeId}
     </select>
 
-    <select id="getLikeCountByLikeType" resultType="int">
+    <select id="getLikeTrackCountByLikeType" resultType="int">
+        SELECT COUNT(*)
+        FROM TB_CHARACTER_LIKE T1
+                 INNER JOIN TB_TRACK T2 ON T1.LIKE_TYPE_ID = T2.TRACK_ID
+        WHERE T1.CHARACTER_NO = #{characterNo} AND T1.LIKE_TYPE = 'TRACK' AND T2.DISP_STATUS_YN = 'Y'
+    </select>
+
+    <select id="getLikeAlbumCountByLikeType" resultType="int">
+        SELECT COUNT(*)
+        FROM TB_CHARACTER_LIKE T1
+                 INNER JOIN TED_ALBUM T2 ON T1.LIKE_TYPE_ID = T2.ALBUM_ID
+        WHERE T1.CHARACTER_NO = #{characterNo} AND T1.LIKE_TYPE = 'ALBUM' AND T2.DISP_STATUS_YN = 'Y'
+    </select>
+
+    <select id="getLikeArtistCountByLikeType" resultType="int">
+        SELECT COUNT(*)
+        FROM TB_CHARACTER_LIKE T1
+                 INNER JOIN TED_ARTIST T2 ON T1.LIKE_TYPE_ID = T2.ARTIST_ID
+        WHERE T1.CHARACTER_NO = #{characterNo} AND T1.LIKE_TYPE = 'ARTIST'
+    </select>
+
+    <select id="getLikeChannelCountByLikeType" resultType="int">
         SELECT
-            COUNT(*)
-        FROM TB_CHARACTER_LIKE
-        WHERE CHARACTER_NO = #{characterNo}
-              AND LIKE_TYPE = #{likeType}
+              COUNT(*)
+        FROM
+                (
+                SELECT
+                        LIKE_TYPE_ID
+                FROM TB_CHARACTER_LIKE
+                WHERE CHARACTER_NO = #{characterNo}
+                        AND LIKE_TYPE = 'CHNL') L
+                    INNER JOIN TB_CHNL A
+                        ON L.LIKE_TYPE_ID = A.CHNL_ID
+                    INNER JOIN TB_ALBUM_IMG I
+                        ON A.ALBUM_ID = I.ALBUM_ID
+        WHERE
+              A.DISP_STATUS_TYPE = 'Y'
+    </select>
+
+    <select id="getLikeChartCountByLikeType" resultType="int">
+        SELECT
+               COUNT(*)
+        FROM
+                (
+                SELECT
+                        LIKE_TYPE_ID
+                     , LIKE_TYPE
+                     , DISP_SN
+                     , UPDATE_DTIME
+                FROM TB_CHARACTER_LIKE
+                WHERE CHARACTER_NO = #{characterNo}
+                        AND LIKE_TYPE = 'CHART') L INNER JOIN TB_CHART A
+                        ON L.LIKE_TYPE_ID = A.CHART_ID
+                                                   INNER JOIN TB_CHART_MUSIC_CONTENT B
+                        ON A.CHART_ID = B.CHART_ID AND B.DISP_SN = 1
+                                                   INNER JOIN TB_TRACK C
+                        ON B.MUSIC_CONTENT_ID = C.TRACK_ID
     </select>
 
     <update id="updateLikeDispSn">

@@ -2,25 +2,16 @@ package com.sktechx.godmusic.personal.rest.controller.v1;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
-import com.sktechx.godmusic.personal.common.domain.constant.LikeConstant;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
-import com.sktechx.godmusic.personal.rest.model.dto.AlbumDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
-import com.sktechx.godmusic.personal.rest.model.dto.PlayListDto;
-import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.vo.like.*;
 import com.sktechx.godmusic.personal.rest.service.LikeService;
 import com.sktechx.godmusic.personal.rest.validate.Validator;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
-
-import java.util.List;
 
 /**
  * Created by Kobe.
@@ -40,12 +31,12 @@ public class LikeController {
 	@ApiOperation(value = "좋아요 플레이리스트 목록 by Kobe ( 기존 /v2/my/channel/like/list GET )", response = LikePlaylistListResponse.class
 			, httpMethod = "GET", notes = "My > 좋아요 > 플레이 리스트 목록")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "page", required = false, dataType = "int", paramType = "query", value = "페이지", defaultValue = "1"),
-			@ApiImplicitParam(name = "size", required = false, dataType = "int", paramType = "query", value = "사이즈", defaultValue = "1000")
+			@ApiImplicitParam(name = "page", required = true, dataType = "int", paramType = "query", value = "페이지", defaultValue = "1"),
+			@ApiImplicitParam(name = "size", required = true, dataType = "int", paramType = "query", value = "사이즈", defaultValue = "1000")
 	})
 	@GetMapping("/type/playlist/list")
 	public CommonApiResponse<LikePlaylistListResponse> getPlayListLikeListByLikeType(
-			@ApiIgnore @PageableDefault(size=1000, page=0) Pageable pageable
+			@PageableDefault(size=50, page=0) Pageable pageable
 	) {
 		GMContext currentContext = GMContext.getContext();
 
@@ -57,12 +48,12 @@ public class LikeController {
 	@ApiOperation(value = "좋아요 앨범 목록 by Kobe ( 기존 /v2/my/album/like/list GET )", response = LikeAlbumListResponse.class
 			, httpMethod = "GET", notes = "My > 좋아요 > 앨범 리스트 목록")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "page", required = false, dataType = "int", paramType = "query", value = "페이지", defaultValue = "1"),
-			@ApiImplicitParam(name = "size", required = false, dataType = "int", paramType = "query", value = "사이즈", defaultValue = "1000")
+			@ApiImplicitParam(name = "page", required = true, dataType = "int", paramType = "query", value = "페이지", defaultValue = "1"),
+			@ApiImplicitParam(name = "size", required = true, dataType = "int", paramType = "query", value = "사이즈", defaultValue = "1000")
 	})
 	@GetMapping("/type/album/list")
 	public CommonApiResponse<LikeAlbumListResponse> getAlbumLikeListByLikeType(
-			@ApiIgnore @PageableDefault(size=1000, page=0) Pageable pageable
+			@PageableDefault(size=50, page=0) Pageable pageable
 	) {
 		GMContext currentContext = GMContext.getContext();
 
@@ -74,12 +65,12 @@ public class LikeController {
 	@ApiOperation(value = "좋아요 아티스트 목록 by Kobe ( 기존 /v2/my/artist/like/list GET )", response = LikeArtistListResponse.class
 			, httpMethod = "GET", notes = "My > 좋아요 > 아티스트 리스트 목록")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "page", required = false, dataType = "int", paramType = "query", value = "페이지", defaultValue = "1"),
-			@ApiImplicitParam(name = "size", required = false, dataType = "int", paramType = "query", value = "사이즈", defaultValue = "1000")
+			@ApiImplicitParam(name = "page", required = true, dataType = "int", paramType = "query", value = "페이지", defaultValue = "1"),
+			@ApiImplicitParam(name = "size", required = true, dataType = "int", paramType = "query", value = "사이즈", defaultValue = "1000")
 	})
 	@GetMapping("/type/artist/list")
 	public CommonApiResponse<LikeArtistListResponse> getArtistLikeListByLikeType(
-			@ApiIgnore @PageableDefault(size=1000, page=0) Pageable pageable
+			@PageableDefault(size=50, page=0) Pageable pageable
 	) {
 		GMContext currentContext = GMContext.getContext();
 
@@ -91,12 +82,12 @@ public class LikeController {
 	@ApiOperation(value = "좋아요 트랙별 목록 by Kobe ( 기존 /v2/my/track/like/list GET )", response = LikeTrackListResponse.class
 			, httpMethod = "GET", notes = "My > 좋아요 > 곡 리스트 목록")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "page", required = false, dataType = "int", paramType = "query", value = "페이지", defaultValue = "1"),
-			@ApiImplicitParam(name = "size", required = false, dataType = "int", paramType = "query", value = "사이즈", defaultValue = "1000")
+			@ApiImplicitParam(name = "page", required = true, dataType = "int", paramType = "query", value = "페이지", defaultValue = "1"),
+			@ApiImplicitParam(name = "size", required = true, dataType = "int", paramType = "query", value = "사이즈", defaultValue = "1000")
 	})
 	@GetMapping("/type/track/list")
 	public CommonApiResponse<LikeTrackListResponse> getTrackLikeListByLikeType(
-			@ApiIgnore @PageableDefault(size=1000, page=0) Pageable pageable
+			@PageableDefault(size=50, page=0) Pageable pageable
 	) {
 		GMContext currentContext = GMContext.getContext();
 

@@ -23,6 +23,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.repository.CharacterPreferGenreMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
+import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.RecommendPanelAssemblyFactory;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
@@ -58,6 +59,8 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
     @Autowired
     private RecommendMapper recommendMapper;
 
+    @Autowired
+    private RecommendReadMapper recommendReadMapper;
     @Autowired
     private RedisService redisService;
 
@@ -104,7 +107,7 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
             personalPhaseMeta.setPreferDispList(characterPreferDispList);
 
             //개인화 추천 패널
-            List<PersonalPanel> rcmmdPanelList = recommendMapper.selectPersonalRecommendPanelMeta(characterNo, SIMILAR_TRACK_DISP_STANDARD_COUNT , RCMMD_CF_TRACK_DISP_STANDARD_COUNT);
+            List<PersonalPanel> rcmmdPanelList = recommendReadMapper.selectPersonalRecommendPanelMeta(characterNo, SIMILAR_TRACK_DISP_STANDARD_COUNT , RCMMD_CF_TRACK_DISP_STANDARD_COUNT);
             personalPhaseMeta.setRcmmdPanelList(rcmmdPanelList);
 
             //현재 노출 되는 패널 정보 입력

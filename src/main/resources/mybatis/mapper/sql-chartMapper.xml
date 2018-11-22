@@ -110,6 +110,7 @@
         LEFT OUTER JOIN ted_album a ON chart_track_table.album_id = a.album_id
             LEFT OUTER JOIN tb_album_img b ON a.album_id = b.album_id
             LEFT OUTER JOIN ted_trackartist c ON chart_track_table.track_id =c.track_id
+                            AND c.rp_yn = 'Y' AND c.db_sts = 'A'
             LEFT OUTER JOIN ted_artist d ON c.artist_id = d.artist_id
             LEFT OUTER JOIN ted_artist e ON e.artist_id = chart_track_table.reprsnt_artist_id
         WHERE a.disp_status_yn = 'Y'

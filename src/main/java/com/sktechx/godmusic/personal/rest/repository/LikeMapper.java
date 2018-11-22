@@ -22,7 +22,11 @@ import java.util.List;
 @BaseMapper
 public interface LikeMapper {
 	int getLikeCountByLikeTypeAndLikeTypeId(@Param("likeType") String likeType, @Param("likeTypeId") Long likeTypeId, @Param("characterNo") Long characterNo);
-	int getLikeCountByLikeType(@Param("likeType") String likeType, @Param("characterNo") Long characterNo);
+	int getLikeTrackCountByLikeType(@Param("characterNo") Long characterNo);
+	int getLikeAlbumCountByLikeType(@Param("characterNo") Long characterNo);
+	int getLikeArtistCountByLikeType(@Param("characterNo") Long characterNo);
+	int getLikeChannelCountByLikeType(@Param("characterNo") Long characterNo);
+	int getLikeChartCountByLikeType(@Param("characterNo") Long characterNo);
 	int updateLikeDispSn(@Param("likeType") String likeType, @Param("characterNo") Long characterNo);
 	int insertLike(@Param("likeType") String likeType, @Param("likeTypeId") Long likeTypeId, @Param("characterNo") Long characterNo);
 	int deleteLike(@Param("likeType") String likeType, @Param("likeTypeId") List<Long> likeTypeId, @Param("characterNo") Long characterNo);
