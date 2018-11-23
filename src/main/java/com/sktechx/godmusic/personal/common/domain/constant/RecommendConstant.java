@@ -52,6 +52,10 @@ public class RecommendConstant {
     public static final int PREFER_GENRE_SIMILAR_TRACK_DISP_STANDARD_COUNT = 5;
 
 
+    //2-A, 2-A' 패널 중복 곡수 기준
+    public static final int SIMILAR_TRACK_DUPLICATE_COUNT = 5;
+
+
     public static final int ARTIST_POPULAR_TRACK_DISP_STANDARD_COUNT = 30;
     public static final int ARTIST_POPULAR_TRACK_DISP_ONE_ARTIST_COUNT = 12;
     public static final int ARTIST_POPULAR_TRACK_DISP_TWO_ARTIST_COUNT = 24;

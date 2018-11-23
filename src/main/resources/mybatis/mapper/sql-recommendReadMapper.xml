@@ -823,4 +823,51 @@
         rcmmd_mforu_id = #{rcmmdId}
     </select>
 
+    <select id="selectSimilarTrackPanelBetweenDuplicateCount" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendDuplicateCountDto">
+        <![CDATA[
+            SELECT
+              COUNT(*) duplicateCount,
+              rcmmdId
+            FROM (
+                SELECT
+                  COUNT(b.track_id) duplicateCount,
+                  MAX(a.rcmmd_similar_track_id) rcmmdId
+                FROM
+                  tb_rcmmd_similar_track a
+                    INNER JOIN tb_rcmmd_similar_track_list b ON a.rcmmd_similar_track_id = b.rcmmd_similar_track_id
+                WHERE
+                  a.character_no = #{characterNo}
+                AND
+                  a.disp_std_start_dt <= NOW()
+                AND
+                  a.disp_std_end_dt >= NOW()
+                GROUP BY b.track_id
+                HAVING duplicateCount >=  2
+            ) a
+        ]]>
+    </select>
+
+    <select id="selectPreferGenreSimilarTrackPanelBetweenDuplicateCount" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendDuplicateCountDto">
+        <![CDATA[
+            SELECT
+              COUNT(*) duplicateCount,
+              rcmmdId
+            FROM (
+                SELECT
+                  COUNT(b.track_id) duplicateCount,
+                  MAX(rcmmd_prefer_genre_similar_track_id) rcmmdId
+                FROM
+                  tb_rcmmd_prefer_genre_similar_track a INNER JOIN tb_rcmmd_prefer_genre_similar_track_list b ON
+                    a.rcmmd_prefer_genre_similar_track_id = b.rcmmd_prefer_genre_similar_track_id
+                WHERE
+                  character_no = #{characterNo}
+                AND
+                  disp_std_start_dt <= NOW()
+                AND
+                  disp_std_end_dt >= NOW()
+                GROUP BY b.track_id
+                HAVING duplicateCount >=2
+            ) a
+        ]]>
+    </select>
 </mapper>
