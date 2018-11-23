@@ -309,7 +309,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 			return null;
 		}
 
-		return new ChartResponse<>(similarArtistList, (sectionNumber == 1 ? HomeContentType.ARTIST1 : HomeContentType.ARTIST2) );
+		return new ChartResponse<>(similarArtistList, HomeContentType.ARTIST);
 	}
 
 	@Override
