@@ -145,6 +145,19 @@ public class PersonalPhaseMeta {
         return null;
     }
 
+    public void removeRecommendPersonalPanel(RecommendPanelContentType recommendPanelContentType ,Long rcmmdId){
+        if(!CollectionUtils.isEmpty(rcmmdPanelList)){
+            rcmmdPanelList.removeIf(personalPanel -> {
+                if(personalPanel.getRecommendPanelContentType().equals(recommendPanelContentType)
+                        && personalPanel.getRecommendId().equals(rcmmdId)){
+                    return true;
+                }
+                return false;
+            });
+
+
+        }
+    }
     private PersonalPanel getRecommendPersonalPanel(RecommendPanelContentType recommendPanelContentType){
         if(!CollectionUtils.isEmpty(rcmmdPanelList)){
             return rcmmdPanelList

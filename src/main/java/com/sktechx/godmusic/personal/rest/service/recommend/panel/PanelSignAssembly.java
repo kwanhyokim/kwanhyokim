@@ -105,7 +105,7 @@ public abstract class PanelSignAssembly extends PanelAssembly {
         Long rcmmdId = personalPhaseMeta.getRecommendPersonalPanelRcmmdId(RC_ATST_TR);
 
         if (rcmmdId != null) {
-            RecommendArtistDto recommendArtistDto = recommendMapper.selectRecommendArtistById(rcmmdId);
+            RecommendArtistDto recommendArtistDto = recommendReadMapper.selectRecommendArtistById(rcmmdId);
 
             if (recommendArtistDto != null && !CollectionUtils.isEmpty(recommendArtistDto.getArtistList())) {
 
@@ -186,7 +186,7 @@ public abstract class PanelSignAssembly extends PanelAssembly {
         if(!CollectionUtils.isEmpty(rcmmdIdList)){
 
             List<RecommendTrackDto> similarTrackList =
-                    recommendMapper.selectRecommendSimilarTrackListByIdList(rcmmdIdList, panelLimitSize,
+                    recommendReadMapper.selectRecommendSimilarTrackListByIdList(rcmmdIdList, panelLimitSize,
                                                 SIMILAR_TRACK_LIMIT_SIZE, personalPhaseMeta.getOsType());
 
             if(!CollectionUtils.isEmpty(similarTrackList)){
@@ -217,7 +217,7 @@ public abstract class PanelSignAssembly extends PanelAssembly {
             if (!CollectionUtils.isEmpty(rcmmdIdList)) {
 
                 List<RecommendTrackDto> preferGenreSimilarTrackList =
-                        recommendMapper.selectRecommendPreferGenreSimilarTrackListByIdList(rcmmdIdList, panelLimitSize,
+                        recommendReadMapper.selectRecommendPreferGenreSimilarTrackListByIdList(rcmmdIdList, panelLimitSize,
                                 PREFER_GENRE_SIMILAR_TRACK_LIMIT_SIZE, personalPhaseMeta.getOsType());
 
                 if(!CollectionUtils.isEmpty(preferGenreSimilarTrackList)){

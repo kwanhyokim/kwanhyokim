@@ -191,6 +191,7 @@
         LEFT OUTER JOIN ted_album b ON a.album_id = b.album_id
         LEFT OUTER JOIN tb_album_img c ON b.album_id = c.album_id
         LEFT OUTER JOIN ted_trackartist d ON a.track_id =d.track_id
+                    AND d.rp_yn = 'Y' AND d.db_sts = 'A'
         LEFT OUTER JOIN ted_artist e ON d.artist_id = e.artist_id
         LEFT OUTER JOIN ted_artist f ON f.artist_id = a.reprsnt_artist_id
         , (SELECT @curRank:=0, @prevChnlId:=0) r
@@ -388,7 +389,7 @@
         ( SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
                  a.listen_type,
                  a.listen_type_id,
-                 CONCAT('오늘의 FLO', ' ', DATE_FORMAT(a.create_dtime, '%m.%d')) AS content_title,
+                 CONCAT(DATE_FORMAT(a.create_dtime, '%c월 %e일'), ' 오늘의 FLO') AS content_title,
                  ( SELECT COUNT(*) FROM tb_rcmmd_similar_track_list WHERE rcmmd_similar_track_id = b.rcmmd_similar_track_id) AS track_count,
                  a.last_listen_dtime,
                  c.img_size AS size,
@@ -418,7 +419,7 @@
         ( SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
                  a.listen_type,
                  a.listen_type_id,
-                 CONCAT('오늘의 FLO', ' ', DATE_FORMAT(a.create_dtime, '%m.%d')) AS content_title,
+                 CONCAT(DATE_FORMAT(a.create_dtime, '%c월 %e일'), ' 오늘의 FLO') AS content_title,
                  ( SELECT COUNT(*) FROM tb_rcmmd_prefer_genre_similar_track_list WHERE rcmmd_prefer_genre_similar_track_id = b.rcmmd_prefer_genre_similar_track_id) AS track_count,
                  a.last_listen_dtime,
                  c.img_size,
@@ -448,7 +449,7 @@
         ( SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
                  a.listen_type,
                  a.listen_type_id,
-                 CONCAT('아티스트 FLO', ' ', DATE_FORMAT(a.create_dtime, '%m.%d')) AS content_title,
+                 CONCAT(DATE_FORMAT(a.create_dtime, '%c월 %e일'), ' 아티스트 FLO') AS content_title,
                  ( SELECT COUNT(*) FROM tb_rcmmd_artist_list WHERE rcmmd_artist_id = b.rcmmd_artist_id) AS track_count,
                  a.last_listen_dtime,
                  c.img_size,
@@ -477,7 +478,7 @@
         ( SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
                  a.listen_type,
                  a.listen_type_id,
-                 CONCAT('너를 위한 FLO', ' ', DATE_FORMAT(a.create_dtime, '%m.%d')) AS content_title,
+                 CONCAT('나를 위한 FLO', ' ', DATE_FORMAT(a.create_dtime, '%m.%d')) AS content_title,
                  ( SELECT COUNT(*) FROM tb_rcmmd_mforu_list WHERE rcmmd_mforu_id = b.rcmmd_mforu_id) AS track_count,
                  a.last_listen_dtime,
                  c.img_size AS size,

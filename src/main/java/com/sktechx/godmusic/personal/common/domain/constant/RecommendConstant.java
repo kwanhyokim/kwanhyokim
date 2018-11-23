@@ -52,6 +52,10 @@ public class RecommendConstant {
     public static final int PREFER_GENRE_SIMILAR_TRACK_DISP_STANDARD_COUNT = 5;
 
 
+    //2-A, 2-A' 패널 중복 곡수 기준
+    public static final int SIMILAR_TRACK_DUPLICATE_COUNT = 5;
+
+
     public static final int ARTIST_POPULAR_TRACK_DISP_STANDARD_COUNT = 30;
     public static final int ARTIST_POPULAR_TRACK_DISP_ONE_ARTIST_COUNT = 12;
     public static final int ARTIST_POPULAR_TRACK_DISP_TWO_ARTIST_COUNT = 24;
@@ -63,7 +67,7 @@ public class RecommendConstant {
     public static final String ARTIST_PANEL_TITLE = "아티스트 FLO";
     public static final String CHART_PANEL_HOURLY_BASIS_PHRASES = "시 기준";
 
-    public static final String RCMMD_TRACK_PANEL_TITLE = "너를 위한 FLO";
+    public static final String RCMMD_TRACK_PANEL_TITLE = "나를 위한 FLO";
     public static final String RCMMD_TRACK_PANEL_SUB_TITLE = "많이 들은\n%s 장르의 추천 음악";
 
     public static final String PREFER_GENRE_SIMILAR_TRACK_PANEL_TITLE = "오늘의 FLO";
