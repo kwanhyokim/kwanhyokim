@@ -855,7 +855,7 @@
             FROM (
                 SELECT
                   COUNT(b.track_id) duplicateCount,
-                  MAX(rcmmd_prefer_genre_similar_track_id) rcmmdId
+                  MAX(a.rcmmd_prefer_genre_similar_track_id) rcmmdId
                 FROM
                   tb_rcmmd_prefer_genre_similar_track a INNER JOIN tb_rcmmd_prefer_genre_similar_track_list b ON
                     a.rcmmd_prefer_genre_similar_track_id = b.rcmmd_prefer_genre_similar_track_id
