@@ -3,6 +3,7 @@ package com.sktechx.godmusic.personal.rest.model.vo.listen;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.domain.type.BitrateType;
 import com.sktechx.godmusic.personal.common.domain.type.OsType;
+import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.common.domain.type.TrackLogType;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -71,4 +72,10 @@ public class ListenTrackRequest {
 
 	@ApiModelProperty(name = "addDateTime", value = "추가 시간")
 	private String addDateTime;
+
+	@ApiModelProperty(name = "sourceType", value = "요청 타입")
+	private SourceType sourceType;
+
+	@ApiModelProperty(name = "ownerToken", value = "파일 원천 정보")
+	private String ownerToken;
 }
