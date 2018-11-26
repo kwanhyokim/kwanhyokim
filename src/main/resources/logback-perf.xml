@@ -55,9 +55,9 @@
     <logger name="springfox.documentation" level="off" />
     <logger name="io.swagger.models.parameters.AbstractSerializableParameter" level="error" />
 
-    <logger name="com.sktechx" level="info" />
+    <logger name="com.sktechx" level="debug" />
 
-    <root level="info">
+    <root level="debug">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
     </root>
