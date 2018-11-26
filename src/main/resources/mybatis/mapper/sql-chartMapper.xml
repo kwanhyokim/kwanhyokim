@@ -44,7 +44,7 @@
             chart_track_table.img_url,
             chart_track_table.disp_sn trackSn,
             chart_track_table.bf_disp_sn trackBfSn,
-            CONVERT (chart_track_table.disp_sn , SIGNED )- CONVERT (chart_track_table.bf_disp_sn , SIGNED )AS rankBadge,
+            CONVERT (chart_track_table.bf_disp_sn , SIGNED ) - CONVERT (chart_track_table.disp_sn , SIGNED )AS rankBadge,
             CASE WHEN chart_track_table.bf_disp_sn = 0 THEN 'Y' ELSE 'N' END AS newYn,
             c.track_id,
             a.album_id,
