@@ -63,6 +63,8 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
 @Slf4j
 public class RecommendPanelServiceImpl implements RecommendPanelService {
 
+    private final int recommendPanelDefaultImageExpiredSec = 3600;
+
     @Autowired
     private SqlSessionTemplate sqlSessionTemplate;
 
@@ -313,7 +315,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             if(CollectionUtils.isEmpty(imgList)){
                 imgList = recommendReadMapper.selectRecommendPanelDefaultImageList();
                 if(!CollectionUtils.isEmpty(imgList)){
-                    redisService.setWithPrefix(RedisKeyConstant.RECOMMEND_PANEL_DEFAULT_IMGLIST_KEY, imgList);
+                    redisService.setWithPrefix(RedisKeyConstant.RECOMMEND_PANEL_DEFAULT_IMGLIST_KEY, imgList, recommendPanelDefaultImageExpiredSec);
                 }
             }
         }
