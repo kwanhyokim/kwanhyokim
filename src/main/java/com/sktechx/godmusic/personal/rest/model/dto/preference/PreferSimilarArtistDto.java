@@ -24,4 +24,5 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PreferSimilarArtistDto extends ArtistDto {
 	private Long seedArtistId;
+	private Integer rank;
 }

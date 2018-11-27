@@ -34,13 +34,17 @@ import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
 import com.sktechx.godmusic.personal.rest.repository.ImageManagementMapper;
 import com.sktechx.godmusic.personal.rest.service.PreferenceService;
 import lombok.extern.slf4j.Slf4j;
+
+import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjuster;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -209,9 +213,11 @@ public class PreferenceServiceImpl implements PreferenceService {
 				return null;
 			}
 
-			// 시드 아티스트 아이디 2개를 랜덤으로 추출
-			//
+			// rank 순으로 정렬
+			preferSimilarArtistDtoList = preferSimilarArtistDtoList.stream().sorted(
+					Comparator.comparingInt(PreferSimilarArtistDto::getRank)).collect(Collectors.toList());
 
+			// 시드 아티스트 아이디 2개를 랜덤으로 추출
 			Iterator preferSimilarArtistDtoListIterator = preferSimilarArtistDtoList.iterator();
 
 			List<Long> seedArtistIdList = new ArrayList<>();
@@ -236,6 +242,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 			seedArtistList = seedArtistList.stream().distinct().collect(Collectors.toList());
 
 			seedArtistList.forEach(x -> log.debug("seed artist name" + x.getArtistName()));
+
 			// 3. 유사 아티스트 목록 추출
 			artistDtoList = preferSimilarArtistDtoList.stream().filter(x-> seedArtistIdList.contains(x.getSeedArtistId())).collect(
 					Collectors.toList());
@@ -247,37 +254,40 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 			// 3알전 기록 삭제
 			historyMap.remove(DateUtil.getMinusDate(currentDate, -2));
-			// 레디스에 히스토리 기록
-			redisService.setWithPrefix(String.format(PERSONAL_SIMILAR_ARTIST_HISTORY_KEY, characterNo), historyMap);
+
+			// 레디스에 히스토리 기록 (만기일 3일 추가)
+			LocalDateTime expireDateTime = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0).plusDays(3L);
+			long expireSeconds = LocalDateTime.now().until(expireDateTime, ChronoUnit.SECONDS);
+			redisService.setWithPrefix(String.format(PERSONAL_SIMILAR_ARTIST_HISTORY_KEY, characterNo), historyMap, (int) expireSeconds);
 
 			// 결과 만들기 (시드1, 나머지 5)
 			List<ArtistDto>[] resultArtistDtoList = new ArrayList[2];
 			int resultIndex = 0;
-			int resultCnt = 0;
 			Iterator<ArtistDto> iterator = artistDtoList.iterator();
 
 			for(ArtistDto artistDto : seedArtistList){
-				// 시드 아티스트를 섹션 맨 앞에 추가
 				resultArtistDtoList[resultIndex] = new ArrayList<>();
-				resultArtistDtoList[resultIndex].add(artistDto);
-
 				while(iterator.hasNext()){
+					// 시드 아티스트를 갖고 있는 유사아티스트는 결과 목록으로
+					PreferSimilarArtistDto tempArtistDto = (PreferSimilarArtistDto)iterator.next();
 
-					ArtistDto tempArtistDto = iterator.next();
-
-					resultArtistDtoList[resultIndex].add(tempArtistDto);
-					resultCnt++;
-
-					// 섹션 당 유사아티스트는 1명
-					if(resultCnt >= 5){
-						resultCnt = 0;
-						break;
+					if(tempArtistDto.getSeedArtistId().equals(artistDto.getArtistId())) {
+						resultArtistDtoList[resultIndex].add(tempArtistDto);
 					}
 				}
 
-				// 시드 아티스트 + 유사아티스트가 3명 미만이면 노출하지 않는다.
-				if(resultArtistDtoList[resultIndex].size() < 3){
-					resultArtistDtoList[resultIndex] = null;
+				if(!CollectionUtils.isEmpty(resultArtistDtoList[resultIndex])) {
+					// 20명 중 5명 랜덤 추출
+					resultArtistDtoList[resultIndex] = resultArtistDtoList[resultIndex].stream().limit(20).collect(Collectors.toList());
+					resultArtistDtoList[resultIndex] = rand.ints(20, 0, totalSeedArtistList.size()).mapToObj(resultArtistDtoList[resultIndex]::get).limit(5)
+							.collect(Collectors.toList());
+					// 시드 아티스트를 섹션 맨 앞에 추가
+					resultArtistDtoList[resultIndex].add(0, artistDto);
+
+					// 시드 아티스트 + 유사아티스트가 3명 미만이면 노출하지 않는다.
+					if (resultArtistDtoList[resultIndex].size() < 3) {
+						resultArtistDtoList[resultIndex] = null;
+					}
 				}
 
 				resultIndex++;
@@ -311,7 +321,10 @@ public class PreferenceServiceImpl implements PreferenceService {
 		    resultArtistDtoList[1].add(ArtistDto.builder().build());
 	    }
 
-		long expireSeconds = LocalTime.now().until(LocalTime.MAX, ChronoUnit.SECONDS);
+	    LocalTime currentTime = LocalTime.now();
+    	LocalTime untilTime = currentTime.plusMinutes(10L);
+		long expireSeconds = currentTime.until(untilTime, ChronoUnit.SECONDS);
+
 		redisService.setWithPrefix(String.format(PERSONAL_SIMILAR_ARTIST_KEY, 1, characterNo), resultArtistDtoList[0], (int) expireSeconds);
 		redisService.setWithPrefix(String.format(PERSONAL_SIMILAR_ARTIST_KEY, 2, characterNo), resultArtistDtoList[1], (int) expireSeconds);
 	}
