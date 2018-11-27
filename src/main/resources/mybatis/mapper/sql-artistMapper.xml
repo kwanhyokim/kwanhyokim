@@ -29,6 +29,7 @@
         <id property="artistId" column="artist_id"/>
         <result property="artistName" column="artist_nm"/>
         <result property="seedArtistId" column="seedArtistId"/>
+        <result property="rank" column="rank"/>
         <collection property="imgList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" column="artist_id" autoMapping="true">
             <result property="size" column="size" />
             <result property="url" column="url" />
@@ -137,13 +138,14 @@
           t1.artist_id,
           t1.artist_nm,
           t1.seedArtistId,
+          t1.rank,
           t2.url,
           t2.size
       ]]>
         FROM (
 
             SELECT
-                a.artist_id, b.artist_nm, a.seedArtistId
+                a.artist_id, b.artist_nm, a.seedArtistId, a.rank
             FROM
                 (
                 SELECT similar_artist_id AS artist_id, artist_id as seedArtistId, rank FROM tb_similar_artist_sub
