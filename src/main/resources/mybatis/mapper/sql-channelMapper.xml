@@ -416,8 +416,7 @@
                           FROM tb_rcmmd_img_mang
                          WHERE rcmmd_type_id = 'RC_SML_TR'
                            AND img_disp_type = 'RCT_DTL'
-                           AND os_type IN ('ALL', #{osType})
-                         LIMIT 1 ) c
+                           AND os_type IN ('ALL', #{osType}) ) c
               ON b.disp_sn = c.disp_sn
              AND WEEKDAY(b.create_dtime) = c.dfk_type )
 
