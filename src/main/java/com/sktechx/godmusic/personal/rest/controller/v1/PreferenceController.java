@@ -21,9 +21,11 @@ import com.sktechx.godmusic.personal.rest.service.PreferenceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -50,9 +52,28 @@ public class PreferenceController {
 
     @ApiOperation(value = "아티스트 추천", httpMethod = "GET", notes = "선호 아티스트 추천 API", response = ArtistDto.class)
     @GetMapping(value = "/artists")
-    public CommonApiResponse<ChartResponse> preferencesArtists() {
-        Long characterNo = GMContext.getContext().getCharacterNo();
-        return new CommonApiResponse<>(preferenceService.getPreferenceArtistList(characterNo));
+    public CommonApiResponse<ChartResponse> preferencesArtists( @RequestParam(name="sectionNumber", required = false) Integer sectionNumber) {
+
+    	Long characterNo = GMContext.getContext().getCharacterNo();
+
+    	if(sectionNumber != null){
+		    return new CommonApiResponse<>(preferenceService.getPreferSimilarArtistList(characterNo, sectionNumber));
+	    }else{
+		    return new CommonApiResponse<>(preferenceService.getPreferenceArtistList(characterNo));
+	    }
     }
 
+	@ApiOperation(value = "유사 시드 아티스트 이름", httpMethod = "GET", notes = "유사 시드 아티스트 이름 받기 API", response = ArtistDto.class)
+	@GetMapping(value = "/artist/name")
+	public CommonApiResponse<String> getPreferSimilarArtistTitle( @RequestParam(name="sectionNumber") Integer sectionNumber) {
+		Long characterNo = GMContext.getContext().getCharacterNo();
+		return new CommonApiResponse<>(preferenceService.getPreferSimilarArtistName(characterNo, sectionNumber));
+	}
+
+	@ApiOperation(value = "유사 시드 아티스트 캐쉬 삭제", httpMethod = "GET", notes = "유사 시드 아티스트 캐쉬 삭제 API", response = ArtistDto.class)
+	@GetMapping(value = "/artist/clear")
+	public CommonApiResponse<ChartResponse> deletePreferSimilarArtistCache() {
+		Long characterNo = GMContext.getContext().getCharacterNo();
+		return new CommonApiResponse<>(preferenceService.deletePreferSimilarArtistName(characterNo));
+	}
 }

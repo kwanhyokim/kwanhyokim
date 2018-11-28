@@ -46,14 +46,12 @@ public class ChannelController {
     @ApiOperation(value = "최근 들은 플레이리스트 상세 by Peter ( 기존 /v2/my/channel/recent/list GET )")
     @GetMapping("recentListened")
     public CommonApiResponse<ListResponse> getLastListenHistory(
-            @ApiIgnore @RequestGMContext GMContext ctx, @PageableDefault(size=100, page=0) Pageable pageable){
-
-        DayType dayType = DayType.findDayOfWeek(LocalDate.now().getDayOfWeek());
+            @ApiIgnore @RequestGMContext GMContext ctx, @PageableDefault(size=50, page=0) Pageable pageable){
 
         int start = Ints.checkedCast(pageable.getOffset());
         int end = Ints.checkedCast(pageable.getOffset()) + pageable.getPageSize();
 
-        List<LastListenHistoryDto> lastListenHistory = channelService.getLastListenHistory(ctx.getMemberNo(), ctx.getCharacterNo(), dayType, ctx.getOsType());
+        List<LastListenHistoryDto> lastListenHistory = channelService.getLastListenHistory(ctx.getMemberNo(), ctx.getCharacterNo(), ctx.getOsType());
         if(CollectionUtils.isEmpty(lastListenHistory)) throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
 
         if(start >= lastListenHistory.size() || start >= end) throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);

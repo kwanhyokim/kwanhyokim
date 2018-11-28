@@ -44,7 +44,7 @@
             chart_track_table.img_url,
             chart_track_table.disp_sn trackSn,
             chart_track_table.bf_disp_sn trackBfSn,
-            CONVERT (chart_track_table.disp_sn , SIGNED )- CONVERT (chart_track_table.bf_disp_sn , SIGNED )AS rankBadge,
+            CONVERT (chart_track_table.bf_disp_sn , SIGNED ) - CONVERT (chart_track_table.disp_sn , SIGNED )AS rankBadge,
             CASE WHEN chart_track_table.bf_disp_sn = 0 THEN 'Y' ELSE 'N' END AS newYn,
             c.track_id,
             a.album_id,
@@ -110,6 +110,7 @@
         LEFT OUTER JOIN ted_album a ON chart_track_table.album_id = a.album_id
             LEFT OUTER JOIN tb_album_img b ON a.album_id = b.album_id
             LEFT OUTER JOIN ted_trackartist c ON chart_track_table.track_id =c.track_id
+                            AND c.rp_yn = 'Y' AND c.db_sts = 'A'
             LEFT OUTER JOIN ted_artist d ON c.artist_id = d.artist_id
             LEFT OUTER JOIN ted_artist e ON e.artist_id = chart_track_table.reprsnt_artist_id
         WHERE a.disp_status_yn = 'Y'

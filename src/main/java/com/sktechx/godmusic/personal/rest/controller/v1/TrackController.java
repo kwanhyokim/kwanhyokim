@@ -40,8 +40,8 @@ public class TrackController {
 
     @ApiOperation(value = "많이 들은  ( 기존 /v2/my/track/most/list GET )")
     @GetMapping("/mostlistened")
-    public CommonApiResponse<ListResponse> mostTrackList(@RequestParam("page") Long page,
-                                                         @RequestParam("size") Long size) {
+    public CommonApiResponse<ListResponse> mostTrackList(@RequestParam(value = "page", defaultValue = "1") Long page,
+                                                         @RequestParam(value = "size", defaultValue = "50") Long size) {
 
         return new CommonApiResponse<>(trackService.mostTrackList(GMContext.getContext().getCharacterNo(), page, size));
     }
@@ -57,7 +57,7 @@ public class TrackController {
     @GetMapping("/recentlistened")
     public CommonApiResponse<ListResponse> recentListenedTrackList(
             @ApiIgnore @RequestGMContext GMContext ctx,
-            @ApiIgnore @PageableDefault(size=500, page=0) Pageable pageable) {
+            @ApiIgnore @PageableDefault(size=50, page=0) Pageable pageable) {
         return new CommonApiResponse<>(new ListResponse(trackService.getMyRecentTrackList(ctx.getMemberNo(), ctx.getCharacterNo(), pageable)));
     }
 }

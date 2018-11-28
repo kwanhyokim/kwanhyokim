@@ -34,4 +34,22 @@ public interface PreferenceService {
      * @return
      */
     ChartResponse getPreferenceArtistList(Long characterNo);
+
+
+	/**
+	 * 유사 아티스트 목록 조회
+	 * @param characterNo
+	 * @return
+	 */
+	ChartResponse getPreferSimilarArtistList(Long characterNo, Integer sectionNumber);
+
+	/**
+	 * 유사 시드 아티스트 이름 조회
+	 * @param characterNo
+	 * @return
+	 */
+	String getPreferSimilarArtistName(Long characterNo, Integer sectionNumber);
+
+
+	ChartResponse deletePreferSimilarArtistName(Long characterNo);
 }

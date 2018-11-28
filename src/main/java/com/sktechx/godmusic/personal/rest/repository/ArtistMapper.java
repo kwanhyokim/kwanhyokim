@@ -13,6 +13,8 @@ package com.sktechx.godmusic.personal.rest.repository;
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
 import com.sktechx.godmusic.lib.mybatis.annotation.ReadOnlyMapper;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
+import com.sktechx.godmusic.personal.rest.model.dto.preference.PreferSimilarArtistDto;
+
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -29,4 +31,7 @@ public interface ArtistMapper {
     List<ArtistDto> getArtistList(@Param("artistIdList") List<Long> artistIdList);
     List<ArtistDto> selectArtistListByPreferArtist(@Param("characterNo") Long characterNo);
 
+	List<ArtistDto> selectSeedArtistList(@Param("characterNo")Long characterNo, @Param("artistIdList")List<Long> artistIdList);
+
+	List<PreferSimilarArtistDto> selectArtistListBySimilarArtist(@Param("characterNo")Long characterNo, @Param("artistIdList")List<Long> artistIdList);
 }

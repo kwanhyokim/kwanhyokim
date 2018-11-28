@@ -93,10 +93,11 @@ public class ListenServiceImpl implements ListenService {
 				.memberRcmdId(request.getRecommendTrackId())
 				.addTm(request.getAddDateTime())
 				.sessionToken("")
-				.sourceType(SourceType.STRM)
+				.sourceType(request.getSourceType())
 				.free(false)
 				.timeMillis(System.currentTimeMillis())
 				.userClientIp(clientIp)
+				.ownerToken(request.getOwnerToken())
 				.build();
 
 		TrackListen.TrackListenBuilder trackListenBuilder = trackListen.toBuilder();
@@ -137,7 +138,7 @@ public class ListenServiceImpl implements ListenService {
 					.setCharactorNo(characterNo)
 					.setTargetId(request.getTrackId())
 					.setTargetType(UserEventTarget.TRACK)
-					.setSourceType(SourceType.STRM)
+					.setSourceType(request.getSourceType())
 					.build();
 			amqpService.deliverUserEvent(userEvent);
 			log.info("[Track Listen Hist - User event] " + userEvent.toString());

@@ -13,9 +13,11 @@ package com.sktechx.godmusic.personal.rest.service.impl.recommend.phase;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferDispDto;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendDuplicateCountDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
@@ -23,6 +25,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.repository.CharacterPreferGenreMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
+import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.RecommendPanelAssemblyFactory;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
@@ -59,14 +62,14 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
     private RecommendMapper recommendMapper;
 
     @Autowired
+    private RecommendReadMapper recommendReadMapper;
+    @Autowired
     private RedisService redisService;
 
     @Override
     public PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType){
         PersonalPhaseMeta personalPhaseMeta = null;
 
-        long startTime = System.currentTimeMillis();
-        long elapsed = 0;
 
         if(characterNo == null){
             return getGuestPhaseMeta(osType);
@@ -82,12 +85,9 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
 
                 cachePersonalPhaseMeta.setOsType(osType);
 
-                elapsed = System.currentTimeMillis() - startTime;
-                log.info("getPersonalRecommendPhaseMeta , getCachePersonPhaseMeta : {}",elapsed);
                 return cachePersonalPhaseMeta;
             }
 
-            startTime = System.currentTimeMillis();
 
             personalPhaseMeta = new PersonalPhaseMeta();
 
@@ -104,8 +104,10 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
             personalPhaseMeta.setPreferDispList(characterPreferDispList);
 
             //개인화 추천 패널
-            List<PersonalPanel> rcmmdPanelList = recommendMapper.selectPersonalRecommendPanelMeta(characterNo, SIMILAR_TRACK_DISP_STANDARD_COUNT , RCMMD_CF_TRACK_DISP_STANDARD_COUNT);
+            List<PersonalPanel> rcmmdPanelList = recommendReadMapper.selectPersonalRecommendPanelMeta(characterNo, SIMILAR_TRACK_DISP_STANDARD_COUNT , RCMMD_CF_TRACK_DISP_STANDARD_COUNT);
             personalPhaseMeta.setRcmmdPanelList(rcmmdPanelList);
+
+            filterRecommendPanelDuplicateTracks(personalPhaseMeta);
 
             //현재 노출 되는 패널 정보 입력
             if(isRcmmdUsageChannelIdFilter(personalPhaseMeta.getFirstPhaseType())){
@@ -119,9 +121,6 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
 
             redisService.setWithPrefix(personalRecommendPhaseKey, personalPhaseMeta, "NX", "PX", hourlyRemainMillisecond());
 
-            elapsed = System.currentTimeMillis() - startTime;
-            log.info("getPersonalRecommendPhaseMeta , end : {}",elapsed);
-
         }catch(Exception ex){
             log.error("getPersonalRecommendPhaseMeta not catched exception : {}",ex.getMessage());
             personalPhaseMeta = getGuestPhaseMeta(osType);
@@ -129,6 +128,29 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
         return personalPhaseMeta;
     }
 
+    public void filterRecommendPanelDuplicateTracks(PersonalPhaseMeta personalPhaseMeta){
+
+        //2-A , 2-A' 패널이 2개 이상일 경우 패널간 중복 곡 5개 이상 발생시 패널 제거 로직
+        List<Long> similarTrackPanelList = personalPhaseMeta.getRecommendPersonalPanelRcmmdIdList(RecommendPanelContentType.RC_SML_TR);
+        if( !CollectionUtils.isEmpty(similarTrackPanelList) && similarTrackPanelList.size() == SIMILAR_TRACK_PANEL_SIZE){
+            RecommendDuplicateCountDto duplicateCountDto = recommendReadMapper.selectSimilarTrackPanelBetweenDuplicateCount(personalPhaseMeta.getCharacterNo());
+            if(duplicateCountDto != null
+                    && duplicateCountDto.getDuplicateCount() >= SIMILAR_TRACK_DUPLICATE_COUNT
+                        && duplicateCountDto.getRcmmdId() != null){
+                personalPhaseMeta.removeRecommendPersonalPanel(RecommendPanelContentType.RC_SML_TR , duplicateCountDto.getRcmmdId());
+            }
+        }
+
+        List<Long> preferGenreSimilarTrackPanelList = personalPhaseMeta.getRecommendPersonalPanelRcmmdIdList(RecommendPanelContentType.RC_GR_TR);
+        if( !CollectionUtils.isEmpty(preferGenreSimilarTrackPanelList) && preferGenreSimilarTrackPanelList.size() == PREFER_GENRE_SIMILAR_PANEL_SIZE ){
+            RecommendDuplicateCountDto duplicateCountDto = recommendReadMapper.selectPreferGenreSimilarTrackPanelBetweenDuplicateCount(personalPhaseMeta.getCharacterNo());
+            if(duplicateCountDto != null
+                    && duplicateCountDto.getDuplicateCount() >= SIMILAR_TRACK_DUPLICATE_COUNT
+                        && duplicateCountDto.getRcmmdId() != null){
+                personalPhaseMeta.removeRecommendPersonalPanel(RecommendPanelContentType.RC_GR_TR , duplicateCountDto.getRcmmdId());
+            }
+        }
+    }
     private boolean isRcmmdUsageChannelIdFilter(PersonalPhaseType personalPhaseType){
 
         if(PersonalPhaseType.VISIT.equals(personalPhaseType)  ||

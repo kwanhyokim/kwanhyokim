@@ -191,6 +191,7 @@
         LEFT OUTER JOIN ted_album b ON a.album_id = b.album_id
         LEFT OUTER JOIN tb_album_img c ON b.album_id = c.album_id
         LEFT OUTER JOIN ted_trackartist d ON a.track_id =d.track_id
+                    AND d.rp_yn = 'Y' AND d.db_sts = 'A'
         LEFT OUTER JOIN ted_artist e ON d.artist_id = e.artist_id
         LEFT OUTER JOIN ted_artist f ON f.artist_id = a.reprsnt_artist_id
         , (SELECT @curRank:=0, @prevChnlId:=0) r
@@ -388,7 +389,7 @@
         ( SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
                  a.listen_type,
                  a.listen_type_id,
-                 CONCAT('Like You', ' ', DATE_FORMAT(a.create_dtime, '%m.%d')) AS content_title,
+                 CONCAT(DATE_FORMAT(a.create_dtime, '%c월 %e일'), ' 오늘의 FLO') AS content_title,
                  ( SELECT COUNT(*) FROM tb_rcmmd_similar_track_list WHERE rcmmd_similar_track_id = b.rcmmd_similar_track_id) AS track_count,
                  a.last_listen_dtime,
                  c.img_size AS size,
@@ -404,21 +405,28 @@
               ON a.listen_type_id = b.rcmmd_similar_track_id
              AND a.character_no = b.character_no
              AND a.listen_type = 'RC_SML_TR'
-            LEFT JOIN (SELECT img_size, img_url, create_dtime
-                         FROM tb_rcmmd_img_mang
-                        WHERE rcmmd_type_id = 'RC_SML_TR'
-                          AND img_disp_type = 'RCT_DTL'
-                          AND dfk_type = #{dayType}
-                          AND os_type IN ('ALL', #{osType})
-                        LIMIT 1 ) c
-              ON 1=1 )
+            LEFT JOIN ( SELECT img_size, img_url, create_dtime, disp_sn,
+                               CASE dfk_type WHEN 'MON' THEN 0
+                               WHEN 'TUE' THEN 1
+                               WHEN 'WED' THEN 2
+                               WHEN 'THU' THEN 3
+                               WHEN 'FRI' THEN 4
+                               WHEN 'SAT' THEN 5
+                               WHEN 'SUN' THEN 6 END AS dfk_type
+                          FROM tb_rcmmd_img_mang
+                         WHERE rcmmd_type_id = 'RC_SML_TR'
+                           AND img_disp_type = 'RCT_DTL'
+                           AND os_type IN ('ALL', #{osType})
+                         LIMIT 1 ) c
+              ON b.disp_sn = c.disp_sn
+             AND WEEKDAY(b.create_dtime) = c.dfk_type )
 
            UNION ALL
 
         ( SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
                  a.listen_type,
                  a.listen_type_id,
-                 CONCAT('Mix Tape', ' ', DATE_FORMAT(a.create_dtime, '%m.%d')) AS content_title,
+                 CONCAT(DATE_FORMAT(a.create_dtime, '%c월 %e일'), ' 오늘의 FLO') AS content_title,
                  ( SELECT COUNT(*) FROM tb_rcmmd_prefer_genre_similar_track_list WHERE rcmmd_prefer_genre_similar_track_id = b.rcmmd_prefer_genre_similar_track_id) AS track_count,
                  a.last_listen_dtime,
                  c.img_size,
@@ -434,21 +442,28 @@
               ON a.listen_type_id = b.rcmmd_prefer_genre_similar_track_id
              AND a.character_no = b.character_no
              AND a.listen_type = 'RC_GR_TR'
-            JOIN ( SELECT img_content_id, img_size, img_url, create_dtime
+            JOIN ( SELECT img_content_id, img_size, img_url, create_dtime,
+                          CASE dfk_type WHEN 'MON' THEN 0
+                          WHEN 'TUE' THEN 1
+                          WHEN 'WED' THEN 2
+                          WHEN 'THU' THEN 3
+                          WHEN 'FRI' THEN 4
+                          WHEN 'SAT' THEN 5
+                          WHEN 'SUN' THEN 6 END AS dfk_type
                      FROM tb_map_img_rcmmd_img
                     WHERE img_content_type = 'GENRE'
                       AND rcmmd_type_id = 'RC_GR_TR'
                       AND img_disp_type = 'RCT_DTL'
-                      AND dfk_type = #{dayType}
                       AND os_type IN ('ALL', #{osType}) ) c
-              ON b.svc_genre_id = c.img_content_id )
+              ON b.svc_genre_id = c.img_content_id
+             AND WEEKDAY(b.create_dtime) = c.dfk_type )
 
            UNION ALL
 
         ( SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
                  a.listen_type,
                  a.listen_type_id,
-                 CONCAT('Musician Focus', ' ', DATE_FORMAT(a.create_dtime, '%m.%d')) AS content_title,
+                 CONCAT(DATE_FORMAT(a.create_dtime, '%c월 %e일'), ' 아티스트 FLO') AS content_title,
                  ( SELECT COUNT(*) FROM tb_rcmmd_artist_list WHERE rcmmd_artist_id = b.rcmmd_artist_id) AS track_count,
                  a.last_listen_dtime,
                  c.img_size,
@@ -477,7 +492,7 @@
         ( SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
                  a.listen_type,
                  a.listen_type_id,
-                 CONCAT('Made for U', ' ', DATE_FORMAT(a.create_dtime, '%m.%d')) AS content_title,
+                 CONCAT('나를 위한 FLO', ' ', DATE_FORMAT(a.create_dtime, '%m.%d')) AS content_title,
                  ( SELECT COUNT(*) FROM tb_rcmmd_mforu_list WHERE rcmmd_mforu_id = b.rcmmd_mforu_id) AS track_count,
                  a.last_listen_dtime,
                  c.img_size AS size,

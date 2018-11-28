@@ -87,6 +87,9 @@ public class TrackListen {
 	@JsonProperty("user_client_ip")
 	private String              userClientIp;
 
+	@JsonProperty("owner_token")
+	private String              ownerToken;
+
 	public TrackListen() {
 		this.timeMillis = System.currentTimeMillis();
 		this.free = false;

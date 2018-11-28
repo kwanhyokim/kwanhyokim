@@ -296,12 +296,11 @@
                              AND b.disp_status_yn = 'Y'
                            ORDER BY a.last_listen_dtime DESC
                            LIMIT 500 ) aa
-                  LIMIT #{pageable.offset}, #{pageable.pageSize}
-                ) a
+                  LIMIT #{pageable.offset}, #{pageable.pageSize} ) a
           LEFT JOIN	tb_album_img c
             ON a.album_id = c.album_id
           LEFT JOIN	ted_trackartist as d
-            ON a.track_id = d.track_id AND d.rp_yn = 'Y' and d.db_sts = 'A'
+            ON a.track_id = d.track_id AND d.rp_yn = 'Y' AND d.db_sts = 'A'
           LEFT JOIN	ted_artist e
             ON d.artist_id = e.artist_id
           LEFT JOIN tb_map_track_like f
@@ -310,22 +309,17 @@
             ON a.album_id = g.album_id
           LEFT JOIN ted_artist h
             ON a.reprsnt_artist_id = h.artist_id
-         ORDER BY lastListenDateTime DESC, d.listorder ASC
     </select>
+
     <select id="selectMyRecentTrackTotalCount" resultType="long">
-      SELECT
-        COUNT(*)
-      FROM (
-        SELECT
-            a.track_id
-        FROM tb_most_listen_track a INNER JOIN tb_track b
-          ON a.track_id = b.track_id
-         WHERE a.member_no = #{memberNo}
-        AND
-            a.character_no = #{characterNo}
-        AND
-            b.disp_status_yn = 'Y'
-         LIMIT 500
-      ) a
+      SELECT COUNT(*)
+        FROM ( SELECT a.track_id
+                 FROM tb_most_listen_track a
+                INNER JOIN tb_track b
+                   ON a.track_id = b.track_id
+                WHERE a.member_no = #{memberNo}
+                  AND a.character_no = #{characterNo}
+                  AND b.disp_status_yn = 'Y'
+                LIMIT 500 ) a
     </select>
 </mapper>

@@ -36,6 +36,7 @@ public class TrackServiceImpl implements TrackService {
     @Override
     public ListResponse mostTrackList(Long characterNo, Long page, Long size) {
 
+        if(page <= 0) page = 1L;
         Long offset = (page - 1) * size;
         List<MostListenedTrackDto> mostTrackList = trackMapper.selectMostListenedTrackList(characterNo, offset, size);
 

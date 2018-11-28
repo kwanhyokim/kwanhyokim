@@ -28,6 +28,8 @@ public enum HomeContentType implements CodeEnum {
     GENRE("GENRE", "선호 장르 추천"),
     SHORTCUT("SHORTCUT", "상황별"),
     ARTIST("ARTIST", "아티스트 추천"),
+	ARTIST1("ARTIST1", "유사아티스트 1"),
+	ARTIST2("ARTIST2", "유사아티스트 2"),
     EDITOR("EDITOR", "Editor's Pick"),
     DISCOVERY("DISCOVERY", "디스커버리"),
     BANNER("BANNER", "배너"),
