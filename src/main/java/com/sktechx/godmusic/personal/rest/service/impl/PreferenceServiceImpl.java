@@ -167,6 +167,8 @@ public class PreferenceServiceImpl implements PreferenceService {
 		// 캐쉬된 내용이 없을 경우
 		if (CollectionUtils.isEmpty(artistDtoList)) {
 
+			setRedisWithArtistDtoList(characterNo, null);
+
 			Date now = new Date();
 			String currentDate = DateUtil.toString(now,"yyyyMMdd");
 
@@ -321,9 +323,8 @@ public class PreferenceServiceImpl implements PreferenceService {
 		    resultArtistDtoList[1].add(ArtistDto.builder().build());
 	    }
 
-	    LocalTime currentTime = LocalTime.now();
-    	LocalTime untilTime = currentTime.plusMinutes(10L);
-		long expireSeconds = currentTime.until(untilTime, ChronoUnit.SECONDS);
+	    // 캐쉬 만기는 당일 자정
+		long expireSeconds = LocalTime.now().until(LocalTime.MAX, ChronoUnit.SECONDS);
 
 		redisService.setWithPrefix(String.format(PERSONAL_SIMILAR_ARTIST_KEY, 1, characterNo), resultArtistDtoList[0], (int) expireSeconds);
 		redisService.setWithPrefix(String.format(PERSONAL_SIMILAR_ARTIST_KEY, 2, characterNo), resultArtistDtoList[1], (int) expireSeconds);
@@ -338,7 +339,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 			return null;
 		}
 
-		return new ChartResponse<>(similarArtistList, HomeContentType.ARTIST);
+		return new ChartResponse<>(similarArtistList, (sectionNumber == 1 ? HomeContentType.ARTIST1 : HomeContentType.ARTIST2) );
 	}
 
 	@Override
