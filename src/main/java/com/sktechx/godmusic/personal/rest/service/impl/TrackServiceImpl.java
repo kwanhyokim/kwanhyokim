@@ -10,9 +10,10 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl;
 
-import com.google.common.primitives.Ints;
+import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
+import com.sktechx.godmusic.personal.common.domain.ListResponse;
 import com.sktechx.godmusic.personal.rest.model.dto.MostListenedTrackDto;
 import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
 import com.sktechx.godmusic.personal.rest.service.TrackService;
@@ -33,19 +34,22 @@ public class TrackServiceImpl implements TrackService {
     private TrackMapper trackMapper;
 
     @Override
-    public PageImpl<?> mostTrackList(Long characterNo, Pageable pageable) {
+    public ListResponse mostTrackList(Long characterNo, Long page, Long size) {
 
-        List<MostListenedTrackDto> mostTrackList = trackMapper.selectMostListenedTrackList(characterNo, pageable);
+        Long offset = (page - 1) * size;
+        List<MostListenedTrackDto> mostTrackList = trackMapper.selectMostListenedTrackList(characterNo, offset, size);
 
         if(CollectionUtils.isEmpty(mostTrackList)){
             throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
         }
 
-//        long totalCount = trackMapper.selectMostListenedTrackTotalCount(characterNo);
+        long totalCount = trackMapper.selectMostListenedTrackTotalCount(characterNo);
         // 1000곡 노출 (pagination 처리 하면 달라져야 함)
-        long totalCount = mostTrackList.size() == pageable.getPageSize() ? pageable.getPageSize() : mostTrackList.size();
+//        long totalCount = mostTrackList.size() == pageable.getPageSize() ? pageable.getPageSize() : mostTrackList.size();
 
-        return new PageImpl<>(mostTrackList, pageable, totalCount);
+        YnType lastPage = (int)Math.ceil(totalCount / size  + 0.5) <= page ?YnType.Y : YnType.N;
+
+        return new ListResponse((int)totalCount, page.intValue(), lastPage,  mostTrackList);
     }
 
     @Override

@@ -36,7 +36,7 @@ public interface TrackMapper {
     List<Long> selectRecommendPanelGenreTrackList(@Param("characterNo") Long characterNo, @Param("rcmmdGenreId")Long rcmmdGenreId);
     List<Long> selectRecommendPanelCfTrackList(@Param("characterNo") Long characterNo, @Param("rcmmdMforuId")Long rcmmdMforuId);
 
-    List<MostListenedTrackDto> selectMostListenedTrackList(@Param("characterNo") Long characterNo, @Param("pageable") Pageable pageable);
+    List<MostListenedTrackDto> selectMostListenedTrackList(@Param("characterNo") Long characterNo, @Param("offset") Long offset, @Param("size") Long size);
     long selectMostListenedTrackTotalCount(@Param("characterNo") Long characterNo);
 
     List<MostListenedTrackDto> selectMyRecentTrackList(@Param("memberNo") Long memberNo, @Param("characterNo") Long characterNo, @Param("pageable") Pageable pageable);

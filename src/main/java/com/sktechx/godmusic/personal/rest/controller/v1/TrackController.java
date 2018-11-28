@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
@@ -39,9 +40,10 @@ public class TrackController {
 
     @ApiOperation(value = "많이 들은  ( 기존 /v2/my/track/most/list GET )")
     @GetMapping("/mostlistened")
-    public CommonApiResponse<ListResponse> mostTrackList(@PageableDefault(size=300, page=0) Pageable pageable) {
+    public CommonApiResponse<ListResponse> mostTrackList(@RequestParam("page") Long page,
+                                                         @RequestParam("size") Long size) {
 
-        return new CommonApiResponse<>(new ListResponse(trackService.mostTrackList(GMContext.getContext().getCharacterNo(), pageable)));
+        return new CommonApiResponse<>(trackService.mostTrackList(GMContext.getContext().getCharacterNo(), page, size));
     }
 
 

@@ -188,8 +188,8 @@
 						character_no = #{characterNo}
                     ORDER BY listen_cnt DESC, last_listen_dtime DESC
 					LIMIT
-						#{pageable.offset} ,
-						#{pageable.pageSize}
+						#{offset} ,
+						#{size}
 				) a
 			INNER JOIN	tb_track b
 				ON a.track_id = b.track_id
@@ -213,7 +213,7 @@
 
     <select id="selectMostListenedTrackTotalCount" resultType="long">
 		 SELECT
-				count(DISCONNECT  a.track_id)
+				count(DISTINCT  a.track_id)
 			FROM
 				(
 				    SELECT

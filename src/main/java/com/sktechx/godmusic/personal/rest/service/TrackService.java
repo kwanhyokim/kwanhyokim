@@ -10,11 +10,12 @@
 
 package com.sktechx.godmusic.personal.rest.service;
 
+import com.sktechx.godmusic.personal.common.domain.ListResponse;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 public interface TrackService {
-    PageImpl<?> mostTrackList(Long characterNo, Pageable pageable);
+    ListResponse mostTrackList(Long characterNo, Long page, Long size);
 
     PageImpl<?> getMyRecentTrackList(Long memberNo, Long characterNo, Pageable pageable);
 }
