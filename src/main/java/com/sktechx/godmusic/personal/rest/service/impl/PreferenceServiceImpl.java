@@ -167,6 +167,8 @@ public class PreferenceServiceImpl implements PreferenceService {
 		// 캐쉬된 내용이 없을 경우
 		if (CollectionUtils.isEmpty(artistDtoList)) {
 
+			setRedisWithArtistDtoList(characterNo, null);
+
 			Date now = new Date();
 			String currentDate = DateUtil.toString(now,"yyyyMMdd");
 
