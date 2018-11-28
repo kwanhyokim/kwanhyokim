@@ -97,6 +97,7 @@ public class ListenServiceImpl implements ListenService {
 				.free(false)
 				.timeMillis(System.currentTimeMillis())
 				.userClientIp(clientIp)
+				.ownerToken(request.getOwnerToken())
 				.build();
 
 		TrackListen.TrackListenBuilder trackListenBuilder = trackListen.toBuilder();
