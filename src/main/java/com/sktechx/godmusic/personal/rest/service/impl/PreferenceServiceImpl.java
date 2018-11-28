@@ -15,7 +15,6 @@ package com.sktechx.godmusic.personal.rest.service.impl;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
-import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.common.domain.domain.HomeContentType;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
@@ -35,7 +34,6 @@ import com.sktechx.godmusic.personal.rest.repository.ImageManagementMapper;
 import com.sktechx.godmusic.personal.rest.service.PreferenceService;
 import lombok.extern.slf4j.Slf4j;
 
-import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -44,7 +42,6 @@ import org.springframework.util.ObjectUtils;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAdjuster;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -167,6 +164,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 		// 캐쉬된 내용이 없을 경우
 		if (CollectionUtils.isEmpty(artistDtoList)) {
 
+			// 우선 빈 캐쉬를 저장
 			setRedisWithArtistDtoList(characterNo, null);
 
 			Date now = new Date();
@@ -195,8 +193,11 @@ public class PreferenceServiceImpl implements PreferenceService {
 			List<ArtistDto> totalSeedArtistList = artistMapper.selectSeedArtistList(characterNo, legacySeedArtistIdList);
 
 			if(CollectionUtils.isEmpty(totalSeedArtistList)) {
+				setRedisWithArtistDtoList(characterNo, makeNoDataArtistDtoList());
 				return null;
 			}
+
+			// 랜덤으로 시드 아티스트를 추출
 			Random rand = new Random();
 
 			totalSeedArtistList = rand.ints(20,0,totalSeedArtistList.size()).mapToObj(
@@ -210,8 +211,8 @@ public class PreferenceServiceImpl implements PreferenceService {
 			List<PreferSimilarArtistDto> preferSimilarArtistDtoList = artistMapper.selectArtistListBySimilarArtist(characterNo, totalPreferSimilarSeedArtistIdList);
 
 			if (CollectionUtils.isEmpty(preferSimilarArtistDtoList)) {
-				// 데이터가 없는 경우, 빈 캐쉬를 저장
-				setRedisWithArtistDtoList(characterNo, null);
+				// 데이터가 없는 경우, No Data Artist를 저장
+				setRedisWithArtistDtoList(characterNo, makeNoDataArtistDtoList());
 				return null;
 			}
 
@@ -288,7 +289,8 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 					// 시드 아티스트 + 유사아티스트가 3명 미만이면 노출하지 않는다.
 					if (resultArtistDtoList[resultIndex].size() < 3) {
-						resultArtistDtoList[resultIndex] = null;
+						resultArtistDtoList[resultIndex].clear();
+						resultArtistDtoList[resultIndex].add(ArtistDto.builder().artistId(-1L).build());
 					}
 				}
 
@@ -300,35 +302,65 @@ public class PreferenceServiceImpl implements PreferenceService {
 			artistDtoList = resultArtistDtoList[sectionNumber -1];
 
 		}
-
-		if(CollectionUtils.isEmpty(artistDtoList)){
-			return null;
-		}
-
-		if(ObjectUtils.isEmpty(artistDtoList.get(0).getArtistId())){
+		if (isEmptyArtistDtoList(artistDtoList)) {
 			return null;
 		}
 
 		return preferenceArtistListConvert(artistDtoList);
 	}
-	private void setRedisWithArtistDtoList(Long characterNo,
-			List<ArtistDto>[] resultArtistDtoList) {
 
-    	if(resultArtistDtoList == null ){
-		    resultArtistDtoList = new ArrayList[2];
-    		resultArtistDtoList[0] = new ArrayList<>();
-		    resultArtistDtoList[1] = new ArrayList<>();
+	private boolean isEmptyArtistDtoList(List<ArtistDto> artistDtoList) {
 
-		    resultArtistDtoList[0].add(ArtistDto.builder().build());
-		    resultArtistDtoList[1].add(ArtistDto.builder().build());
+    	try{
+			if (CollectionUtils.isEmpty(artistDtoList) ||
+					ObjectUtils.isEmpty(artistDtoList.get(0).getArtistId()) ||
+					new Long(-1L).equals(artistDtoList.get(0).getArtistId())
+			) {
+				return true;
+			}
+
+	    }catch(Exception e){
+    	    log.error(e.getMessage());
 	    }
 
-	    // 캐쉬 만기는 당일 자정
+		return false;
+	}
+
+	private void setRedisWithArtistDtoList(Long characterNo, List<ArtistDto>[] resultArtistDtoList) {
+
+		if(resultArtistDtoList == null) {
+			resultArtistDtoList = makeEmptyArtistDtoList();
+		}
+
+		// 캐쉬 만기는 당일 자정
 		long expireSeconds = LocalTime.now().until(LocalTime.MAX, ChronoUnit.SECONDS);
 
 		redisService.setWithPrefix(String.format(PERSONAL_SIMILAR_ARTIST_KEY, 1, characterNo), resultArtistDtoList[0], (int) expireSeconds);
 		redisService.setWithPrefix(String.format(PERSONAL_SIMILAR_ARTIST_KEY, 2, characterNo), resultArtistDtoList[1], (int) expireSeconds);
 	}
+
+	private List<ArtistDto>[] makeEmptyArtistDtoList() {
+
+		List<ArtistDto>[] resultArtistDtoList = new ArrayList[2];
+		resultArtistDtoList[0] = new ArrayList<>();
+		resultArtistDtoList[1] = new ArrayList<>();
+		resultArtistDtoList[0].add(ArtistDto.builder().build());
+		resultArtistDtoList[1].add(ArtistDto.builder().build());
+
+		return resultArtistDtoList;
+	}
+
+	private List<ArtistDto>[] makeNoDataArtistDtoList() {
+
+		List<ArtistDto>[] resultArtistDtoList = new ArrayList[2];
+		resultArtistDtoList[0] = new ArrayList<>();
+		resultArtistDtoList[1] = new ArrayList<>();
+		resultArtistDtoList[0].add(ArtistDto.builder().artistId(-1L).build());
+		resultArtistDtoList[1].add(ArtistDto.builder().build());
+
+		return resultArtistDtoList;
+	}
+
 
 	@Override
 	public ChartResponse getPreferSimilarArtistList(Long characterNo, Integer sectionNumber) {
@@ -359,9 +391,26 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 	@Override
 	public ChartResponse deletePreferSimilarArtistName(Long characterNo) {
-		redisService.delWithPrefix(String.format(PERSONAL_SIMILAR_ARTIST_HISTORY_KEY, characterNo));
-		redisService.delWithPrefix(String.format(PERSONAL_SIMILAR_ARTIST_KEY, 1, characterNo));
-		redisService.delWithPrefix(String.format(PERSONAL_SIMILAR_ARTIST_KEY, 2, characterNo));
+
+		String personalSimilarArtistKey = String.format(PERSONAL_SIMILAR_ARTIST_KEY, 1, characterNo);
+
+		// redis 캐쉬 검색
+		List<ArtistDto> artistDtoList = redisService.getListWithPrefix(personalSimilarArtistKey, ArtistDto.class);
+
+		if (CollectionUtils.isEmpty(artistDtoList)) {
+			return null;
+		}
+
+		log.debug("XXXXXXXX" + artistDtoList.get(0).getArtistId());
+
+		// artist id 가 빈 경우에 캐쉬를 갱신
+		if(ObjectUtils.isEmpty(artistDtoList.get(0).getArtistId())) {
+			redisService
+					.delWithPrefix(String.format(PERSONAL_SIMILAR_ARTIST_HISTORY_KEY, characterNo));
+			redisService.delWithPrefix(String.format(PERSONAL_SIMILAR_ARTIST_KEY, 1, characterNo));
+			redisService.delWithPrefix(String.format(PERSONAL_SIMILAR_ARTIST_KEY, 2, characterNo));
+		}
+
 		return null;
 	}
 	//    private List<Chart> preferenceGenreListConvert(List<ChartDto> chartDtoList) {
