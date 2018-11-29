@@ -13,6 +13,7 @@ package com.sktechx.godmusic.personal.rest.repository;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
 import com.sktechx.godmusic.personal.common.domain.type.DayType;
+import com.sktechx.godmusic.personal.common.domain.type.PopularChnlType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlListDto;
@@ -30,7 +31,10 @@ import java.util.List;
 @BaseMapper
 public interface ChannelMapper {
     List<Long> selectPopularChannelIdList();
-    List<ChnlDto> selectChannelListByIdList(@Param("channelIdList") List<Long> channelIdList, @Param("trackLimitSize") int trackLimitSize ,@Param("osType") OsType osType);
+    List<ChnlDto> selectChannelListByIdList(@Param("channelIdList") List<Long> channelIdList,
+                                            @Param("trackLimitSize") int trackLimitSize ,
+                                            @Param("osType") OsType osType ,
+                                            @Param("popularChnlType") PopularChnlType popularChnlType);
 
     List<PreferGenrePopularChnlListDto> selectAllPreferGenrePopularChannelIdList();
     List<MoodPopularChnlListDto> selectAllMoodPopularChannelIdList();
