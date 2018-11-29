@@ -374,24 +374,10 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public ChartResponse deletePreferSimilarArtistName(Long characterNo) {
 
-		String personalSimilarArtistKey = String.format(PERSONAL_SIMILAR_ARTIST_KEY, 1, characterNo);
-
-		// redis 캐쉬 검색
-		List<ArtistDto> artistDtoList = redisService.getListWithPrefix(personalSimilarArtistKey, ArtistDto.class);
-
-		if (CollectionUtils.isEmpty(artistDtoList)) {
-			return null;
-		}
-
-		log.debug("XXXXXXXX" + artistDtoList.get(0).getArtistId());
-
-		// artist id 가 빈 경우에 캐쉬를 갱신
-		if(ObjectUtils.isEmpty(artistDtoList.get(0).getArtistId())) {
-			redisService
-					.delWithPrefix(String.format(PERSONAL_SIMILAR_ARTIST_HISTORY_KEY, characterNo));
-			redisService.delWithPrefix(String.format(PERSONAL_SIMILAR_ARTIST_KEY, 1, characterNo));
-			redisService.delWithPrefix(String.format(PERSONAL_SIMILAR_ARTIST_KEY, 2, characterNo));
-		}
+		redisService
+				.delWithPrefix(String.format(PERSONAL_SIMILAR_ARTIST_HISTORY_KEY, characterNo));
+		redisService.delWithPrefix(String.format(PERSONAL_SIMILAR_ARTIST_KEY, 1, characterNo));
+		redisService.delWithPrefix(String.format(PERSONAL_SIMILAR_ARTIST_KEY, 2, characterNo));
 
 		return null;
 	}
