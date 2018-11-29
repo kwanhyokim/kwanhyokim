@@ -248,9 +248,9 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                     artistDtoList = recommendArtistDto.getArtistList();
                 }
 
-                List<String> artistNameList = new ArrayList<>();
+                List<String> artistNameList = artistDtoList.stream().map(x -> x.getArtistName()).limit(5).collect(
+		                Collectors.toList());
 
-                artistDtoList.stream().limit(5).forEach(artistDto -> artistNameList.add(artistDto.getArtistName()));
                 // 아티스트의 첫 이미지를 배경 이미지로 사용
                 panel =  new RecommendPanelInfoDto.Builder()
                         .title(RecommendConstant.ARTIST_PANEL_TITLE)

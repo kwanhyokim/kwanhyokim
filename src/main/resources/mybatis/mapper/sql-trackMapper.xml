@@ -93,8 +93,9 @@
                 WHERE
                     rcmmd_artist_id = #{rcmmdArtistId}
                     )
-        ORDER BY disp_sn ASC
 
+        ORDER BY disp_sn ASC
+        LIMIT 30
     </select>
     <select id="selectRecommendPanelSimilarTrackList" resultType="Long">
         SELECT
