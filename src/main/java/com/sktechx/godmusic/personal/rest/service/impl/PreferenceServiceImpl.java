@@ -216,7 +216,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 			// rank 순으로 정렬
 			preferSimilarArtistDtoList = preferSimilarArtistDtoList.stream().sorted(
-					Comparator.comparingInt(PreferSimilarArtistDto::getRank)).collect(Collectors.toList());
+					Comparator.comparingInt(PreferSimilarArtistDto::getRank)).distinct().collect(Collectors.toList());
 
 			// 전체 선호 아티스트 들 중 시드 아티스트 아이디 2개를 추출
 			List<Long> seedArtistIdList = preferSimilarArtistDtoList.stream().map(x -> x.getSeedArtistId()).distinct().limit(2).collect(
