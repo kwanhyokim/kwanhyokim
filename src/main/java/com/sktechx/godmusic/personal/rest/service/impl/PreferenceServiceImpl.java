@@ -260,6 +260,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 				while(iterator.hasNext()){
 					// 시드 아티스트를 갖고 있는 유사아티스트는 결과 목록으로
 					PreferSimilarArtistDto tempArtistDto = (PreferSimilarArtistDto)iterator.next();
+
 					if(tempArtistDto.getSeedArtistId().equals(seedArtistDto.getArtistId())) {
 						resultArtistDtoList[resultIndex].add(tempArtistDto);
 					}
@@ -267,11 +268,12 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 				if(!CollectionUtils.isEmpty(resultArtistDtoList[resultIndex])) {
 					// 20명 중 5명 랜덤 추출
-					resultArtistDtoList[resultIndex] = resultArtistDtoList[resultIndex].stream().limit(20).collect(Collectors.toList());
+					resultArtistDtoList[resultIndex] = resultArtistDtoList[resultIndex].stream().distinct().limit(20).collect(
+							Collectors.toList());
 					resultArtistDtoList[resultIndex] = rand.ints(
 							20,
 							0,
-							resultArtistDtoList[resultIndex].size() - 1
+							resultArtistDtoList[resultIndex].size()
 					).mapToObj(resultArtistDtoList[resultIndex]::get).limit(5)
 							.collect(Collectors.toList());
 					// 시드 아티스트를 섹션 맨 앞에 추가
@@ -353,7 +355,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 			return null;
 		}
 
-		return new ChartResponse<>(similarArtistList, (sectionNumber == 1 ? HomeContentType.ARTIST1 : HomeContentType.ARTIST2) );
+		return new ChartResponse<>(similarArtistList, HomeContentType.ARTIST );
 	}
 
 	@Override
