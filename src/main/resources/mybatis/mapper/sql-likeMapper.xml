@@ -313,7 +313,7 @@
                          , DISP_SN
                          , UPDATE_DTIME
                     FROM TB_CHARACTER_LIKE
-                    WHERE CHARACTER_NO = 1
+                    WHERE CHARACTER_NO = #{characterNo}
                             AND LIKE_TYPE = 'CHART') L
                     INNER JOIN TB_CHART A
                                ON L.LIKE_TYPE_ID = A.CHART_ID
@@ -335,7 +335,7 @@
                          , DISP_SN
                          , UPDATE_DTIME
                     FROM TB_CHARACTER_LIKE
-                    WHERE CHARACTER_NO = 1
+                    WHERE CHARACTER_NO = #{characterNo}
                             AND LIKE_TYPE = 'CHNL') L
                     INNER JOIN TB_CHNL A
                                ON L.LIKE_TYPE_ID = A.CHNL_ID AND A.DISP_STATUS_TYPE = 'Y'
