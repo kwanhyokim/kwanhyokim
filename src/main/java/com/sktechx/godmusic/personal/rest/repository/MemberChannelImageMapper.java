@@ -30,7 +30,7 @@ import java.util.List;
 @BaseMapper
 public interface MemberChannelImageMapper {
 
-    @RedisCacheable(format = RedisKeyConstant.PERSONAL_MEMBERCHANNEL_IMAGE_MANAGEMENT_KEY, params = {"#p0" , "#p1" , "#p2"}, expireSeconds = 60)
+//    @RedisCacheable(format = RedisKeyConstant.PERSONAL_MEMBERCHANNEL_IMAGE_MANAGEMENT_KEY, params = {"#p0" , "#p1" , "#p2"}, expireSeconds = 60)
     List<MemberChannelImageDto> selectMemberChannelImageList(@Param("memberChnlId") Long memberChnlId,
                                                           @Param("imgDispType") String imgDispType,
                                                           @Param("osType") String osType);
