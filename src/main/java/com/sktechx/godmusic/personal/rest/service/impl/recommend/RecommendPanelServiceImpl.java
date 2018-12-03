@@ -265,7 +265,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             case RC_SML_TR:
                 panel = new RecommendPanelInfoDto.Builder()
                         .title(RecommendConstant.SIMILAR_TRACK_PANEL_TITLE)
-                        .subTitle(RecommendConstant.SIMILAR_TRACK_PANEL_SUB_TITLE)
+                        .subTitle(RecommendConstant.SIMILAR_TRACK_PANEL_DETAIL_SUB_TITLE)
                         .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType))
                         .trackCount(trackCount)
                         .newYn(YnType.Y)
@@ -276,7 +276,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             case RC_GR_TR:
                 panel = new RecommendPanelInfoDto.Builder()
                         .title(RecommendConstant.PREFER_GENRE_SIMILAR_TRACK_PANEL_TITLE)
-                        .subTitle(RecommendConstant.PREFER_GENRE_SIMILAR_TRACK_PANEL_SUB_TITLE)
+                        .subTitle(RecommendConstant.PREFER_GENRE_SIMILAR_TRACK_PANEL_DETAIL_SUB_TITLE)
                         .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType) )
                         .trackCount(trackCount)
                         .newYn(YnType.Y)

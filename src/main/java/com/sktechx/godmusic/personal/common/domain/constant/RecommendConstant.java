@@ -72,9 +72,11 @@ public class RecommendConstant {
 
     public static final String PREFER_GENRE_SIMILAR_TRACK_PANEL_TITLE = "오늘의 FLO";
     public static final String PREFER_GENRE_SIMILAR_TRACK_PANEL_SUB_TITLE = "많이 들은 곡과\n비슷한 음악";
+    public static final String PREFER_GENRE_SIMILAR_TRACK_PANEL_DETAIL_SUB_TITLE = "많이 들은 곡과 비슷한 음악";
 
     public static final String SIMILAR_TRACK_PANEL_TITLE = "오늘의 FLO";
     public static final String SIMILAR_TRACK_PANEL_SUB_TITLE = "많이 들은 곡과\n비슷한 음악";
+    public static final String SIMILAR_TRACK_PANEL_DETAIL_SUB_TITLE = "많이 들은 곡과 비슷한 음악";
 
 }
 
