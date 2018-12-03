@@ -150,7 +150,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
     public MemberChannelDto getMemberChannel(Long memberNo, Long characterNo, Long memberChannelId) {
         MemberChannelDto memberChannelDto = memberChannelMapper.selectMemberChannel(memberNo, characterNo, memberChannelId);
 
-        List<ImageInfo> recommendImageList = getRecommendImageList(ImageDisplayType.MAIN_TOP, memberChannelDto);
+        List<ImageInfo> recommendImageList = getRecommendImageList(ImageDisplayType.RCT_DTL, memberChannelDto);
 
         if (!CollectionUtils.isEmpty(recommendImageList)) {
             memberChannelDto.getAlbum().setImgList(recommendImageList);
