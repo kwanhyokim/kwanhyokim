@@ -232,6 +232,16 @@
                                      , UPDATE_DTIME
                                  FROM TB_CHARACTER_LIKE
                                  WHERE CHARACTER_NO = #{characterNo}
+        <if test="chartIds != null">
+            AND LIKE_TYPE_ID IN
+            <foreach item="chartId" index="index" collection="chartIds" open="(" separator="," close=")">
+                #{chartId}
+            </foreach>
+        </if>
+        <if test="chartIds == null">
+            AND 1 = 0
+        </if>
+
                                        AND LIKE_TYPE = 'CHART') L INNER JOIN TB_CHART A
                                  ON L.LIKE_TYPE_ID = A.CHART_ID
                              INNER JOIN TB_CHART_MUSIC_CONTENT B
@@ -268,17 +278,72 @@
                              , UPDATE_DTIME
                          FROM TB_CHARACTER_LIKE
                          WHERE CHARACTER_NO = #{characterNo}
+        <if test="chartIds != null">
+            AND LIKE_TYPE_ID IN
+            <foreach item="chnlId" index="index" collection="chnlIds" open="(" separator="," close=")">
+                #{chnlId}
+            </foreach>
+        </if>
+        <if test="chnlIds == null">
+            AND 1 = 0
+        </if>
                                AND LIKE_TYPE = 'CHNL') L
                      INNER JOIN TB_CHNL A
                          ON L.LIKE_TYPE_ID = A.CHNL_ID
+                       AND A.DISP_STATUS_TYPE = 'Y'
                      INNER JOIN TB_ALBUM_IMG I
-                         ON A.ALBUM_ID = I.ALBUM_ID
-                 WHERE
-                     A.DISP_STATUS_TYPE = 'Y') AA
+                         ON A.ALBUM_ID = I.ALBUM_ID) AA
         ORDER BY AA.DISPSN ASC, AA.LIKEUPDATEDTIME ASC
+    </select>
+
+    <select id="getLikePlaylistIdsByLikeType" resultType="com.sktechx.godmusic.personal.rest.model.vo.like.LikeTypeVo">
+        SELECT LIKE_TYPE_ID
+             , LIKE_TYPE
+        FROM (
+            SELECT
+                LIKE_TYPE_ID
+                 , LIKE_TYPE
+                 , DISP_SN
+                 , L.UPDATE_DTIME
+            FROM
+                (
+                    SELECT
+                        LIKE_TYPE_ID
+                         , LIKE_TYPE
+                         , DISP_SN
+                         , UPDATE_DTIME
+                    FROM TB_CHARACTER_LIKE
+                    WHERE CHARACTER_NO = 1
+                            AND LIKE_TYPE = 'CHART') L
+                    INNER JOIN TB_CHART A
+                               ON L.LIKE_TYPE_ID = A.CHART_ID
+                                   AND EXISTS(SELECT *
+                                              FROM TB_CHART_MUSIC_CONTENT B
+                                              WHERE A.CHART_ID = B.CHART_ID AND B.DISP_SN = 1 AND
+                                                    EXISTS(SELECT * FROM TB_TRACK C WHERE B.MUSIC_CONTENT_ID = C.TRACK_ID))
+            UNION ALL
+            SELECT
+                LIKE_TYPE_ID
+                 , LIKE_TYPE
+                 , DISP_SN
+                 , L.UPDATE_DTIME
+            FROM
+                (
+                    SELECT
+                        LIKE_TYPE_ID
+                         , LIKE_TYPE
+                         , DISP_SN
+                         , UPDATE_DTIME
+                    FROM TB_CHARACTER_LIKE
+                    WHERE CHARACTER_NO = 1
+                            AND LIKE_TYPE = 'CHNL') L
+                    INNER JOIN TB_CHNL A
+                               ON L.LIKE_TYPE_ID = A.CHNL_ID AND A.DISP_STATUS_TYPE = 'Y'
+                                   AND EXISTS(SELECT * FROM TB_ALBUM_IMG I WHERE A.ALBUM_ID = I.ALBUM_ID)) T1
+        ORDER BY DISP_SN ASC, UPDATE_DTIME ASC
         LIMIT
-        #{pageable.offset} ,
-        #{pageable.pageSize}
+            #{pageable.offset} ,
+            #{pageable.pageSize}
     </select>
 
     <select id="getLikeCountByLikeTypeAndLikeTypeId" resultType="int">
@@ -322,11 +387,8 @@
                 WHERE CHARACTER_NO = #{characterNo}
                         AND LIKE_TYPE = 'CHNL') L
                     INNER JOIN TB_CHNL A
-                        ON L.LIKE_TYPE_ID = A.CHNL_ID
-                    INNER JOIN TB_ALBUM_IMG I
-                        ON A.ALBUM_ID = I.ALBUM_ID
-        WHERE
-              A.DISP_STATUS_TYPE = 'Y'
+                        ON L.LIKE_TYPE_ID = A.CHNL_ID AND A.DISP_STATUS_TYPE = 'Y'
+                  AND EXISTS(SELECT * FROM TB_ALBUM_IMG I WHERE A.ALBUM_ID = I.ALBUM_ID)
     </select>
 
     <select id="getLikeChartCountByLikeType" resultType="int">
@@ -341,12 +403,13 @@
                      , UPDATE_DTIME
                 FROM TB_CHARACTER_LIKE
                 WHERE CHARACTER_NO = #{characterNo}
-                        AND LIKE_TYPE = 'CHART') L INNER JOIN TB_CHART A
+                        AND LIKE_TYPE = 'CHART') L
+                  INNER JOIN TB_CHART A
                         ON L.LIKE_TYPE_ID = A.CHART_ID
-                                                   INNER JOIN TB_CHART_MUSIC_CONTENT B
-                        ON A.CHART_ID = B.CHART_ID AND B.DISP_SN = 1
-                                                   INNER JOIN TB_TRACK C
-                        ON B.MUSIC_CONTENT_ID = C.TRACK_ID
+                            AND EXISTS(SELECT *
+                                       FROM TB_CHART_MUSIC_CONTENT B
+                                       WHERE A.CHART_ID = B.CHART_ID AND B.DISP_SN = 1 AND
+                                             EXISTS(SELECT * FROM TB_TRACK C WHERE B.MUSIC_CONTENT_ID = C.TRACK_ID))
     </select>
 
     <update id="updateLikeDispSn">
