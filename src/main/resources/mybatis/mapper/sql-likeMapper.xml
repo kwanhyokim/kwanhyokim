@@ -278,7 +278,7 @@
                              , UPDATE_DTIME
                          FROM TB_CHARACTER_LIKE
                          WHERE CHARACTER_NO = #{characterNo}
-        <if test="chartIds != null">
+        <if test="chnlIds != null">
             AND LIKE_TYPE_ID IN
             <foreach item="chnlId" index="index" collection="chnlIds" open="(" separator="," close=")">
                 #{chnlId}
