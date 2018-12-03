@@ -26,9 +26,8 @@
 		<if test="imgDispType != null">
 			   AND a.img_disp_type = #{imgDispType}
 		</if>
-		<if test="osType != null">
-			   AND a.os_type = #{osType}
-		</if>
+			   AND a.os_type IN ('ALL', #{osType})
+		ORDER BY a.os_type DESC
 	</select>
 
 	<insert id="insertMemberChannelImage" parameterType="com.sktechx.godmusic.personal.rest.model.dto.MemberChannelImageDto">
