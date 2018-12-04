@@ -158,17 +158,27 @@
                 (
                   SELECT
                     a.*,
-                    b.category_id,
                     c.img_url,
                     c.img_size
                   FROM
                   tb_chnl a
+                <if test="popularChnlType != null and  popularChnlType.getCode() == 'ALL'">
                     LEFT OUTER JOIN tb_map_category_chnl b ON a.chnl_id = b.chnl_id
                     LEFT OUTER JOIN  ( SELECT * FROM tb_img_mang WHERE img_content_type IN ('MOOD', 'SITTN') ) AS c
                   ON b.category_id = c.img_content_id
                     AND c.img_disp_type = 'CHNL_MAIN'
                     AND c.dfk_type = 'EVERY'
                     AND c.os_type = #{osType}
+                </if>
+                <if test="popularChnlType != null and  popularChnlType.getCode() == 'GENRE'">
+                    LEFT OUTER JOIN tb_map_svc_genre_chnl b ON a.chnl_id = b.chnl_id
+                    LEFT OUTER JOIN  tb_map_img_rcmmd_img c ON b.svc_genre_id = c.img_content_id
+                    AND c.img_disp_type = 'MAIN_TOP'
+                    AND c.dfk_type = 'EVERY'
+                    AND c.os_type = #{osType}
+                    AND c.rcmmd_type_id = 'RC_PRF_CN'
+                    AND c.img_content_type = 'GENRE'
+                </if>
                   WHERE
                     a.chnl_id IN
                 <foreach item="channelId" index="index" collection="channelIdList" open="(" separator="," close=")">
@@ -176,6 +186,8 @@
                 </foreach>
                   AND a.disp_status_type = 'Y'
                   GROUP BY a.chnl_id
+
+
                 ) chnl
                 INNER JOIN
                   tb_map_chnl_track b ON chnl.chnl_id = b.chnl_id
@@ -201,6 +213,9 @@
           b.disp_status_yn = 'Y'
     </select>
 
+    <select id="selectPopularChannelListByIdList" resultMap="channelResultMap">
+
+    </select>
     <select id="selectPopularChannelIdList" resultType="Long">
        SELECT
             b.chnl_id
@@ -253,8 +268,8 @@
               tb_chart_music_content c ON b.chart_id = c.chart_id
             INNER JOIN
               tb_chnl e ON e.chnl_id = c.music_content_id
-			INNER JOIN
-			  tb_map_category_chnl f ON e.chnl_id = f.chnl_id
+            INNER JOIN
+			  tb_map_svc_genre_chnl f ON e.chnl_id = f.chnl_id
         WHERE
                 b.chart_type = 'WEEKLY'
             AND b.svc_content_type = 'GENRE'

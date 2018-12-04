@@ -13,6 +13,7 @@ package com.sktechx.godmusic.personal.rest.service.impl;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.type.DayType;
+import com.sktechx.godmusic.personal.common.domain.type.PopularChnlType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlDto;
@@ -70,7 +71,7 @@ public class ChannelServiceImpl implements ChannelService {
                 if(!CollectionUtils.isEmpty(popularChannelIdList)){
                     popularChannelIdList = slicePopularChannelIdLimit(popularChannelIdList);
 
-                    popularChannelList = channelMapper.selectChannelListByIdList(popularChannelIdList,trackLimitSize, osType);
+                    popularChannelList = channelMapper.selectChannelListByIdList(popularChannelIdList,trackLimitSize, osType , PopularChnlType.ALL);
                     if(!CollectionUtils.isEmpty(popularChannelList)){
                         redisService.setWithPrefix(ALL_POPULAR_CHNL_KEY,popularChannelList,POPULAR_CHNL_EXPIRED_SECONDS);
                     }
@@ -207,7 +208,8 @@ public class ChannelServiceImpl implements ChannelService {
     private void attachPreferGenreChannelInfo(final List<PreferGenrePopularChnlDto> popularChnlList, int trackLimitSize, OsType osType){
         List<Long> channelIdList = popularChnlList.stream().map(dto -> dto.getChnlId()).collect(Collectors.toList());
         if(!CollectionUtils.isEmpty( channelIdList )){
-            List<ChnlDto> channelList = channelMapper.selectChannelListByIdList(channelIdList , trackLimitSize, osType);
+            List<ChnlDto> channelList = channelMapper.selectChannelListByIdList(channelIdList , trackLimitSize, osType , PopularChnlType.GENRE);
+
             if(!CollectionUtils.isEmpty(channelList)) {
 
                 for(PreferGenrePopularChnlDto popularChnlDto :  popularChnlList ){
@@ -228,7 +230,7 @@ public class ChannelServiceImpl implements ChannelService {
     private void attachListenMoodUniqueChannelList(final List<MoodPopularChnlDto> popularChnlList, int trackLimitSize, OsType osType){
         List<Long> channelIdList = popularChnlList.stream().map(dto -> dto.getChnlId()).collect(Collectors.toList());
         if(!CollectionUtils.isEmpty( channelIdList )){
-            List<ChnlDto> channelList = channelMapper.selectChannelListByIdList(channelIdList , trackLimitSize, osType);
+            List<ChnlDto> channelList = channelMapper.selectChannelListByIdList(channelIdList , trackLimitSize, osType, PopularChnlType.ALL);
             if(!CollectionUtils.isEmpty(channelList)) {
 
                 for(MoodPopularChnlDto popularChnlDto :  popularChnlList ){
