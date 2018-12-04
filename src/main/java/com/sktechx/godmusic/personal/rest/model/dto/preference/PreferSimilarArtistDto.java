@@ -15,6 +15,7 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * 설명 : XXXXXXXXX
@@ -27,20 +28,4 @@ import lombok.Data;
 public class PreferSimilarArtistDto extends ArtistDto {
 	private Long seedArtistId;
 	private Integer rank;
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (!(o instanceof PreferSimilarArtistDto))
-			return false;
-		if (!super.equals(o))
-			return false;
-		PreferSimilarArtistDto that = (PreferSimilarArtistDto) o;
-		return Objects.equals(seedArtistId, that.seedArtistId) && Objects.equals(super.getArtistId(), that.getArtistId());
-	}
-	@Override
-	public int hashCode() {
-		return Objects.hash( super.getArtistId(), seedArtistId);
-	}
 }

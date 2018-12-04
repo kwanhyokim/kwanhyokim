@@ -257,25 +257,30 @@ public class PreferenceServiceImpl implements PreferenceService {
 			for(ArtistDto seedArtistDto : seedArtistList){
 				Iterator<ArtistDto> iterator = artistDtoList.iterator();
 				resultArtistDtoList[resultIndex] = new ArrayList<>();
+
 				while(iterator.hasNext()){
 					// 시드 아티스트를 갖고 있는 유사아티스트는 결과 목록으로
 					PreferSimilarArtistDto tempArtistDto = (PreferSimilarArtistDto)iterator.next();
 
 					if(tempArtistDto.getSeedArtistId().equals(seedArtistDto.getArtistId())) {
+
+						if(resultArtistDtoList[resultIndex].contains(tempArtistDto)){
+							continue;
+						}
+
 						resultArtistDtoList[resultIndex].add(tempArtistDto);
 					}
 				}
 
 				if(!CollectionUtils.isEmpty(resultArtistDtoList[resultIndex])) {
 					// 20명 중 5명 랜덤 추출
-					resultArtistDtoList[resultIndex] = resultArtistDtoList[resultIndex].stream().distinct().limit(20).collect(
+					resultArtistDtoList[resultIndex] = resultArtistDtoList[resultIndex].stream().limit(20).collect(
 							Collectors.toList());
-					resultArtistDtoList[resultIndex] = rand.ints(
-							20,
-							0,
-							resultArtistDtoList[resultIndex].size()
-					).mapToObj(resultArtistDtoList[resultIndex]::get).limit(5)
-							.collect(Collectors.toList());
+
+					if(resultArtistDtoList[resultIndex].size() > 5) {
+						resultArtistDtoList[resultIndex] = rand.ints(20, 0, resultArtistDtoList[resultIndex].size())
+								.mapToObj(resultArtistDtoList[resultIndex]::get).limit(5).collect(Collectors.toList());
+					}
 					// 시드 아티스트를 섹션 맨 앞에 추가
 					resultArtistDtoList[resultIndex].add(0, seedArtistDto);
 
