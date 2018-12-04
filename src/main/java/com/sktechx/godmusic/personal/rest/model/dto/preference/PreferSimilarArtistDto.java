@@ -10,8 +10,6 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto.preference;
 
-import java.util.Objects;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import lombok.Data;
