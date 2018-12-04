@@ -50,8 +50,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.RCMMD_CF_TRACK_LIMIT_SIZE;
-import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.RCMMD_TRACK_PANEL_SUB_TITLE;
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
 
 /**
  * 설명 : 추천 패널 데이터 생성
@@ -290,7 +289,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 	            String genreNm = recommendReadMapper.selectRecommendGenreByRcmmdId(panelContentId);
                 panel = new RecommendPanelInfoDto.Builder()
                         .title(RecommendConstant.RCMMD_TRACK_PANEL_TITLE)
-                        .subTitle(String.format(RCMMD_TRACK_PANEL_SUB_TITLE,(genreNm == null ? "" : genreNm)))
+                        .subTitle(String.format(RCMMD_TRACK_PANEL_DETAIL_SUB_TITLE,(genreNm == null ? "" : genreNm)))
                         .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType))
                         .trackCount(trackCount)
                         .newYn(YnType.Y)
