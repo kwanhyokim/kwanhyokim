@@ -47,6 +47,10 @@ public class RecommendImageManagementServiceImpl implements RecommendImageManage
                 imageList = recommendImageManagementMapper.selectRecommendImageManagementList(recommendType, recommendId, imageType, osType);
                 break;
 
+            case RC_ATST_TR:
+                imageList = recommendImageManagementMapper.selectFixedRecommendImageList(recommendType, recommendId, imageType, osType);
+                break;
+
             case RC_GR_TR:
             case RC_CF_TR:
                 imageList = recommendImageManagementMapper.selectMappingImageRecommendImageList(recommendType, recommendId, imageType, osType);

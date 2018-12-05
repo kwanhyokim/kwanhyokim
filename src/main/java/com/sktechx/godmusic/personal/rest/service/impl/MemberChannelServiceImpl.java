@@ -193,6 +193,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
         } if (PinType.RC_ATST_TR == pinType) {
             memberChannelName = pinType.getTitle();
             trackIdList = trackMapper.selectRecommendPanelPopularTrackList(characterNo, pinTypeId);
+            recommendImageList = recommendImageManagementMapper.selectFixedRecommendImageList(RecommendPanelContentType.fromCode(pinType.getCode()), pinTypeId, null, null);
         }
         /*} else if (PinType.CHART == pinType) {
             ChartDto chartDto = chartMapper.selectChartMusicContentList(pinId);
