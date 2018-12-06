@@ -15,6 +15,7 @@ package com.sktechx.godmusic.personal.rest.service.impl;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
+import com.sktechx.godmusic.personal.common.domain.PreferPropsType;
 import com.sktechx.godmusic.personal.common.domain.domain.HomeContentType;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
@@ -84,6 +85,10 @@ public class PreferenceServiceImpl implements PreferenceService {
         if (characterNo != null) {
             characterPreferGenreList = characterPreferGenreMapper.selectCharacterPreferGenreList(characterNo);
             characterPreferDispList = characterPreferGenreMapper.selectCharacterPreferDispList(characterNo);
+
+			characterPreferDispList = characterPreferDispList.stream()
+					.filter(x -> PreferPropsType.KIDS100.getCode().equals(x.getDispPropsType()))
+					.collect(Collectors.toList());
         }
 
         if (characterNo == null
