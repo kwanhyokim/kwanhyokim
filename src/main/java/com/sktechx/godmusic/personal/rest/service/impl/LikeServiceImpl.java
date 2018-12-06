@@ -54,11 +54,33 @@ public class LikeServiceImpl implements LikeService {
 	@Autowired
 	private LikeMapper likeMapper;
 
+	public static void main(String[] args) {
+		List<Long> chnlIds = new ArrayList<>();
+		System.out.printf("hi " + chnlIds);
+		if (chnlIds == null) System.out.printf("null");
+	}
+
 	@Override
 	public LikePlaylistListResponse getPlayListLikeListByLikeType(Long characterNo, Pageable pageable) {
 		int totalCount = 0;
 
-		List<PlayListDto> playListDtos = likeMapper.getLikePlaylistByLikeType(characterNo, pageable);
+		List<LikeTypeVo> likeTypeVos = likeMapper.getLikePlaylistIdsByLikeType(characterNo, pageable);
+
+		if (CollectionUtils.isEmpty(likeTypeVos)) return null;
+
+		List<Long> chnlIds = new ArrayList<>();
+		List<Long> chartIds = new ArrayList<>();
+
+		for (LikeTypeVo l : likeTypeVos) {
+			if (l.getLikeType().equals("CHNL")) {
+				chnlIds.add(l.getLikeTypeId());
+			} else if (l.getLikeType().equals("CHART")) {
+				chartIds.add(l.getLikeTypeId());
+			}
+		}
+
+		List<PlayListDto> playListDtos = likeMapper.getLikePlaylistByLikeType(characterNo,
+				CollectionUtils.isEmpty(chnlIds) ? null : chnlIds, CollectionUtils.isEmpty(chartIds) ? null : chartIds);
 
 		if (CollectionUtils.isEmpty(playListDtos)) return null;
 

@@ -27,20 +27,12 @@ import com.sktechx.godmusic.personal.common.domain.type.ImageDisplayType;
 import com.sktechx.godmusic.personal.common.domain.type.PinType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
-import com.sktechx.godmusic.personal.rest.model.dto.AlbumDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ImageManagementDto;
-import com.sktechx.godmusic.personal.rest.model.dto.MemberChannelDto;
-import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
+import com.sktechx.godmusic.personal.rest.model.dto.*;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistRetriveAllResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistTrackCreateResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistTrackRetrieveAllResponse;
-import com.sktechx.godmusic.personal.rest.repository.ChannelMapper;
-import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
-import com.sktechx.godmusic.personal.rest.repository.MemberChannelMapper;
-import com.sktechx.godmusic.personal.rest.repository.MemberChannelTrackMapper;
-import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
+import com.sktechx.godmusic.personal.rest.repository.*;
 import com.sktechx.godmusic.personal.rest.service.MemberChannelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendImageManagementService;
 import lombok.extern.slf4j.Slf4j;
@@ -102,6 +94,12 @@ public class MemberChannelServiceImpl implements MemberChannelService {
     TrackMapper trackMapper;
 
     @Autowired
+    MemberChannelImageMapper memberChannelImageMapper;
+
+    @Autowired
+    RecommendImageManagementMapper recommendImageManagementMapper;
+
+    @Autowired
     RecommendImageManagementService recommendImageManagementService;
 
     @Autowired
@@ -152,7 +150,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
     public MemberChannelDto getMemberChannel(Long memberNo, Long characterNo, Long memberChannelId) {
         MemberChannelDto memberChannelDto = memberChannelMapper.selectMemberChannel(memberNo, characterNo, memberChannelId);
 
-        List<ImageInfo> recommendImageList = getRecommendImageList(ImageDisplayType.MAIN_TOP, memberChannelDto);
+        List<ImageInfo> recommendImageList = getRecommendImageList(ImageDisplayType.RCT_DTL, memberChannelDto);
 
         if (!CollectionUtils.isEmpty(recommendImageList)) {
             memberChannelDto.getAlbum().setImgList(recommendImageList);
@@ -170,6 +168,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
 
         String memberChannelName = Strings.EMPTY;
         List<Long> trackIdList = null;
+        List<ImageManagementDto> recommendImageList = Collections.EMPTY_LIST;
 
         if (PinType.CHNL == pinType || PinType.MY_CHNL == pinType) {
             ChnlDto chnlDto = channelMapper.selectChannelById(pinTypeId);
@@ -179,14 +178,17 @@ public class MemberChannelServiceImpl implements MemberChannelService {
         } if (PinType.RC_SML_TR == pinType) {
             memberChannelName = pinType.getTitle();
             trackIdList = trackMapper.selectRecommendPanelSimilarTrackList(characterNo, pinTypeId);
+            recommendImageList = recommendImageManagementMapper.selectRecommendImageManagementList(RecommendPanelContentType.fromCode(pinType.getCode()), pinTypeId, null, null);
 
         } if (PinType.RC_GR_TR == pinType) {
             memberChannelName = pinType.getTitle();
             trackIdList = trackMapper.selectRecommendPanelGenreTrackList(characterNo, pinTypeId);
+            recommendImageList = recommendImageManagementMapper.selectMappingImageRecommendImageList(RecommendPanelContentType.fromCode(pinType.getCode()), pinTypeId, null, null);
 
         } if (PinType.RC_CF_TR == pinType) {
             memberChannelName = pinType.getTitle();
             trackIdList = trackMapper.selectRecommendPanelCfTrackList(characterNo, pinTypeId);
+            recommendImageList = recommendImageManagementMapper.selectMappingImageRecommendImageList(RecommendPanelContentType.fromCode(pinType.getCode()), pinTypeId, null, null);
 
         } if (PinType.RC_ATST_TR == pinType) {
             memberChannelName = pinType.getTitle();
@@ -201,13 +203,24 @@ public class MemberChannelServiceImpl implements MemberChannelService {
         if (StringUtils.isEmpty(memberChannelName) || CollectionUtils.isEmpty(trackIdList)) {
             throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
         } else {
-            memberChannelName = memberChannelName + " " + LocalDate.now().getMonthValue() + "." + LocalDate.now().getDayOfMonth();
+            memberChannelName = LocalDate.now().getMonthValue() + "월 " + LocalDate.now().getDayOfMonth() + "일 " + memberChannelName;
         }
 
         String appName = GMContext.getContext().getAppName();
         AppNameType appNameType = AppNameType.fromCode(appName);
 
         MemberChannelDto memberChannelDto = createMemberChannel(memberNo, characterNo, memberChannelName, pinType, pinTypeId);
+
+        if (!CollectionUtils.isEmpty(recommendImageList)) {
+            for (ImageManagementDto imageManagementDto : recommendImageList) {
+                memberChannelImageMapper.insertMemberChannelImage(memberChannelDto.getMemberChannelId(),
+                        imageManagementDto.getImgDispType(),
+                        imageManagementDto.getOsType(),
+                        imageManagementDto.getImgSize(),
+                        imageManagementDto.getImgUrl());
+            }
+        }
+
         return addTrackList(appNameType, memberNo, characterNo, memberChannelDto.getMemberChannelId(), trackIdList);
     }
 
@@ -493,7 +506,8 @@ public class MemberChannelServiceImpl implements MemberChannelService {
                 OsType personalOsType = GMContext.getContext().getOsType();
                 com.sktechx.godmusic.personal.common.domain.type.OsType osType = com.sktechx.godmusic.personal.common.domain.type.OsType.fromCode(personalOsType.getCode());
 
-                List<ImageManagementDto> imageList = recommendImageManagementService.getRecommendImageList(recommendType, recommendId, imageDisplayType, osType);
+//                List<ImageManagementDto> imageList = recommendImageManagementService.getRecommendImageList(recommendType, recommendId, imageDisplayType, osType);
+                List<MemberChannelImageDto> imageList = memberChannelImageMapper.selectMemberChannelImageList(memberChannelDto.getMemberChannelId(), imageDisplayType.getCode(), osType.getCode());
 
                 if (!CollectionUtils.isEmpty(imageList)) {
                     recommendImageList = imageList.stream().map(x -> new ImageInfo(x.getImgSize(), x.getImgUrl())).collect(Collectors.toList());

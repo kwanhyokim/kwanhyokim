@@ -5,11 +5,10 @@ import com.sktechx.godmusic.personal.rest.model.dto.AlbumDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.PlayListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
-import com.sktechx.godmusic.personal.rest.model.vo.like.LikeVo;
+import com.sktechx.godmusic.personal.rest.model.vo.like.LikeTypeVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -36,5 +35,6 @@ public interface LikeMapper {
 	List<TrackDto> getLikeTrackByLikeType(@Param("characterNo") Long characterNo, @Param("pageable") Pageable pageable);
 	List<AlbumDto> getLikeAlbumByLikeType(@Param("characterNo") Long characterNo, @Param("pageable") Pageable pageable);
 	List<ArtistDto> getLikeArtistByLikeType(@Param("characterNo") Long characterNo, @Param("pageable") Pageable pageable);
-	List<PlayListDto> getLikePlaylistByLikeType(@Param("characterNo") Long characterNo, @Param("pageable") Pageable pageable);
+	List<PlayListDto> getLikePlaylistByLikeType(@Param("characterNo") Long characterNo, @Param("chnlIds") List<Long> chnlIds, @Param("chartIds") List<Long> chartIds);
+	List<LikeTypeVo> getLikePlaylistIdsByLikeType(@Param("characterNo") Long characterNo, @Param("pageable") Pageable pageable);
 }

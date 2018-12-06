@@ -19,6 +19,8 @@
 
 	<select id="selectRecommendImageManagementList" resultMap="recommendImageResultMap">
 		SELECT
+		  b.img_disp_type,
+		  b.os_type,
 		  b.img_size,
 		  b.img_url
 		FROM tb_rcmmd_similar_track a
@@ -26,8 +28,12 @@
 			ON a.disp_sn = b.disp_sn
 			   AND a.rcmmd_similar_track_id = #{recommendId}
 			   AND b.rcmmd_type_id = #{recommendType} /* only RC_SML_TR */
+		<if test="imageType != null">
 			   AND b.img_disp_type = #{imageType}
+		</if>
+		<if test="osType != null">
 			   AND b.os_type = #{osType}
+		</if>
 		  JOIN (
 				 SELECT CASE DAYOFWEEK(NOW())
 						WHEN '1'
@@ -54,6 +60,8 @@
 
 	<select id="selectMappingImageRecommendImageList" resultMap="recommendImageResultMap">
 		SELECT
+		  b.img_disp_type,
+		  b.os_type,
 		  b.img_size,
 		  b.img_url
 		<if test="recommendType.getCode() == 'RC_GR_TR'">
@@ -70,8 +78,12 @@
 		</if>
 			   AND b.img_content_type = 'GENRE'
 			   AND b.rcmmd_type_id = #{recommendType}
+		<if test="osType != null">
 			   AND b.os_type = #{osType}
+		</if>
+		<if test="imageType != null">
 			   AND b.img_disp_type = #{imageType}
+		</if>
 		  JOIN (
 				 SELECT CASE DAYOFWEEK(NOW())
 						WHEN '1'
@@ -94,7 +106,5 @@
 			   ) c ON b.dfk_type = c.dfk_type
 		ORDER BY a.disp_sn
 	</select>
-
-
 
 </mapper>

@@ -32,13 +32,13 @@ import java.util.List;
 @ReadOnlyMapper
 public interface RecommendImageManagementMapper {
 
-    @RedisCacheable(key = RedisKeyConstant.RECOMMEND_IMAGE_MANAGEMENT_KEY, params = {"#p0", "#p1", "#p2", "#p3"})
+//    @RedisCacheable(key = RedisKeyConstant.RECOMMEND_IMAGE_MANAGEMENT_KEY, params = {"#p0", "#p1", "#p2", "#p3"})
     List<ImageManagementDto> selectRecommendImageManagementList(@Param("recommendType") RecommendPanelContentType recommendType,
                                                                 @Param("recommendId") Long recommendId,
                                                                 @Param("imageType") ImageDisplayType imageType,
                                                                 @Param("osType") OsType osType);
 
-    @RedisCacheable(key = RedisKeyConstant.RECOMMEND_IMAGE_MANAGEMENT_KEY, params = {"#p0", "#p1", "#p2", "#p3"})
+//    @RedisCacheable(key = RedisKeyConstant.RECOMMEND_IMAGE_MANAGEMENT_KEY, params = {"#p0", "#p1", "#p2", "#p3"})
     List<ImageManagementDto> selectMappingImageRecommendImageList(@Param("recommendType") RecommendPanelContentType recommendType,
                                                                   @Param("recommendId") Long recommendId,
                                                                   @Param("imageType") ImageDisplayType imageType,

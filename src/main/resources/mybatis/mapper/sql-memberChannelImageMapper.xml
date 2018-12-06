@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ /*
+  ~  * Copyright (c) 2018 SK TECHX.
+  ~  * All right reserved.
+  ~  *
+  ~  * This software is the confidential and proprietary information of SK TECHX.
+  ~  * You shall not disclose such Confidential Information and
+  ~  * shall use it only in accordance with the terms of the license agreement
+  ~  * you entered into with SK TECHX.
+  ~  */
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.MemberChannelImageMapper">
+
+    <resultMap id="memberChannelImageResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.MemberChannelImageDto" />
+
+	<select id="selectMemberChannelImageList" resultMap="memberChannelImageResultMap">
+		SELECT
+		  a.img_size,
+		  a.img_url
+		FROM tb_member_chnl_img a
+		WHERE a.member_chnl_id = #{memberChnlId}
+		<if test="imgDispType != null">
+			   AND a.img_disp_type = #{imgDispType}
+		</if>
+			   AND a.os_type IN ('ALL', #{osType})
+		ORDER BY a.os_type DESC
+	</select>
+
+	<insert id="insertMemberChannelImage" parameterType="com.sktechx.godmusic.personal.rest.model.dto.MemberChannelImageDto">
+		INSERT INTO tb_member_chnl_img (
+			member_chnl_id,
+			img_disp_type,
+			os_type,
+			img_size,
+			img_url
+		) VALUES (
+			#{memberChnlId},
+			#{imgDispType},
+			#{osType},
+			#{imgSize},
+			#{imgUrl}
+		)
+	</insert>
+
+</mapper>

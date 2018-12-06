@@ -17,10 +17,8 @@ import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.domain.type.ArtistGroupType;
 import com.sktechx.godmusic.personal.common.domain.type.GenderType;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
@@ -37,6 +35,7 @@ import java.util.List;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder(value = {"id","name"}, alphabetic = true)
+@EqualsAndHashCode
 public class ArtistDto {
     @JsonProperty("id")
     private Long artistId;
