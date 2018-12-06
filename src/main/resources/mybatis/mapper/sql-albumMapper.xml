@@ -62,7 +62,7 @@
                    FROM tb_member_last_listen_hist
                   WHERE member_no = #{memberNo}
                     AND character_no = #{characterNo}
-                    AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
+                    AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
                   ORDER BY last_listen_dtime DESC
                   LIMIT 1000 ) a
           JOIN ted_album b
