@@ -319,7 +319,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
-                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN tb_member_chnl b
@@ -345,7 +345,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
-                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN ( SELECT chart_id, music_content_cnt
@@ -368,6 +368,41 @@
         ( SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
                  a.listen_type,
                  a.listen_type_id,
+                 b.artist_nm as content_title,
+                 COUNT(DISTINCT e.track_id) AS track_count,
+                 a.last_listen_dtime,
+                 c.size,
+                 CONCAT(c.url, '?updateDate=', UNIX_TIMESTAMP(c.update_dtime)) AS url
+            FROM ( SELECT listen_type, listen_type_id, last_listen_dtime
+                     FROM tb_member_last_listen_hist
+                    WHERE member_no = 2100896
+                      AND character_no = 2100896
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
+                    ORDER BY last_listen_dtime DESC
+                    LIMIT 20 ) a
+            JOIN ted_artist b
+              ON a.listen_type_id = b.artist_id
+             AND a.listen_type = 'ARTIST'
+            LEFT JOIN ted_artistimage c
+              ON b.artist_id = c.artist_id
+            JOIN ted_trackartist d
+              ON b.artist_id = d.artist_id
+             AND d.db_sts = 'A'
+            JOIN tb_track e
+              ON d.track_id = e.track_id
+             AND e.disp_status_yn = 'Y'
+            JOIN ted_album f
+              ON e.album_id = f.album_id
+             AND f.db_sts = 'A'
+             AND f.disp_status_yn = 'Y'
+             AND f.album_tp IN ('RL','SL','EP','OS','LV','RM','SP','MF')
+           GROUP BY CONCAT(a.listen_type, a.listen_type_id), a.listen_type, a.listen_type_id, b.artist_nm, a.last_listen_dtime, c.size, CONCAT(c.url, '?updateDate=', UNIX_TIMESTAMP(c.update_dtime)) )
+
+           UNION ALL
+
+        ( SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
+                 a.listen_type,
+                 a.listen_type_id,
                  b.chart_nm AS content_title,
                  b.music_content_cnt AS track_count,
                  a.last_listen_dtime,
@@ -377,7 +412,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
-                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN ( SELECT chart_id, svc_content_id, chart_nm, music_content_cnt,
@@ -413,7 +448,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
-                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN tb_rcmmd_similar_track b
@@ -449,7 +484,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
-                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN tb_rcmmd_prefer_genre_similar_track b
@@ -486,7 +521,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
-                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN tb_rcmmd_artist b
@@ -515,7 +550,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
-                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN tb_rcmmd_mforu b
@@ -548,7 +583,7 @@
                    FROM tb_member_last_listen_hist
                   WHERE member_no = #{memberNo}
                     AND character_no = #{characterNo}
-                    AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
+                    AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
                   ORDER BY last_listen_dtime DESC
                   LIMIT 300 ) a
           JOIN tb_chnl b
