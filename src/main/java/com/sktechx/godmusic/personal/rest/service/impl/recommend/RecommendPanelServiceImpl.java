@@ -204,9 +204,9 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 		return trackList;
 	}
 
-	private List<ImageInfo> getRecommendPanelInfoBgImage(RecommendPanelContentType recommendPanelContentType,Long panelContentId, OsType osType){
+	private List<ImageInfo> getRecommendPanelInfoBgImage(RecommendPanelContentType recommendPanelContentType,Long panelContentId, OsType osType , int dispSn){
 
-        String imgUrl = recommendReadMapper.selectRecommendPanelInfoBgImageUrl(recommendPanelContentType, panelContentId, osType);
+        String imgUrl = recommendReadMapper.selectRecommendPanelInfoBgImageUrl(recommendPanelContentType, panelContentId, osType , dispSn);
 
         if(StringUtils.isEmpty(imgUrl)) {
             List<ImageInfo> imageInfoList = getRecommendPanelDefaultImageList(osType);
@@ -262,10 +262,22 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 break;
             // 선호 유사
             case RC_SML_TR:
+
+                List<RecommendTrackDto> similarTrackList =
+                        recommendReadMapper.selectRecommendSimilarTrackListByIdList(Arrays.asList(panelContentId), 1,
+                                1, osType);
+
+                int dispSn = 1;
+                if(!CollectionUtils.isEmpty(similarTrackList)){
+                    RecommendTrackDto recommendTrackDto = similarTrackList.get(0);
+                    if(recommendTrackDto != null){
+                        dispSn = recommendTrackDto.getDispSn();
+                    }
+                }
                 panel = new RecommendPanelInfoDto.Builder()
                         .title(RecommendConstant.SIMILAR_TRACK_PANEL_TITLE)
                         .subTitle(RecommendConstant.SIMILAR_TRACK_PANEL_DETAIL_SUB_TITLE)
-                        .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType))
+                        .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType , dispSn))
                         .trackCount(trackCount)
                         .newYn(YnType.Y)
                         .renewDtime(new Date())
@@ -276,7 +288,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 panel = new RecommendPanelInfoDto.Builder()
                         .title(RecommendConstant.PREFER_GENRE_SIMILAR_TRACK_PANEL_TITLE)
                         .subTitle(RecommendConstant.PREFER_GENRE_SIMILAR_TRACK_PANEL_DETAIL_SUB_TITLE)
-                        .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType) )
+                        .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType , 0) )
                         .trackCount(trackCount)
                         .newYn(YnType.Y)
                         .renewDtime(new Date())
@@ -290,7 +302,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 panel = new RecommendPanelInfoDto.Builder()
                         .title(RecommendConstant.RCMMD_TRACK_PANEL_TITLE)
                         .subTitle(String.format(RCMMD_TRACK_PANEL_DETAIL_SUB_TITLE,(genreNm == null ? "" : genreNm)))
-                        .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType))
+                        .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType , 0))
                         .trackCount(trackCount)
                         .newYn(YnType.Y)
                         .renewDtime(new Date())

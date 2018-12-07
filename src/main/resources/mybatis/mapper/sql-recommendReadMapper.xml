@@ -768,6 +768,7 @@
                 WHEN '6' THEN 'FRI'
                 WHEN '7' THEN 'SAT'
             END
+            AND c.disp_sn = #{dispSn}
             AND c.rcmmd_type_id = 'RC_SML_TR'
             AND c.img_disp_type = 'MAIN_TOP'
             AND c.os_type = #{osType}
