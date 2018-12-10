@@ -61,6 +61,7 @@ public abstract class TrackPanel extends Panel {
         content.setTrackCount(recommendTrackDto.getTrackCount());
         content.setGenre(new GenreVo(recommendTrackDto.getSvcGenreDto()));
         content.setCreateDtime(recommendTrackDto.getRcmmdCreateDtime());
+        content.setUpdateDtime(recommendTrackDto.getRcmmdCreateDtime());
         content.setRenewYn(YnType.Y);
 
         return content;

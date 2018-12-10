@@ -67,13 +67,13 @@
 		<if test="recommendType.getCode() == 'RC_GR_TR'">
 		FROM tb_rcmmd_prefer_genre_similar_track a
 		  JOIN tb_map_img_rcmmd_img b
-			ON a.svc_genre_id = b.img_content_id AND a.disp_sn = b.disp_sn
+			ON a.svc_genre_id = b.img_content_id
 			   AND a.rcmmd_prefer_genre_similar_track_id = #{recommendId}
 		</if>
 		<if test="recommendType.getCode() == 'RC_CF_TR'">
 		FROM tb_rcmmd_mforu a
 		  JOIN tb_map_img_rcmmd_img b
-			ON a.svc_genre_id = b.img_content_id AND a.disp_sn = b.disp_sn
+			ON a.svc_genre_id = b.img_content_id
 			   AND a.rcmmd_mforu_id = #{recommendId}
 		</if>
 			   AND b.img_content_type = 'GENRE'
@@ -105,6 +105,19 @@
 				 SELECT 'EVERY'
 			   ) c ON b.dfk_type = c.dfk_type
 		ORDER BY a.disp_sn
+	</select>
+
+	<select id="selectFixedRecommendImageList" resultMap="recommendImageResultMap">
+		SELECT
+		  'RCT_DTL' AS img_disp_type,
+		  os_type,
+		  img_size,
+		  img_url
+		FROM tb_rcmmd_img_mang
+		WHERE rcmmd_type_id = 'RC_ATST_TR'
+		AND img_disp_type = 'MAIN_SRT'
+		AND os_TYPE IN ('ALL', #{osType})
+		LIMIT 1
 	</select>
 
 </mapper>

@@ -80,7 +80,8 @@ public interface RecommendReadMapper {
 
     String selectRecommendPanelInfoBgImageUrl(@Param("recommendPanelContentType") RecommendPanelContentType recommendPanelContentType
             , @Param("rcmmdId") Long rcmmdId
-            , @Param("osType") OsType osType);
+            , @Param("osType") OsType osType
+            , @Param("dispSn") int dispSn);
 
     String selectRecommendGenreByRcmmdId(@Param("rcmmdId") Long rcmmdId);
 

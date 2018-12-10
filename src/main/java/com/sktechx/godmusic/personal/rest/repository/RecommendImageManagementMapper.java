@@ -43,4 +43,9 @@ public interface RecommendImageManagementMapper {
                                                                   @Param("recommendId") Long recommendId,
                                                                   @Param("imageType") ImageDisplayType imageType,
                                                                   @Param("osType") OsType osType);
+
+    List<ImageManagementDto> selectFixedRecommendImageList(@Param("recommendType") RecommendPanelContentType recommendType,
+                                                                  @Param("recommendId") Long recommendId,
+                                                                  @Param("imageType") ImageDisplayType imageType,
+                                                                  @Param("osType") OsType osType);
 }

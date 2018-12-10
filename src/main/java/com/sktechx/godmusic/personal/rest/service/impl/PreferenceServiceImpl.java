@@ -15,6 +15,7 @@ package com.sktechx.godmusic.personal.rest.service.impl;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
+import com.sktechx.godmusic.personal.common.domain.PreferPropsType;
 import com.sktechx.godmusic.personal.common.domain.domain.HomeContentType;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
@@ -84,6 +85,10 @@ public class PreferenceServiceImpl implements PreferenceService {
         if (characterNo != null) {
             characterPreferGenreList = characterPreferGenreMapper.selectCharacterPreferGenreList(characterNo);
             characterPreferDispList = characterPreferGenreMapper.selectCharacterPreferDispList(characterNo);
+
+			characterPreferDispList = characterPreferDispList.stream()
+					.filter(x -> PreferPropsType.KIDS100.getCode().equals(x.getDispPropsType()))
+					.collect(Collectors.toList());
         }
 
         if (characterNo == null
@@ -226,16 +231,21 @@ public class PreferenceServiceImpl implements PreferenceService {
 					x-> legacySeedIdList.addAll(x)
 			);
 
+			log.info("[유사아티스트] - [{}] 기존 노출 시드 아티스트 이력 : {}", characterNo, legacySeedIdList);
+
 			// 3. 이력이 있을 경우, 3일간 노출된 시드 아티스트 정보를 노출 불가 시드 아티스트로 하여 시드 아티스트를 검색
 			List<ArtistDto> totalSeedArtistList = artistMapper.selectSeedArtistList(characterNo, (legacySeedIdList.size() <= 0 ? null : legacySeedIdList));
 
 			if(CollectionUtils.isEmpty(totalSeedArtistList)) {
+				log.info("[유사아티스트] - [{}] 노출할 시드 아티스트 없음", characterNo);
 				return null;
 			}
 
 			// 4. 랜덤으로 시드 아티스트를 추출
 			Collections.shuffle(totalSeedArtistList);
 			totalSeedArtistList = totalSeedArtistList.stream().limit(10).collect(Collectors.toList());
+
+			log.info("[유사아티스트] - [{}] 타켓 시드 아티스트 추출 : {}", characterNo, totalSeedArtistList);
 
 			// 5. 전체 시드 아티스트 기준으로 유사 아티스트 목록 추출
 			List<PreferSimilarArtistDto> preferSimilarArtistDtoList =
@@ -248,6 +258,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 					Collectors.toList()));
 
 			if (CollectionUtils.isEmpty(preferSimilarArtistDtoList)) {
+				log.info("[유사아티스트] - [{}] 노출할 유사아티스트 없음", characterNo);
 				return null;
 			}
 
@@ -260,11 +271,13 @@ public class PreferenceServiceImpl implements PreferenceService {
 			List<Long> seedArtistIdList = preferSimilarArtistDtoList.stream().map(x -> x.getSeedArtistId()).distinct().limit(2).collect(
 					Collectors.toList());
 
+			log.info("[유사아티스트] - [{}] 오늘의 시드 아티스트 : {}", characterNo, seedArtistIdList);
+
 			// 8. 시드 아티스트 이력 갱신
 			refreshSeedArtistIdHistoryMap(characterNo, historyMap, seedArtistIdList);
 
 			// 9. 결과 아티스트 목록 생성
-			List<ArtistDto>[] resultArtistDtoList = makeResultArtistDtoList(totalSeedArtistList,
+			List<ArtistDto>[] resultArtistDtoList = makeResultArtistDtoList(characterNo, totalSeedArtistList,
 					preferSimilarArtistDtoMap, seedArtistIdList);
 
 			preferenceSimilarArtistListRedisWrapper.setArtistDtoList(resultArtistDtoList);
@@ -277,12 +290,15 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 		// 캐쉬된 혹은 새로 만들어진 결과가 빈 리스트인 경우에 null 처리
 		if (isEmptyArtistDtoList(artistDtoList)) {
+			log.info("[유사아티스트] - [{}] 노출할 유사아티스트 없음", characterNo);
 			return null;
 		}
 
 		return preferenceArtistListConvert(artistDtoList);
 	}
-	private List<ArtistDto>[] makeResultArtistDtoList(List<ArtistDto> totalSeedArtistList,
+	private List<ArtistDto>[] makeResultArtistDtoList(
+			Long characterNo,
+			List<ArtistDto> totalSeedArtistList,
 			Map<Long, List<PreferSimilarArtistDto>> preferSimilarArtistDtoMap,
 			List<Long> seedArtistIdList) {
 
@@ -297,7 +313,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 			Long seedArtistId = (Long) iter.next();
 
-			// 중복 제거, 20명으로 자르기
+			// ArtistDto로 축소, 시드 아티스트가 들어있는 경우 제거, 중복 제거, 20명으로 자르기
 			List<ArtistDto> currentPreferArtistDtoList = preferSimilarArtistDtoMap.get(seedArtistId).stream()
 					.map(
 							x -> ArtistDto.builder()
@@ -307,6 +323,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 									.build()
 
 					)
+					.filter(x-> !seedArtistIdList.contains(x.getArtistId()))
 					.distinct()
 					.limit(20)
 					.collect(Collectors.toList())
@@ -315,6 +332,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 			// 유사아티스트가 2명 이하면 생성 X
 			if(currentPreferArtistDtoList.size() <= 2){
+				log.info("[유사아티스트] - [{}] 선호 아티스트 섹션{} 결과 없음", characterNo, seedIndex + 1);
 				continue;
 			}
 
@@ -328,6 +346,8 @@ public class PreferenceServiceImpl implements PreferenceService {
 			resultArtistDtoList[seedIndex].add(0, totalSeedArtistList.stream().filter(x-> x.getArtistId().equals(seedArtistId)).findFirst().get());
 			resultArtistDtoList[seedIndex].addAll(currentPreferArtistDtoList);
 
+			log.info("[유사아티스트] - [{}] 선호 아티스트 섹션{} 생성 완료", characterNo, seedIndex + 1);
+
 			seedIndex++;
 
 		}
@@ -336,6 +356,9 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 	private void refreshSeedArtistIdHistoryMap(Long characterNo, Map<String, List<Long>> historyMap,
 			List<Long> seedArtistIdList) {
+
+		log.info("[유사아티스트] - [{}] 노출 시드 이력 저장", characterNo);
+
 		String currentDate = DateUtil.toString(new Date(),"yyyyMMdd");
 		// 시드 아이디 노출 이력 기록
 		historyMap.put(currentDate, seedArtistIdList);
@@ -345,6 +368,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 		LocalDateTime expireDateTime = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0).plusDays(3L);
 		long expireSeconds = LocalDateTime.now().until(expireDateTime, ChronoUnit.SECONDS);
 		redisService.setWithPrefix(String.format(PERSONAL_SIMILAR_ARTIST_HISTORY_KEY, characterNo), historyMap, (int) expireSeconds);
+
 	}
 
 	private Map<String, List<Long>> getSeedArtistIdHistoryMap(Long characterNo) {
