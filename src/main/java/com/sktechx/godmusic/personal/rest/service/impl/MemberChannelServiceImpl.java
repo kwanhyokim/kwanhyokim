@@ -52,14 +52,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -138,6 +131,11 @@ public class MemberChannelServiceImpl implements MemberChannelService {
 
         if (CollectionUtils.isEmpty(list)) {
             throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
+        }
+
+        MemberChannelDto memberChannelDto = getMemberChannel(memberNo, characterNo, memberChannelId);
+        if (memberChannelDto.getPinType() != null) {
+            list = list.stream().sorted(Comparator.comparing(TrackDto::getTrackSn)).collect(Collectors.toList());
         }
 
         long totalCount = memberChannelTrackMapper.selectMemberChannelTrackListCount(memberNo, characterNo, memberChannelId);
