@@ -733,7 +733,7 @@
                                                                                 AND CL.LIKE_TYPE = 'TRACK'
                                                                                 AND CL.UPDATE_DTIME <![CDATA[>=]]>
                                                                                     date_format(ADDDATE(CURDATE(), -7), '%Y-%m-%d 00:00:00')
-                                                                                AND CL.CHARACTER_NO = 7000001) J
+                                                                                AND CL.CHARACTER_NO = #{characterNo}) J
                             WHERE J.TOTAL_LIST_CNT <![CDATA[>=]]> 3) D ON MSGT.TRACK_ID = D.TRACK_ID
         WHERE CPG.CHARACTER_NO = #{characterNo}
         ORDER BY D.TOTAL_LIST_CNT DESC
