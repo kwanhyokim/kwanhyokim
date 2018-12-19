@@ -14,6 +14,7 @@ import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.personal.common.domain.ListResponse;
+import com.sktechx.godmusic.personal.common.domain.constant.TrackConstant;
 import com.sktechx.godmusic.personal.rest.model.dto.MostListenedTrackDto;
 import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
 import com.sktechx.godmusic.personal.rest.service.TrackService;
@@ -47,6 +48,9 @@ public class TrackServiceImpl implements TrackService {
         long totalCount = trackMapper.selectMostListenedTrackTotalCount(characterNo);
         // 1000곡 노출 (pagination 처리 하면 달라져야 함)
 //        long totalCount = mostTrackList.size() == pageable.getPageSize() ? pageable.getPageSize() : mostTrackList.size();
+
+        if(totalCount > TrackConstant.MOST_TRACK_LIST_MAX_COUNT)
+            totalCount = TrackConstant.MOST_TRACK_LIST_MAX_COUNT;
 
         YnType lastPage = (int)Math.ceil(totalCount / size  + 0.5) <= page ?YnType.Y : YnType.N;
 
