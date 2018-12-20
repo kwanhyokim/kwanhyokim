@@ -26,14 +26,15 @@ import org.springframework.util.StringUtils;
 public enum AppNameType implements CodeEnum {
 	MMATE("MMATE","뮤직메이트"),
 	MUSIC_MALL("MUSIC_MALL","뮤직몰"),
-	NUGU("NUGU","NUGU")
+	NUGU("NUGU","NUGU"),
+	FLO("FLO", "FLO")
 	;
 	
 	final String code;
 	final String desc;
 	
 
-	private AppNameType(String code, String desc) {
+	AppNameType(String code, String desc) {
 		this.code = code;
 		this.desc = desc;
 	}
