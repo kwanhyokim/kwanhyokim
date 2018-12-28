@@ -116,6 +116,12 @@ public class MemberChannelServiceImpl implements MemberChannelService {
         for (MemberChannelDto memberChannelDto : list) {
             List<ImageInfo> recommendImageList = getRecommendImageList(ImageDisplayType.RCT_DTL, memberChannelDto);
 
+            if (memberChannelDto.getAlbum() == null) { // 추천 이미지 처리를 위해 더미로 생성
+                memberChannelDto.setAlbum(AlbumDto.builder().albumId(0L).build());
+                memberChannelDto.setChannelPlayTime("0");
+                memberChannelDto.setTrackCount(0);
+            }
+
             if (!CollectionUtils.isEmpty(recommendImageList)) {
                 memberChannelDto.getAlbum().setImgList(recommendImageList);
             }
@@ -149,6 +155,12 @@ public class MemberChannelServiceImpl implements MemberChannelService {
         MemberChannelDto memberChannelDto = memberChannelMapper.selectMemberChannel(memberNo, characterNo, memberChannelId);
 
         List<ImageInfo> recommendImageList = getRecommendImageList(ImageDisplayType.RCT_DTL, memberChannelDto);
+
+        if (memberChannelDto.getAlbum() == null) { // 추천 이미지 처리를 위해 더미로 생성
+            memberChannelDto.setAlbum(AlbumDto.builder().albumId(0L).build());
+            memberChannelDto.setChannelPlayTime("0");
+            memberChannelDto.setTrackCount(0);
+        }
 
         if (!CollectionUtils.isEmpty(recommendImageList)) {
             memberChannelDto.getAlbum().setImgList(recommendImageList);
