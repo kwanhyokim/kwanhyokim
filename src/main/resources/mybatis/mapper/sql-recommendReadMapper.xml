@@ -671,6 +671,7 @@
         SELECT
             TT.REPRSNT_ARTIST_ID AS ARTIST_ID
             , TT.TRACK_ID
+            , TT.TRACK_NM
         FROM TB_TRACK TT INNER JOIN
             (
                 SELECT

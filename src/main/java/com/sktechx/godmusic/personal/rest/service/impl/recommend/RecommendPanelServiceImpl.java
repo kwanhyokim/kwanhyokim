@@ -93,6 +93,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     @Autowired
     private MetaApiProxy metaApiProxy;
 
+    private static String instrumentalTrackRegexPattern="(\\\\(inst)\\\\)|(\\\\(inst\\\\.)\\\\)|(\\\\(mr)\\\\)|(\\\\(멜로디mr)\\\\)|(\\\\(instrumental)\\\\)|(\\\\(instrumental version)\\\\)|(\\\\(Instrumental)\\\\)|(\\\\(instrumental)\\\\)|(\\\\(INSTRUMENTAL)\\\\)|(\\\\(InstruMental)\\\\)|(\\\\(Instrumental Version)\\\\)|(\\\\(Instrumental version)\\\\)|(\\\\(instrumental version)\\\\)|(\\\\(instrumental Version)\\\\)|(\\\\(INSTRUMENTAL VERSION)\\\\)|(\\\\(Inst)\\\\)|(\\\\(Inst )\\\\)|(\\\\(Instl)\\\\)|(\\\\(INST)\\\\)|(\\\\(Inst\\\\.)\\\\)|(\\\\(inst)\\\\)|(\\\\(inst\\\\.)\\\\)|(\\\\(Instr)\\\\)|(\\\\(instr)\\\\)|(\\\\(Instu)\\\\)|(\\\\(INST\\\\.)\\\\)|(\\\\(inst,)\\\\)|(\\\\(Inst,)\\\\)|(\\\\(MR)\\\\)|(\\\\(멜로디MR)\\\\)|(\\\\(Mr)\\\\)|(\\\\(mr)\\\\)";
+
     @Override
     public List<Panel> createRecommendPanelList(Long characterNo , OsType osType) {
         List<Panel> panelList = null;
@@ -417,6 +419,9 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         // 모든 곡의 아티스트가 연달아 나오지 않게 정렬
         notDuplicateList(recommendArtistTrackListDto);
 
+	    recommendArtistTrackListDto = recommendArtistTrackListDto.stream().
+			    filter(x-> !(x.getTrackNm().matches(instrumentalTrackRegexPattern))).collect(Collectors.toList());
+
         // 기존 패널 종료시간을 지금시간으로 업데이트
         recommendMapper.updateRcmmdArtistDispStdEndDt(characterNo);
         RecommendArtistDto recommendArtistDto = RecommendArtistDto.builder()
@@ -442,12 +447,14 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                             }
                     );
 
-            IntStream.range(0, recommendArtistTrackListDto.size())
+	        List<RecommendArtistTrackListDto> finalRecommendArtistTrackListDto = recommendArtistTrackListDto;
+
+	        IntStream.range(0, recommendArtistTrackListDto.size())
                     .forEach(index ->
                             {
                                 batchParam.clear();
                                 batchParam.put("rcmmdArtistId", recommendArtistDto.getRcmmdArtistId());
-                                batchParam.put("trackId", recommendArtistTrackListDto.get(index).getTrackId());
+                                batchParam.put("trackId", finalRecommendArtistTrackListDto.get(index).getTrackId());
                                 batchParam.put("dispSn", index);
                                 log.info("recommendArtistTrackListDto batchParam : " + batchParam.toString());
                                 sqlSession.update("insertRcmmdArtistTrackList", batchParam);
