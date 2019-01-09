@@ -1,5 +1,6 @@
 package com.sktechx.godmusic.personal.rest.model.dto.recommend;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 
@@ -12,9 +13,12 @@ import lombok.Data;
  */
 @Data
 @Builder
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class RecommendArtistTrackListDto {
 	private Long rcmmdArtistId;
 	private Long artistId;
 	private Long trackId;
+	private String trackNm;
 	private int dispSn;
+
 }
