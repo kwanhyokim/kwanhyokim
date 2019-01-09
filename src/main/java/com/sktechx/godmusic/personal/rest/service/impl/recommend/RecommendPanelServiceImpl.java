@@ -10,6 +10,20 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend;
 
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import org.apache.ibatis.session.ExecutorType;
+import org.apache.ibatis.session.SqlSession;
+import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
+
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.code.YnType;
@@ -28,29 +42,17 @@ import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
-import com.sktechx.godmusic.personal.rest.repository.*;
-import com.sktechx.godmusic.personal.rest.service.ChannelService;
-import com.sktechx.godmusic.personal.rest.service.ChartService;
+import com.sktechx.godmusic.personal.rest.repository.ArtistMapper;
+import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
+import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
+import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
 import com.sktechx.godmusic.personal.rest.service.MetaApiProxy;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.session.ExecutorType;
-import org.apache.ibatis.session.SqlSession;
-import org.mybatis.spring.SqlSessionTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.RCMMD_TRACK_PANEL_DETAIL_SUB_TITLE;
 
 /**
  * 설명 : 추천 패널 데이터 생성
@@ -93,7 +95,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     @Autowired
     private MetaApiProxy metaApiProxy;
 
-    private static String instrumentalTrackRegexPattern="(\\\\(inst)\\\\)|(\\\\(inst\\\\.)\\\\)|(\\\\(mr)\\\\)|(\\\\(멜로디mr)\\\\)|(\\\\(instrumental)\\\\)|(\\\\(instrumental version)\\\\)|(\\\\(Instrumental)\\\\)|(\\\\(instrumental)\\\\)|(\\\\(INSTRUMENTAL)\\\\)|(\\\\(InstruMental)\\\\)|(\\\\(Instrumental Version)\\\\)|(\\\\(Instrumental version)\\\\)|(\\\\(instrumental version)\\\\)|(\\\\(instrumental Version)\\\\)|(\\\\(INSTRUMENTAL VERSION)\\\\)|(\\\\(Inst)\\\\)|(\\\\(Inst )\\\\)|(\\\\(Instl)\\\\)|(\\\\(INST)\\\\)|(\\\\(Inst\\\\.)\\\\)|(\\\\(inst)\\\\)|(\\\\(inst\\\\.)\\\\)|(\\\\(Instr)\\\\)|(\\\\(instr)\\\\)|(\\\\(Instu)\\\\)|(\\\\(INST\\\\.)\\\\)|(\\\\(inst,)\\\\)|(\\\\(Inst,)\\\\)|(\\\\(MR)\\\\)|(\\\\(멜로디MR)\\\\)|(\\\\(Mr)\\\\)|(\\\\(mr)\\\\)";
+    private static String instrumentalTrackRegexPattern=".*\\(inst\\)|.*\\(inst\\.\\)|.*\\(mr\\)|.*\\(멜로디mr\\)|.*\\(instrumental\\)|.*\\(instrumental version\\)|.*\\(Instrumental\\)|.*\\(instrumental\\)|.*\\(INSTRUMENTAL\\)|.*\\(InstruMental\\)|.*\\(Instrumental Version\\)|.*\\(Instrumental version\\)|.*\\(instrumental version\\)|.*\\(instrumental Version\\)|.*\\(INSTRUMENTAL VERSION\\)|.*\\(Inst\\)|.*\\(Inst \\)|.*\\(Instl\\)|.*\\(INST\\)|.*\\(Inst\\.\\)|.*\\(inst\\)|.*\\(inst\\.\\)|.*\\(Instr\\)|.*\\(instr\\)|.*\\(Instu\\)|.*\\(INST\\.\\)|.*\\(inst,\\)|.*\\(Inst,\\)|.*\\(MR\\)|.*\\(멜로디MR\\)|.*\\(Mr\\)|.*\\(mr\\)";
 
     @Override
     public List<Panel> createRecommendPanelList(Long characterNo , OsType osType) {
