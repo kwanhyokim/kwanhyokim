@@ -18,6 +18,7 @@ import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -95,7 +96,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     @Autowired
     private MetaApiProxy metaApiProxy;
 
-    private static String instrumentalTrackRegexPattern=".*\\(inst\\)|.*\\(inst\\.\\)|.*\\(mr\\)|.*\\(멜로디mr\\)|.*\\(instrumental\\)|.*\\(instrumental version\\)|.*\\(Instrumental\\)|.*\\(instrumental\\)|.*\\(INSTRUMENTAL\\)|.*\\(InstruMental\\)|.*\\(Instrumental Version\\)|.*\\(Instrumental version\\)|.*\\(instrumental version\\)|.*\\(instrumental Version\\)|.*\\(INSTRUMENTAL VERSION\\)|.*\\(Inst\\)|.*\\(Inst \\)|.*\\(Instl\\)|.*\\(INST\\)|.*\\(Inst\\.\\)|.*\\(inst\\)|.*\\(inst\\.\\)|.*\\(Instr\\)|.*\\(instr\\)|.*\\(Instu\\)|.*\\(INST\\.\\)|.*\\(inst,\\)|.*\\(Inst,\\)|.*\\(MR\\)|.*\\(멜로디MR\\)|.*\\(Mr\\)|.*\\(mr\\)";
+    @Value("${personal.prefer.artist.panel.addPreferArtistPanel.instrumentalTrackRegexPattern}")
+    private String instrumentalTrackRegexPattern;
 
     @Override
     public List<Panel> createRecommendPanelList(Long characterNo , OsType osType) {
@@ -421,8 +423,14 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         // 모든 곡의 아티스트가 연달아 나오지 않게 정렬
         notDuplicateList(recommendArtistTrackListDto);
 
+        // added by Bob 2019.01.09
+	    // 연주곡 추천 제외 로직 추가
 	    recommendArtistTrackListDto = recommendArtistTrackListDto.stream().
 			    filter(x-> !(x.getTrackNm().matches(instrumentalTrackRegexPattern))).collect(Collectors.toList());
+
+	    if (CommonUtils.empty(recommendArtistTrackListDto)) {
+	    	return;
+	    }
 
         // 기존 패널 종료시간을 지금시간으로 업데이트
         recommendMapper.updateRcmmdArtistDispStdEndDt(characterNo);
