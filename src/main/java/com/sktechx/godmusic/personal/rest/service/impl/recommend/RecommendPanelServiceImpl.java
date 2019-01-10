@@ -10,6 +10,21 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend;
 
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import org.apache.ibatis.session.ExecutorType;
+import org.apache.ibatis.session.SqlSession;
+import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
+
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.code.YnType;
@@ -28,29 +43,17 @@ import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
-import com.sktechx.godmusic.personal.rest.repository.*;
-import com.sktechx.godmusic.personal.rest.service.ChannelService;
-import com.sktechx.godmusic.personal.rest.service.ChartService;
+import com.sktechx.godmusic.personal.rest.repository.ArtistMapper;
+import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
+import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
+import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
 import com.sktechx.godmusic.personal.rest.service.MetaApiProxy;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.session.ExecutorType;
-import org.apache.ibatis.session.SqlSession;
-import org.mybatis.spring.SqlSessionTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.RCMMD_TRACK_PANEL_DETAIL_SUB_TITLE;
 
 /**
  * 설명 : 추천 패널 데이터 생성
@@ -92,6 +95,9 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
     @Autowired
     private MetaApiProxy metaApiProxy;
+
+    @Value("${personal.prefer.artist.panel.addPreferArtistPanel.instrumentalTrackRegexPattern}")
+    private String instrumentalTrackRegexPattern;
 
     @Override
     public List<Panel> createRecommendPanelList(Long characterNo , OsType osType) {
@@ -417,6 +423,15 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         // 모든 곡의 아티스트가 연달아 나오지 않게 정렬
         notDuplicateList(recommendArtistTrackListDto);
 
+        // added by Bob 2019.01.09
+	    // 연주곡 추천 제외 로직 추가
+	    recommendArtistTrackListDto = recommendArtistTrackListDto.stream().
+			    filter(x-> !(x.getTrackNm().matches(instrumentalTrackRegexPattern))).collect(Collectors.toList());
+
+	    if (CommonUtils.empty(recommendArtistTrackListDto)) {
+	    	return;
+	    }
+
         // 기존 패널 종료시간을 지금시간으로 업데이트
         recommendMapper.updateRcmmdArtistDispStdEndDt(characterNo);
         RecommendArtistDto recommendArtistDto = RecommendArtistDto.builder()
@@ -442,12 +457,14 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                             }
                     );
 
-            IntStream.range(0, recommendArtistTrackListDto.size())
+	        List<RecommendArtistTrackListDto> finalRecommendArtistTrackListDto = recommendArtistTrackListDto;
+
+	        IntStream.range(0, recommendArtistTrackListDto.size())
                     .forEach(index ->
                             {
                                 batchParam.clear();
                                 batchParam.put("rcmmdArtistId", recommendArtistDto.getRcmmdArtistId());
-                                batchParam.put("trackId", recommendArtistTrackListDto.get(index).getTrackId());
+                                batchParam.put("trackId", finalRecommendArtistTrackListDto.get(index).getTrackId());
                                 batchParam.put("dispSn", index);
                                 log.info("recommendArtistTrackListDto batchParam : " + batchParam.toString());
                                 sqlSession.update("insertRcmmdArtistTrackList", batchParam);
