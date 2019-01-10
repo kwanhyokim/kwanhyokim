@@ -10,19 +10,25 @@
 
 package com.sktechx.godmusic.personal.rest.controller.v1;
 
+import java.util.List;
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.*;
+
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.CommonConstant;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.RequestGMContext;
-import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelInfoDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
-import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistUpdateOrderRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendDummyDataRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDataService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
@@ -31,13 +37,7 @@ import com.sktechx.godmusic.personal.rest.validate.Validator;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
-
-import javax.validation.Valid;
-import java.util.List;
 
 /**
  * 설명 : 추천 컨트롤러
@@ -75,8 +75,16 @@ public class RecommendPanelController {
     @GetMapping(value = "/home/panels")
     public CommonApiResponse<RecommendPanelResponse> recommendHomePanels(@ApiIgnore @RequestGMContext GMContext ctx){
 		RecommendPanelResponse recommendPanelResponse = new RecommendPanelResponse();
-		recommendPanelResponse.setList(recommendPanelService.createRecommendPanelList(ctx.getCharacterNo(),ctx.getOsType()));
-		return new CommonApiResponse<RecommendPanelResponse>(recommendPanelResponse);
+	    List<Panel> recommendPanelList = recommendPanelService
+			    .createRecommendPanelList(ctx.getCharacterNo(), ctx.getOsType());
+
+	    if(CollectionUtils.isEmpty(recommendPanelList)){
+	    	return null;
+	    }
+
+	    recommendPanelResponse.setList(recommendPanelList);
+
+		return new CommonApiResponse<>(recommendPanelResponse);
     }
 
 
