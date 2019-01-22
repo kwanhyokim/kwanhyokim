@@ -1,21 +1,8 @@
 package com.sktechx.godmusic.personal.rest.service.impl;
 
-import com.sktechx.godmusic.lib.domain.CommonApiResponse;
-import com.sktechx.godmusic.lib.domain.code.YnType;
-import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
-import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
-import com.sktechx.godmusic.personal.common.domain.constant.LikeConstant;
-import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
-import com.sktechx.godmusic.personal.common.util.CommonUtils;
-import com.sktechx.godmusic.personal.rest.model.dto.AlbumDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
-import com.sktechx.godmusic.personal.rest.model.dto.PlayListDto;
-import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
-import com.sktechx.godmusic.personal.rest.model.vo.like.*;
-import com.sktechx.godmusic.personal.rest.repository.LikeMapper;
-import com.sktechx.godmusic.personal.rest.service.LikeService;
-import com.sktechx.godmusic.personal.rest.service.MetaApiProxy;
-import lombok.extern.slf4j.Slf4j;
+import java.util.*;
+import java.util.stream.IntStream;
+
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -28,8 +15,28 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
-import java.util.stream.IntStream;
+import com.sktechx.godmusic.lib.domain.CommonApiResponse;
+import com.sktechx.godmusic.lib.domain.GMContext;
+import com.sktechx.godmusic.lib.domain.code.YnType;
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
+import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
+import com.sktechx.godmusic.personal.common.amqp.domain.UserEvent;
+import com.sktechx.godmusic.personal.common.amqp.domain.UserEventTarget;
+import com.sktechx.godmusic.personal.common.amqp.domain.UserEventType;
+import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
+import com.sktechx.godmusic.personal.common.domain.constant.LikeConstant;
+import com.sktechx.godmusic.personal.common.domain.type.AppNameType;
+import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
+import com.sktechx.godmusic.personal.common.util.CommonUtils;
+import com.sktechx.godmusic.personal.rest.model.dto.AlbumDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
+import com.sktechx.godmusic.personal.rest.model.dto.PlayListDto;
+import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
+import com.sktechx.godmusic.personal.rest.model.vo.like.*;
+import com.sktechx.godmusic.personal.rest.repository.LikeMapper;
+import com.sktechx.godmusic.personal.rest.service.LikeService;
+import com.sktechx.godmusic.personal.rest.service.MetaApiProxy;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by Kobe.
@@ -53,6 +60,9 @@ public class LikeServiceImpl implements LikeService {
 
 	@Autowired
 	private LikeMapper likeMapper;
+
+	@Autowired
+	private AmqpService amqpService;
 
 	public static void main(String[] args) {
 		List<Long> chnlIds = new ArrayList<>();
@@ -154,6 +164,14 @@ public class LikeServiceImpl implements LikeService {
 		likeMapper.updateLikeDispSn(request.getLikeType(), characterNo);
 
 		likeMapper.insertLike(request.getLikeType(), request.getLikeTypeId(), characterNo);
+
+		try {
+			sendUserEvent(UserEventType.LIKE, AppNameType.FLO, GMContext.getContext().getMemberNo(),
+					characterNo, request.getLikeTypeId(), UserEventTarget.valueOf(request.getLikeType()));
+		}catch (Exception e){
+			log.error("Like :: like add UserEvent :: Error Message", e.getMessage());
+			throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	@Override
@@ -177,6 +195,18 @@ public class LikeServiceImpl implements LikeService {
 			log.error("Like :: like delete :: Error Message", e.getMessage());
 			throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
 		}
+
+		try {
+			IntStream.range(0, request.getLikeTypeList().size()).forEach(
+					index -> sendUserEvent(UserEventType.UNLIKE, AppNameType.FLO,
+							GMContext.getContext().getMemberNo(), characterNo,
+							request.getLikeTypeList().get(index).getLikeTypeId(),
+							UserEventTarget.valueOf(request.getLikeTypeList().get(index).getLikeType())));
+		}catch (Exception e){
+			log.error("Like :: like delete UserEvent :: Error Message", e.getMessage());
+			throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
+		}
+
 	}
 
 	@Override
@@ -326,5 +356,20 @@ public class LikeServiceImpl implements LikeService {
 
 		if(StringUtils.isEmpty(response) || StringUtils.isEmpty(response.getCode())
 				|| !"2000000".equals(response.getCode()) || CommonUtils.empty(response.getData())) throw new CommonBusinessException(message);
+	}
+
+	private void sendUserEvent(UserEventType userEventType, AppNameType appName, Long memberNo, Long characterNo, Long targetId, UserEventTarget targetType){
+		UserEvent userEvent = UserEvent.newBuilder()
+				.setPlayChnl(appName)
+				.setEvent(userEventType)
+				.setMemberNo(memberNo)
+				.setCharactorNo(characterNo)
+				.setTargetId(targetId)
+				.setTargetType(targetType)
+				.build();
+
+		amqpService.deliverUserEvent(userEvent);
+		log.info("[Add Like - User event] " + userEvent.toString());
+
 	}
 }
