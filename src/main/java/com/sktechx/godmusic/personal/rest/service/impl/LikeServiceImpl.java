@@ -169,8 +169,9 @@ public class LikeServiceImpl implements LikeService {
 			sendUserEvent(UserEventType.LIKE, AppNameType.FLO, GMContext.getContext().getMemberNo(),
 					characterNo, request.getLikeTypeId(), UserEventTarget.valueOf(request.getLikeType()));
 		}catch (Exception e){
-			log.error("Like :: like add UserEvent :: Error Message", e.getMessage());
-			throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
+			log.error("Like :: like add UserEvent :: Error Message {}", e.getMessage());
+//			throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
+
 		}
 	}
 
@@ -192,7 +193,7 @@ public class LikeServiceImpl implements LikeService {
 			sqlSession.flushStatements();
 			sqlSession.commit();
 		}catch(Exception e){
-			log.error("Like :: like delete :: Error Message", e.getMessage());
+			log.error("Like :: like delete :: Error Message{} ", e.getMessage());
 			throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
 		}
 
@@ -203,8 +204,8 @@ public class LikeServiceImpl implements LikeService {
 							request.getLikeTypeList().get(index).getLikeTypeId(),
 							UserEventTarget.valueOf(request.getLikeTypeList().get(index).getLikeType())));
 		}catch (Exception e){
-			log.error("Like :: like delete UserEvent :: Error Message", e.getMessage());
-			throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
+			log.error("Like :: like delete UserEvent :: Error Message :{}", e.getMessage());
+//			throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
 		}
 
 	}
