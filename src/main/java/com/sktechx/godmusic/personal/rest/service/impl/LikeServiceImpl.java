@@ -187,7 +187,7 @@ public class LikeServiceImpl implements LikeService {
 			sqlSession.flushStatements();
 			sqlSession.commit();
 		}catch(Exception e){
-			log.error("Like :: like delete :: Error Message{} ", e.getMessage());
+			log.error("Like :: like delete :: Error Message :: {} ", e.getMessage());
 			throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
 		}
 
@@ -223,7 +223,7 @@ public class LikeServiceImpl implements LikeService {
 			sqlSession.flushStatements();
 			sqlSession.commit();
 		}catch(Exception e){
-			log.error("Like :: like update :: Error Message", e.getMessage());
+			log.error("Like :: like update :: Error Message :: {}", e.getMessage());
 			throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
 		}
 	}
