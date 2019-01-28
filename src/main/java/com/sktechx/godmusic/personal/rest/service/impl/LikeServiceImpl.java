@@ -64,12 +64,6 @@ public class LikeServiceImpl implements LikeService {
 	@Autowired
 	private AmqpService amqpService;
 
-	public static void main(String[] args) {
-		List<Long> chnlIds = new ArrayList<>();
-		System.out.printf("hi " + chnlIds);
-		if (chnlIds == null) System.out.printf("null");
-	}
-
 	@Override
 	public LikePlaylistListResponse getPlayListLikeListByLikeType(Long characterNo, Pageable pageable) {
 		int totalCount = 0;
@@ -169,7 +163,7 @@ public class LikeServiceImpl implements LikeService {
 			sendUserEvent(UserEventType.LIKE, AppNameType.FLO.getCode(), GMContext.getContext().getMemberNo(),
 					characterNo, request.getLikeTypeId(), UserEventTarget.valueOf(request.getLikeType()));
 		}catch (Exception e){
-			log.error("Like :: like add UserEvent :: Error Message {}", e.getMessage());
+			log.warn("Like :: like add UserEvent :: failed Message :: {}", e.getMessage());
 //			throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
 
 		}
@@ -204,7 +198,7 @@ public class LikeServiceImpl implements LikeService {
 							request.getLikeTypeList().get(index).getLikeTypeId(),
 							UserEventTarget.valueOf(request.getLikeTypeList().get(index).getLikeType())));
 		}catch (Exception e){
-			log.error("Like :: like delete UserEvent :: Error Message :{}", e.getMessage());
+			log.warn("Like :: like delete UserEvent :: failed Message :: {}", e.getMessage());
 //			throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
 		}
 
