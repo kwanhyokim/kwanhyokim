@@ -1,5 +1,12 @@
 package com.sktechx.godmusic.personal.rest.service.impl;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
+
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
@@ -8,7 +15,6 @@ import com.sktechx.godmusic.personal.common.amqp.domain.UserEventTarget;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEventType;
 import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
 import com.sktechx.godmusic.personal.common.domain.type.AppNameType;
-import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.common.domain.type.TrackLogType;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.PurchasePassDto;
@@ -20,12 +26,6 @@ import com.sktechx.godmusic.personal.rest.service.ListenService;
 import com.sktechx.godmusic.personal.rest.service.PurchaseService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDataService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
-
-import javax.servlet.http.HttpServletRequest;
 
 import static com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType.*;
 /**
@@ -132,13 +132,15 @@ public class ListenServiceImpl implements ListenService {
 		UserEventType userEventType = UserEventType.fromTrackLogType(request.getTrackLogType());
 		if( !userEventType.equals(UserEventType.UNKNOWN) )	{
 			UserEvent userEvent = UserEvent.newBuilder()
-					.setPlayChnl(AppNameType.fromCode(currentContext.getAppName()))
-					.setEvent(userEventType)
-					.setMemberNo(memberNo)
-					.setCharactorNo(characterNo)
-					.setTargetId(request.getTrackId())
-					.setTargetType(UserEventTarget.TRACK)
-					.setSourceType(request.getSourceType())
+					.playChnl(currentContext.getAppName())
+					.event(userEventType)
+					.memberNo(memberNo)
+					.charactorNo(characterNo)
+					.targetId(String.valueOf(request.getTrackId()))
+					.targetType(UserEventTarget.TRACK)
+					.sourceType(request.getSourceType())
+					.trackTotTm(request.getTrackTotalSec())
+					.elapsedTm(request.getElapsedSec())
 					.build();
 			amqpService.deliverUserEvent(userEvent);
 			log.info("[Track Listen Hist - User event] " + userEvent.toString());

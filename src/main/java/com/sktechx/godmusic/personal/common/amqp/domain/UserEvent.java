@@ -13,8 +13,9 @@
 package com.sktechx.godmusic.personal.common.amqp.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sktechx.godmusic.personal.common.domain.type.AppNameType;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 /**
@@ -24,7 +25,8 @@ import lombok.Getter;
  * @date 2018. 3. 26.
  *
  */
-
+@Builder(builderMethodName = "newBuilder")
+@AllArgsConstructor
 @Getter
 public class UserEvent {
 	@JsonProperty("play_chnl")
@@ -50,69 +52,15 @@ public class UserEvent {
 
 	@JsonProperty("source_type")
 	private SourceType          sourceType;
+
+	@JsonProperty("track_tot_tm")
+	private Long				trackTotTm;
+
+	@JsonProperty("elapsed_tm")
+	private Long				elapsedTm;
 	
 	private UserEvent()	{
 		this.timeMillis = System.currentTimeMillis();
-	}
-
-	public final static UserEventBuilder	newBuilder()	{
-		return new UserEventBuilder();
-	}
-	
-	public static class UserEventBuilder	{
-		UserEvent instance = new UserEvent();
-		
-		private UserEventBuilder()	{}	
-
-		public UserEventBuilder		setPlayChnl(AppNameType playChnl)	{
-			if(playChnl != null )
-				instance.playChnl = playChnl.getCode();
-			return this;
-		}
-
-		public UserEventBuilder		setEvent(UserEventType event)	{
-			instance.event = event;
-			return this;
-		}
-
-		public UserEventBuilder		setMemberNo(long memberNo)	{
-			instance.memberNo = memberNo;
-			return this;
-		}
-
-		public UserEventBuilder		setCharactorNo(long charactorNo)	{
-			instance.charactorNo = charactorNo;
-			return this;
-		}
-
-		public UserEventBuilder		setTargetType(UserEventTarget target)	{
-			instance.targetType = target;
-			return this;
-		}
-
-		public UserEventBuilder		setTargetId(String targetId)	{
-			instance.targetId = targetId;
-			return this;
-		}
-
-		public UserEventBuilder		setTargetId(long targetId)	{
-			instance.targetId = Long.toString(targetId);
-			return this;
-		}
-
-		public UserEventBuilder		setSourceType(SourceType sourceType)	{
-			instance.sourceType = sourceType;
-			return this;
-		}
-		
-		public UserEvent	build()	{
-			if( instance.event == null )	throw new IllegalStateException("event is null");
-			if( instance.memberNo == null )	throw new IllegalStateException("memberNo is null");
-			if( instance.targetType == null )	throw new IllegalStateException("targetType is null");
-			if( instance.targetId == null )	throw new IllegalStateException("targetId is null");
-
-			return instance;
-		}
 	}
 
 	@Override
