@@ -361,6 +361,7 @@ public class LikeServiceImpl implements LikeService {
 				.charactorNo(characterNo)
 				.targetId(String.valueOf(targetId))
 				.targetType(targetType)
+				.timeMillis(System.currentTimeMillis())
 				.build();
 
 		amqpService.deliverUserEvent(userEvent);

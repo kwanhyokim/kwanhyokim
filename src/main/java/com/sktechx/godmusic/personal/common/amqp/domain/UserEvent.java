@@ -59,10 +59,6 @@ public class UserEvent {
 	@JsonProperty("elapsed_tm")
 	private Long				elapsedTm;
 	
-	private UserEvent()	{
-		this.timeMillis = System.currentTimeMillis();
-	}
-
 	@Override
 	public String toString() {
 		return "UserEvent{" +
