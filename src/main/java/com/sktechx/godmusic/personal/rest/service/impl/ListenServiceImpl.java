@@ -141,6 +141,7 @@ public class ListenServiceImpl implements ListenService {
 					.sourceType(request.getSourceType())
 					.trackTotTm(request.getTrackTotalSec())
 					.elapsedTm(request.getElapsedSec())
+					.timeMillis(System.currentTimeMillis())
 					.build();
 			amqpService.deliverUserEvent(userEvent);
 			log.info("[Track Listen Hist - User event] " + userEvent.toString());

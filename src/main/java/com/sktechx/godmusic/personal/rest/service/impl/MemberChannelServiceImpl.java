@@ -343,6 +343,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
                     .charactorNo(characterNo)
                     .targetId(String.valueOf(trackId))
                     .targetType(UserEventTarget.TRACK)
+		            .timeMillis(System.currentTimeMillis())
                     .build();
             amqpService.deliverUserEvent(userEvent);
         }
@@ -387,6 +388,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
                         .charactorNo(characterNo)
                         .targetId(String.valueOf(trackId))
                         .targetType(UserEventTarget.TRACK)
+		                .timeMillis(System.currentTimeMillis())
                         .build();
                 amqpService.deliverUserEvent(userEvent);
             }catch (Exception e){
