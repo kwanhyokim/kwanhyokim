@@ -12,30 +12,14 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl;
 
-import com.sktechx.godmusic.lib.domain.GMContext;
-import com.sktechx.godmusic.lib.domain.code.OsType;
-import com.sktechx.godmusic.lib.domain.code.YnType;
-import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
-import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
-import com.sktechx.godmusic.personal.common.amqp.domain.UserEvent;
-import com.sktechx.godmusic.personal.common.amqp.domain.UserEventTarget;
-import com.sktechx.godmusic.personal.common.amqp.domain.UserEventType;
-import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
-import com.sktechx.godmusic.personal.common.domain.type.AppNameType;
-import com.sktechx.godmusic.personal.common.domain.type.FixedSize;
-import com.sktechx.godmusic.personal.common.domain.type.ImageDisplayType;
-import com.sktechx.godmusic.personal.common.domain.type.PinType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
-import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
-import com.sktechx.godmusic.personal.rest.model.dto.*;
-import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
-import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistRetriveAllResponse;
-import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistTrackCreateResponse;
-import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistTrackRetrieveAllResponse;
-import com.sktechx.godmusic.personal.rest.repository.*;
-import com.sktechx.godmusic.personal.rest.service.MemberChannelService;
-import com.sktechx.godmusic.personal.rest.service.recommend.RecommendImageManagementService;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.logging.log4j.util.Strings;
@@ -51,13 +35,26 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
-import java.time.LocalDate;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import com.sktechx.godmusic.lib.domain.GMContext;
+import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.lib.domain.code.YnType;
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
+import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
+import com.sktechx.godmusic.personal.common.amqp.domain.UserEvent;
+import com.sktechx.godmusic.personal.common.amqp.domain.UserEventTarget;
+import com.sktechx.godmusic.personal.common.amqp.domain.UserEventType;
+import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
+import com.sktechx.godmusic.personal.common.domain.type.*;
+import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
+import com.sktechx.godmusic.personal.rest.model.dto.*;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
+import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistRetriveAllResponse;
+import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistTrackCreateResponse;
+import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistTrackRetrieveAllResponse;
+import com.sktechx.godmusic.personal.rest.repository.*;
+import com.sktechx.godmusic.personal.rest.service.MemberChannelService;
+import com.sktechx.godmusic.personal.rest.service.recommend.RecommendImageManagementService;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 설명 :
@@ -340,12 +337,12 @@ public class MemberChannelServiceImpl implements MemberChannelService {
         // 사용자 이벤트 전송
         for(Long trackId : trackIdList){
             UserEvent userEvent = UserEvent.newBuilder()
-                    .setPlayChnl(appName)
-                    .setEvent(UserEventType.UNPICK)
-                    .setMemberNo(memberNo)
-                    .setCharactorNo(characterNo)
-                    .setTargetId(trackId)
-                    .setTargetType(UserEventTarget.TRACK)
+                    .playChnl(appName.getCode())
+                    .event(UserEventType.UNPICK)
+                    .memberNo(memberNo)
+                    .charactorNo(characterNo)
+                    .targetId(String.valueOf(trackId))
+                    .targetType(UserEventTarget.TRACK)
                     .build();
             amqpService.deliverUserEvent(userEvent);
         }
@@ -384,13 +381,12 @@ public class MemberChannelServiceImpl implements MemberChannelService {
 
                 // 사용자 이벤트 전송
                 UserEvent userEvent = UserEvent.newBuilder()
-                        .setPlayChnl(appName)
-                        .setEvent(UserEventType.PICK)
-                        .setEvent(UserEventType.PICK)
-                        .setMemberNo(memberNo)
-                        .setCharactorNo(characterNo)
-                        .setTargetId(trackId)
-                        .setTargetType(UserEventTarget.TRACK)
+                        .playChnl(appName.getCode())
+                        .event(UserEventType.PICK)
+                        .memberNo(memberNo)
+                        .charactorNo(characterNo)
+                        .targetId(String.valueOf(trackId))
+                        .targetType(UserEventTarget.TRACK)
                         .build();
                 amqpService.deliverUserEvent(userEvent);
             }catch (Exception e){

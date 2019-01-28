@@ -166,7 +166,7 @@ public class LikeServiceImpl implements LikeService {
 		likeMapper.insertLike(request.getLikeType(), request.getLikeTypeId(), characterNo);
 
 		try {
-			sendUserEvent(UserEventType.LIKE, AppNameType.FLO, GMContext.getContext().getMemberNo(),
+			sendUserEvent(UserEventType.LIKE, AppNameType.FLO.getCode(), GMContext.getContext().getMemberNo(),
 					characterNo, request.getLikeTypeId(), UserEventTarget.valueOf(request.getLikeType()));
 		}catch (Exception e){
 			log.error("Like :: like add UserEvent :: Error Message {}", e.getMessage());
@@ -199,7 +199,7 @@ public class LikeServiceImpl implements LikeService {
 
 		try {
 			IntStream.range(0, request.getLikeTypeList().size()).forEach(
-					index -> sendUserEvent(UserEventType.UNLIKE, AppNameType.FLO,
+					index -> sendUserEvent(UserEventType.UNLIKE, AppNameType.FLO.getCode(),
 							GMContext.getContext().getMemberNo(), characterNo,
 							request.getLikeTypeList().get(index).getLikeTypeId(),
 							UserEventTarget.valueOf(request.getLikeTypeList().get(index).getLikeType())));
@@ -359,14 +359,14 @@ public class LikeServiceImpl implements LikeService {
 				|| !"2000000".equals(response.getCode()) || CommonUtils.empty(response.getData())) throw new CommonBusinessException(message);
 	}
 
-	private void sendUserEvent(UserEventType userEventType, AppNameType appName, Long memberNo, Long characterNo, Long targetId, UserEventTarget targetType){
+	private void sendUserEvent(UserEventType userEventType, String appName, Long memberNo, Long characterNo, Long targetId, UserEventTarget targetType){
 		UserEvent userEvent = UserEvent.newBuilder()
-				.setPlayChnl(appName)
-				.setEvent(userEventType)
-				.setMemberNo(memberNo)
-				.setCharactorNo(characterNo)
-				.setTargetId(targetId)
-				.setTargetType(targetType)
+				.playChnl(appName)
+				.event(userEventType)
+				.memberNo(memberNo)
+				.charactorNo(characterNo)
+				.targetId(String.valueOf(targetId))
+				.targetType(targetType)
 				.build();
 
 		amqpService.deliverUserEvent(userEvent);
