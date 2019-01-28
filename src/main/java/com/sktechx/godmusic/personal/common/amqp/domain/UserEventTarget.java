@@ -24,5 +24,6 @@ public enum UserEventTarget {
 	TRACK,
 	CHANNEL,
 	ARTIST,
-	ALBUM;
+	ALBUM,
+	CHNL;
 }
