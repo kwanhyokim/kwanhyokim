@@ -90,6 +90,9 @@ public class TrackListen {
 	@JsonProperty("owner_token")
 	private String              ownerToken;
 
+	@JsonProperty("session_id")
+	private String              listenSessionId;
+
 	public TrackListen() {
 		this.timeMillis = System.currentTimeMillis();
 		this.free = false;

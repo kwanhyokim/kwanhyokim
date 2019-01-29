@@ -75,7 +75,7 @@ public class ListenServiceImpl implements ListenService {
 		String osType = request.getOsType() != null ? request.getOsType().getCode() : "";
 		String clientIp = httpServletRequest.getHeader("client_ip") != null ? httpServletRequest.getHeader("client_ip") : "";
 		String chnlType = StringUtils.isEmpty(request.getChannelType()) ? null : request.getChannelType();
-
+		String listenSessionId = StringUtils.isEmpty(request.getListenSessionId()) ? null : request.getListenSessionId();
 		TrackListen trackListen = TrackListen.builder()
 				.playChnl(playChannel)
 				.memberNo(memberNo)
@@ -98,6 +98,7 @@ public class ListenServiceImpl implements ListenService {
 				.timeMillis(System.currentTimeMillis())
 				.userClientIp(clientIp)
 				.ownerToken(request.getOwnerToken())
+				.listenSessionId(listenSessionId)
 				.build();
 
 		TrackListen.TrackListenBuilder trackListenBuilder = trackListen.toBuilder();
