@@ -148,6 +148,12 @@
                 a.artist_id, b.artist_nm, a.seedArtistId, a.rank
             FROM
                 (
+                SELECT similar_artist_id AS artist_id, artist_id as seedArtistId, rank FROM tb_similar_artist_word2vec
+                WHERE artist_id IN
+                <foreach collection="artistIdList" item="artistId" index="index" open="(" separator="," close=")">
+                    #{artistId}
+                </foreach>
+                UNION
                 SELECT similar_artist_id AS artist_id, artist_id as seedArtistId, rank FROM tb_similar_artist_sub
                 WHERE artist_id IN
                 <foreach collection="artistIdList" item="artistId" index="index" open="(" separator="," close=")">
