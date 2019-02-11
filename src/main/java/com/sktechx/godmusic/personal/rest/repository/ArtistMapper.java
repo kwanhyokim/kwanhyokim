@@ -10,14 +10,13 @@
 
 package com.sktechx.godmusic.personal.rest.repository;
 
-import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
-import com.sktechx.godmusic.lib.mybatis.annotation.ReadOnlyMapper;
-import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
-import com.sktechx.godmusic.personal.rest.model.dto.preference.PreferSimilarArtistDto;
+import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
+import com.sktechx.godmusic.lib.mybatis.annotation.ReadOnlyMapper;
+import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
+import com.sktechx.godmusic.personal.rest.model.dto.preference.PreferSimilarArtistDto;
 
 /**
  * 설명 :  아티스트 Repository
@@ -34,4 +33,5 @@ public interface ArtistMapper {
 	List<ArtistDto> selectSeedArtistList(@Param("characterNo")Long characterNo, @Param("artistIdList")List<Long> artistIdList);
 
 	List<PreferSimilarArtistDto> selectArtistListBySimilarArtist(@Param("characterNo")Long characterNo, @Param("artistIdList")List<Long> artistIdList);
+	List<PreferSimilarArtistDto> selectArtistListBySimilarArtistOld(@Param("characterNo")Long characterNo, @Param("artistIdList")List<Long> artistIdList);
 }

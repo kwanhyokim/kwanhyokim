@@ -153,19 +153,6 @@
                 <foreach collection="artistIdList" item="artistId" index="index" open="(" separator="," close=")">
                     #{artistId}
                 </foreach>
-                UNION
-                SELECT similar_artist_id AS artist_id, artist_id as seedArtistId, rank FROM tb_similar_artist_sub
-                WHERE artist_id IN
-                <foreach collection="artistIdList" item="artistId" index="index" open="(" separator="," close=")">
-                    #{artistId}
-                </foreach>
-                UNION
-                SELECT similar_artist_id AS artist_id, artist_id as seedArtistId, rank  FROM tb_similar_artist
-                WHERE artist_id IN
-                <foreach collection="artistIdList" item="artistId" index="index" open="(" separator="," close=")">
-                    #{artistId}
-                </foreach>
-
                 ) a
                     JOIN
                 ted_artist b ON a.artist_id = b.artist_id
@@ -178,5 +165,47 @@
             ORDER BY NULL
           ) t1
           JOIN ted_artistimage t2 ON t1.artist_id = t2.artist_id
+    </select>
+
+    <select id="selectArtistListBySimilarArtistOld" resultMap="preferSimilarArtistResultMap">
+        <![CDATA[
+        SELECT
+          t1.artist_id,
+          t1.artist_nm,
+          t1.seedArtistId,
+          t1.rank,
+          t2.url,
+          t2.size
+      ]]>
+        FROM (
+
+        SELECT
+        a.artist_id, b.artist_nm, a.seedArtistId, a.rank
+        FROM
+        (
+        SELECT similar_artist_id AS artist_id, artist_id as seedArtistId, rank FROM tb_similar_artist_sub
+        WHERE artist_id IN
+        <foreach collection="artistIdList" item="artistId" index="index" open="(" separator="," close=")">
+            #{artistId}
+        </foreach>
+        UNION
+        SELECT similar_artist_id AS artist_id, artist_id as seedArtistId, rank  FROM tb_similar_artist
+        WHERE artist_id IN
+        <foreach collection="artistIdList" item="artistId" index="index" open="(" separator="," close=")">
+            #{artistId}
+        </foreach>
+
+        ) a
+        JOIN
+        ted_artist b ON a.artist_id = b.artist_id
+        JOIN
+        tb_track d ON b.artist_id = d.reprsnt_artist_id
+        AND d.disp_status_yn = 'Y'
+        AND d.track_popularity > 0
+        GROUP BY a.artist_id , b.artist_nm
+        HAVING COUNT(1) >= 5
+        ORDER BY NULL
+        ) t1
+        JOIN ted_artistimage t2 ON t1.artist_id = t2.artist_id
     </select>
 </mapper>

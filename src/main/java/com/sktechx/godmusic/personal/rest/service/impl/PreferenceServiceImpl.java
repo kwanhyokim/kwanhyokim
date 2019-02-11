@@ -12,6 +12,17 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
+
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
@@ -19,11 +30,7 @@ import com.sktechx.godmusic.personal.common.domain.PreferPropsType;
 import com.sktechx.godmusic.personal.common.domain.domain.HomeContentType;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
-import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
-import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferDispDto;
-import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ImageManagementDto;
+import com.sktechx.godmusic.personal.rest.model.dto.*;
 import com.sktechx.godmusic.personal.rest.model.dto.preference.PreferSimilarArtistDto;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.Artist;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.Chart;
@@ -36,20 +43,7 @@ import com.sktechx.godmusic.personal.rest.repository.ImageManagementMapper;
 import com.sktechx.godmusic.personal.rest.service.PreferenceService;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
-
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.PERSONAL_RREFERENCE_ARTIST_KEY;
-import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.PERSONAL_SIMILAR_ARTIST_HISTORY_KEY;
-import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.PERSONAL_SIMILAR_ARTIST_KEY;
+import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.*;
 
 /**
  * 설명 :
@@ -256,6 +250,19 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 							.stream().distinct().collect(
 					Collectors.toList()));
+
+
+			if (CollectionUtils.isEmpty(preferSimilarArtistDtoList)) {
+				log.info("[유사아티스트] - [{}] 노출할 word2vec에 아티스트 없어 기존 테이블 조회", characterNo);
+				preferSimilarArtistDtoList =
+						artistMapper.selectArtistListBySimilarArtistOld(
+								characterNo,
+
+								totalSeedArtistList.stream().map(x -> x.getArtistId()).collect(Collectors.toList())
+
+										.stream().distinct().collect(
+										Collectors.toList()));
+			}
 
 			if (CollectionUtils.isEmpty(preferSimilarArtistDtoList)) {
 				log.info("[유사아티스트] - [{}] 노출할 유사아티스트 없음", characterNo);
