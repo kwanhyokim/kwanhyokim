@@ -1,5 +1,8 @@
 package com.sktechx.godmusic.personal.rest.model.vo.listen;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.domain.type.BitrateType;
 import com.sktechx.godmusic.personal.common.domain.type.OsType;
@@ -10,9 +13,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 
 /**
  * Created by Kobe.
@@ -78,4 +78,7 @@ public class ListenTrackRequest {
 
 	@ApiModelProperty(name = "ownerToken", value = "파일 원천 정보")
 	private String ownerToken;
+
+	@ApiModelProperty(name = "listenSessionId", value = "청취 세션 아이디")
+	private String listenSessionId;
 }
