@@ -104,22 +104,20 @@ public class ListenServiceImpl implements ListenService {
 
 		log.info("addListenHistByTrack...");
 		if(request.getTrackLogType() == TrackLogType.ONEMIN){
-			if(!YnType.Y.equals(request.getFreeYn())){
-				String pssrl = purchaseService.getPssrlCd(memberNo);
-				if(ObjectUtils.isEmpty(pssrl)){
-					throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
-				}
-				PurchasePassDto purchasePassDto = purchaseService.getInUsePurchaseIdByMemberNo(memberNo);
-
-				if(purchasePassDto == null){
-					throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
-				}
-
-				trackListenBuilder
-						.pssrlCd(pssrl)
-						.prchsId(purchasePassDto.getPrchsId())
-						.goodsId(purchasePassDto.getGoodsId());
+			String pssrl = purchaseService.getPssrlCd(memberNo);
+			if(ObjectUtils.isEmpty(pssrl)){
+				throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
 			}
+			PurchasePassDto purchasePassDto = purchaseService.getInUsePurchaseIdByMemberNo(memberNo);
+
+			if(purchasePassDto == null){
+				throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
+			}
+
+			trackListenBuilder
+					.pssrlCd(pssrl)
+					.prchsId(purchasePassDto.getPrchsId())
+					.goodsId(purchasePassDto.getGoodsId());
 		}
 
 		if(YnType.Y.equals(request.getFreeYn()))	{
