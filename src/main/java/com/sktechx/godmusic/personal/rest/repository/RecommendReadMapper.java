@@ -83,7 +83,7 @@ public interface RecommendReadMapper {
             , @Param("osType") OsType osType
             , @Param("dispSn") int dispSn);
 
-    String selectRecommendGenreByRcmmdId(@Param("rcmmdId") Long rcmmdId);
+    RecommendGenreVo selectRecommendGenreByRcmmdId(@Param("rcmmdId") Long rcmmdId);
 
     RecommendDuplicateCountDto selectSimilarTrackPanelBetweenDuplicateCount(@Param("characterNo") Long characterNo);
     RecommendDuplicateCountDto selectPreferGenreSimilarTrackPanelBetweenDuplicateCount(@Param("characterNo") Long characterNo);

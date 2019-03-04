@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -304,14 +305,22 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             // 추천
 
             case RC_CF_TR:
-	            String genreNm = recommendReadMapper.selectRecommendGenreByRcmmdId(panelContentId);
+                RecommendGenreVo recommendGenreVo = recommendReadMapper.selectRecommendGenreByRcmmdId(panelContentId);
+                String genreNm = "";
+                Date createDTime = new Date();
+
+                if(!ObjectUtils.isEmpty(recommendGenreVo)){
+                    genreNm = recommendGenreVo.getSvcGenreNm();
+                    createDTime = recommendGenreVo.getCreateDtime();
+                }
+
                 panel = new RecommendPanelInfoDto.Builder()
                         .title(RecommendConstant.RCMMD_TRACK_PANEL_TITLE)
-                        .subTitle(String.format(RCMMD_TRACK_PANEL_DETAIL_SUB_TITLE,(genreNm == null ? "" : genreNm)))
+                        .subTitle(String.format(RCMMD_TRACK_PANEL_DETAIL_SUB_TITLE,(genreNm)))
                         .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType , 0))
                         .trackCount(trackCount)
                         .newYn(YnType.Y)
-                        .renewDtime(new Date())
+                        .renewDtime(createDTime)
                         .build();
                 break;
         }
