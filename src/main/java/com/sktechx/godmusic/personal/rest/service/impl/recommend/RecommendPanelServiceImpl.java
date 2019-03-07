@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.service.impl.recommend;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -308,10 +309,16 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 RecommendGenreVo recommendGenreVo = recommendReadMapper.selectRecommendGenreByRcmmdId(panelContentId);
                 String genreNm = "";
                 Date createDTime = new Date();
+                YnType newYn = YnType.N;
 
                 if(!ObjectUtils.isEmpty(recommendGenreVo)){
                     genreNm = recommendGenreVo.getSvcGenreNm();
                     createDTime = recommendGenreVo.getCreateDtime();
+
+                    Date stdDate = new Date((System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1)));
+                    if(stdDate.before(createDTime)){
+                        newYn = YnType.Y;
+                    }
                 }
 
                 panel = new RecommendPanelInfoDto.Builder()
@@ -319,7 +326,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                         .subTitle(String.format(RCMMD_TRACK_PANEL_DETAIL_SUB_TITLE,(genreNm)))
                         .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType , 0))
                         .trackCount(trackCount)
-                        .newYn(YnType.Y)
+                        .newYn(newYn)
                         .renewDtime(createDTime)
                         .build();
                 break;

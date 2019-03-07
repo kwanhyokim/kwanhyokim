@@ -23,8 +23,10 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelCon
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Date;
 import java.util.List;
-import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
+import java.util.concurrent.TimeUnit;
+
 /**
  * 설명 : 곡 유형 추천 패널
  *
@@ -62,7 +64,13 @@ public abstract class TrackPanel extends Panel {
         content.setGenre(new GenreVo(recommendTrackDto.getSvcGenreDto()));
         content.setCreateDtime(recommendTrackDto.getRcmmdCreateDtime());
         content.setUpdateDtime(recommendTrackDto.getRcmmdCreateDtime());
-        content.setRenewYn(YnType.Y);
+
+        Date stdDate = new Date((System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1)));
+        if(stdDate.before(recommendTrackDto.getRcmmdCreateDtime())){
+            content.setRenewYn(YnType.Y);
+        }else{
+            content.setRenewYn(YnType.N);
+        }
 
         return content;
     }
