@@ -62,22 +62,21 @@
             CONCAT(b.album_img_url, '?updateDate=', unix_timestamp(b.update_dtime)) url
         FROM
           tb_track a
-        LEFT OUTER JOIN	tb_album_img b
-          ON a.album_id = b.album_id
-        LEFT OUTER JOIN	ted_trackartist as c
-          ON a.track_id = c.track_id AND c.rp_yn = 'Y' and c.db_sts = 'A'
-        LEFT OUTER JOIN	ted_artist d
-          ON c.artist_id = d.artist_id
-        LEFT OUTER JOIN ted_album e
-          ON a.album_id = e.album_id
-        LEFT OUTER JOIN ted_artist f
-          ON a.reprsnt_artist_id = f.artist_id
+        LEFT OUTER JOIN	tb_album_img b ON a.album_id = b.album_id
+        LEFT OUTER JOIN	ted_trackartist as c ON a.track_id = c.track_id
+                        AND c.rp_yn = 'Y' and c.db_sts = 'A'
+        LEFT OUTER JOIN ted_artist d ON c.artist_id = d.artist_id
+        INNER JOIN ted_album e ON a.album_id = e.album_id
+                        AND e.disp_status_yn = 'Y'
+                        AND now() BETWEEN e.disp_start_dtime AND e.disp_end_dtime
+        LEFT OUTER JOIN ted_artist f ON a.reprsnt_artist_id = f.artist_id
       WHERE
         a.track_id IN
         <foreach collection="trackIdList" item="trackId"  open="("  index="index" separator="," close=")">
             #{trackId}
         </foreach>
         AND a.disp_status_yn = 'Y'
+        AND now() BETWEEN a.disp_start_dtime AND a.disp_end_dtime
     </select>
 
     <select id="selectRecommendPanelPopularTrackList" resultType="Long">
@@ -192,22 +191,19 @@
 						#{offset} ,
 						#{size}
 				) a
-			INNER JOIN	tb_track b
-				ON a.track_id = b.track_id
+			INNER JOIN tb_track b
+                ON a.track_id = b.track_id AND b.disp_status_yn ='Y' AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
 			LEFT OUTER JOIN tb_character_like f
 				ON a.track_id = f.like_type_id AND a.character_no = f.character_no AND like_type = 'TRACK'
-			LEFT OUTER JOIN	tb_album_img c
-				ON b.album_id = c.album_id
+			LEFT OUTER JOIN	tb_album_img c ON b.album_id = c.album_id
 			LEFT OUTER JOIN	ted_trackartist as d
 				ON b.track_id = d.track_id AND d.rp_yn = 'Y' and d.db_sts = 'A'
 			LEFT OUTER JOIN	ted_artist e
 				ON d.artist_id = e.artist_id
-			LEFT OUTER JOIN ted_album g
-				ON b.album_id = g.album_id
+			INNER JOIN ted_album g
+				ON b.album_id = g.album_id AND g.disp_status_yn ='Y' AND now() BETWEEN g.disp_start_dtime AND g.disp_end_dtime
 			LEFT OUTER JOIN ted_artist h
 				ON b.reprsnt_artist_id = h.artist_id
-			WHERE
-				b.disp_status_yn ='Y'
 			ORDER BY listenCount DESC, lastListenDateTime DESC, d.listorder
 		]]>
 	</select>
@@ -231,7 +227,7 @@
 						character_no = #{characterNo}
 				) a
 			INNER JOIN	tb_track b
-				ON a.track_id = b.track_id
+				ON a.track_id = b.track_id AND b.disp_status_yn ='Y' AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
 			LEFT OUTER JOIN tb_character_like f
 				ON a.track_id = f.like_type_id AND a.character_no = f.character_no AND like_type = 'TRACK'
 			LEFT OUTER JOIN	tb_album_img c
@@ -240,12 +236,10 @@
 				ON b.track_id = d.track_id AND d.rp_yn = 'Y' and d.db_sts = 'A'
 			LEFT OUTER JOIN	ted_artist e
 				ON d.artist_id = e.artist_id
-			LEFT OUTER JOIN ted_album g
-				ON b.album_id = g.album_id
+			INNER JOIN ted_album g
+				ON b.album_id = g.album_id AND g.disp_status_yn ='Y' AND now() BETWEEN g.disp_start_dtime AND g.disp_end_dtime
 			LEFT OUTER JOIN ted_artist h
 				ON b.reprsnt_artist_id = h.artist_id
-			WHERE
-				b.disp_status_yn ='Y'
 	</select>
 
     <select id="selectMyRecentTrackList" resultMap="mostListenedTrackResultMap">
@@ -290,11 +284,10 @@
                                  b.reprsnt_artist_id,
                                  b.create_dtime,
                                  b.update_dtime
-                            FROM tb_most_listen_track a INNER JOIN tb_track b
-                              ON a.track_id = b.track_id
+                            FROM tb_most_listen_track a
+                                INNER JOIN tb_track b ON a.track_id = b.track_id AND b.disp_status_yn = 'Y' AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
                            WHERE a.member_no = #{memberNo}
                              AND a.character_no = #{characterNo}
-                             AND b.disp_status_yn = 'Y'
                            ORDER BY a.last_listen_dtime DESC
                            LIMIT 500 ) aa
                   LIMIT #{pageable.offset}, #{pageable.pageSize} ) a
@@ -306,8 +299,8 @@
             ON d.artist_id = e.artist_id
           LEFT JOIN tb_map_track_like f
             ON a.track_id = f.track_id AND a.member_no = f.member_no
-          LEFT JOIN ted_album g
-            ON a.album_id = g.album_id
+          INNER JOIN ted_album g
+            ON a.album_id = g.album_id AND g.disp_status_yn ='Y' AND now() BETWEEN g.disp_start_dtime AND g.disp_end_dtime
           LEFT JOIN ted_artist h
             ON a.reprsnt_artist_id = h.artist_id
     </select>
@@ -316,11 +309,9 @@
       SELECT COUNT(*)
         FROM ( SELECT a.track_id
                  FROM tb_most_listen_track a
-                INNER JOIN tb_track b
-                   ON a.track_id = b.track_id
+                INNER JOIN tb_track b ON a.track_id = b.track_id AND b.disp_status_yn = 'Y'AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
                 WHERE a.member_no = #{memberNo}
                   AND a.character_no = #{characterNo}
-                  AND b.disp_status_yn = 'Y'
                 LIMIT 500 ) a
     </select>
 </mapper>

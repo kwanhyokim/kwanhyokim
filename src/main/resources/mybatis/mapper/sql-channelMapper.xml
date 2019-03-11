@@ -76,9 +76,8 @@
             c.track_sn
         FROM
           tb_chnl a INNER JOIN tb_map_chnl_track c ON a.chnl_id = c.chnl_id
-                    INNER JOIN tb_track d ON c.track_id = d.track_id
+                    INNER JOIN tb_track d ON c.track_id = d.track_id AND d.disp_status_yn = 'Y' AND now() BETWEEN d.disp_start_dtime AND d.disp_end_dtime
         WHERE a.chnl_id = #{channelId}
-            AND d.disp_status_yn = 'Y'
         ORDER BY c.track_sn ASC
     </select>
 
@@ -189,10 +188,10 @@
 
 
                 ) chnl
-                INNER JOIN
-                  tb_map_chnl_track b ON chnl.chnl_id = b.chnl_id
-                INNER JOIN
-                  tb_track c ON b.track_id = c.track_id
+                INNER JOIN tb_map_chnl_track b ON chnl.chnl_id = b.chnl_id
+                INNER JOIN tb_track c ON b.track_id = c.track_id
+                        AND c.disp_status_yn = 'Y'
+                        AND now() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
                 ORDER BY FIELD(chnl.chnl_id,
                 <foreach item="channelId" index="index" collection="channelIdList" open="" separator="," close="">
                     #{channelId}
@@ -200,7 +199,9 @@
                 ) , b.track_sn ASC
             ) a
         ) a
-        LEFT OUTER JOIN ted_album b ON a.album_id = b.album_id
+        INNER JOIN ted_album b ON a.album_id = b.album_id
+                    AND b.disp_status_yn = 'Y'
+                    AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
         LEFT OUTER JOIN tb_album_img c ON b.album_id = c.album_id
         LEFT OUTER JOIN ted_trackartist d ON a.track_id =d.track_id
                     AND d.rp_yn = 'Y' AND d.db_sts = 'A'
@@ -209,8 +210,6 @@
         , (SELECT @curRank:=0, @prevChnlId:=0) r
         WHERE
           a.rank  <![CDATA[<=]]> #{trackLimitSize}
-        AND
-          b.disp_status_yn = 'Y'
     </select>
 
     <select id="selectPopularChannelListByIdList" resultMap="channelResultMap">
