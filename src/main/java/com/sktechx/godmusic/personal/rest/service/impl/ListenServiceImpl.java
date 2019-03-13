@@ -119,6 +119,7 @@ public class ListenServiceImpl implements ListenService {
 			}
 
 			trackListenBuilder
+					.pssrlCd(svcCd)
 					.svcCd(svcCd)
 					.prchsId(purchasePassDto.getPrchsId())
 					.goodsId(purchasePassDto.getGoodsId());
