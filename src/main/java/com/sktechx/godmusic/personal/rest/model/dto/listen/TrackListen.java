@@ -75,8 +75,8 @@ public class TrackListen {
 	@Builder.Default
 	private Boolean				free = false;
 
-	@JsonProperty("pssrl_cd")
-	private String				pssrlCd;
+//	@JsonProperty("pssrl_cd")
+//	private String				pssrlCd;
 
 	@JsonProperty("session_token")
 	private String				sessionToken;
@@ -92,7 +92,10 @@ public class TrackListen {
 
 	@JsonProperty("session_id")
 	private String              listenSessionId;
-
+	
+	@JsonProperty("svcCd")
+	private String              svcCd;
+	
 	public TrackListen() {
 		this.timeMillis = System.currentTimeMillis();
 		this.free = false;

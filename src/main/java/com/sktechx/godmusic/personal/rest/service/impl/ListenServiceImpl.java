@@ -1,12 +1,5 @@
 package com.sktechx.godmusic.personal.rest.service.impl;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
-
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
@@ -24,8 +17,15 @@ import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenTrackRequest;
 import com.sktechx.godmusic.personal.rest.repository.ListenMapper;
 import com.sktechx.godmusic.personal.rest.service.ListenService;
 import com.sktechx.godmusic.personal.rest.service.PurchaseService;
+import com.sktechx.godmusic.personal.rest.service.SettlementService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDataService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
 
 import static com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType.*;
 /**
@@ -51,6 +51,9 @@ public class ListenServiceImpl implements ListenService {
 
 	@Autowired
 	RecommendDataService recommendDataService;
+	
+	@Autowired
+	SettlementService settlementService;
 
 	@Override
 	public void addListenHistByChannel(ListenRequest request, Long memberNo, Long characterNo) {
@@ -105,8 +108,8 @@ public class ListenServiceImpl implements ListenService {
 
 		log.info("addListenHistByTrack...");
 		if(request.getTrackLogType() == TrackLogType.ONEMIN){
-			String pssrl = purchaseService.getPssrlCd(memberNo);
-			if(ObjectUtils.isEmpty(pssrl)){
+			String svcCd = getSettlementCode(memberNo, request);
+			if(ObjectUtils.isEmpty(svcCd)){
 				throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
 			}
 			PurchasePassDto purchasePassDto = purchaseService.getInUsePurchaseIdByMemberNo(memberNo);
@@ -116,12 +119,12 @@ public class ListenServiceImpl implements ListenService {
 			}
 
 			trackListenBuilder
-					.pssrlCd(pssrl)
+					.svcCd(svcCd)
 					.prchsId(purchasePassDto.getPrchsId())
 					.goodsId(purchasePassDto.getGoodsId());
 		}
 
-		if(YnType.Y.equals(request.getFreeYn()))	{
+		if(YnType.Y.equals(request.getFreeYn())) {
 			trackListenBuilder.free(true);
 		}
 
@@ -155,5 +158,13 @@ public class ListenServiceImpl implements ListenService {
 			return true;
 		}
 		return false;
+	}
+	
+	private String getSettlementCode(Long memberNo, ListenTrackRequest request) {
+		if (YnType.Y == request.getFreeYn()) {
+			return "FREE_SVC";
+		} else {
+			return settlementService.getServiceCode(memberNo, request.getSourceType().getPlayType());
+		}
 	}
 }
