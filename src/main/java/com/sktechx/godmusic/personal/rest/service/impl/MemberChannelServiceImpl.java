@@ -375,10 +375,17 @@ public class MemberChannelServiceImpl implements MemberChannelService {
         int maxViewPriority = memberChannelTrackMapper.selectMaxTrackViewPriority(memberChannelId);
         AtomicInteger viewPriority = new AtomicInteger(maxViewPriority+1);
 
-        for(Long trackId : trackIdList){
+        List<TrackDto> trackDtoList = getTrackList(trackIdList);
+
+        for(TrackDto trackDto : trackDtoList){
             try{
-                memberChannelTrackMapper.insertTrackMemberChannel(memberChannelId, trackId, viewPriority.getAndIncrement());
-                successfulIdList.add(trackId);
+
+                if(trackDto.getDisplayYn() == YnType.Y){
+                    memberChannelTrackMapper.insertTrackMemberChannel(memberChannelId, trackDto.getTrackId(), viewPriority.getAndIncrement());
+                    successfulIdList.add(trackDto.getTrackId());
+                }else{
+                    dataIntegrityIdList.add(trackDto.getTrackId());
+                }
 
                 // 사용자 이벤트 전송
                 UserEvent userEvent = UserEvent.newBuilder()
@@ -386,7 +393,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
                         .event(UserEventType.PICK)
                         .memberNo(memberNo)
                         .charactorNo(characterNo)
-                        .targetId(String.valueOf(trackId))
+                        .targetId(String.valueOf(trackDto.getTrackId()))
                         .targetType(UserEventTarget.TRACK)
 		                .timeMillis(System.currentTimeMillis())
                         .build();
@@ -394,11 +401,11 @@ public class MemberChannelServiceImpl implements MemberChannelService {
             }catch (Exception e){
                 // 중복 등록 - 키 중복 에러로 체크
                 if(e instanceof DuplicateKeyException){
-                    duplicateKeyIdList.add(trackId);
+                    duplicateKeyIdList.add(trackDto.getTrackId());
                 }
                 // 비존재 트랙(실제로는 Meta 비동기 상태이지만 권리사 미제공으로 정리) - 외래키 에러로 체크
                 else if(e instanceof DataIntegrityViolationException){
-                    dataIntegrityIdList.add(trackId);
+                    dataIntegrityIdList.add(trackDto.getTrackId());
                 }
             }
         }
@@ -416,6 +423,16 @@ public class MemberChannelServiceImpl implements MemberChannelService {
                 .duplicatedYn(duplicateKeyIdList.size() > 0 ? YnType.Y : YnType.N)
                 .agencyCancelYn(dataIntegrityIdList.size() > 0 ? YnType.Y : YnType.N)
                 .build();
+    }
+
+    private List<TrackDto> getTrackList(List<Long> trackIdList){
+
+        if(CollectionUtils.isEmpty(trackIdList)){
+            return null;
+        }
+
+        // TODO feign 으로 변경 필요
+        return trackMapper.selectTrackList(trackIdList);
     }
 
     @Override
