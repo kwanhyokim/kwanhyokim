@@ -375,37 +375,36 @@ public class MemberChannelServiceImpl implements MemberChannelService {
         int maxViewPriority = memberChannelTrackMapper.selectMaxTrackViewPriority(memberChannelId);
         AtomicInteger viewPriority = new AtomicInteger(maxViewPriority+1);
 
+        // displayYn이 N인 경우는 로드되지 않게 하기 위함.
         List<TrackDto> trackDtoList = getTrackList(trackIdList);
 
-        for(TrackDto trackDto : trackDtoList){
-            try{
+        if(!ObjectUtils.isEmpty(trackDtoList)){
+            for(TrackDto trackDto : trackDtoList){
+                try{
 
-                if(trackDto.getDisplayYn() == YnType.Y){
                     memberChannelTrackMapper.insertTrackMemberChannel(memberChannelId, trackDto.getTrackId(), viewPriority.getAndIncrement());
                     successfulIdList.add(trackDto.getTrackId());
-                }else{
-                    dataIntegrityIdList.add(trackDto.getTrackId());
-                }
 
-                // 사용자 이벤트 전송
-                UserEvent userEvent = UserEvent.newBuilder()
-                        .playChnl(appName.getCode())
-                        .event(UserEventType.PICK)
-                        .memberNo(memberNo)
-                        .charactorNo(characterNo)
-                        .targetId(String.valueOf(trackDto.getTrackId()))
-                        .targetType(UserEventTarget.TRACK)
-		                .timeMillis(System.currentTimeMillis())
-                        .build();
-                amqpService.deliverUserEvent(userEvent);
-            }catch (Exception e){
-                // 중복 등록 - 키 중복 에러로 체크
-                if(e instanceof DuplicateKeyException){
-                    duplicateKeyIdList.add(trackDto.getTrackId());
-                }
-                // 비존재 트랙(실제로는 Meta 비동기 상태이지만 권리사 미제공으로 정리) - 외래키 에러로 체크
-                else if(e instanceof DataIntegrityViolationException){
-                    dataIntegrityIdList.add(trackDto.getTrackId());
+                    // 사용자 이벤트 전송
+                    UserEvent userEvent = UserEvent.newBuilder()
+                            .playChnl(appName.getCode())
+                            .event(UserEventType.PICK)
+                            .memberNo(memberNo)
+                            .charactorNo(characterNo)
+                            .targetId(String.valueOf(trackDto.getTrackId()))
+                            .targetType(UserEventTarget.TRACK)
+                            .timeMillis(System.currentTimeMillis())
+                            .build();
+                    amqpService.deliverUserEvent(userEvent);
+                }catch (Exception e){
+                    // 중복 등록 - 키 중복 에러로 체크
+                    if(e instanceof DuplicateKeyException){
+                        duplicateKeyIdList.add(trackDto.getTrackId());
+                    }
+                    // 비존재 트랙(실제로는 Meta 비동기 상태이지만 권리사 미제공으로 정리) - 외래키 에러로 체크
+                    else if(e instanceof DataIntegrityViolationException){
+                        dataIntegrityIdList.add(trackDto.getTrackId());
+                    }
                 }
             }
         }
