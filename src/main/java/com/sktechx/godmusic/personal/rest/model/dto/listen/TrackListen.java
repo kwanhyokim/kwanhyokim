@@ -92,7 +92,10 @@ public class TrackListen {
 
 	@JsonProperty("session_id")
 	private String              listenSessionId;
-
+	
+	@JsonProperty("svc_cd")
+	private String              svcCd;
+	
 	public TrackListen() {
 		this.timeMillis = System.currentTimeMillis();
 		this.free = false;
