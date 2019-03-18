@@ -64,7 +64,7 @@
           tb_track a
         LEFT OUTER JOIN	tb_album_img b ON a.album_id = b.album_id
         LEFT OUTER JOIN	ted_trackartist as c ON a.track_id = c.track_id
-                        AND c.rp_yn = 'Y' and c.db_sts = 'A'
+                        AND c.rp_yn = 'Y'
         LEFT OUTER JOIN ted_artist d ON c.artist_id = d.artist_id
         INNER JOIN ted_album e ON a.album_id = e.album_id
                         AND e.disp_status_yn = 'Y'
@@ -197,7 +197,7 @@
 				ON a.track_id = f.like_type_id AND a.character_no = f.character_no AND like_type = 'TRACK'
 			LEFT OUTER JOIN	tb_album_img c ON b.album_id = c.album_id
 			LEFT OUTER JOIN	ted_trackartist as d
-				ON b.track_id = d.track_id AND d.rp_yn = 'Y' and d.db_sts = 'A'
+				ON b.track_id = d.track_id AND d.rp_yn = 'Y'
 			LEFT OUTER JOIN	ted_artist e
 				ON d.artist_id = e.artist_id
 			INNER JOIN ted_album g
@@ -233,7 +233,7 @@
 			LEFT OUTER JOIN	tb_album_img c
 				ON b.album_id = c.album_id
 			LEFT OUTER JOIN	ted_trackartist as d
-				ON b.track_id = d.track_id AND d.rp_yn = 'Y' and d.db_sts = 'A'
+				ON b.track_id = d.track_id AND d.rp_yn = 'Y'
 			LEFT OUTER JOIN	ted_artist e
 				ON d.artist_id = e.artist_id
 			INNER JOIN ted_album g
@@ -294,7 +294,7 @@
           LEFT JOIN	tb_album_img c
             ON a.album_id = c.album_id
           LEFT JOIN	ted_trackartist as d
-            ON a.track_id = d.track_id AND d.rp_yn = 'Y' AND d.db_sts = 'A'
+            ON a.track_id = d.track_id AND d.rp_yn = 'Y'
           LEFT JOIN	ted_artist e
             ON d.artist_id = e.artist_id
           LEFT JOIN tb_map_track_like f

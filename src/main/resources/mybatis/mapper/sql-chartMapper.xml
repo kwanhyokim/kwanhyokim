@@ -111,7 +111,7 @@
             INNER JOIN ted_album a ON chart_track_table.album_id = a.album_id AND a.disp_status_yn = 'Y' AND now() BETWEEN a.disp_start_dtime AND a.disp_end_dtime
             LEFT OUTER JOIN tb_album_img b ON a.album_id = b.album_id
             LEFT OUTER JOIN ted_trackartist c ON chart_track_table.track_id =c.track_id
-                            AND c.rp_yn = 'Y' AND c.db_sts = 'A'
+                            AND c.rp_yn = 'Y'
             LEFT OUTER JOIN ted_artist d ON c.artist_id = d.artist_id
             LEFT OUTER JOIN ted_artist e ON e.artist_id = chart_track_table.reprsnt_artist_id
     </select>

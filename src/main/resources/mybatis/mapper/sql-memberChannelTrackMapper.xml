@@ -77,7 +77,7 @@
 			INNER JOIN tb_track b
 				ON a.track_id = b.track_id
 			LEFT OUTER JOIN ted_trackartist c
-				ON b.track_id = c.track_id AND c.rp_yn = 'Y' AND c.db_sts = 'A'
+				ON b.track_id = c.track_id AND c.rp_yn = 'Y'
 			LEFT OUTER JOIN ted_artist d
 				ON c.artist_id = d.artist_id
 			LEFT OUTER JOIN tb_character_like e
