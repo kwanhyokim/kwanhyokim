@@ -8,13 +8,16 @@ import com.sktechx.godmusic.personal.common.amqp.domain.UserEventTarget;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEventType;
 import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
 import com.sktechx.godmusic.personal.common.domain.type.AppNameType;
+import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.common.domain.type.TrackLogType;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.PurchasePassDto;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.TrackListen;
+import com.sktechx.godmusic.personal.rest.model.vo.drm.OwnerTokenClaim;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenTrackRequest;
 import com.sktechx.godmusic.personal.rest.repository.ListenMapper;
+import com.sktechx.godmusic.personal.rest.service.DrmService;
 import com.sktechx.godmusic.personal.rest.service.ListenService;
 import com.sktechx.godmusic.personal.rest.service.PurchaseService;
 import com.sktechx.godmusic.personal.rest.service.SettlementService;
@@ -55,6 +58,9 @@ public class ListenServiceImpl implements ListenService {
 	@Autowired
 	SettlementService settlementService;
 
+	@Autowired
+	DrmService drmService;
+	
 	@Override
 	public void addListenHistByChannel(ListenRequest request, Long memberNo, Long characterNo) {
 		listenMapper.addListenHistByChannel(request.getListenType(), request.getListenTypeId(),
@@ -108,8 +114,9 @@ public class ListenServiceImpl implements ListenService {
 
 		log.info("addListenHistByTrack...");
 		if(request.getTrackLogType() == TrackLogType.ONEMIN){
-			String svcCd = getSettlementCode(memberNo, request);
-			if(ObjectUtils.isEmpty(svcCd)){
+			String pssrlCd = purchaseService.getPssrlCd(memberNo);
+			String serviceId = getServiceCode(memberNo, request);
+			if(ObjectUtils.isEmpty(serviceId)){
 				throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
 			}
 			PurchasePassDto purchasePassDto = purchaseService.getInUsePurchaseIdByMemberNo(memberNo);
@@ -119,12 +126,32 @@ public class ListenServiceImpl implements ListenService {
 			}
 
 			trackListenBuilder
-					.pssrlCd(svcCd)
-					.svcCd(svcCd)
+					.pssrlCd(pssrlCd)
+					.serviceId(serviceId)
 					.prchsId(purchasePassDto.getPrchsId())
 					.goodsId(purchasePassDto.getGoodsId());
+			
+			if (SourceType.DN == request.getSourceType()) {
+				if (StringUtils.isEmpty(request.getOwnerToken())) {
+					// todo throw error ???
+					log.warn("OwnerToken이 존재하지 않습니다. (DRM 스트리밍)");
+				} else {
+					OwnerTokenClaim ownerToken = drmService.getOwnerTokenInfo(request.getOwnerToken());
+					
+					if (ObjectUtils.isEmpty(ownerToken)) {
+						// todo throw error ???
+						log.warn("OwnerToken 값이 유효하지 않습니다. (DRM 스트리밍)");
+					} else {
+						trackListenBuilder.drmMemberNo(ownerToken.getMemberNo());
+						trackListenBuilder.drmGoodsId(ownerToken.getGoodsId());
+						trackListenBuilder.drmPrchsId(ownerToken.getPurchaseId());
+						trackListenBuilder.drmPssrlCd(ownerToken.getPssrlCode());
+						trackListenBuilder.serviceId(ownerToken.getServiceId());
+					}
+				}
+			}
 		}
-
+		
 		if(YnType.Y.equals(request.getFreeYn())) {
 			trackListenBuilder.free(true);
 		}
@@ -161,8 +188,9 @@ public class ListenServiceImpl implements ListenService {
 		return false;
 	}
 	
-	private String getSettlementCode(Long memberNo, ListenTrackRequest request) {
+	private String getServiceCode(Long memberNo, ListenTrackRequest request) {
 		if (YnType.Y == request.getFreeYn()) {
+			// todo 스트리밍 api를 이용하여 무료 서비스 코드를 가져오는 코드로 변경 필요
 			return "FREE_SVC";
 		} else {
 			return settlementService.getServiceCode(memberNo, request.getSourceType().getPlayType());

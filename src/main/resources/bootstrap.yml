@@ -16,7 +16,7 @@ spring:
     active: dev
   cloud:
     config:
-      name: lib-module,personal-api
+      name: lib-module,personal-api,token
     refresh:
       extra-refreshable: javax.sql.DataSource
 

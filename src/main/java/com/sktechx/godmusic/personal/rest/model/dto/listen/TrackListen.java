@@ -93,8 +93,23 @@ public class TrackListen {
 	@JsonProperty("session_id")
 	private String              listenSessionId;
 	
-	@JsonProperty("svc_cd")
-	private String              svcCd;
+	@JsonProperty("service_id")
+	private String              serviceId;
+	
+	@JsonProperty("drm_member_no")
+	private Long				drmMemberNo;
+	
+	@JsonProperty("drm_prchs_id")
+	private Long				drmPrchsId;
+	
+	@JsonProperty("drm_goods_id")
+	private Long				drmGoodsId;
+	
+	@JsonProperty("drm_pssrl_cd")
+	private String              drmPssrlCd;
+	
+	@JsonProperty("drm_service_id")
+	private String              drmServiceId;
 	
 	public TrackListen() {
 		this.timeMillis = System.currentTimeMillis();
