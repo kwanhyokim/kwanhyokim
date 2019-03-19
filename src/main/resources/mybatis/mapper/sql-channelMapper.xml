@@ -392,7 +392,7 @@
             JOIN ted_album f
               ON e.album_id = f.album_id
              AND f.disp_status_yn = 'Y'
-             AND f.album_tp IN ('RL','SL','EP','OS','LV','RM','SP','MF')
+             AND f.album_tp IN ('RL','SL','EP','OS','LV','RM','SP','DS')
            GROUP BY CONCAT(a.listen_type, a.listen_type_id), a.listen_type, a.listen_type_id, b.artist_nm, a.last_listen_dtime, c.size, CONCAT(c.url, '?updateDate=', UNIX_TIMESTAMP(c.update_dtime)) )
 
            UNION ALL
