@@ -59,7 +59,7 @@
             d.artist_id,
             d.artist_nm,
             b.album_img_size size,
-            CONCAT(b.album_img_url, '?updateDate=', unix_timestamp(b.update_dtime)) url
+            b.album_img_url url
         FROM
           tb_track a
         LEFT OUTER JOIN	tb_album_img b ON a.album_id = b.album_id
@@ -164,7 +164,7 @@
 			    b.agency_id agencyId,
 			    c.album_id,
 			    c.album_img_size size,
-			    CONCAT(c.album_img_url, '?updateDate=', unix_timestamp(c.update_dtime)) AS url,
+			    c.album_img_url AS url,
 			    c.update_dtime albumImgUpdateDateTime,
 			    e.artist_id,
 			    e.artist_nm,
@@ -257,7 +257,7 @@
                a.update_dtime AS updateDateTime,
                c.album_id,
                c.album_img_size size,
-               CONCAT(c.album_img_url, '?updateDate=', unix_timestamp(c.update_dtime)) AS url,
+               c.album_img_url AS url,
                a.last_listen_dtime AS lastListenDateTime,
                e.artist_id,
                e.artist_nm,

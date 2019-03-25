@@ -175,7 +175,7 @@
             d.artist_nm,
             a.album_id,
             b.album_img_size size,
-            CONCAT(b.album_img_url,'?updateDate=',UNIX_TIMESTAMP(b.update_dtime)) url,
+            b.album_img_url url,
             e.artist_id reqArtistId,
             e.artist_nm reqArtistNm,
             rank
@@ -325,7 +325,7 @@
             d.artist_nm,
             a.album_id,
             b.album_img_size size,
-            CONCAT(b.album_img_url,'?updateDate=',UNIX_TIMESTAMP(b.update_dtime)) url,
+            b.album_img_url url,
             e.artist_id reqArtistId,
             e.artist_nm reqArtistNm,
             rank
@@ -475,7 +475,7 @@
             d.artist_nm,
             a.album_id,
             b.album_img_size size,
-            CONCAT(b.album_img_url,'?updateDate=',UNIX_TIMESTAMP(b.update_dtime)) url,
+            b.album_img_url url,
             e.artist_id reqArtistId,
             e.artist_nm reqArtistNm,
             rank

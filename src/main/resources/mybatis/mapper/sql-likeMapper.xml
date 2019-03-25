@@ -77,7 +77,7 @@
              , A.CREATE_DTIME
              , A.UPDATE_DTIME
              , E.ALBUM_IMG_SIZE                                                        AS size
-             , CONCAT(E.ALBUM_IMG_URL, '?updateDate=', unix_timestamp(E.UPDATE_DTIME)) AS url
+             , E.ALBUM_IMG_URL                                                         AS url
              , 'Y'                                                                     AS likeYn
              , IF(A.STREAMING_PREMIUM_YN = 'Y' OR A.PPS_YN = 'Y', 'Y', 'N')            AS holdbackYn
              , IF(A.ADULT_AUTH_NEED_TRACK_YN = 'Y', 'Y', 'N')                          AS adultAuthYn
@@ -127,7 +127,7 @@
              , IFNULL(GROUP_CONCAT(DISTINCT (F.STYLE_NM) ORDER BY F.STYLE_ID ASC SEPARATOR ','),
                       '앨범 유형 정보가 없습니다.')                                               AS genreStyle
              , D.ALBUM_IMG_SIZE                                                        AS size
-             , CONCAT(D.ALBUM_IMG_URL, '?updateDate=', unix_timestamp(D.UPDATE_DTIME)) AS url
+             , D.ALBUM_IMG_URL                                                         AS url
              , G.ARTIST_ID                                                             AS albumRepArtistId
              , G.ARTIST_NM                                                             AS albumRepArtistName
              , 'Y'                                                                     AS likeYn
@@ -155,7 +155,7 @@
              , L.SEX_CD                                                                                AS genderCd
              , L.GRP_CD                                                                                AS artistGroupType
              , B.SIZE                                                                                  AS size
-             , CONCAT(B.URL, '?updateDate=', unix_timestamp(B.UPDATE_DTIME))                           AS url
+             , B.URL                                                                                   AS url
              , IFNULL(SUBSTR(L.ACT_START_YMD, 1, 4), NULL)                                             AS actStartYmd
              , IFNULL(GROUP_CONCAT(DISTINCT (D.STYLE_NM) ORDER BY D.STYLE_ID ASC SEPARATOR ','), NULL) AS artistStyle
              , 'Y'                                                                                     AS likeYn
@@ -197,7 +197,7 @@
                      , CL.CHART_NM                                                   AS name
                      , CL.CHART_TYPE                                                 AS chartType
                      , CL.ALBUM_ID                                                   AS albumId
-                     , CONCAT(I.URL, '?updateDate=', unix_timestamp(I.UPDATE_DTIME)) AS url
+                     , I.URL                                                         AS url
                      , I.SIZE                                                        AS size
                      , CL.MUSIC_CONTENT_CNT                                          AS trackCount
                      , CL.CREATE_DTIME                                               AS createDateTime
@@ -257,7 +257,7 @@
                      , A.CHNL_NM                                                               AS name
                      , ''                                                                      AS chartType
                      , ''                                                                      AS albumId
-                     , CONCAT(I.ALBUM_IMG_URL, '?updateDate=', unix_timestamp(I.UPDATE_DTIME)) AS url
+                     , I.ALBUM_IMG_URL                                                         AS url
                      , I.ALBUM_IMG_SIZE                                                        AS size
                      , A.TRACK_CNT                                                             AS trackCount
                      , A.CREATE_DTIME                                                          AS createDateTime

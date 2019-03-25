@@ -51,7 +51,7 @@
 			C.create_dtime							AS createDateTime,
 			C.update_dtime 							AS updateDateTime,
  			D.ALBUM_IMG_SIZE						AS size,
-			CONCAT(D.album_img_url, '?updateDate=', unix_timestamp(D.update_dtime)) AS url,
+			D.album_img_url							AS url,
 			D.update_dtime 							AS albumImgUpdateDateTime,
  			E.TITLE									AS albumTitle
 		FROM
@@ -90,7 +90,7 @@
 			C.update_dtime 							AS updateDateTime,
 			C.create_dtime                   		AS createDateTime,
 			D.ALBUM_IMG_SIZE						AS size,
-			CONCAT(D.album_img_url, '?updateDate=', unix_timestamp(D.update_dtime)) AS url,
+			D.album_img_url							AS url,
 			D.update_dtime 							AS albumImgUpdateDateTime,
 			E.TITLE									AS albumTitle
 		FROM

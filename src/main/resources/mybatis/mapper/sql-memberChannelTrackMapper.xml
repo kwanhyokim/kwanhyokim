@@ -40,7 +40,7 @@
 		    b.create_dtime createDateTime,
 		    b.update_dtime updateDateTime,
 		    f.album_img_size size,
-			CONCAT(f.album_img_url, '?updateDate=', unix_timestamp(f.update_dtime)) AS url,
+			f.album_img_url AS url,
 			f.update_dtime albumImgUpdateDateTime,
 		    IF(e.like_type_id is not null, 'Y', 'N') likeYn,
 		    IF(b.streaming_premium_yn = 'Y' OR b.pps_yn = 'Y', 'Y', 'N') holdbackYn,

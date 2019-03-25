@@ -95,7 +95,7 @@
             e.artist_id,
             e.artist_nm,
             c.album_img_size size,
-            CONCAT(c.album_img_url,'?updateDate=',UNIX_TIMESTAMP(c.update_dtime)) url,
+            c.album_img_url url,
             a.create_dtime,
             a.update_dtime,
             a.track_cnt trackCount,
@@ -313,7 +313,7 @@
                  b.track_cnt as track_count,
                  a.last_listen_dtime,
                  d.album_img_size as size,
-                 CONCAT(d.album_img_url, '?updateDate=', UNIX_TIMESTAMP(d.update_dtime)) AS url
+                 d.album_img_url AS url
             FROM ( SELECT listen_type, listen_type_id, character_no, last_listen_dtime
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
@@ -339,7 +339,7 @@
                  b.music_content_cnt AS track_count,
                  a.last_listen_dtime,
                  d.img_size,
-                 CONCAT(d.img_url, '?updateDate=', UNIX_TIMESTAMP(d.create_dtime)) AS url
+                 d.img_url AS url
             FROM ( SELECT listen_type, listen_type_id, last_listen_dtime
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
@@ -371,7 +371,7 @@
                  COUNT(DISTINCT e.track_id) AS track_count,
                  a.last_listen_dtime,
                  c.size,
-                 CONCAT(c.url, '?updateDate=', UNIX_TIMESTAMP(c.update_dtime)) AS url
+                 c.url AS url
             FROM ( SELECT listen_type, listen_type_id, last_listen_dtime
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
@@ -393,7 +393,7 @@
               ON e.album_id = f.album_id
              AND f.disp_status_yn = 'Y'
              AND f.album_tp IN ('RL','SL','EP','OS','LV','RM','SP','DS','BS')
-           GROUP BY CONCAT(a.listen_type, a.listen_type_id), a.listen_type, a.listen_type_id, b.artist_nm, a.last_listen_dtime, c.size, CONCAT(c.url, '?updateDate=', UNIX_TIMESTAMP(c.update_dtime)) )
+           GROUP BY CONCAT(a.listen_type, a.listen_type_id), a.listen_type, a.listen_type_id, b.artist_nm, a.last_listen_dtime, c.size, c.url )
 
            UNION ALL
 
@@ -404,7 +404,7 @@
                  b.music_content_cnt AS track_count,
                  a.last_listen_dtime,
                  c.img_size,
-                 CONCAT(c.img_url, '?updateDate=', UNIX_TIMESTAMP(c.create_dtime)) AS url
+                 c.img_url AS url
             FROM ( SELECT listen_type, listen_type_id, last_listen_dtime
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
@@ -440,7 +440,7 @@
                  ( SELECT COUNT(*) FROM tb_rcmmd_similar_track_list WHERE rcmmd_similar_track_id = b.rcmmd_similar_track_id) AS track_count,
                  a.last_listen_dtime,
                  c.img_size AS size,
-                 CONCAT(c.img_url, '?updateDate=', UNIX_TIMESTAMP(c.create_dtime)) AS url
+                 c.img_url AS url
             FROM ( SELECT listen_type, listen_type_id, character_no, last_listen_dtime, create_dtime
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
@@ -476,7 +476,7 @@
                  ( SELECT COUNT(*) FROM tb_rcmmd_prefer_genre_similar_track_list WHERE rcmmd_prefer_genre_similar_track_id = b.rcmmd_prefer_genre_similar_track_id) AS track_count,
                  a.last_listen_dtime,
                  c.img_size,
-                 CONCAT(c.img_url, '?updateDate=', UNIX_TIMESTAMP(c.create_dtime)) AS url
+                 c.img_url AS url
             FROM ( SELECT listen_type, listen_type_id, character_no, last_listen_dtime, create_dtime
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
@@ -513,7 +513,7 @@
                  ( SELECT COUNT(*) FROM tb_rcmmd_artist_list WHERE rcmmd_artist_id = b.rcmmd_artist_id) AS track_count,
                  a.last_listen_dtime,
                  c.img_size,
-                 CONCAT(c.img_url, '?updateDate=', UNIX_TIMESTAMP(c.create_dtime)) AS url
+                 c.img_url AS url
             FROM ( SELECT listen_type, listen_type_id, character_no, last_listen_dtime, create_dtime
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
@@ -542,7 +542,7 @@
                  ( SELECT COUNT(*) FROM tb_rcmmd_mforu_list WHERE rcmmd_mforu_id = b.rcmmd_mforu_id) AS track_count,
                  a.last_listen_dtime,
                  c.img_size AS size,
-                 CONCAT(c.img_url, '?updateDate=', UNIX_TIMESTAMP(c.create_dtime)) AS url
+                 c.img_url AS url
             FROM ( SELECT listen_type, listen_type_id, character_no, last_listen_dtime, create_dtime
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
@@ -573,7 +573,7 @@
                b.track_cnt as track_count,
                a.last_listen_dtime,
                d.album_img_size as size,
-               CONCAT(d.album_img_url, '?updateDate=', UNIX_TIMESTAMP(d.update_dtime)) AS url,
+               d.album_img_url AS url,
                b.renew_track_cnt,
                b.renew_dtime
           FROM ( SELECT listen_type, listen_type_id, last_listen_dtime

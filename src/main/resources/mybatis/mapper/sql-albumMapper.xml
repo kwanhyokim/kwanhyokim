@@ -49,7 +49,7 @@
                b.title as content_title,
                a.last_listen_dtime,
                e.album_img_size as size,
-               CONCAT(e.album_img_url, '?updateDate=', UNIX_TIMESTAMP(e.update_dtime)) AS url,
+               e.album_img_url AS url,
                b.album_id,
                b.title,
                b.release_ymd,
