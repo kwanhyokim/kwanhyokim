@@ -77,6 +77,11 @@
         </foreach>
         AND a.disp_status_yn = 'Y'
         AND now() BETWEEN a.disp_start_dtime AND a.disp_end_dtime
+        ORDER BY FIELD ( a.track_id,
+        <foreach collection="trackIdList" item="trackId" index="index" separator=",">
+            #{trackId}
+        </foreach>
+        )
     </select>
 
     <select id="selectRecommendPanelPopularTrackList" resultType="Long">
