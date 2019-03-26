@@ -1,9 +1,10 @@
 package com.sktechx.godmusic.personal.common.domain.type;
 
+import org.apache.ibatis.type.MappedTypes;
+
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnum;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnumTypeHandler;
-import org.apache.ibatis.type.MappedTypes;
 
 /**
  * Created by Kobe.
@@ -23,7 +24,8 @@ public enum AlbumType implements CodeEnum {
 	RM("RM", "리마스터"),
 	SP("SP", "스페셜"),
 	MF("MF", "가상앨범"),
-	CV("CV", "커버버젼");
+	CV("CV", "커버버젼"),
+	DS("DS", "디지털싱글");
 
 	private final String code;
 	private final String value;
