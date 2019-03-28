@@ -146,7 +146,7 @@ public class ListenServiceImpl implements ListenService {
 						trackListenBuilder.drmGoodsId(ownerToken.getGoodsId());
 						trackListenBuilder.drmPrchsId(ownerToken.getPurchaseId());
 						trackListenBuilder.drmPssrlCd(ownerToken.getPssrlCode());
-						trackListenBuilder.serviceId(ownerToken.getServiceId());
+						trackListenBuilder.drmServiceId(ownerToken.getServiceId());
 					}
 				}
 			}
