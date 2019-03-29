@@ -437,7 +437,10 @@
                  a.listen_type,
                  a.listen_type_id,
                  CONCAT(DATE_FORMAT(a.create_dtime, '%c월 %e일'), ' 오늘의 FLO') AS content_title,
-                 ( SELECT COUNT(*) FROM tb_rcmmd_similar_track_list WHERE rcmmd_similar_track_id = b.rcmmd_similar_track_id) AS track_count,
+                 ( SELECT COUNT(*)
+                        FROM tb_rcmmd_similar_track_list aa
+                        JOIN tb_track bb ON bb.track_id = aa.track_id AND bb.disp_status_yn = 'Y' AND now() BETWEEN bb.disp_start_dtime AND bb.disp_end_dtime
+                        WHERE aa.rcmmd_similar_track_id = b.rcmmd_similar_track_id) AS track_count,
                  a.last_listen_dtime,
                  c.img_size AS size,
                  c.img_url AS url
@@ -473,7 +476,11 @@
                  a.listen_type,
                  a.listen_type_id,
                  CONCAT(DATE_FORMAT(a.create_dtime, '%c월 %e일'), ' 오늘의 FLO') AS content_title,
-                 ( SELECT COUNT(*) FROM tb_rcmmd_prefer_genre_similar_track_list WHERE rcmmd_prefer_genre_similar_track_id = b.rcmmd_prefer_genre_similar_track_id) AS track_count,
+                 ( SELECT COUNT(*)
+                    FROM tb_rcmmd_prefer_genre_similar_track_list aa
+                    JOIN tb_track b ON aa.track_id = b.track_id AND b.disp_status_yn = 'Y' AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
+                    WHERE aa.rcmmd_prefer_genre_similar_track_id = b.rcmmd_prefer_genre_similar_track_id
+                    ) AS track_count,
                  a.last_listen_dtime,
                  c.img_size,
                  c.img_url AS url
@@ -539,7 +546,9 @@
                  a.listen_type,
                  a.listen_type_id,
                  CONCAT(DATE_FORMAT(a.create_dtime, '%c월 %e일'), ' 나를 위한 FLO') AS content_title,
-                 ( SELECT COUNT(*) FROM tb_rcmmd_mforu_list WHERE rcmmd_mforu_id = b.rcmmd_mforu_id) AS track_count,
+                 ( SELECT COUNT(*) FROM tb_rcmmd_mforu_list aa
+                        JOIN tb_track bb ON aa.track_id = bb.track_id AND bb.disp_status_yn = 'Y' AND now() BETWEEN bb.disp_start_dtime AND bb.disp_end_dtime
+                        WHERE aa.rcmmd_mforu_id = b.rcmmd_mforu_id) AS track_count,
                  a.last_listen_dtime,
                  c.img_size AS size,
                  c.img_url AS url
