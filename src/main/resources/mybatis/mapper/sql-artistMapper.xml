@@ -154,11 +154,8 @@
                     #{artistId}
                 </foreach>
                 ) a
-                    JOIN
-                ted_artist b ON a.artist_id = b.artist_id
-                    JOIN
-                tb_track d ON b.artist_id = d.reprsnt_artist_id
-                    AND d.disp_status_yn = 'Y'
+                    JOIN ted_artist b ON a.artist_id = b.artist_id
+                    JOIN tb_track d ON b.artist_id = d.reprsnt_artist_id AND d.disp_status_yn = 'Y' AND now() BETWEEN d.disp_start_dtime AND d.disp_end_dtime
                     AND d.track_popularity > 0
             GROUP BY a.artist_id , b.artist_nm
             HAVING COUNT(1) >= 5

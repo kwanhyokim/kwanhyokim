@@ -86,11 +86,12 @@
 
     <select id="selectRecommendPanelPopularTrackList" resultType="Long">
         SELECT
-            track_id
+            a.track_id
         FROM
-            tb_rcmmd_artist_track_list
+            tb_rcmmd_artist_track_list a
+            JOIN tb_track b ON b.track_id = a.track_id AND b.disp_status_yn = 'Y' AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
         WHERE
-            rcmmd_artist_id = (SELECT
+            a.rcmmd_artist_id = (SELECT
                     rcmmd_artist_id
                 FROM
                     tb_rcmmd_artist
@@ -98,54 +99,57 @@
                     rcmmd_artist_id = #{rcmmdArtistId}
                     )
 
-        ORDER BY disp_sn ASC
+        ORDER BY a.disp_sn ASC
         LIMIT 30
     </select>
     <select id="selectRecommendPanelSimilarTrackList" resultType="Long">
         SELECT
-            track_id
+            a.track_id
         FROM
-            tb_rcmmd_similar_track_list
+            tb_rcmmd_similar_track_list a
+            JOIN tb_track b ON b.track_id = a.track_id AND b.disp_status_yn = 'Y' AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
         WHERE
-            rcmmd_similar_track_id = (SELECT
+            a.rcmmd_similar_track_id = (SELECT
                     rcmmd_similar_track_id
                 FROM
                     tb_rcmmd_similar_track
                 WHERE
                     rcmmd_similar_track_id = #{rcmmdTrackId}
                     )
-        ORDER BY disp_sn ASC
+        ORDER BY a.disp_sn ASC
 
     </select>
     <select id="selectRecommendPanelGenreTrackList" resultType="Long">
         SELECT
-            track_id
+            a.track_id
         FROM
-            tb_rcmmd_prefer_genre_similar_track_list
+            tb_rcmmd_prefer_genre_similar_track_list a
+            JOIN tb_track b ON a.track_id = b.track_id AND b.disp_status_yn = 'Y' AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
         WHERE
-            rcmmd_prefer_genre_similar_track_id = (SELECT
+            a.rcmmd_prefer_genre_similar_track_id = (SELECT
                     rcmmd_prefer_genre_similar_track_id
                 FROM
                     tb_rcmmd_prefer_genre_similar_track
                 WHERE
                     rcmmd_prefer_genre_similar_track_id = #{rcmmdGenreId}
                     )
-        ORDER BY disp_sn ASC
+        ORDER BY a.disp_sn ASC
     </select>
     <select id="selectRecommendPanelCfTrackList" resultType="Long">
         SELECT
-            track_id
+            a.track_id
         FROM
-            tb_rcmmd_mforu_list
+            tb_rcmmd_mforu_list a
+            JOIN tb_track b ON b.track_id = a.track_id AND b.disp_status_yn = 'Y' AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
         WHERE
-            rcmmd_mforu_id = (SELECT
+            a.rcmmd_mforu_id = (SELECT
                     rcmmd_mforu_id
                 FROM
                     tb_rcmmd_mforu
                 WHERE
                     rcmmd_mforu_id = #{rcmmdMforuId}
                 )
-        ORDER BY disp_sn ASC
+        ORDER BY a.disp_sn ASC
 
     </select>
 

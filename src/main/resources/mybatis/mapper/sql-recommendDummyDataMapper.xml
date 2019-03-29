@@ -180,7 +180,7 @@
                 #{rcmmdId},
                 track_id,
                 1
-              FROM ( SELECT track_id FROM tb_track WHERE disp_status_yn = 'Y' LIMIT 10000 ) a
+              FROM ( SELECT aa.track_id FROM tb_track aa WHERE aa.disp_status_yn = 'Y' AND now() BETWEEN aa.disp_start_dtime AND aa.disp_end_dtime LIMIT 10000 ) a
             ORDER BY rand()
             LIMIT 50
     </insert>
