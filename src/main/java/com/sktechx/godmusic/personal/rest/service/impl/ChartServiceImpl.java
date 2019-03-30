@@ -13,8 +13,8 @@ package com.sktechx.godmusic.personal.rest.service.impl;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendChartPanelType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
+import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
 import com.sktechx.godmusic.personal.rest.service.ChartService;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +52,12 @@ public class ChartServiceImpl implements ChartService {
             if(realTimeTrackChart == null){
                 realTimeTrackChart = chartMapper.selectPreferDispChart(RecommendChartPanelType.TOP100 , osType, trackLimitSize);
                 if(realTimeTrackChart != null){
+
+                    int priority = 1;
+                    for(TrackDto trackDto : realTimeTrackChart.getTrackList()){
+                        trackDto.setTrackSn(priority++);
+                    }
+
                     redisService.setWithPrefix(REALTIME_CHART_KEY, realTimeTrackChart, REALTIME_CHART_EXPIRED_SECONDS);
                 }
             }
