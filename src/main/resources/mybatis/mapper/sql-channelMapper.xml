@@ -323,8 +323,7 @@
               ON a.listen_type_id = b.member_chnl_id
              AND a.character_no = b.character_no
              AND a.listen_type = 'MY_CHNL'
-            LEFT JOIN ted_album c
-              ON b.album_id = c.album_id
+            JOIN ted_album c ON b.album_id = c.album_id AND c.disp_status_yn= 'Y' AND now() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
             LEFT JOIN tb_album_img d
               ON c.album_id = d.album_id )
 
@@ -589,8 +588,7 @@
           JOIN tb_chnl b
             ON a.listen_type_id = b.chnl_id
            AND a.listen_type = 'CHNL'
-          LEFT JOIN ted_album c
-            ON b.album_id = c.album_id
+          JOIN ted_album c ON b.album_id = c.album_id AND c.disp_status_yn= 'Y' AND now() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
           LEFT JOIN tb_album_img d
             ON c.album_id = d.album_id
     </select>

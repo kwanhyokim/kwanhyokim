@@ -65,8 +65,7 @@
                     AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
                   ORDER BY last_listen_dtime DESC
                   LIMIT 1000 ) a
-          JOIN ted_album b
-            ON a.listen_type_id = b.album_id
+          JOIN ted_album b ON a.listen_type_id = b.album_id AND b.disp_status_yn = 'Y' AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
            AND listen_type = 'ALBUM'
           LEFT OUTER JOIN ted_albumartist c
             ON b.album_id = c.album_id
