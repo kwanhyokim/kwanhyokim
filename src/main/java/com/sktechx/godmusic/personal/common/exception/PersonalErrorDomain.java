@@ -10,8 +10,9 @@
 
 package com.sktechx.godmusic.personal.common.exception;
 
-import com.sktechx.godmusic.lib.domain.exception.ErrorDomain;
 import org.springframework.http.HttpStatus;
+
+import com.sktechx.godmusic.lib.domain.exception.ErrorDomain;
 
 public enum PersonalErrorDomain implements ErrorDomain {
 	GM_CONTEXT_MEMBER_NO_NOT_EXIST(4030701, HttpStatus.FORBIDDEN ,"회원 정보 없음", "유효하지 않은 API 접근입니다.")
@@ -29,13 +30,11 @@ public enum PersonalErrorDomain implements ErrorDomain {
 	, MY_CHANNEL_OVER_CREATE(4090712, HttpStatus.CONFLICT,"내 리스트를 더 이상 추가할 수 없습니다.\n최대 1000개의 내 리스트를 만들 수 있습니다.","My 플레이 리스트 생성 최대값 초과")
 	, MY_CHANNEL_TRACK_OVER_ADD(4090713, HttpStatus.CONFLICT, "내 리스트에는 최대 1000곡까지 담을 수 있습니다.\n새로운 플레이리스트를 만들어 주세요.","My 플레이 리스트 곡 추가 최대값 초과")
 	, MY_CHANNEL_DUPLICATED_NAME(4090714, HttpStatus.CONFLICT, "동일한 내 리스트 명이 이미 존재합니다" ,"채널명 중복")
-//	, MY_CHANNEL_NOT_FOUND(4090701, HttpStatus.BAD_REQUEST, "요청하신 채널이 존재하지 않습니다.", "요청 채널 에러")
-	// My 		0300
 	, CHANNEL_NOT_FOUND(4090715, HttpStatus.BAD_REQUEST, "존재 하지 않은 채널 정보 입니다.", "채널 정보 없음")
 	, CHART_NOT_FOUND(4090716, HttpStatus.BAD_REQUEST, "존재 하지 않은 차트 정보 입니다.", "차트 정보 없음")
 	, ALBUM_NOT_FOUND(4090717,HttpStatus.BAD_REQUEST ,"존재 하지 않은 앨범 정보 입니다.","앨범 정보 없음"  )
 	, ARTIST_NOT_FOUND(4090718,HttpStatus.BAD_REQUEST ,"존재 하지 않은 아티스트 정보 입니다.","아티스트 정보 없음"  )
-	, TRACK_NOT_FOUND(4090719,HttpStatus.BAD_REQUEST ,"존재 하지 않은 곡 정보 입니다.","곡 정보 없음"  )
+	, TRACK_NOT_FOUND(4090719,HttpStatus.BAD_REQUEST ,"권리가 중단되어 서비스가 불가능한 곡입니다.","곡 정보 없음"  )
 
 	, PREFER_ARTIST_PANEL_FAIL(4090720,HttpStatus.CONFLICT ,"선호/유사 아티스트 인기곡 입력시 문제가 발생했습니다.","데이터 문제"  )
 	, PREFER_GENRE_PANEL_FAIL(4090721,HttpStatus.CONFLICT ,"선호 장르 유사곡 입력시 문제가 발생했습니다.","데이터 문제"  )
