@@ -189,9 +189,7 @@
 
                 ) chnl
                 INNER JOIN tb_map_chnl_track b ON chnl.chnl_id = b.chnl_id
-                INNER JOIN tb_track c ON b.track_id = c.track_id
-                        AND c.disp_status_yn = 'Y'
-                        AND now() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
+                INNER JOIN tb_track c ON b.track_id = c.track_id AND c.disp_status_yn = 'Y' AND now() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
                 ORDER BY FIELD(chnl.chnl_id,
                 <foreach item="channelId" index="index" collection="channelIdList" open="" separator="," close="">
                     #{channelId}
@@ -386,12 +384,8 @@
               ON b.artist_id = c.artist_id
             JOIN ted_trackartist d
               ON b.artist_id = d.artist_id
-            JOIN tb_track e
-              ON d.track_id = e.track_id
-             AND e.disp_status_yn = 'Y'
-            JOIN ted_album f
-              ON e.album_id = f.album_id
-             AND f.disp_status_yn = 'Y'
+            JOIN tb_track e ON d.track_id = e.track_id AND e.disp_status_yn = 'Y' AND now() BETWEEN e.disp_start_dtime AND e.disp_end_dtime
+            JOIN ted_album f ON e.album_id = f.album_id  AND f.disp_status_yn = 'Y' AND now() BETWEEN f.disp_start_dtime AND f.disp_end_dtime
              AND f.album_tp IN ('RL','SL','EP','OS','LV','RM','SP','DS','BS','MF')
            GROUP BY CONCAT(a.listen_type, a.listen_type_id), a.listen_type, a.listen_type_id, b.artist_nm, a.last_listen_dtime, c.size, c.url )
 

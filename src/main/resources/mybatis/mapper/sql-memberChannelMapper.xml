@@ -242,7 +242,7 @@
 		SELECT
 			b.album_id
 		FROM tb_map_member_chnl_track a
-		JOIN tb_track b ON a.track_id = b.track_id
+		JOIN tb_track b ON a.track_id = b.track_id AND b.disp_status_yn = 'Y' AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
 		WHERE a.member_chnl_id = #{channelId}
         ORDER BY a.update_dtime DESC, a.track_sn ASC
         LIMIT 1;
@@ -254,10 +254,9 @@
 				select mt.member_chnl_id, tt.album_id
 				from
 					tb_map_member_chnl_track mt
-				join tb_track tt on tt.track_id = mt.track_id
+				join tb_track tt on tt.track_id = mt.track_id AND tt.disp_status_yn ='Y' AND now() BETWEEN tt.disp_start_dtime AND tt.disp_end_dtime
 				where
-					tt.disp_status_yn ='Y'
-					and mt.member_chnl_id = #{channelId}
+					mt.member_chnl_id = #{channelId}
 				order by mt.update_dtime DESC, mt.track_sn ASC
 				limit 1) b
 			on a.member_chnl_id = b.member_chnl_id

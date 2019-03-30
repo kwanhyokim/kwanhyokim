@@ -74,8 +74,7 @@
 							#{pageable.pageSize}
 				</if>
 		    ) a
-			INNER JOIN tb_track b
-				ON a.track_id = b.track_id
+			INNER JOIN tb_track b ON a.track_id = b.track_id AND b.disp_status_yn = 'Y' AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
 			LEFT OUTER JOIN ted_trackartist c
 				ON b.track_id = c.track_id AND c.rp_yn = 'Y'
 			LEFT OUTER JOIN ted_artist d
@@ -84,12 +83,9 @@
 				ON b.track_id = e.like_type_id AND e.character_no = #{characterNo} AND e.like_type = 'TRACK'
 			LEFT OUTER JOIN tb_album_img f
 				ON b.album_id = f.album_id
-			LEFT OUTER JOIN ted_album g
-				ON b.album_id = g.album_id
+			INNER JOIN ted_album g ON b.album_id = g.album_id AND g.disp_status_yn = 'Y' AND now() BETWEEN g.disp_start_dtime AND g.disp_end_dtime
 			LEFT OUTER JOIN ted_artist h
 				ON b.reprsnt_artist_id = h.artist_id
-			WHERE
-				b.disp_status_yn = 'Y'
 		    ORDER BY a.update_dtime DESC , a.track_sn ASC, c.listorder ASC
 	</select>
 

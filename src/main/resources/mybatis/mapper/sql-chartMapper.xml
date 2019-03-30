@@ -103,9 +103,7 @@
                 INNER JOIN
                     tb_chart_music_content b ON chart_img_table.chart_id = b.chart_id
                 INNER JOIN
-                  tb_track c ON b.music_content_id = c.track_id
-                    AND c.disp_status_yn = 'Y'
-                    AND now() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
+                  tb_track c ON b.music_content_id = c.track_id AND c.disp_status_yn = 'Y' AND now() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
                 ORDER BY b.disp_sn
             LIMIT #{trackLimitSize} ) chart_track_table
             INNER JOIN ted_album a ON chart_track_table.album_id = a.album_id AND a.disp_status_yn = 'Y' AND now() BETWEEN a.disp_start_dtime AND a.disp_end_dtime

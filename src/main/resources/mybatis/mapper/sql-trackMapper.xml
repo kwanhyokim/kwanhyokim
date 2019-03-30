@@ -200,8 +200,7 @@
 						#{offset} ,
 						#{size}
 				) a
-			INNER JOIN tb_track b
-                ON a.track_id = b.track_id AND b.disp_status_yn ='Y' AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
+			INNER JOIN tb_track b ON a.track_id = b.track_id AND b.disp_status_yn ='Y' AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
 			LEFT OUTER JOIN tb_character_like f
 				ON a.track_id = f.like_type_id AND a.character_no = f.character_no AND like_type = 'TRACK'
 			LEFT OUTER JOIN	tb_album_img c ON b.album_id = c.album_id
@@ -235,8 +234,7 @@
 					WHERE
 						character_no = #{characterNo}
 				) a
-			INNER JOIN	tb_track b
-				ON a.track_id = b.track_id AND b.disp_status_yn ='Y' AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
+			INNER JOIN	tb_track b ON a.track_id = b.track_id AND b.disp_status_yn ='Y' AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
 			LEFT OUTER JOIN tb_character_like f
 				ON a.track_id = f.like_type_id AND a.character_no = f.character_no AND like_type = 'TRACK'
 			LEFT OUTER JOIN	tb_album_img c
