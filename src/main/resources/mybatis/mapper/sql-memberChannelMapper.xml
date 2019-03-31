@@ -40,26 +40,33 @@
 
 	<select id="selectMemberChannelList" resultMap="memberChannelResultMap">
 		SELECT
-			C.member_chnl_id 						AS memberChannelId,
-			C.member_chnl_nm 						AS memberChannelName,
-			C.member_chnl_sn 						AS channelPriority,
-			C.pin_type								AS pinType,
-			C.pin_type_id							AS pinTypeId,
-			C.album_id 								AS albumId,
- 			IFNULL(C.track_cnt, 0) 					AS trackCount,
- 			IFNULL(C.chnl_play_tm, 0)				AS channelPlayTime,
-			C.create_dtime							AS createDateTime,
-			C.update_dtime 							AS updateDateTime,
- 			D.ALBUM_IMG_SIZE						AS size,
-			D.album_img_url							AS url,
-			D.update_dtime 							AS albumImgUpdateDateTime,
- 			E.TITLE									AS albumTitle
-		FROM
-			TB_MEMBER_CHNL AS C
-			LEFT JOIN TB_ALBUM_IMG D ON C.ALBUM_ID = D.ALBUM_ID
-			LEFT JOIN TED_ALBUM E ON C.ALBUM_ID = E.ALBUM_ID
+			a.member_chnl_id 						AS memberChannelId,
+			a.member_chnl_nm 						AS memberChannelName,
+			a.member_chnl_sn 						AS channelPriority,
+			a.pin_type								AS pinType,
+			a.pin_type_id							AS pinTypeId,
+			IFNULL(a.track_cnt, 0) 					AS trackCount,
+			IFNULL(a.chnl_play_tm, 0)				AS channelPlayTime,
+			a.create_dtime							AS createDateTime,
+			a.update_dtime 							AS updateDateTime,
+			b.album_id 								AS albumId,
+			b.title									AS albumTitle,
+			c.album_img_size						AS size,
+			c.album_img_url							AS url,
+			c.update_dtime 							AS albumImgUpdateDateTime
+		FROM tb_member_chnl a
+		JOIN ted_album b
+			  ON b.album_id = (
+						SELECT aa.album_id
+							FROM tb_track aa
+							JOIN tb_map_member_chnl_track bb ON aa.track_id = bb.track_id AND bb.member_chnl_id IN
+							<foreach collection="channelIdList" item="channelId" index="index" open="(" separator="," close=")">
+								#{channelId}
+							</foreach>
+						  	AND aa.disp_status_yn = 'Y' AND now() BETWEEN aa.disp_start_dtime AND aa.disp_end_dtime LIMIT 1)
+		LEFT JOIN tb_album_img c ON b.album_id = c.album_id
 		WHERE
-			C.member_chnl_id IN
+			a.member_chnl_id IN
 			<foreach collection="channelIdList" item="channelId" index="index" open="(" separator="," close=")">
 				#{channelId}
 			</foreach>
