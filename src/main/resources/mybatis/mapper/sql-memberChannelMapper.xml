@@ -63,7 +63,9 @@
 							JOIN tb_member_chnl cc ON bb.member_chnl_id = cc.member_chnl_id
 							WHERE
 								cc.member_chnl_id = a.member_chnl_id
-								AND aa.disp_status_yn = 'Y' AND now() BETWEEN aa.disp_start_dtime AND aa.disp_end_dtime LIMIT 1
+								AND aa.disp_status_yn = 'Y' AND now() BETWEEN aa.disp_start_dtime AND aa.disp_end_dtime
+								ORDER BY bb.track_sn
+								LIMIT 1
 						  	)
 		LEFT JOIN tb_album_img c ON b.album_id = c.album_id
 		WHERE
