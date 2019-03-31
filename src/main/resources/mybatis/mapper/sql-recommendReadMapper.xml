@@ -610,7 +610,7 @@
               tb_rcmmd_artist_track_list aa
               JOIN tb_track bb ON bb.track_id = aa.track_id AND bb.disp_status_yn = 'Y' AND now() BETWEEN bb.disp_start_dtime AND bb.disp_end_dtime
             WHERE
-              aa.rcmmd_artist_id = a.rcmmd_artist_id
+              aa.rcmmd_artist_id = #{recommendArtistId}
           ) trackCount
       FROM
         tb_rcmmd_artist a
