@@ -10,4 +10,5 @@ package com.sktechx.godmusic.personal.rest.service;
 public interface SettlementService {
 	// 정산 정보 조회
 	String getServiceCode(Long memberNo, String settlementTypeCode);
+	String getServiceCodeByPrchsId(Long prchsId, String settlementTypeCode);
 }

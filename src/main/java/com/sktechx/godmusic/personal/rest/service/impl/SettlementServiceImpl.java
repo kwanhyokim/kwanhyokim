@@ -22,4 +22,9 @@ public class SettlementServiceImpl implements SettlementService {
 	public String getServiceCode(Long memberNo, String settlementTypeCode) {
 		return settlementMapper.selectServiceCode(memberNo, settlementTypeCode);
 	}
+	
+	@Override
+	public String getServiceCodeByPrchsId(Long prchsId, String settlementTypeCode) {
+		return settlementMapper.selectServiceCodeByPrchsId(prchsId, settlementTypeCode);
+	}
 }

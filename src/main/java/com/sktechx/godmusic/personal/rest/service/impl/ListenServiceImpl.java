@@ -189,11 +189,11 @@ public class ListenServiceImpl implements ListenService {
 	}
 	
 	private String getServiceCode(Long memberNo, ListenTrackRequest request) {
-		if (YnType.Y == request.getFreeYn()) {
-			// todo 스트리밍 api를 이용하여 무료 서비스 코드를 가져오는 코드로 변경 필요
-			return "FREE_SVC";
-		} else {
+		// todo 무료곡 서비스 시점에 다시 수정 필요
+//		if (YnType.Y == request.getFreeYn()) {
+//			return "FREE_SVC";
+//		} else {
 			return settlementService.getServiceCode(memberNo, request.getSourceType().getPlayType());
-		}
+//		}
 	}
 }

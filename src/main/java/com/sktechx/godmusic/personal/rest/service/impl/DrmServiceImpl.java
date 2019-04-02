@@ -10,15 +10,19 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl;
 
+import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.rest.model.vo.drm.OwnerTokenClaim;
 import com.sktechx.godmusic.personal.rest.service.DrmService;
+import com.sktechx.godmusic.personal.rest.service.SettlementService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -36,6 +40,9 @@ public class DrmServiceImpl implements DrmService {
 	@Value("${token.drm.owner.key}")
 	private String tokenKey;
 	
+	@Autowired
+	SettlementService settlementService;
+	
 	@Override
 	public OwnerTokenClaim getOwnerTokenInfo(String ownerToken) {
 		try {
@@ -44,16 +51,30 @@ public class DrmServiceImpl implements DrmService {
 			
 			if(ObjectUtils.isEmpty(claims)) return null;
 			
-			return OwnerTokenClaim.builder()
+			OwnerTokenClaim ownerTokenClaim = OwnerTokenClaim.builder()
 					.memberNo(Long.valueOf((Integer)claims.get("memberNo")))
 					.goodsId(Long.valueOf((Integer)claims.get("goodsId")))
 					.purchaseId(Long.valueOf((Integer)claims.get("purchaseId")))
 					.pssrlCode((String)claims.get("pssrlCode"))
 					.serviceId((String)claims.get("serviceId"))
 					.build();
+			
+			// todo 2019.05월 이후 불필요 코드 이므로 아래 method와 함께 삭제 필요
+			addServiceIdToOwnerToken(ownerTokenClaim);
+			
+			return ownerTokenClaim;
 		} catch (Exception e) {
 			log.error("Owner Token Parse 에러 : {}", e.getMessage());
 			return null;
+		}
+	}
+	
+	private void addServiceIdToOwnerToken(OwnerTokenClaim ownerTokenClaim) {
+		if (ObjectUtils.isEmpty(ownerTokenClaim.getPurchaseId()) == false
+				&& StringUtils.isEmpty(ownerTokenClaim.getServiceId())) {
+			String serviceId = settlementService.getServiceCodeByPrchsId(ownerTokenClaim.getPurchaseId(), SourceType.DN.getPlayType());
+			
+			ownerTokenClaim.setServiceId(serviceId);
 		}
 	}
 }
