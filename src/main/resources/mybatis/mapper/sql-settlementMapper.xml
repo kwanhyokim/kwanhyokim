@@ -28,4 +28,18 @@
             AND a.tmbrship_apply_yn = c.tmbrship_apply_yn
             AND a.goods_status = 'INUSE'
 	</select>
+    
+    <select id="selectServiceCodeByPrchsId" resultType="string" parameterType="map">
+        SELECT
+            c.svc_id
+        FROM
+            tb_prchs_pass a
+            JOIN tb_goods b ON a.goods_id = b.goods_id
+            JOIN tb_map_goods_svc_id c ON a.goods_id = c.goods_id
+        WHERE
+            a.prchs_id = #{prchsId}
+            AND c.category_type1 = #{playType}
+            AND a.tmbrship_apply_yn = c.tmbrship_apply_yn
+	</select>
+ 
 </mapper>

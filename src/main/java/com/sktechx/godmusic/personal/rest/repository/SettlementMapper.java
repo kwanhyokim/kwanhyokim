@@ -12,4 +12,5 @@ import org.apache.ibatis.annotations.Param;
 @BaseMapper
 public interface SettlementMapper {
 	String selectServiceCode(@Param("memberNo")Long memberNo, @Param("playType")String playType);
+	String selectServiceCodeByPrchsId(@Param("prchsId")Long prchsId, @Param("playType")String playType);
 }
