@@ -87,11 +87,11 @@ public class AmqpDeliverImpl implements AmqpDeliver {
 			try	{
 				DeliveryItem item = queue.take();
 				if( item == null )	{
-					Thread.currentThread().sleep(TimeUnit.SECONDS.toMillis(10));
+					Thread.currentThread().sleep(TimeUnit.SECONDS.toMillis(3));
 					continue;
 				}
 				while( !deliver(item) )	{
-					Thread.currentThread().sleep(TimeUnit.SECONDS.toMillis(10));
+					Thread.currentThread().sleep(TimeUnit.SECONDS.toMillis(3));
 				}
 			} catch(InterruptedException e0)	{
 				return;
