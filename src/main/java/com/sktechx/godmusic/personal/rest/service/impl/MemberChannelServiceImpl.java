@@ -411,9 +411,16 @@ public class MemberChannelServiceImpl implements MemberChannelService {
 
         //앨범 아이디 및 trackCount 업데이트
         Long albumId = getMemberChannelAlbumId(memberChannelId);
-        memberChannelMapper.updateMemberChannelList(memberNo, characterNo, memberChannelId, null, albumId, true, true, new Date());
+        
+        try {
+            memberChannelMapper.updateMemberChannelList(memberNo, characterNo, memberChannelId, null, albumId, true, true, new Date());
+        } catch (Exception e) {
+            log.warn("Update Database Log : memberNo={}, characterNo={}, memberChannelId={}, albumId={}",
+                    memberNo, characterNo, memberChannelId, albumId);
+            throw e;
+        }
+    
         //TODO 업데이트 한 member channel의 sn 순서를 1로 변경 해준다.
-
         MemberChannelDto myChannel = getMemberChannel(memberNo, characterNo, memberChannelId);
 
         return MyPlaylistTrackCreateResponse.builder()
