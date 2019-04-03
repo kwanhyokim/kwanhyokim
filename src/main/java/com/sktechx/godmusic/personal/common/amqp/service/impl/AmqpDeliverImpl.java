@@ -87,6 +87,7 @@ public class AmqpDeliverImpl implements AmqpDeliver {
 			try	{
 				DeliveryItem item = queue.take();
 				if( item == null )	{
+					log.info("amqp deliver wait caused by item is null");
 					Thread.currentThread().sleep(TimeUnit.SECONDS.toMillis(3));
 					continue;
 				}
