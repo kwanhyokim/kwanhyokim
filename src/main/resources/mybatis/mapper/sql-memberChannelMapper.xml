@@ -228,8 +228,7 @@
 							FROM
 								TB_MAP_MEMBER_CHNL_TRACK B
 							WHERE
-								A.MEMBER_CHNL_ID = B.MEMBER_CHNL_ID
-							GROUP BY A.MEMBER_CHNL_ID),
+								A.MEMBER_CHNL_ID = B.MEMBER_CHNL_ID),
 						0),
 			]]>
 			</if>
@@ -245,8 +244,7 @@
 								TB_MAP_MEMBER_CHNL_TRACK D
 								JOIN TB_TRACK C ON D.TRACK_ID = C.TRACK_ID
 							WHERE
-								A.MEMBER_CHNL_ID = D.MEMBER_CHNL_ID
-							GROUP BY A.MEMBER_CHNL_ID),
+								A.MEMBER_CHNL_ID = D.MEMBER_CHNL_ID),
 						0),
 			]]>
 			</if>
