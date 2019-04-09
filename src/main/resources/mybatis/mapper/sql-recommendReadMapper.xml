@@ -62,23 +62,7 @@
             WHERE
                 a.character_no = #{characterNo}
             AND
-                a.disp_std_start_dt <= NOW()
-            AND
-                a.disp_std_end_dt >= NOW()
-            AND a.create_std_dtime = ( SELECT
-                                        create_std_dtime
-                                    FROM
-                                        tb_rcmmd_mforu
-                                    WHERE
-                                        character_no =  #{characterNo}
-                                    AND
-                                        disp_std_start_dt <= NOW()
-                                    AND
-                                        disp_std_end_dt >= NOW()
-                                    GROUP BY create_std_dtime
-                                    ORDER BY create_std_dtime DESC
-                                    LIMIT 1
-                                )
+                NOW() BETWEEN a.disp_std_start_dt AND a.disp_std_end_dt
             GROUP BY a.rcmmd_mforu_id
             HAVING contentCount >= #{rcmmdCfTrackDispStandardCount}
             UNION ALL

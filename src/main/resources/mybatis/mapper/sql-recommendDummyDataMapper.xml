@@ -33,10 +33,7 @@
               tb_rcmmd_mforu
             WHERE
               character_no = #{characterNo}
-            AND
-              disp_std_start_dt <= NOW()
-            AND
-              disp_std_end_dt >= NOW()
+            AND now() BETWEEN  disp_std_start_dt AND disp_std_end_dt
             LIMIT 1
         ]]>
     </select>
