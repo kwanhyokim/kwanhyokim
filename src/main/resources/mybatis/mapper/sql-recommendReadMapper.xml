@@ -534,7 +534,7 @@
                                 WHERE
                                   aa.rcmmd_mforu_id = a.rcmmd_mforu_id
                             ) trackCount,
-                            a.create_dtime rcmmdCreateDtime
+                            a.disp_std_start_dt rcmmdCreateDtime
                         FROM
                           tb_rcmmd_mforu a INNER JOIN tb_svc_genre b ON a.svc_genre_id = b.svc_genre_id
                         WHERE
