@@ -7,5 +7,5 @@ import java.util.Date;
 @Data
 public class RecommendGenreVo {
     private String svcGenreNm;
-    private Date createDtime;
+    private Date dispStdStartDt;
 }
