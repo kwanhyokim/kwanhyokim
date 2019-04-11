@@ -75,7 +75,7 @@
             c.create_dtime trackRenewDtime,
             c.track_sn
         FROM
-          tb_chnl a INNER JOIN tb_map_chnl_track c ON a.chnl_id = c.chnl_id
+          tb_chnl a INNER JOIN tb_map_chnl_track c ON a.chnl_id = c.chnl_id AND a.disp_status_type = 'Y'
                     INNER JOIN tb_track d ON c.track_id = d.track_id AND d.disp_status_yn = 'Y' AND now() BETWEEN d.disp_start_dtime AND d.disp_end_dtime
         WHERE a.chnl_id = #{channelId}
         ORDER BY c.track_sn ASC
@@ -585,9 +585,7 @@
                     AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
                   ORDER BY last_listen_dtime DESC
                   LIMIT 300 ) a
-          JOIN tb_chnl b
-            ON a.listen_type_id = b.chnl_id
-           AND a.listen_type = 'CHNL'
+          JOIN tb_chnl b ON a.listen_type_id = b.chnl_id AND a.listen_type = 'CHNL'AND b.disp_status_type = 'Y'
           JOIN ted_album c ON b.album_id = c.album_id AND c.disp_status_yn= 'Y' AND now() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
           LEFT JOIN tb_album_img d
             ON c.album_id = d.album_id
