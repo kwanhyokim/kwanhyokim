@@ -121,7 +121,7 @@
 			a.character_no = #{characterNo}
 			AND a.member_no = #{memberNo}
 			AND a.member_chnl_id = #{channelId}
-			ORDER BY channelPriority ASC
+			ORDER BY a.update_dtime DESC, a.member_chnl_sn ASC
 	</select>
 
     <select id="selectMemberChannelCount" resultType="int">
