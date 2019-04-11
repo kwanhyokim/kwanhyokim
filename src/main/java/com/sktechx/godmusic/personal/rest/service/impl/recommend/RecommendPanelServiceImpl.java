@@ -313,7 +313,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
                 if(!ObjectUtils.isEmpty(recommendGenreVo)){
                     genreNm = recommendGenreVo.getSvcGenreNm();
-                    createDTime = recommendGenreVo.getCreateDtime();
+                    createDTime = recommendGenreVo.getDispStdStartDt();
 
                     Date stdDate = new Date((System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1)));
                     if(stdDate.before(createDTime)){

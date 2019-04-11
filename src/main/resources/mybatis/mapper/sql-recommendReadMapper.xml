@@ -62,23 +62,7 @@
             WHERE
                 a.character_no = #{characterNo}
             AND
-                a.disp_std_start_dt <= NOW()
-            AND
-                a.disp_std_end_dt >= NOW()
-            AND a.create_std_dtime = ( SELECT
-                                        create_std_dtime
-                                    FROM
-                                        tb_rcmmd_mforu
-                                    WHERE
-                                        character_no =  #{characterNo}
-                                    AND
-                                        disp_std_start_dt <= NOW()
-                                    AND
-                                        disp_std_end_dt >= NOW()
-                                    GROUP BY create_std_dtime
-                                    ORDER BY create_std_dtime DESC
-                                    LIMIT 1
-                                )
+                NOW() BETWEEN a.disp_std_start_dt AND a.disp_std_end_dt
             GROUP BY a.rcmmd_mforu_id
             HAVING contentCount >= #{rcmmdCfTrackDispStandardCount}
             UNION ALL
@@ -550,7 +534,7 @@
                                 WHERE
                                   aa.rcmmd_mforu_id = a.rcmmd_mforu_id
                             ) trackCount,
-                            a.create_dtime rcmmdCreateDtime
+                            a.disp_std_start_dt rcmmdCreateDtime
                         FROM
                           tb_rcmmd_mforu a INNER JOIN tb_svc_genre b ON a.svc_genre_id = b.svc_genre_id
                         WHERE
@@ -821,7 +805,7 @@
     <select id="selectRecommendGenreByRcmmdId" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendGenreVo">
         SELECT
             b.svc_genre_nm,
-            a.create_dtime
+            a.disp_std_start_dt
         FROM
             tb_rcmmd_mforu a INNER JOIN tb_svc_genre b ON a.svc_genre_id = b.svc_genre_id
         WHERE
