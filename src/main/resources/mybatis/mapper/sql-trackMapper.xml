@@ -310,6 +310,7 @@
             ON a.album_id = g.album_id AND g.disp_status_yn ='Y' AND now() BETWEEN g.disp_start_dtime AND g.disp_end_dtime
           LEFT JOIN ted_artist h
             ON a.reprsnt_artist_id = h.artist_id
+          ORDER BY a.last_listen_dtime DESC, d.listorder ASC
     </select>
 
     <select id="selectMyRecentTrackTotalCount" resultType="long">
