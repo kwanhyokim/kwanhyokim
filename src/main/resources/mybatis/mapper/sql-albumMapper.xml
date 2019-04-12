@@ -43,43 +43,59 @@
     </resultMap>
 
     <select id = "selectLastListenHistory" resultMap="lastListenHistoryResultMap">
-        SELECT CONCAT(a.listen_type, a.listen_type_id) as listen_id,
-               a.listen_type,
-               a.listen_type_id,
-               b.title as content_title,
-               a.last_listen_dtime,
-               e.album_img_size as size,
-               e.album_img_url AS url,
-               b.album_id,
-               b.title,
-               b.release_ymd,
-               IF(b.album_tp='MF', '', b.album_tp) album_type,
-               d.artist_id albumArtistId,
-               d.artist_nm albumArtistName,
-               h.artist_id albumRepArtistId,
-               h.artist_nm albumRepArtistName
-          FROM ( SELECT listen_type, listen_type_id, last_listen_dtime
-                   FROM tb_member_last_listen_hist
-                  WHERE member_no = #{memberNo}
-                    AND character_no = #{characterNo}
-                    AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
-                  ORDER BY last_listen_dtime DESC
-                  LIMIT 1000 ) a
-          JOIN ted_album b ON a.listen_type_id = b.album_id AND b.disp_status_yn = 'Y' AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
-           AND listen_type = 'ALBUM'
-          LEFT OUTER JOIN ted_albumartist c
-            ON b.album_id = c.album_id
-          LEFT OUTER JOIN ted_artist d
-            ON c.artist_id = d.artist_id
-          LEFT OUTER JOIN tb_album_img e
-            ON b.album_id = e.album_id
-          LEFT OUTER JOIN ted_albumstyle f
-            ON b.album_id = f.album_id
-          LEFT OUTER JOIN ted_style g
-            ON f.style_id = g.style_id
-          LEFT OUTER JOIN ted_artist h
-            ON h.artist_id = b.artist_id
-         ORDER BY last_listen_dtime DESC
+
+        SELECT
+                i.listen_id,
+                i.listen_type,
+                i.listen_type_id,
+                i.content_title,
+                i.last_listen_dtime,
+                i.album_id,
+                i.title,
+                i.release_ymd,
+                i.album_type,
+                i.albumArtistId,
+                i.albumArtistName,
+                j.album_img_size as size,
+                j.album_img_url as url
+            FROM (
+            SELECT CONCAT(a.listen_type, a.listen_type_id) as listen_id,
+                   a.listen_type,
+                   a.listen_type_id,
+                   b.title as content_title,
+                   a.last_listen_dtime,
+                   b.album_id,
+                   b.title,
+                   b.release_ymd,
+                   b.album_tp as album_type,
+                   d.artist_id albumArtistId,
+                   d.artist_nm albumArtistName
+              FROM ( SELECT listen_type, listen_type_id, last_listen_dtime
+                       FROM tb_member_last_listen_hist
+                      WHERE member_no = #{memberNo}
+                        AND character_no = #{characterNo}
+                        AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR')
+                      ORDER BY last_listen_dtime DESC
+                      LIMIT 1000 ) a
+              JOIN ted_album b ON a.listen_type_id = b.album_id AND b.disp_status_yn = 'Y' AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
+               AND listen_type = 'ALBUM'
+              LEFT OUTER JOIN ted_albumartist c
+                ON b.album_id = c.album_id
+              LEFT OUTER JOIN ted_artist d
+                ON c.artist_id = d.artist_id
+              LEFT OUTER JOIN ted_albumstyle f
+                ON b.album_id = f.album_id
+              LEFT OUTER JOIN ted_style g
+                ON f.style_id = g.style_id
+              LEFT OUTER JOIN ted_artist h
+                ON h.artist_id = b.artist_id
+            GROUP BY listen_id, listen_type, listen_type_id, content_title, last_listen_dtime, album_id, title, release_ymd, album_type, albumArtistId, albumArtistName, listorder
+            ORDER BY last_listen_dtime DESC
+            ) i
+
+            LEFT OUTER JOIN tb_album_img j
+              ON i.album_id = j.album_id
+
     </select>
 
 </mapper>
