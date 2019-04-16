@@ -73,7 +73,7 @@
 			<foreach collection="channelIdList" item="channelId" index="index" open="(" separator="," close=")">
 				#{channelId}
 			</foreach>
-		ORDER BY a.update_dtime DESC, a.member_chnl_sn ASC
+		ORDER BY a.member_chnl_sn ASC
 	</select>
 
 	<select id="selectMemberChannelTotalCount" resultType ="int">
