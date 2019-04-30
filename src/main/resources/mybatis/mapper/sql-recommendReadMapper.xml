@@ -387,7 +387,7 @@
                         FROM
                           tb_rcmmd_similar_track a
                         WHERE
-                            rcmmd_similar_track_id IN''
+                            rcmmd_similar_track_id IN
                             <foreach item="rcmmdId" index="index" collection="recommendIdList" open="(" separator="," close=")">
                                 #{rcmmdId}
                             </foreach>
