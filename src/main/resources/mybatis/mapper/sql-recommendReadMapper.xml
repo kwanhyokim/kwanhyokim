@@ -301,8 +301,6 @@
             rcmmd_track_rank_table.img_size,
             rcmmd_track_rank_table.img_url,
             rcmmd_track_rank_table.rcmmdCreateDtime,
-            rcmmd_track_rank_table.svc_genre_id,
-            rcmmd_track_rank_table.svc_genre_nm,
             rcmmd_track_rank_table.trackCount,
             d.artist_id,
             d.artist_nm,
@@ -331,16 +329,12 @@
                 rcmmd_track_table.img_size,
                 rcmmd_track_table.img_url,
                 rcmmd_track_table.rcmmdCreateDtime,
-                rcmmd_track_table.svc_genre_id,
-                rcmmd_track_table.svc_genre_nm,
                 rcmmd_track_table.trackCount
               FROM
                 (
                     -- 3. rcmmd_track_table start
                     SELECT
                         rcmmd_img_table.rcmmd_id,
-                        rcmmd_img_table.svc_genre_id,
-                        rcmmd_img_table.svc_genre_nm,
                         rcmmd_img_table.disp_sn rcmmd_disp_sn,
                         rcmmd_img_table.img_size,
                         rcmmd_img_table.img_url,
@@ -359,8 +353,6 @@
                         -- 2. rcmmd_img_table start
                         SELECT
                             rcmmd_table.rcmmd_id,
-                            rcmmd_table.svc_genre_id,
-                            rcmmd_table.svc_genre_nm,
                             rcmmd_table.disp_sn,
                             rcmmd_table.rcmmdCreateDtime,
                             rcmmd_table.trackCount,
@@ -371,8 +363,6 @@
                         -- 1. rcmmd_table start
                         SELECT
                             rcmmd_similar_track_id rcmmd_id,
-                            a.svc_genre_id,
-                            b.svc_genre_nm,
                             disp_sn,
                             CASE DAYOFWEEK(NOW())
                                 WHEN '1' THEN 'SUN'
@@ -395,9 +385,9 @@
                                   aa.rcmmd_similar_track_id = a.rcmmd_similar_track_id
                             ) trackCount
                         FROM
-                          tb_rcmmd_similar_track a INNER JOIN tb_svc_genre b ON a.svc_genre_id = b.svc_genre_id
+                          tb_rcmmd_similar_track a
                         WHERE
-                            rcmmd_similar_track_id IN
+                            rcmmd_similar_track_id IN''
                             <foreach item="rcmmdId" index="index" collection="recommendIdList" open="(" separator="," close=")">
                                 #{rcmmdId}
                             </foreach>
