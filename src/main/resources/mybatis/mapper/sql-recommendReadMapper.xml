@@ -371,8 +371,8 @@
                         -- 1. rcmmd_table start
                         SELECT
                             rcmmd_similar_track_id rcmmd_id,
-                            a.svc_genre_id,
-                            b.svc_genre_nm,
+                            0 as svc_genre_id,
+                            '' as svc_genre_nm,
                             disp_sn,
                             CASE DAYOFWEEK(NOW())
                                 WHEN '1' THEN 'SUN'
@@ -395,7 +395,7 @@
                                   aa.rcmmd_similar_track_id = a.rcmmd_similar_track_id
                             ) trackCount
                         FROM
-                          tb_rcmmd_similar_track a INNER JOIN tb_svc_genre b ON a.svc_genre_id = b.svc_genre_id
+                          tb_rcmmd_similar_track a
                         WHERE
                             rcmmd_similar_track_id IN
                             <foreach item="rcmmdId" index="index" collection="recommendIdList" open="(" separator="," close=")">
