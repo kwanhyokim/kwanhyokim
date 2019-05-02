@@ -258,15 +258,26 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 List<String> artistNameList = artistDtoList.stream().map(x -> x.getArtistName()).limit(5).collect(
 		                Collectors.toList());
 
-                // 아티스트 이미지가 default 이미지인것은 목록에서 제외한다
-                artistDtoList = artistDtoList.stream().filter(x -> !x.hasDefaultImage()).collect(Collectors.toList());
+                // 아티스트 이미지가 default 이미지인것은 목록에서 뒷 부분으로 위치를 변경한다
+                List<ArtistDto> normalImageArtistList = new LinkedList<>();
+                List<ArtistDto> defaultImageArtistList = new LinkedList<>();
+                artistDtoList.stream().forEach(x ->  {
+                    if( x.hasDefaultImage() ) {
+                        defaultImageArtistList.add(x);
+                    } else {
+                        normalImageArtistList.add(x);
+                    }
+                });
+                if(defaultImageArtistList.size() > 0)   {
+                    normalImageArtistList.addAll(defaultImageArtistList);
+                }
 
                 // 아티스트의 첫 이미지를 배경 이미지로 사용
                 panel =  new RecommendPanelInfoDto.Builder()
                         .title(RecommendConstant.ARTIST_PANEL_TITLE)
                         .subTitle(String.join(",", artistNameList))
                         .imgList((artistDtoList == null || artistDtoList.get(0) == null? null : artistDtoList.get(0).getImgList()))
-                        .artistList(artistDtoList)
+                        .artistList(normalImageArtistList)
                         .artistCount(artistDtoList.size())
                         .newYn(YnType.Y)
                         .build();
