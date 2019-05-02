@@ -10,11 +10,15 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend.panel;
 
-import com.sktechx.godmusic.lib.domain.code.OsType;
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.util.CollectionUtils;
+
 import com.sktechx.godmusic.personal.common.domain.PreferPropsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+import com.sktechx.godmusic.personal.common.util.BooleanComparator;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
@@ -24,17 +28,11 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.artist.ArtistPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.ListenMoodPopularChannelPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.PreferGenrePopularChannelPanel;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.chart.ChartPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.GenreVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.PreferGenreSimilarTrackPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.PreferSimilarTrackPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.CollectionUtils;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
 import static com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType.*;
@@ -110,6 +108,10 @@ public abstract class PanelSignAssembly extends PanelAssembly {
             if (recommendArtistDto != null && !CollectionUtils.isEmpty(recommendArtistDto.getArtistList())) {
 
                 try {
+
+                    recommendArtistDto.getArtistList().sort(
+                            (ArtistDto a, ArtistDto b) -> (BooleanComparator.TRUE_LOW.compare(a.hasDefaultImage(), b.hasDefaultImage()))
+                    );
 
                     if(isArtistPopularTrackPanelAppend(recommendArtistDto)){
                         panelList.add(new ArtistPanel(recommendArtistDto));
