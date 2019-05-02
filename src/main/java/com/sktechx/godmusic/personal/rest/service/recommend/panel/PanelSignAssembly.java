@@ -110,7 +110,7 @@ public abstract class PanelSignAssembly extends PanelAssembly {
                 try {
 
                     recommendArtistDto.getArtistList().sort(
-                            (ArtistDto a, ArtistDto b) -> (BooleanComparator.TRUE_LOW.compare(a.hasDefaultImage(), b.hasDefaultImage()))
+                            (ArtistDto a, ArtistDto b) -> (BooleanComparator.TRUE_HIGH.compare(a.hasDefaultImage(), b.hasDefaultImage()))
                     );
 
                     if(isArtistPopularTrackPanelAppend(recommendArtistDto)){
