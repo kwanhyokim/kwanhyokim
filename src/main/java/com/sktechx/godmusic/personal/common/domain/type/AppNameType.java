@@ -27,7 +27,8 @@ public enum AppNameType implements CodeEnum {
 	MMATE("MMATE","뮤직메이트"),
 	MUSIC_MALL("MUSIC_MALL","뮤직몰"),
 	NUGU("NUGU","NUGU"),
-	FLO("FLO", "FLO")
+	FLO("FLO", "FLO"),
+	FLO_WEB("FLO_WEB", "FLO_WEB"),
 	;
 	
 	final String code;

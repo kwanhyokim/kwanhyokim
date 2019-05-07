@@ -47,7 +47,6 @@
     <logger name="org.springframework.jdbc" level="info" />
 
     <logger name="java.sql" level="error" />
-    <logger name="jdbc.sqlonly" level="debug"/>
     <logger name="com.spring.ibatis" level="debug" />
     <logger name="org.apache.ibatis" level="debug" />
     <logger name="org.mybatis.spring" level="debug" />
@@ -57,7 +56,13 @@
     <logger name="io.swagger.models.parameters.AbstractSerializableParameter" level="error" />
 
     <logger name="com.sktechx" level="trace" />
-
+	
+	<logger name="jdbc.sqlonly" level="INFO"/>
+	<logger name="jdbc.resultsettable" level="INFO"/>
+	<logger name="jdbc.audit" level="OFF"/>
+	<logger name="jdbc.connection" level="OFF"/>
+	<logger name="jdbc.resultset" level="OFF"/>
+	
     <root level="info">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />

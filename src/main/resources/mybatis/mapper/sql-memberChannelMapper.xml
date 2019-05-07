@@ -216,7 +216,7 @@
 		UPDATE TB_MEMBER_CHNL A
 		<trim prefix="SET" suffixOverrides=",">
 			<if test="albumId != null">
-				ALBUM_ID = #{albumId},
+				ALBUM_ID = #{albumId, javaType=LONG},
 			</if>
 			<if test="viewPriority != null">
 				MEMBER_CHNL_SN = #{viewPriority},
@@ -251,9 +251,9 @@
 			<if test="updateDateTime != null">UPDATE_DTIME = #{updateDateTime}</if>
 		</trim>
 		<trim prefix="WHERE" prefixOverrides="AND | OR ">
-			AND MEMBER_CHNL_ID = #{channelId}
-			AND CHARACTER_NO = #{characterNo}
-			AND MEMBER_NO = #{memberNo}
+			AND MEMBER_CHNL_ID = #{channelId, javaType=LONG}
+			AND CHARACTER_NO = #{characterNo, javaType=LONG}
+			AND MEMBER_NO = #{memberNo, javaType=LONG}
 		</trim>
 	</update>
 
