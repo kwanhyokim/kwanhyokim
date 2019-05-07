@@ -70,12 +70,17 @@
 	<resultMap id="ocrAnalsVoMap" type="com.sktechx.godmusic.personal.rest.model.vo.ocr.OcrAnalsVo" autoMapping="true">
 		<id property="ocrNo" column="ocr_no"/>
 		<collection property="ocrAnalsResultList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ocr.OcrAnalsVo$OcrAnalsResultVo" autoMapping="true">
-			<id property="ocrAnalsResultNo" column="ocr_anals_result_no"/>
+			<id property="ocrFileNo" column="ocr_file_no"/>
 			<!--<collection property="ocrAnalsResultTrackList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ocr.OcrAnalsVo$OcrAnalsResultTrackVo">-->
 				<!--<result property="trackId" column="track_id" />-->
 				<!--<result property="matchingRate" column="matching_rate" />-->
 			<!--</collection>-->
-			<collection property="track" resultMap="com.sktechx.godmusic.personal.rest.repository.TrackMapper.trackResultMap"/>
+			<collection property="ocrAnalsResultDetailList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ocr.OcrAnalsVo$OcrAnalsResultDetailVo" autoMapping="true">
+				<id property="ocrAnalsResultNo" column="ocr_anals_result_no"/>
+				<collection property="track" resultMap="com.sktechx.godmusic.personal.rest.repository.TrackMapper.trackResultMap"/>
+			</collection>
+
+
 		</collection>
 
 	</resultMap>
