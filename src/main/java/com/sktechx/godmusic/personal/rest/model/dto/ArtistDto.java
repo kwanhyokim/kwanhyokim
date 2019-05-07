@@ -20,6 +20,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import lombok.*;
 
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -72,4 +73,17 @@ public class ArtistDto {
     List<ImageInfo> imgList;
 
     private String artistType;
+
+    /**
+     * 아티스트 이미지가 존재하지 않아서 디폴트 이미즈를 사용했는지 여부를 리턴한다
+     * https://cdn.music-flo.com/image/artist/000/000/00/00/000000000/000000000.jpg
+     * @return
+     */
+    public boolean  hasDefaultImage()    {
+        if( this.imgList == null || this.imgList.size() == 0 )  {
+            return true;
+        }
+
+        return this.imgList.get(0).getUrl().contains("000000000") ? true : false;
+    }
 }
