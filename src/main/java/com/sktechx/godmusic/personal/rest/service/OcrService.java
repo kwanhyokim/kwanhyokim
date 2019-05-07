@@ -1,15 +1,20 @@
 package com.sktechx.godmusic.personal.rest.service;
 
-import com.sktechx.godmusic.personal.rest.model.vo.ocr.CreateOcrSessionRequest;
-import com.sktechx.godmusic.personal.rest.model.vo.ocr.OcrTrackListVo;
+import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrDto;
+import com.sktechx.godmusic.personal.rest.model.vo.external.AwsFileVo;
+import com.sktechx.godmusic.personal.rest.model.vo.ocr.OcrAnalsVo;
 import org.springframework.web.multipart.MultipartFile;
 
 
 public interface OcrService {
 
-    String createOcrSession(CreateOcrSessionRequest request);
+    OcrDto createOcr(Long memberNo, Long characterNo, int totalFileCnt);
 
-    void uploadOcrFile(Long memberNo, MultipartFile file, String sessionId, Integer index);
+    void requestAnalysisToOcrServer(Long ocrNo, Integer ocrFileNo, AwsFileVo awsFileVo);
 
-    OcrTrackListVo getOcrTrackList(String sessionId);
+    AwsFileVo uploadOcrFile(Long memberNo, MultipartFile multipartFile, Long ocrNo, Integer ocrFileNo);
+
+    OcrAnalsVo getOcrAnals(Long ocrNo);
+
+
 }

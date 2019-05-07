@@ -1,21 +1,26 @@
 package com.sktechx.godmusic.personal.rest.service.impl;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
+import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.AwsBucketType;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
+import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrFileDto;
 import com.sktechx.godmusic.personal.rest.model.vo.external.AwsFileVo;
-import com.sktechx.godmusic.personal.rest.model.vo.ocr.CreateOcrSessionRequest;
-import com.sktechx.godmusic.personal.rest.model.vo.ocr.OcrTrackListVo;
+import com.sktechx.godmusic.personal.rest.model.vo.ocr.OcrAnalsVo;
+import com.sktechx.godmusic.personal.rest.repository.OcrMapper;
 import com.sktechx.godmusic.personal.rest.service.ExternalApiProxy;
+import com.sktechx.godmusic.personal.rest.service.OcrHelperService;
 import com.sktechx.godmusic.personal.rest.service.OcrService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -24,32 +29,71 @@ public class OcrServiceImpl implements OcrService {
     @Autowired
     private ExternalApiProxy externalApiProxy;
 
+    @Autowired
+    private OcrHelperService ocrHelperService;
+
+    @Autowired
+    private OcrMapper ocrMapper;
+
     @Override
-    public String createOcrSession(CreateOcrSessionRequest request){
+    @Transactional
+    public OcrDto createOcr(Long memberNo, Long characterNo, int totalFileCnt){
 
-        String ocrSession = UUID.randomUUID().toString().replace("-", "");
+        OcrDto ocrDto = OcrDto.builder().memberNo(memberNo).characterNo(characterNo).build();
+        ocrMapper.insertOcr(ocrDto);
 
-        //TODO DB설계 필요.
+        for( int i = 0; i < totalFileCnt ; i++){
+            ocrMapper.insertOcrFile(OcrFileDto.builder()
+                    .ocrNo(ocrDto.getOcrNo())
+                    .ocrFileNo(i+1)
+                    .uploadYn(YnType.N)
+                    .build());
+        }
 
-
-        return ocrSession;
+        return ocrDto;
     }
 
     @Override
-    public void uploadOcrFile(Long memberNo, MultipartFile multipartFile, String sessionId, Integer index){
-
+    public AwsFileVo uploadOcrFile(Long memberNo, MultipartFile multipartFile, Long ocrNo, Integer ocrFileNo){
 
         log.info(multipartFile.getOriginalFilename());
         AwsFileVo awsFileVo = uploadFile(multipartFile, AwsBucketType.OCR, memberNo);
-        //TODO DB설계 필요.
 
-        //완료시잠 push 발송
+        ocrHelperService.updateOcrFile(OcrFileDto.builder()
+                .ocrNo(ocrNo)
+                .ocrFileNo(ocrFileNo)
+                .awsBucketNm(awsFileVo.getBucket())
+                .awsBucketKey(awsFileVo.getBucketKey())
+                .uploadYn(YnType.Y)
+                .build());
+
+        return awsFileVo;
+    }
+
+
+    @Override
+    public void requestAnalysisToOcrServer(Long ocrNo, Integer ocrFileNo, AwsFileVo awsFileVo){
+
+        //TODO send FileInfo to OCR Server
+
+
+        ocrHelperService.updateOcrFile(OcrFileDto.builder()
+                .ocrNo(ocrNo)
+                .ocrFileNo(ocrFileNo)
+                .analsStartDtime(new Date())
+                .build());
+
     }
 
     @Override
-    public OcrTrackListVo getOcrTrackList(String sessionId){
+    @Transactional(readOnly = true)
+    public OcrAnalsVo getOcrAnals(Long ocrNo){
 
-        return null;
+        OcrAnalsVo ocrResultVo=  ocrMapper.selectOcrAnals(ocrNo);
+
+        // TODO duplicateYn 처리 필요.
+
+        return ocrResultVo;
     }
 
     private AwsFileVo uploadFile(MultipartFile file, AwsBucketType awsBucketType, Long memberNo) {

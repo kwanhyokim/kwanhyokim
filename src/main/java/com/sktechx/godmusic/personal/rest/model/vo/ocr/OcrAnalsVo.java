@@ -1,0 +1,54 @@
+package com.sktechx.godmusic.personal.rest.model.vo.ocr;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sktechx.godmusic.lib.domain.code.YnType;
+import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class OcrAnalsVo {
+
+    private Long ocrNo;
+    private List<OcrAnalsResultVo> ocrAnalsResultList;
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class OcrAnalsResultVo{
+
+        @JsonIgnore
+        private Long ocrAnalsResultNo;
+
+        private Integer ocrFileNo;
+        private Integer leftTopXAxis;
+        private Integer leftTopYAxis;
+        private Integer rightBottomXAxis;
+        private Integer rightBottomYAxis;
+
+        private YnType trackNmSkipYn;
+        private YnType albumNmSkipYn;
+        private YnType artistMatchingYn;
+
+        private YnType duplicateYn;
+
+        private TrackDto track;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class OcrAnalsResultTrackVo{
+        private Long trackId;
+        private Float matchingRate;
+    }
+}
