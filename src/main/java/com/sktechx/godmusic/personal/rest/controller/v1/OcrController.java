@@ -35,7 +35,7 @@ public class OcrController {
     @ApiOperation(value = "OCR 세션 정보 생성", httpMethod = "POST", notes = "OCR 분석할 파일을 올리기 위한, 세션 아이디를 생성 한다")
     @PostMapping("")
     public CommonApiResponse<CreateOcrSessionResponse> createOcrSession(
-            @ApiParam(value = "디바이스 아이디", required = true, defaultValue = "test_device") @RequestHeader(value = CommonConstant.X_GM_DEVICE_ID) OsType deviceId,
+            @ApiParam(value = "디바이스 아이디", required = true, defaultValue = "test_device") @RequestHeader(value = CommonConstant.X_GM_DEVICE_ID) String deviceId,
             @RequestBody CreateOcrSessionRequest request){
 
         //OcrDto ocrDto = ocrService.createOcr(2100981L, 2101151L, "test_device", request.getTotalFileCnt());
