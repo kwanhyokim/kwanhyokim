@@ -15,5 +15,9 @@ public interface OcrMapper {
 
     OcrAnalsVo selectOcrAnals(@Param("ocrNo")Long ocrNo);
 
+    int countDoneProcessionOcrFile(@Param("ocrNo") Long ocrNo);
+
+    int countOcrFile(@Param("ocrNo") Long ocrNo);
+
 }
 

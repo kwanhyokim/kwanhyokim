@@ -5,12 +5,15 @@ import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.AwsBucketType;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
+import com.sktechx.godmusic.personal.rest.model.dto.member.MemberDvcDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrFileDto;
 import com.sktechx.godmusic.personal.rest.model.vo.external.AwsFileVo;
+import com.sktechx.godmusic.personal.rest.model.vo.ocr.GetOcrStatusResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.ocr.OcrAnalsVo;
 import com.sktechx.godmusic.personal.rest.repository.OcrMapper;
 import com.sktechx.godmusic.personal.rest.service.ExternalApiProxy;
+import com.sktechx.godmusic.personal.rest.service.MemberApiProxy;
 import com.sktechx.godmusic.personal.rest.service.OcrHelperService;
 import com.sktechx.godmusic.personal.rest.service.OcrService;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +33,9 @@ public class OcrServiceImpl implements OcrService {
     private ExternalApiProxy externalApiProxy;
 
     @Autowired
+    private MemberApiProxy memberApiProxy;
+
+    @Autowired
     private OcrHelperService ocrHelperService;
 
     @Autowired
@@ -37,9 +43,12 @@ public class OcrServiceImpl implements OcrService {
 
     @Override
     @Transactional
-    public OcrDto createOcr(Long memberNo, Long characterNo, int totalFileCnt){
+    public OcrDto createOcr(Long memberNo, Long characterNo, String deviceId, int totalFileCnt){
 
-        OcrDto ocrDto = OcrDto.builder().memberNo(memberNo).characterNo(characterNo).build();
+        MemberDvcDto memberDvcDto = getMemberDvc(memberNo, deviceId);
+
+        OcrDto ocrDto = OcrDto.builder().memberNo(memberNo).characterNo(characterNo).memberDvcNo(memberDvcDto.getMemberDvcNo()).build();
+
         ocrMapper.insertOcr(ocrDto);
 
         for( int i = 0; i < totalFileCnt ; i++){
@@ -87,7 +96,7 @@ public class OcrServiceImpl implements OcrService {
 
     @Override
     @Transactional(readOnly = true)
-    public OcrAnalsVo getOcrAnals(Long ocrNo){
+    public OcrAnalsVo getOcrAnals(Long characterNo, Long ocrNo){
 
         OcrAnalsVo ocrResultVo=  ocrMapper.selectOcrAnals(ocrNo);
 
@@ -95,6 +104,20 @@ public class OcrServiceImpl implements OcrService {
 
         return ocrResultVo;
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public GetOcrStatusResponse getOcrStatus(Long characterNo, Long ocrNo){
+
+        int totalCount = ocrMapper.countOcrFile(ocrNo);
+        int jobDoneCount = ocrMapper.countDoneProcessionOcrFile(ocrNo);
+
+        return GetOcrStatusResponse.builder()
+                .totalCount(totalCount)
+                .jobDoneCount(jobDoneCount)
+                .build();
+    }
+
 
     private AwsFileVo uploadFile(MultipartFile file, AwsBucketType awsBucketType, Long memberNo) {
 
@@ -107,6 +130,20 @@ public class OcrServiceImpl implements OcrService {
 
         return response.getData();
     }
+
+    private MemberDvcDto getMemberDvc(Long memberNo, String deviceId) {
+
+        log.debug("OcrServiceImpl::getMemberDvc start");
+        CommonApiResponse<MemberDvcDto> response = memberApiProxy.getMemberDvc(memberNo, deviceId);
+        log.debug("OcrServiceImpl::getMemberDvc end");
+
+        if(StringUtils.isEmpty(response) || StringUtils.isEmpty(response.getCode())
+                || !"2000000".equals(response.getCode()) || CommonUtils.empty(response.getData())) throw new CommonBusinessException("member-server getMemberDvc fail");
+
+        return response.getData();
+    }
+
+
 
 
 
