@@ -19,10 +19,12 @@
 		INSERT INTO tb_ocr (
 		  	  member_no
 		  	, character_no
+		  	, member_dvc_no
 		  	, create_dtime
 		) VALUES (
 			  #{memberNo}
 			, #{characterNo}
+			, #{memberDvcNo}
             , now()
 		)
 	</insert>
@@ -118,7 +120,7 @@
 			i.artist_nm
 		FROM
 			tb_ocr_anals_result a
-			LEFT JOIN tb_ocr_anals_result_track b ON a.ocr_anals_result_no = b.ocr_anals_result_no AND b.artist_matching_yn = 'Y'
+			LEFT JOIN tb_ocr_anals_result_track b ON a.ocr_anals_result_no = b.ocr_anals_result_no AND b.pick_yn = 'Y'
             LEFT JOIN tb_track c ON b.track_id = c.track_id AND c.disp_status_yn= 'Y' AND now() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
             LEFT JOIN ted_album d ON d.album_id = c.album_id AND d.disp_status_yn= 'Y' AND now() BETWEEN d.disp_start_dtime AND d.disp_end_dtime
             LEFT JOIN ted_albumstyle e ON e.album_id = d.album_id
@@ -128,5 +130,24 @@
             LEFT JOIN ted_artist i ON h.artist_id = i.artist_id
 		WHERE a.ocr_no = #{ocrNo}
 	</select>
+
+	<select id="countDoneProcessionOcrFile" resultType="int">
+        SELECT
+        	COUNT(*)
+        FROM
+			tb_ocr_file
+		WHERE
+			ocr_no = #{ocrNo}
+			AND anals_end_dtime IS NOT NULL
+    </select>
+
+	<select id="countOcrFile" resultType="int">
+        SELECT
+        	COUNT(*)
+        FROM
+			tb_ocr_file
+		WHERE
+			ocr_no = #{ocrNo}
+    </select>
 
 </mapper>

@@ -10,5 +10,6 @@ public class OcrDto {
     private Long ocrNo;
     private Long memberNo;
     private Long characterNo;
+    private Long memberDvcNo;
 
 }

@@ -1,16 +1,20 @@
 package com.sktechx.godmusic.personal.rest.controller.v1;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
+import com.sktechx.godmusic.lib.domain.CommonConstant;
 import com.sktechx.godmusic.lib.domain.GMContext;
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrDto;
 import com.sktechx.godmusic.personal.rest.model.vo.external.AwsFileVo;
 import com.sktechx.godmusic.personal.rest.model.vo.ocr.CreateOcrSessionRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.ocr.CreateOcrSessionResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.ocr.OcrAnalsVo;
+import com.sktechx.godmusic.personal.rest.model.vo.ocr.GetOcrStatusResponse;
 import com.sktechx.godmusic.personal.rest.service.OcrService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -30,10 +34,12 @@ public class OcrController {
 
     @ApiOperation(value = "OCR 세션 정보 생성", httpMethod = "POST", notes = "OCR 분석할 파일을 올리기 위한, 세션 아이디를 생성 한다")
     @PostMapping("")
-    public CommonApiResponse<CreateOcrSessionResponse> createOcrSession(@RequestBody CreateOcrSessionRequest request){
+    public CommonApiResponse<CreateOcrSessionResponse> createOcrSession(
+            @ApiParam(value = "디바이스 아이디", required = true, defaultValue = "test_device") @RequestHeader(value = CommonConstant.X_GM_DEVICE_ID) OsType deviceId,
+            @RequestBody CreateOcrSessionRequest request){
 
-        //OcrDto ocrDto = ocrService.createOcr(1000190L, 1000190L, request.getTotalFileCnt());
-        OcrDto ocrDto = ocrService.createOcr(GMContext.getContext().getMemberNo(), GMContext.getContext().getCharacterNo(), request.getTotalFileCnt());
+        //OcrDto ocrDto = ocrService.createOcr(2100981L, 2101151L, "test_device", request.getTotalFileCnt());
+        OcrDto ocrDto = ocrService.createOcr(GMContext.getContext().getMemberNo(), GMContext.getContext().getCharacterNo(), GMContext.getContext().getDeviceId(), request.getTotalFileCnt());
         return new CommonApiResponse<>(CreateOcrSessionResponse.builder().ocrNo(ObjectUtils.isEmpty(ocrDto) ? null : ocrDto.getOcrNo() ).build());
     }
 
@@ -54,9 +60,16 @@ public class OcrController {
     @GetMapping("/{ocrNo}")
     public CommonApiResponse<OcrAnalsVo> getOcrResult(@PathVariable Long ocrNo){
 
-        OcrAnalsVo ocrAnalsVo = ocrService.getOcrAnals(ocrNo);
+        OcrAnalsVo ocrAnalsVo = ocrService.getOcrAnals(GMContext.getContext().getCharacterNo(), ocrNo);
 
         return new CommonApiResponse<>(ocrAnalsVo);
+    }
+
+    @ApiOperation(value = "OCR 이미지 분석 상태", httpMethod = "GET", notes = "OCR 이미지 분석된 정보를 가져가는 API")
+    @GetMapping("/{ocrNo}/status")
+    public CommonApiResponse<GetOcrStatusResponse> getOcrStatus(@PathVariable Long ocrNo){
+
+        return new CommonApiResponse<>(ocrService.getOcrStatus(GMContext.getContext().getCharacterNo(), ocrNo));
     }
 
 }
