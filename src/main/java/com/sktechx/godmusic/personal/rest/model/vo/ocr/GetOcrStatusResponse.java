@@ -9,5 +9,5 @@ public class GetOcrStatusResponse {
 
     private Integer totalCount;
 
-    private Integer jobDoneCount;
+    private Integer completeJobCount;
 }

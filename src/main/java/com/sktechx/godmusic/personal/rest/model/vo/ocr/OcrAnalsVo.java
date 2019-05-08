@@ -25,6 +25,7 @@ public class OcrAnalsVo {
     @AllArgsConstructor
     public static class OcrAnalsResultVo{
         private Integer ocrFileNo;
+        private YnType  completeJobYn;
         private List<OcrAnalsResultDetailVo> ocrAnalsResultDetailList;
     }
 

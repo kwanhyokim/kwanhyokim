@@ -89,46 +89,48 @@
 
 	<select id="selectOcrAnals" resultMap="ocrAnalsVoMap">
 		SELECT
-            a.ocr_anals_result_no,
             a.ocr_no,
             a.ocr_file_no,
-            a.left_top_x_axis,
-            a.left_top_y_axis,
-            a.right_bottom_x_axis,
-            a.right_bottom_y_axis,
-            a.track_nm_skip_yn,
-            a.artist_nm_skip_yn,
-            a.artist_matching_yn,
-            c.track_id,
-			c.track_nm,
-			c.track_play_tm,
-			c.adult_auth_need_track_yn,
-			c.track_subtrct_qty,
-			IF(c.streaming_premium_yn = 'Y' OR c.pps_yn ='Y' , 'Y', 'N')	AS holdbackYn,
-			c.disp_status_yn,
-			IF(c.title_yn = 'Y' , 'Y', 'N') 								AS titleYn,
-			c.agency_id,
-			c.free_yn,
-			d.album_id,
-			d.title,
-			d.release_ymd,
-			IF(d.album_tp='MF', '', d.album_tp) 							AS albumType,
-			f.style_nm 														AS genreStyle,
-			g.album_img_size 												AS size,
-			g.album_img_url 												AS url,
-			h.artist_id,
-			i.artist_nm
+            IF(a.anals_end_dtime IS NULL , 'N', 'Y') 						AS completeJobYn,
+            b.ocr_anals_result_no,
+            b.left_top_x_axis,
+            b.left_top_y_axis,
+            b.right_bottom_x_axis,
+            b.right_bottom_y_axis,
+            b.track_nm_skip_yn,
+            b.artist_nm_skip_yn,
+            b.artist_matching_yn,
+            d.track_id,
+			d.track_nm,
+			d.track_play_tm,
+			d.adult_auth_need_track_yn,
+			d.track_subtrct_qty,
+			IF(d.streaming_premium_yn = 'Y' OR d.pps_yn ='Y' , 'Y', 'N')	AS holdbackYn,
+			d.disp_status_yn,
+			IF(d.title_yn = 'Y' , 'Y', 'N') 								AS titleYn,
+			d.agency_id,
+			d.free_yn,
+			e.album_id,
+			e.title,
+			e.release_ymd,
+			IF(e.album_tp='MF', '', e.album_tp) 							AS albumType,
+			g.style_nm 														AS genreStyle,
+			h.album_img_size 												AS size,
+			h.album_img_url 												AS url,
+			i.artist_id,
+			j.artist_nm
 		FROM
-			tb_ocr_anals_result a
-			LEFT JOIN tb_ocr_anals_result_track b ON a.ocr_anals_result_no = b.ocr_anals_result_no AND b.pick_yn = 'Y'
-            LEFT JOIN tb_track c ON b.track_id = c.track_id AND c.disp_status_yn= 'Y' AND now() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
-            LEFT JOIN ted_album d ON d.album_id = c.album_id AND d.disp_status_yn= 'Y' AND now() BETWEEN d.disp_start_dtime AND d.disp_end_dtime
-            LEFT JOIN ted_albumstyle e ON e.album_id = d.album_id
-			LEFT JOIN ted_style f ON f.style_id = e.style_id
-            LEFT JOIN tb_album_img g ON g.album_id = d.album_id
-            LEFT JOIN ted_trackartist h ON h.artist_id = d.artist_id AND h.rp_yn = 'Y'
-            LEFT JOIN ted_artist i ON h.artist_id = i.artist_id
-		WHERE a.ocr_no = #{ocrNo}
+			tb_ocr_file a
+			LEFT JOIN tb_ocr_anals_result b ON b.ocr_no = a.ocr_no
+			LEFT JOIN tb_ocr_anals_result_track c ON c.ocr_anals_result_no = b.ocr_anals_result_no AND c.pick_yn = 'Y'
+            LEFT JOIN tb_track d ON d.track_id = c.track_id AND d.disp_status_yn= 'Y' AND now() BETWEEN d.disp_start_dtime AND d.disp_end_dtime
+            LEFT JOIN ted_album e ON e.album_id = d.album_id AND e.disp_status_yn= 'Y' AND now() BETWEEN e.disp_start_dtime AND e.disp_end_dtime
+            LEFT JOIN ted_albumstyle f ON f.album_id = e.album_id
+			LEFT JOIN ted_style g ON g.style_id = f.style_id
+            LEFT JOIN tb_album_img h ON h.album_id = e.album_id
+            LEFT JOIN ted_trackartist i ON i.artist_id = e.artist_id AND i.rp_yn = 'Y'
+            LEFT JOIN ted_artist j ON j.artist_id = i.artist_id
+		WHERE a.ocr_no =  #{ocrNo}
 	</select>
 
 	<select id="countDoneProcessionOcrFile" resultType="int">

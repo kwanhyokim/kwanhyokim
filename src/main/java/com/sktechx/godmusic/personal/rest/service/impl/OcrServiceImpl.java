@@ -110,11 +110,11 @@ public class OcrServiceImpl implements OcrService {
     public GetOcrStatusResponse getOcrStatus(Long characterNo, Long ocrNo){
 
         int totalCount = ocrMapper.countOcrFile(ocrNo);
-        int jobDoneCount = ocrMapper.countDoneProcessionOcrFile(ocrNo);
+        int completeJobCount = ocrMapper.countDoneProcessionOcrFile(ocrNo);
 
         return GetOcrStatusResponse.builder()
                 .totalCount(totalCount)
-                .jobDoneCount(jobDoneCount)
+                .completeJobCount(completeJobCount)
                 .build();
     }
 
