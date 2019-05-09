@@ -43,7 +43,6 @@ public class OcrAnalsVo {
 
         private YnType trackNmSkipYn;
         private YnType albumNmSkipYn;
-        private YnType artistMatchingYn;
 
         private YnType duplicateYn;
 

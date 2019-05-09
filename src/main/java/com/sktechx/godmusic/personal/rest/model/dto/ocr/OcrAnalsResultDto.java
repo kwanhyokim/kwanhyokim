@@ -18,5 +18,5 @@ public class OcrAnalsResultDto {
 
     private YnType trackNmSkipYn;
     private YnType albumNmSkipYn;
-    private YnType artistMatchingYn;
+
 }

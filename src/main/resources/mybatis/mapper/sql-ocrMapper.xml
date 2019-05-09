@@ -34,7 +34,7 @@
 		  	  ocr_no
 		  	, ocr_file_no
 		  	, upload_yn
-		  	, anals_succ_yn
+		  	, anals_status_type
 		  	, anals_start_dtime
 		  	, anals_end_dtime
 		  	, aws_bucket_nm
@@ -44,7 +44,7 @@
 			  #{ocrNo}
 			, #{ocrFileNo}
 			, #{uploadYn}
-			, #{analsSuccYn}
+			, #{analsStatusType}
 			, #{analsStartDtime}
 			, #{analsEndDtime}
 			, #{awsBucketNm}
@@ -57,7 +57,7 @@
         UPDATE tb_ocr_file
         <trim prefix="SET" suffixOverrides=",">
             <if test="uploadYn != null">upload_yn = #{uploadYn},  </if>
-            <if test="analsSuccYn != null">anals_succ_yn = #{analsSuccYn},  </if>
+            <if test="analsStatusType != null">anals_status_type = #{analsStatusType},  </if>
             <if test="analsStartDtime != null">anals_start_dtime = #{analsStartDtime},  </if>
             <if test="analsEndDtime != null">anals_end_dtime = #{analsEndDtime},  </if>
             <if test="awsBucketNm != null">aws_bucket_nm = #{awsBucketNm},  </if>
@@ -99,7 +99,6 @@
             b.right_bottom_y_axis,
             b.track_nm_skip_yn,
             b.artist_nm_skip_yn,
-            b.artist_matching_yn,
             d.track_id,
 			d.track_nm,
 			d.track_play_tm,
@@ -138,7 +137,7 @@
 			ocr_no,
 			ocr_file_no,
 			upload_yn,
-			anals_succ_yn,
+			anals_status_type,
 			anals_start_dtime,
 			anals_end_dtime,
 			aws_bucket_nm,
