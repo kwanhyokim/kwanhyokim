@@ -4,6 +4,7 @@ import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.AwsBucketType;
+import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
 import com.sktechx.godmusic.personal.rest.model.dto.member.MemberDvcDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrDto;
@@ -20,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -63,7 +65,14 @@ public class OcrServiceImpl implements OcrService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AwsFileVo uploadOcrFile(Long memberNo, MultipartFile multipartFile, Long ocrNo, Integer ocrFileNo){
+
+        OcrFileDto ocrFileDto = ocrMapper.selectOcrFile(ocrNo, ocrFileNo);
+        if(ObjectUtils.isEmpty(ocrFileDto)) {
+            log.error("OcrServiceImpl::uploadOcrFile ocrNo:{}, ocrFileNo:{}", ocrNo, ocrFileNo);
+            throw new CommonBusinessException(PersonalErrorDomain.NOT_FOUND_OCR_FILE);
+        }
 
         log.info(multipartFile.getOriginalFilename());
         AwsFileVo awsFileVo = uploadFile(multipartFile, AwsBucketType.OCR, memberNo);

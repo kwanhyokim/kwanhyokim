@@ -40,6 +40,8 @@ public enum PersonalErrorDomain implements ErrorDomain {
 	, PREFER_GENRE_PANEL_FAIL(4090721,HttpStatus.CONFLICT ,"선호 장르 유사곡 입력시 문제가 발생했습니다.","데이터 문제"  )
 
 	, USER_PSSRL_NOT_FOUND(4090701, HttpStatus.CONFLICT, "회원의 PSSRL이 존재하지 않아 정산 요청을 할 수 없습니다.", "회원 PSSRL 코드 없음")
+
+    , NOT_FOUND_OCR_FILE(4090722, HttpStatus.CONFLICT, "OCR 파일 정보가 없습니다.", "OCR 파일 정보가 없습니다.")
     ;
 
     private int code;

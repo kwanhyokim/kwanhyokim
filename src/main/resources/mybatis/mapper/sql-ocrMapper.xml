@@ -133,6 +133,24 @@
 		WHERE a.ocr_no =  #{ocrNo}
 	</select>
 
+	<select id="selectOcrFile" resultType="com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrFileDto">
+		SELECT
+			ocr_no,
+			ocr_file_no,
+			upload_yn,
+			anals_succ_yn,
+			anals_start_dtime,
+			anals_end_dtime,
+			aws_bucket_nm,
+			aws_bucket_key,
+			send_push_dtime
+		FROM
+			tb_ocr_file
+		WHERE
+			ocr_no = #{ocrNo}
+			AND ocr_file_no = #{ocrFileNo}
+	</select>
+
 	<select id="countDoneProcessionOcrFile" resultType="int">
         SELECT
         	COUNT(*)
