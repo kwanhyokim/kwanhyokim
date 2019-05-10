@@ -130,6 +130,37 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
         return panelList;
     }
+    @Override
+    public List<Panel> createRecommendV2PanelList(Long characterNo, OsType osType) {
+        List<Panel> panelList = null;
+        PersonalPhaseMeta personalPhaseMeta = null;
+        PanelAssembly panelAssembly = null;
+        try{
+
+            personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType);
+
+            panelAssembly = recommendPanelAssemblyFactory.getRecommendV2PanelAssembly(personalPhaseMeta);
+
+            panelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
+
+        }catch(CommonBusinessException cbex){
+            log.error("createRecommendPanel business exception : {}", cbex.getDisplayMessage());
+        }catch(Exception ex){
+            log.error("createRecommendPanel not catched exception : {}",ex.getMessage());
+        }finally{
+            if(CollectionUtils.isEmpty(panelList)){
+                if(panelAssembly == null)
+                    panelAssembly = recommendPanelAssemblyFactory.getRecommendPanelAssembly();
+                try{
+                    panelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
+                }catch(Exception e){
+                    log.error("createRecommendPanel recovery not catched exception : {}",e.getMessage());
+                }
+            }
+        }
+
+        return panelList;
+    }
 
     private List<ImageInfo> makePanelBackGroundImageList(String url){
         List<ImageInfo> artistImgList = new ArrayList<>();

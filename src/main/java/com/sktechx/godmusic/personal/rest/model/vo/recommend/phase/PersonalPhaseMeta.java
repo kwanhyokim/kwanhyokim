@@ -10,6 +10,11 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.phase;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
+import org.springframework.util.CollectionUtils;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
@@ -18,13 +23,10 @@ import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferDispDto;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.CollectionUtils;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType.*;
-import static com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType.*;
+import static com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType.RC_CF_TR;
+import static com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType.RC_SML_TR;
 /**
  * 설명 : 개인화 콘텐츠 메타 캐쉬 데이터 ( 단계, 추천 패널 )
  *
@@ -66,7 +68,34 @@ public class PersonalPhaseMeta {
         return PersonalPhaseType.GUEST;
     }
 
+    public boolean isRecommendPersonalPanelPresent(RecommendPanelContentType recommendPanelContentType){
 
+        if(CollectionUtils.isEmpty(getRecommendPersonalPanelRcmmdIdList(recommendPanelContentType))){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    public PersonalPanel getRecommendPersonalPanelTopItem() {
+
+        if(!CollectionUtils.isEmpty(rcmmdPanelList)) {
+            return rcmmdPanelList.stream()
+                    .filter(personalPanel -> {
+                        return Objects.nonNull(personalPanel) ;
+                    })
+                    .sorted(Comparator.comparing(PersonalPanel::getCreateDtime, (dtime1, dtime2) -> {
+                        return dtime1.compareTo(dtime2);
+                    }))
+                    .findFirst().get();
+        }
+
+        return null;
+    }
+
+    public boolean isPreferGenreListPresent(){
+         return !CollectionUtils.isEmpty(getPreferGenreList());
+    }
 
     public List<Long> getRecommendPersonalPanelRcmmdIdList(RecommendPanelContentType recommendPanelContentType) {
         if(!CollectionUtils.isEmpty(rcmmdPanelList)) {
