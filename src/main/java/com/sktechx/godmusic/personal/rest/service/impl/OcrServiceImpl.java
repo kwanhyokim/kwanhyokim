@@ -13,10 +13,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.external.AwsFileVo;
 import com.sktechx.godmusic.personal.rest.model.vo.ocr.GetOcrStatusResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.ocr.OcrAnalsVo;
 import com.sktechx.godmusic.personal.rest.repository.OcrMapper;
-import com.sktechx.godmusic.personal.rest.service.ExternalApiProxy;
-import com.sktechx.godmusic.personal.rest.service.MemberApiProxy;
-import com.sktechx.godmusic.personal.rest.service.OcrHelperService;
-import com.sktechx.godmusic.personal.rest.service.OcrService;
+import com.sktechx.godmusic.personal.rest.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -97,7 +94,8 @@ public class OcrServiceImpl implements OcrService {
     public void requestAnalysisToOcrServer(Long ocrNo, Integer ocrFileNo, AwsFileVo awsFileVo){
 
         //TODO send FileInfo to OCR Server
-
+        int fileCount = ocrMapper.countOcrFile(ocrNo);
+        ocrRecognize(ocrNo, ocrFileNo, fileCount, awsFileVo.getBucket(), awsFileVo.getBucketKey());
 
         ocrHelperService.updateOcrFile(OcrFileDto.builder()
                 .ocrNo(ocrNo)
@@ -156,8 +154,14 @@ public class OcrServiceImpl implements OcrService {
         return response.getData();
     }
 
+    private void ocrRecognize( Long ocrNo, Integer ocrFileNo, Integer imageCount, String bucketKey, String bucketName){
+        log.debug("ocrRecognize start:");
 
+        CommonApiResponse<AwsFileVo> response = externalApiProxy.ocrRecognize(ocrNo, ocrFileNo, imageCount, bucketKey, bucketName);
+        log.debug("ocrRecognize end");
 
-
+        if(StringUtils.isEmpty(response) || StringUtils.isEmpty(response.getCode())
+                || !"2000000".equals(response.getCode()) || CommonUtils.empty(response.getData())) throw new CommonBusinessException("ocrRecognize fail ");
+    }
 
 }
