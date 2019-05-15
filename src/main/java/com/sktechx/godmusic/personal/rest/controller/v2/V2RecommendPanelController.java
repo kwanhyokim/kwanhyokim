@@ -37,6 +37,8 @@ import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDataService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -104,10 +106,14 @@ public class V2RecommendPanelController {
 		return new CommonApiResponse<>(recommendPanelList);
 	}
 
-	@ApiOperation(value = "선호 장르 테마리스트 리스트 by Peter ( 기존 /v2/my/channel/recent/list GET )")
+	@ApiOperation(value = "선호 장르 테마리스트 리스트 ")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "page", required = false, dataType = "int", paramType = "query", value = "페이지", defaultValue = "1"),
+			@ApiImplicitParam(name = "size", required = false, dataType = "int", paramType = "query", value = "사이즈", defaultValue = "20")
+	})
 	@GetMapping("/preferGenreChnl/list")
 	public CommonApiResponse<ListResponse> getPreferGenreChannelList(
-			@ApiIgnore @RequestGMContext GMContext ctx, @PageableDefault(size=50, page=0) Pageable pageable){
+			@ApiIgnore @RequestGMContext GMContext ctx, @ApiIgnore @PageableDefault(size=50, page=0) Pageable pageable){
 
 		int start = Ints.checkedCast(pageable.getOffset());
 		int end = Ints.checkedCast(pageable.getOffset()) + pageable.getPageSize();
