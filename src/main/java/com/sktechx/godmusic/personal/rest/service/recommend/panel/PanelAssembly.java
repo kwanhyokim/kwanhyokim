@@ -10,6 +10,12 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend.panel;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
+
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
@@ -24,11 +30,6 @@ import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import com.sktechx.godmusic.personal.rest.service.ChartService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.POPULAR_CHNL_TRACK_LIMIT_SIZE;
 
@@ -62,6 +63,8 @@ public abstract class PanelAssembly {
 
     public abstract List<Panel> assembleRecommendPanel(PersonalPhaseMeta personalPhaseMeta) throws Exception;
     protected abstract List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta);
+
+    public abstract List<Panel> getRecommendPanelList(Long characterNo, OsType osType);
 
     protected int panelCount(RecommendPanelType recommendPanelType ,final List<Panel> panelList){
         return (int)Optional.ofNullable(panelList).orElse(Collections.emptyList()).stream().filter(panel -> {

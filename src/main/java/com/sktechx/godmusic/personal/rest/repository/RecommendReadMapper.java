@@ -104,7 +104,7 @@ public interface RecommendReadMapper {
     List<RecommendTrackDto> selectRecommendSimilarTrackListByCharacterNo(
             @Param("characterNo") Long characterNo,
             @Param("recommendLimitSize") int recommendLimitSize,
-            @Param("trackLimitSize") int trackLimitSiz,
+            @Param("trackLimitSize") int trackLimitSize,
             @Param("osType") OsType osType);
 
 }

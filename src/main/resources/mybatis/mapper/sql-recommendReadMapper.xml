@@ -876,16 +876,8 @@
           c.artist_nm,
           d.size,
           d.url,
-          a.create_dtime,
-          (
-            SELECT
-              COUNT(*)
-            FROM
-              tb_rcmmd_artist_track_list aa
-              JOIN tb_track bb ON bb.track_id = aa.track_id AND bb.disp_status_yn = 'Y' AND now() >= bb.disp_start_dtime
-            WHERE
-              aa.rcmmd_artist_id = #{recommendArtistId}
-          ) trackCount
+          a.create_dtime
+
       FROM
         tb_rcmmd_artist a
             INNER JOIN
@@ -897,7 +889,7 @@
       WHERE
           a.character_no = #{characterNo}
       ORDER BY
-         b.disp_sn ASC
+         a.create_dtime DESC
     </select>
 
     <select id="selectRecommendCfTrackListByCharacterNo" resultMap="rcmmdTrackResultMap">
@@ -1054,6 +1046,8 @@
         rcmmd_track_rank_table.svc_genre_id,
         rcmmd_track_rank_table.svc_genre_nm,
         rcmmd_track_rank_table.trackCount,
+        rcmmd_track_rank_table.seedArtistNm,
+        rcmmd_track_rank_table.seedTrackNm,
         d.artist_id,
         d.artist_nm,
         a.album_id,
@@ -1083,7 +1077,9 @@
         rcmmd_track_table.rcmmdCreateDtime,
         rcmmd_track_table.svc_genre_id,
         rcmmd_track_table.svc_genre_nm,
-        rcmmd_track_table.trackCount
+        rcmmd_track_table.trackCount,
+        rcmmd_track_table.seedArtistNm,
+        rcmmd_track_table.seedTrackNm
         FROM
         (
         -- 3. rcmmd_track_table start
@@ -1096,6 +1092,8 @@
         rcmmd_img_table.img_url,
         rcmmd_img_table.rcmmdCreateDtime,
         rcmmd_img_table.trackCount,
+        rcmmd_img_table.seedArtistNm,
+        rcmmd_img_table.seedTrackNm,
         b.track_id,
         b.disp_sn,
         c.album_id,
@@ -1114,6 +1112,8 @@
         rcmmd_table.disp_sn,
         rcmmd_table.rcmmdCreateDtime,
         rcmmd_table.trackCount,
+        rcmmd_table.seedArtistNm,
+        rcmmd_table.seedTrackNm,
         b.img_size,
         b.img_url
         FROM
@@ -1143,19 +1143,15 @@
         JOIN tb_track bb ON bb.track_id = aa.track_id AND bb.disp_status_yn = 'Y' AND now() BETWEEN bb.disp_start_dtime AND bb.disp_end_dtime
         WHERE
         aa.rcmmd_similar_track_id = a.rcmmd_similar_track_id
-        ) trackCount
+        ) trackCount,
+
+        (select group_concat(B.artist_nm) from ted_trackartist A inner join ted_artist B on A.artist_id = B.artist_id where A.track_id = a.seed_track_id) AS seedArtistNm,
+        (select A.track_nm from tb_track A where A.track_id = a.seed_track_id AND A.disp_status_yn = 'Y' AND now() BETWEEN A.disp_start_dtime AND A.disp_end_dtime) as seedTrackNm
         FROM
         tb_rcmmd_similar_track a
         WHERE
-        rcmmd_similar_track_id IN
-        <foreach item="rcmmdId" index="index" collection="recommendIdList" open="(" separator="," close=")">
-            #{rcmmdId}
-        </foreach>
-        ORDER BY FIELD(rcmmd_id,
-        <foreach item="rcmmdId" index="index" collection="recommendIdList" open="" separator="," close="">
-            #{rcmmdId}
-        </foreach>
-        ), disp_sn
+          a.character_no = #{characterNo}
+
         LIMIT #{recommendLimitSize}
         -- 1. rcmmd_table end;
         ) rcmmd_table

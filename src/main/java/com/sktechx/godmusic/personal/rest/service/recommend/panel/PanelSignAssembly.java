@@ -279,4 +279,6 @@ public abstract class PanelSignAssembly extends PanelAssembly {
         return new PreferGenrePopularChannelPanel(channel,genre,
                 getDefaultBgImageList( channel.getImgList(), personalPhaseMeta.getOsType()));
     }
+
+
 }

@@ -10,6 +10,8 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
@@ -20,8 +22,6 @@ import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.PanelOrde
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
-
-import java.util.List;
 
 /**
  * 설명 : 추천 패널
@@ -51,6 +51,14 @@ public abstract class Panel {
     @Getter
     @ApiModelProperty(required = true, value = "패널 컨텐츠")
     protected PanelContentVo content;
+
+    @Getter
+    @ApiModelProperty(required = true, value = "시드 아티스트명")
+    protected String seedArtistNm;
+
+    @Getter
+    @ApiModelProperty(required = true, value = "시드 트랙명")
+    protected String seedTrackNm;
 
     public Integer getPanelOrderSn(PersonalPhaseType personalPhaseType){
         return PanelOrderSnService.getPanelOrderSn(personalPhaseType, this.type);

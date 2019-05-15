@@ -16,6 +16,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.util.BooleanComparator;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
@@ -69,9 +70,7 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
                         (ArtistDto a, ArtistDto b) -> (BooleanComparator.TRUE_HIGH.compare(a.hasDefaultImage(), b.hasDefaultImage()))
                 );
 
-                if(isArtistPopularTrackPanelAppend(recommendArtistDto)){
-                    panelList.add(new ArtistPanel(recommendArtistDto));
-                }
+                panelList.add(new ArtistPanel(recommendArtistDto));
 
             } catch (Exception e) {
                 log.error("PanelSignAssembly appendPreferArtistPanel artistPanel create error : {}", e.getMessage());
@@ -79,5 +78,19 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
         }});
     }
 
+
+    @Override
+    public List<Panel> getRecommendPanelList(Long characterNo, OsType osType){
+        PersonalPhaseMeta personalPhaseMeta = new PersonalPhaseMeta();
+        personalPhaseMeta.setCharacterNo(characterNo);
+        personalPhaseMeta.setOsType(osType);
+
+        List<Panel> panelList = new ArrayList<>();
+
+        appendPreferArtistPopularTrackPanel(personalPhaseMeta, panelList);
+
+        return panelList;
+
+    }
 }
 

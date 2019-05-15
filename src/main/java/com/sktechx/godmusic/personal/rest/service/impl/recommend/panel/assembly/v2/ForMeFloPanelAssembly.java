@@ -17,6 +17,7 @@ import java.util.Objects;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.RcmmdTrackPanel;
@@ -55,7 +56,7 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
 
     }
 
-    private void appendRecommendCfTrackPanelList(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int panelLimitSize) {
+    public void appendRecommendCfTrackPanelList(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int panelLimitSize) {
 
         List<RecommendTrackDto> recommendCfTrackList =
                 recommendReadMapper.selectRecommendCfTrackListByCharacterNo(personalPhaseMeta.getCharacterNo(), panelLimitSize, RCMMD_CF_TRACK_LIMIT_SIZE, personalPhaseMeta.getOsType());
@@ -84,6 +85,20 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
             final RecommendTrackDto cfTrack){
 
         return new RcmmdTrackPanel(cfTrack, getDefaultBgImageList( cfTrack.getImgList() , personalPhaseMeta.getOsType()));
+    }
+
+    @Override
+    public List<Panel> getRecommendPanelList(Long characterNo, OsType osType){
+        PersonalPhaseMeta personalPhaseMeta = new PersonalPhaseMeta();
+        personalPhaseMeta.setCharacterNo(characterNo);
+        personalPhaseMeta.setOsType(osType);
+
+        List<Panel> panelList = new ArrayList<>();
+
+        appendRecommendCfTrackPanelList(personalPhaseMeta, panelList, 7);
+
+        return panelList;
+
     }
 
 }

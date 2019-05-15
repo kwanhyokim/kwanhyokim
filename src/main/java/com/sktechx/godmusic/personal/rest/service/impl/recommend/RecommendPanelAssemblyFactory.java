@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.service.ApplicationContextProvider;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
@@ -78,7 +79,25 @@ public class RecommendPanelAssemblyFactory {
             return applicationContextProvider.getContext().getBean(PreferGenreThemePanelAssembly.class);
         }
 
-        return applicationContextProvider.getContext().getBean(TPOPanelAssembly.class);
+        return applicationContextProvider.getContext().getBean(TpoPanelAssembly.class);
+
+    }
+
+    public PanelAssembly getRecommendV2PanelAssembly(RecommendPanelContentType recommendPanelContentType){
+
+        switch (recommendPanelContentType){
+            // 나를 위한 FLO
+            case RC_CF_TR:
+                return applicationContextProvider.getContext().getBean(ForMeFloPanelAssembly.class);
+            // 오늘의 FLO
+            case RC_SML_TR:
+                return applicationContextProvider.getContext().getBean(TodayFloPanelAssembly.class);
+            // 아티스트 FLO
+            case RC_ATST_TR:
+                return applicationContextProvider.getContext().getBean(ArtistFloPanelAssembly.class);
+            default:
+                return null;
+        }
 
     }
 

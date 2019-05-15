@@ -591,4 +591,17 @@
             ON c.album_id = d.album_id
     </select>
 
+
+    <update id="deleteLastListenHistory">
+        DELETE
+        FROM
+        tb_member_last_listen_hist
+        WHERE
+          member_no = #{memberNo}
+          AND character_no = #{characterNo}
+          AND listen_type = #{listenType}
+          AND listen_type_id = #{listenTypeId}
+    </update>
+
+
 </mapper>

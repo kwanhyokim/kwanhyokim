@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.client.DisplayClient;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
@@ -38,10 +39,10 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
  * @date 2019. 5. 8.
  */
 @Slf4j
-@Service("tPOPanelAssembly")
-public class TPOPanelAssembly extends PanelNonSignAssembly {
+@Service("tpoPanelAssembly")
+public class TpoPanelAssembly extends PanelNonSignAssembly {
 
-    private TPOPanelAssembly(){}
+    private TpoPanelAssembly(){}
 
     @Autowired
     DisplayClient displayClient;
@@ -60,8 +61,12 @@ public class TPOPanelAssembly extends PanelNonSignAssembly {
 
         return panelList;
     }
+    @Override
+    public List<Panel> getRecommendPanelList(Long characterNo, OsType osType) {
+        return null;
+    }
 
-        private void appendTPOPanel(final PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int panelLimitSize) {
+    private void appendTPOPanel(final PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int panelLimitSize) {
 
             CommonApiResponse<ChannelListResponse> chnlDtoCommonApiResponse =  displayClient.getOperationTpoList();
             List<ChnlDto> tpoChnlList = new ArrayList();

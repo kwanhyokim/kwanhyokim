@@ -17,6 +17,7 @@ import java.util.Objects;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
@@ -25,7 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.SIMILAR_TRACK_DISP_STANDARD_COUNT;
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.SIMILAR_TRACK_LIMIT_SIZE;
-import static com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType.RC_SML_TR;
 
 /**
  * 설명 : 오늘의 플로 생성기
@@ -58,29 +58,38 @@ public class TodayFloPanelAssembly extends PanelSignAssembly {
             final List<Panel> panelList,
             int panelLimitSize) {
 
-        List<Long> rcmmdIdList = personalPhaseMeta.getRecommendPersonalPanelRcmmdIdList(RC_SML_TR);
+        List<RecommendTrackDto> similarTrackList =
+                recommendReadMapper.selectRecommendSimilarTrackListByCharacterNo(personalPhaseMeta.getCharacterNo(), panelLimitSize,
+                        SIMILAR_TRACK_LIMIT_SIZE, personalPhaseMeta.getOsType());
 
-        if(!CollectionUtils.isEmpty(rcmmdIdList)){
-
-            List<RecommendTrackDto> similarTrackList =
-                    recommendReadMapper.selectRecommendSimilarTrackListByIdList(rcmmdIdList, panelLimitSize,
-                            SIMILAR_TRACK_LIMIT_SIZE, personalPhaseMeta.getOsType());
-
-            if(!CollectionUtils.isEmpty(similarTrackList)){
-                similarTrackList
-                        .stream()
-                        .filter(Objects::nonNull)
-                        .forEach(similarTrack ->{
-                            try {
-                                if(similarTrack.getTrackCount() >= SIMILAR_TRACK_DISP_STANDARD_COUNT){
-                                    panelList.add(createSimilarTrackPanel (personalPhaseMeta, similarTrack));
-                                }
-                            } catch (Exception e) {
-                                log.error("appendSimilarTrackPanelList error : {}", e.getMessage());
+        if(!CollectionUtils.isEmpty(similarTrackList)){
+            similarTrackList
+                    .stream()
+                    .filter(Objects::nonNull)
+                    .forEach(similarTrack ->{
+                        try {
+                            if(similarTrack.getTrackCount() >= SIMILAR_TRACK_DISP_STANDARD_COUNT){
+                                panelList.add(createSimilarTrackPanel (personalPhaseMeta, similarTrack));
                             }
-                        });
-            }
+                        } catch (Exception e) {
+                            log.error("appendSimilarTrackPanelList error : {}", e.getMessage());
+                        }
+                    });
         }
+    }
+
+    @Override
+    public List<Panel> getRecommendPanelList(Long characterNo, OsType osType){
+        PersonalPhaseMeta personalPhaseMeta = new PersonalPhaseMeta();
+        personalPhaseMeta.setCharacterNo(characterNo);
+        personalPhaseMeta.setOsType(osType);
+
+        List<Panel> panelList = new ArrayList<>();
+
+        appendSimilarTrackPanelList(personalPhaseMeta, panelList, 7);
+
+        return panelList;
+
     }
 
 }

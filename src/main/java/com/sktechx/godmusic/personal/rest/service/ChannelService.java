@@ -10,17 +10,13 @@
 
 package com.sktechx.godmusic.personal.rest.service;
 
+import java.util.List;
+
 import com.sktechx.godmusic.lib.domain.code.OsType;
-import com.sktechx.godmusic.personal.common.domain.type.DayType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto;
-import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlDto;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
-import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 /**
  * 설명 : 채널 서비스
@@ -34,4 +30,6 @@ public interface ChannelService {
     List<PreferGenrePopularChnlDto> getPreferGenrePopularChannelList(List<Long> preferGenreIdList, int trackLimitSize, OsType osType);
     List<MoodPopularChnlDto> getListenMoodPopularChannelIdList(List<Long> moodIdList , int trackLimitSize , OsType osType);
     List<LastListenHistoryDto> getLastListenHistory(Long memberNo, Long characterNo, OsType osType);
+
+    void removeLastListenHistory(Long memberNo, Long characterNo, String listenType, Long listenId);
 }

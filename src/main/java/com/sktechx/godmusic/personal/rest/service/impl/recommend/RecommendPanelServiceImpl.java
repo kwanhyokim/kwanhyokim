@@ -412,19 +412,6 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             return null;
         }
 
-//        URI uri = UriComponentsBuilder.newInstance().scheme("http").host("meta-api")
-//                .path("meta/v1/track/list")
-//                .queryParam("trackIdList", trackIdList.toArray(new Long[0]))
-//                .build().encode().toUri();
-//
-//
-//        CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>> response = restTemplate.exchange(
-//                uri,
-//                HttpMethod.GET,
-//                null,
-//                new ParameterizedTypeReference<CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>>>() {}).getBody();
-//
-//
         // feign 으로 변경
         // edited by Bob 2018.09.05
         CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>> response = metaApiProxy.recommendPanelTracks(trackIdList.toArray(new Long[0]));
@@ -584,6 +571,23 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             throw new CommonBusinessException(PersonalErrorDomain.PREFER_GENRE_PANEL_FAIL);
         }
 	}
+
+    @Override
+    public List<Panel> getRecommendPanelList(Long characterNo,
+            RecommendPanelContentType recommendPanelType, OsType osType) {
+
+        try {
+
+            PanelAssembly panelAssembly = recommendPanelAssemblyFactory.getRecommendV2PanelAssembly(recommendPanelType);
+
+            List<Panel> recommendPanelList = panelAssembly.getRecommendPanelList(characterNo, osType);
+
+            return recommendPanelList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 
     private List<RecommendPreferGenreSimilarTrackDto> getRecommendPreferGenreSimilarTrackDtos(Long characterNo, List<PreferGenreTrackDto> preferGenreTrackDtoList) {

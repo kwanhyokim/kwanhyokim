@@ -51,4 +51,7 @@ public interface RecommendPanelService {
 	void addPreferArtistPanel(Long characterNo);
 
 	void addPreferGenrePanel(Long characterNo);
+
+	List<Panel> getRecommendPanelList(Long characterNo, RecommendPanelContentType recommendPanelType, OsType osType);
+
 }

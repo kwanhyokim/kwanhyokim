@@ -10,6 +10,12 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track;
 
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import org.springframework.util.CollectionUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
@@ -21,11 +27,6 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.GenreVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.CollectionUtils;
-
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 설명 : 곡 유형 추천 패널
@@ -45,6 +46,8 @@ public abstract class TrackPanel extends Panel {
         this.imgList = bgImgList;
         this.title = title;
         this.subTitle = subTitle;
+        this.seedArtistNm = recommendTrackDto.getSeedArtistNm();
+        this.seedTrackNm = recommendTrackDto.getSeedTrackNm();
         initialPanel();
     }
 

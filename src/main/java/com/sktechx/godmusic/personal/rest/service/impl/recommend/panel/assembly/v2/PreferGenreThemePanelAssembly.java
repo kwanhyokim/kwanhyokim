@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelSignAssembly;
@@ -40,12 +41,18 @@ public class PreferGenreThemePanelAssembly extends PanelSignAssembly {
 
         return panelList;
     }
+
     @Override
     protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){
         appendPreferenceChartPanel(personalPhaseMeta,panelList);
 
         sort(personalPhaseMeta , panelList);
 
+    }
+
+    @Override
+    public List<Panel> getRecommendPanelList(Long characterNo, OsType osType) {
+        return null;
     }
 
 }
