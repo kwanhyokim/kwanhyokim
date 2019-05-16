@@ -10,16 +10,18 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelSignAssembly;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
 /**
@@ -66,6 +68,11 @@ public class ListenPhasePanelAssembly extends PanelSignAssembly {
 
 
         return panelList;
+    }
+
+    @Override
+    public List<Panel> getRecommendPanelList(Long characterNo, OsType osType) {
+        return null;
     }
     @Override
     protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){

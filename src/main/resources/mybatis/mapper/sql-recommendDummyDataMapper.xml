@@ -79,13 +79,13 @@
     </delete>
     <delete id="deleteRcmmdMforuSubData">
          <![CDATA[
-          DELETE
+          DELETE A
           FROM
-            tb_rcmmd_mforu_list
-          WHERE
-            rcmmd_mforu_id IN (
-              SELECT rcmmd_mforu_id FROM tb_rcmmd_mforu WHERE character_no = #{characterNo}
-            )
+            tb_rcmmd_mforu_list A
+            INNER JOIN tb_rcmmd_mforu B
+            ON A.rcmmd_mforu_id = B.rcmmd_mforu_id
+            AND B.character_no = #{characterNo}
+
         ]]>
     </delete>
     <delete id="deleteRcmmdSimilarTrackData">
@@ -99,11 +99,13 @@
     </delete>
     <delete id="deleteRcmmdSimilarTrackSubData">
         <![CDATA[
-          DELETE
+          DELETE A
           FROM
-            tb_rcmmd_similar_track_list
-          WHERE
-            rcmmd_similar_track_id IN ( SELECT rcmmd_similar_track_id FROM  tb_rcmmd_similar_track  WHERE character_no = #{characterNo} )
+            tb_rcmmd_similar_track_list A
+            INNER JOIN tb_rcmmd_similar_track B
+            ON A.rcmmd_similar_track_id = B.rcmmd_similar_track_id
+            AND B.character_no = #{characterNo}
+
         ]]>
     </delete>
     <delete id="deleteRcmmdListenMoodChnlTrackData">

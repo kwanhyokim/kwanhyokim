@@ -10,13 +10,15 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track;
 
+import java.util.List;
+
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 
-import java.util.List;
-import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.SIMILAR_TRACK_PANEL_SUB_TITLE;
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.SIMILAR_TRACK_PANEL_TITLE;
 /**
  * 설명 : 유사곡 패널
  *

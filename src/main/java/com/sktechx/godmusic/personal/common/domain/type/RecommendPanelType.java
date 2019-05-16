@@ -10,11 +10,12 @@
 
 package com.sktechx.godmusic.personal.common.domain.type;
 
+import org.apache.ibatis.type.MappedTypes;
+import org.springframework.util.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnum;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnumTypeHandler;
-import org.apache.ibatis.type.MappedTypes;
-import org.springframework.util.StringUtils;
 
 /**
  * 설명 : 추천 패널 타입
@@ -27,12 +28,16 @@ public enum RecommendPanelType implements CodeEnum{
     POPULAR_CHANNEL("POPULAR_CHANNEL" , "인기채널"),
     PREFER_GENRE_POPULAR_CHANNEL("PREFER_GENRE_POPULAR_CHANNEL" , "선호 장르 인기 채널"),
     LISTEN_MOOD_POPULAR_CHANNEL("LISTEN_MOOD_POPULAR_CHANNEL" , "청취무드 인기채널"),
-    ARTIST_POPULAR_TRACK("ARTIST_POPULAR_TRACK" , "아티스트 인기곡"),
     PREFER_SIMILAR_TRACK("PREFER_SIMILAR_TRACK" , "선호 유사곡"),
+
+    ARTIST_POPULAR_TRACK("ARTIST_POPULAR_TRACK" , "아티스트 인기곡"),
     PREFER_GENRE_SIMILAR_TRACK("PREFER_GENRE_SIMILAR_TRACK" , "선호 장르 유사곡"),
     RCMMD_TRACK("RCMMD_TRACK" , "추천 유사곡"),
+
     LIVE_CHART("LIVE_CHART" , "실시간 차트" ),
-    KIDS_CHART("KIDS_CHART" , "키즈 차트" );
+    KIDS_CHART("KIDS_CHART" , "키즈 차트" ),
+
+    TPO_CHANNEL("TPO_CHANNEL", "TPO 채널");
 
 
     private final String code;

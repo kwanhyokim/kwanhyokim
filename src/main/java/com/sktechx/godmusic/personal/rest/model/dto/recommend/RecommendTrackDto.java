@@ -10,14 +10,13 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto.recommend;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Date;
+import java.util.List;
+
 import com.sktechx.godmusic.personal.rest.model.dto.ServiceGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import lombok.Data;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  * 설명 : 추천 트랙 DTO
@@ -38,8 +37,11 @@ public class RecommendTrackDto {
 
     private List<TrackDto> trackList;
     private int trackCount;
+    private String seedArtistNm;
+    private String seedTrackNm;
 
     private ServiceGenreDto svcGenreDto;
 
     private List<ImageInfo> imgList;
+
 }

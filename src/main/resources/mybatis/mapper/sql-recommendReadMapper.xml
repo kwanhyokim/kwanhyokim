@@ -53,6 +53,7 @@
                 a.rcmmd_mforu_id as recommendId,
                 a.disp_std_end_dt as avaliableDateTime,
                 a.disp_sn as dispSn,
+                a.create_dtime,
                 0 as moodId,
                 count(a.rcmmd_mforu_id) contentCount
             FROM
@@ -71,6 +72,7 @@
                 a.rcmmd_similar_track_id as recommendId,
                 a.disp_std_end_dt as avaliableDateTime,
                 a.disp_sn as dispSn,
+                a.create_dtime,
                 0 as moodId,
                 count(b.rcmmd_similar_track_id) contentCount
             FROM
@@ -91,6 +93,7 @@
                 rcmmd_artist_id as recommendId,
                 disp_std_end_dt as avaliableDateTime,
                 disp_sn as dispSn,
+                create_dtime,
                 0 as moodId,
                 0 as contentCount
             FROM
@@ -108,6 +111,7 @@
                 disp_std_end_dt as avaliableDateTime,
                 disp_sn as dispSn,
                 category_id as moodId,
+                create_dtime,
                 0 as contentCount
             FROM
                 tb_rcmmd_listen_mood
@@ -123,6 +127,7 @@
                 rcmmd_prefer_genre_similar_track_id as recommendId,
                 disp_std_end_dt as avaliableDateTime,
                 disp_sn as dispSn,
+                create_dtime,
                 0 as moodId,
                 0 as contentCount
             FROM
@@ -861,4 +866,323 @@
             ) a
         ]]>
     </select>
+
+
+    <select id="selectRecommendArtistByCharacterNo" resultMap="rcmmdArtistResultMap">
+      SELECT
+          a.rcmmd_artist_id,
+          b.artist_id ,
+          b.artist_type,
+          c.artist_nm,
+          d.size,
+          d.url,
+          a.create_dtime
+
+      FROM
+        tb_rcmmd_artist a
+            INNER JOIN
+        tb_rcmmd_artist_list b ON a.rcmmd_artist_id = b.rcmmd_artist_id
+            INNER JOIN
+        ted_artist c ON b.artist_id = c.artist_id
+            LEFT OUTER JOIN
+        ted_artistimage d ON c.artist_id = d.artist_id
+      WHERE
+          a.character_no = #{characterNo}
+      ORDER BY
+         a.create_dtime DESC
+    </select>
+
+    <select id="selectRecommendCfTrackListByCharacterNo" resultMap="rcmmdTrackResultMap">
+        SELECT
+        rcmmd_track_rank_table.rcmmd_id,
+        rcmmd_track_rank_table.rcmmd_disp_sn,
+        rcmmd_track_rank_table.track_id,
+        rcmmd_track_rank_table.track_nm,
+        rcmmd_track_rank_table.disp_sn,
+        rcmmd_track_rank_table.reprsnt_artist_id,
+        rcmmd_track_rank_table.agency_id,
+        rcmmd_track_rank_table.create_dtime,
+        rcmmd_track_rank_table.update_dtime,
+        rcmmd_track_rank_table.img_size,
+        rcmmd_track_rank_table.img_url,
+        rcmmd_track_rank_table.svc_genre_id,
+        rcmmd_track_rank_table.svc_genre_nm,
+        rcmmd_track_rank_table.trackCount,
+        rcmmd_track_rank_table.rcmmdCreateDtime,
+        d.artist_id,
+        d.artist_nm,
+        a.album_id,
+        b.album_img_size size,
+        b.album_img_url url,
+        e.artist_id reqArtistId,
+        e.artist_nm reqArtistNm,
+        rank
+        FROM
+        (
+        -- 4. rcmmd_rank_table start
+        SELECT
+        @curRank:=IF(@prevRcmmdId = rcmmd_track_table.rcmmd_id, @curRank + 1, 1) AS rank,
+        @prevRcmmdId:=rcmmd_track_table.rcmmd_id,
+        rcmmd_track_table.rcmmd_id,
+        rcmmd_track_table.rcmmd_disp_sn,
+        rcmmd_track_table.track_id,
+        rcmmd_track_table.track_nm,
+        rcmmd_track_table.disp_sn,
+        rcmmd_track_table.album_id,
+        rcmmd_track_table.reprsnt_artist_id,
+        rcmmd_track_table.agency_id,
+        rcmmd_track_table.create_dtime,
+        rcmmd_track_table.update_dtime,
+        rcmmd_track_table.img_size,
+        rcmmd_track_table.img_url,
+        rcmmd_track_table.svc_genre_id,
+        rcmmd_track_table.svc_genre_nm,
+        rcmmd_track_table.trackCount,
+        rcmmd_track_table.rcmmdCreateDtime
+        FROM
+        (
+        SELECT
+        -- 3. rcmmd_track_table starSELECT
+        rcmmd_img_table.rcmmd_id,
+        rcmmd_img_table.svc_genre_id,
+        rcmmd_img_table.svc_genre_nm,
+        rcmmd_img_table.disp_sn rcmmd_disp_sn,
+        rcmmd_img_table.img_size,
+        rcmmd_img_table.img_url,
+        rcmmd_img_table.trackCount,
+        rcmmd_img_table.rcmmdCreateDtime,
+        b.track_id,
+        b.disp_sn,
+        c.track_nm,
+        c.album_id,
+        c.reprsnt_artist_id,
+        c.agency_id,
+        c.create_dtime,
+        c.update_dtime
+        FROM
+        (
+        -- 2. rcmmd_img_table start
+        SELECT
+        rcmmd_table.rcmmd_id,
+        rcmmd_table.svc_genre_id,
+        rcmmd_table.svc_genre_nm,
+        rcmmd_table.disp_sn,
+        rcmmd_table.trackCount,
+        rcmmd_table.rcmmdCreateDtime,
+        b.img_size,
+        b.img_url
+        FROM
+        (
+        -- 1. rcmmd_table start
+        SELECT
+        rcmmd_mforu_id rcmmd_id,
+        a.svc_genre_id,
+        b.svc_genre_nm,
+        disp_sn,
+        (
+        SELECT
+        COUNT(*)
+        FROM tb_rcmmd_mforu_list aa
+        JOIN tb_track bb ON aa.track_id = bb.track_id AND bb.disp_status_yn = 'Y' AND now() BETWEEN bb.disp_start_dtime AND bb.disp_end_dtime
+        WHERE
+        aa.rcmmd_mforu_id = a.rcmmd_mforu_id
+        ) trackCount,
+        a.disp_std_start_dt rcmmdCreateDtime
+        FROM
+        tb_rcmmd_mforu a
+        INNER JOIN tb_svc_genre b ON a.svc_genre_id = b.svc_genre_id
+
+        WHERE
+          a.character_no = #{characterNo}
+          AND now() >=a.disp_std_start_dt
+
+        ORDER BY a.create_dtime DESC
+        LIMIT #{recommendLimitSize}
+        -- 1. rcmmd_table end;
+        ) rcmmd_table
+        LEFT OUTER JOIN tb_map_img_rcmmd_img b ON rcmmd_table.svc_genre_id = b.img_content_id
+        AND b.rcmmd_type_id = 'RC_CF_TR'
+        AND b.os_type = #{osType}
+        AND b.img_disp_type = 'MAIN_TOP'
+        AND b.img_content_type = 'GENRE'
+
+        ORDER BY rcmmd_table.disp_sn
+        -- 2. rcmmd_img_table end
+        ) rcmmd_img_table
+        INNER JOIN tb_rcmmd_mforu_list b ON rcmmd_img_table.rcmmd_id = b.rcmmd_mforu_id
+        INNER JOIN tb_track c ON b.track_id = c.track_id
+        JOIN (SELECT @curRank:=0, @prevRcmmdId:=0) r
+        WHERE
+        c.disp_status_yn = 'Y'AND now() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
+        ORDER BY rcmmd_img_table.rcmmd_id , b.disp_sn
+        -- 3. rcmmd_track_table end
+        ) rcmmd_track_table
+        -- 4. rcmmd_tank_table end
+        ) rcmmd_track_rank_table
+        JOIN ted_album a ON rcmmd_track_rank_table.album_id = a.album_id AND a.disp_status_yn= 'Y' AND now() BETWEEN a.disp_start_dtime AND a.disp_end_dtime
+        LEFT OUTER JOIN tb_album_img b ON a.album_id = b.album_id
+        LEFT OUTER JOIN ted_trackartist c ON rcmmd_track_rank_table.track_id =c.track_id
+        AND c.rp_yn = 'Y'
+        LEFT OUTER JOIN ted_artist d ON c.artist_id = d.artist_id
+        LEFT OUTER JOIN ted_artist e ON e.artist_id = rcmmd_track_rank_table.reprsnt_artist_id
+        WHERE
+        rank <![CDATA[<=]]> #{trackLimitSize};
+    </select>
+
+    <select id="selectRecommendSimilarTrackListByCharacterNo" resultMap="rcmmdTrackResultMap">
+        SELECT
+        rcmmd_track_rank_table.rcmmd_id,
+        rcmmd_track_rank_table.rcmmd_disp_sn,
+        rcmmd_track_rank_table.track_id,
+        rcmmd_track_rank_table.track_nm,
+        rcmmd_track_rank_table.disp_sn,
+        rcmmd_track_rank_table.reprsnt_artist_id,
+        rcmmd_track_rank_table.agency_id,
+        rcmmd_track_rank_table.create_dtime,
+        rcmmd_track_rank_table.update_dtime,
+        rcmmd_track_rank_table.img_size,
+        rcmmd_track_rank_table.img_url,
+        rcmmd_track_rank_table.rcmmdCreateDtime,
+        rcmmd_track_rank_table.svc_genre_id,
+        rcmmd_track_rank_table.svc_genre_nm,
+        rcmmd_track_rank_table.trackCount,
+        rcmmd_track_rank_table.seedArtistNm,
+        rcmmd_track_rank_table.seedTrackNm,
+        d.artist_id,
+        d.artist_nm,
+        a.album_id,
+        b.album_img_size size,
+        b.album_img_url url,
+        e.artist_id reqArtistId,
+        e.artist_nm reqArtistNm,
+        rank
+        FROM
+        (
+        -- 4. rcmmd_rank_table start
+        SELECT
+        @curRank:=IF(@prevRcmmdId = rcmmd_track_table.rcmmd_id, @curRank + 1, 1) AS rank,
+        @prevRcmmdId:=rcmmd_track_table.rcmmd_id,
+        rcmmd_track_table.rcmmd_id,
+        rcmmd_track_table.rcmmd_disp_sn,
+        rcmmd_track_table.track_id,
+        rcmmd_track_table.track_nm,
+        rcmmd_track_table.disp_sn,
+        rcmmd_track_table.album_id,
+        rcmmd_track_table.reprsnt_artist_id,
+        rcmmd_track_table.agency_id,
+        rcmmd_track_table.create_dtime,
+        rcmmd_track_table.update_dtime,
+        rcmmd_track_table.img_size,
+        rcmmd_track_table.img_url,
+        rcmmd_track_table.rcmmdCreateDtime,
+        rcmmd_track_table.svc_genre_id,
+        rcmmd_track_table.svc_genre_nm,
+        rcmmd_track_table.trackCount,
+        rcmmd_track_table.seedArtistNm,
+        rcmmd_track_table.seedTrackNm
+        FROM
+        (
+        -- 3. rcmmd_track_table start
+        SELECT
+        rcmmd_img_table.rcmmd_id,
+        rcmmd_img_table.svc_genre_id,
+        rcmmd_img_table.svc_genre_nm,
+        rcmmd_img_table.disp_sn rcmmd_disp_sn,
+        rcmmd_img_table.img_size,
+        rcmmd_img_table.img_url,
+        rcmmd_img_table.rcmmdCreateDtime,
+        rcmmd_img_table.trackCount,
+        rcmmd_img_table.seedArtistNm,
+        rcmmd_img_table.seedTrackNm,
+        b.track_id,
+        b.disp_sn,
+        c.album_id,
+        c.track_nm,
+        c.reprsnt_artist_id,
+        c.agency_id,
+        c.create_dtime,
+        c.update_dtime
+        FROM
+        (
+        -- 2. rcmmd_img_table start
+        SELECT
+        rcmmd_table.rcmmd_id,
+        rcmmd_table.svc_genre_id,
+        rcmmd_table.svc_genre_nm,
+        rcmmd_table.disp_sn,
+        rcmmd_table.rcmmdCreateDtime,
+        rcmmd_table.trackCount,
+        rcmmd_table.seedArtistNm,
+        rcmmd_table.seedTrackNm,
+        b.img_size,
+        b.img_url
+        FROM
+        (
+        -- 1. rcmmd_table start
+        SELECT
+        rcmmd_similar_track_id rcmmd_id,
+        0 as svc_genre_id,
+        '' as svc_genre_nm,
+        disp_sn,
+        CASE DAYOFWEEK(NOW())
+        WHEN '1' THEN 'SUN'
+        WHEN '2' THEN 'MON'
+        WHEN '3' THEN 'TUE'
+        WHEN '4' THEN 'WED'
+        WHEN '5' THEN 'THU'
+        WHEN '6' THEN 'FRI'
+        WHEN '7' THEN 'SAT'
+        END AS week,
+        a.create_dtime rcmmdCreateDtime,
+        a.disp_sn panel_disp_sn,
+        (
+        SELECT
+        COUNT(*)
+        FROM
+        tb_rcmmd_similar_track_list aa
+        JOIN tb_track bb ON bb.track_id = aa.track_id AND bb.disp_status_yn = 'Y' AND now() BETWEEN bb.disp_start_dtime AND bb.disp_end_dtime
+        WHERE
+        aa.rcmmd_similar_track_id = a.rcmmd_similar_track_id
+        ) trackCount,
+
+        (select group_concat(B.artist_nm) from ted_trackartist A inner join ted_artist B on A.artist_id = B.artist_id where A.track_id = a.seed_track_id) AS seedArtistNm,
+        (select A.track_nm from tb_track A where A.track_id = a.seed_track_id AND A.disp_status_yn = 'Y' AND now() BETWEEN A.disp_start_dtime AND A.disp_end_dtime) as seedTrackNm
+        FROM
+        tb_rcmmd_similar_track a
+        WHERE
+          a.character_no = #{characterNo}
+
+        LIMIT #{recommendLimitSize}
+        -- 1. rcmmd_table end;
+        ) rcmmd_table
+        LEFT OUTER JOIN tb_rcmmd_img_mang b ON rcmmd_table.week = b.dfk_type
+        AND rcmmd_table.panel_disp_sn = b.disp_sn
+        AND b.rcmmd_type_id = 'RC_SML_TR'
+        AND b.img_disp_type = 'MAIN_TOP'
+        AND b.os_type = #{osType}
+        ORDER BY rcmmd_table.disp_sn
+
+        -- 2. rcmmd_img_table end
+        ) rcmmd_img_table
+        INNER JOIN tb_rcmmd_similar_track_list b ON rcmmd_img_table.rcmmd_id = b.rcmmd_similar_track_id
+        INNER JOIN tb_track c ON b.track_id = c.track_id
+        JOIN (SELECT @curRank:=0, @prevRcmmdId:=0) r
+        WHERE
+        c.disp_status_yn = 'Y'
+        AND now() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
+        ORDER BY rcmmd_img_table.rcmmd_id , b.disp_sn
+        -- 3. rcmmd_track_table end
+        ) rcmmd_track_table
+        -- 4. rcmmd_tank_table end
+        ) rcmmd_track_rank_table
+        JOIN ted_album a ON rcmmd_track_rank_table.album_id = a.album_id AND a.disp_status_yn= 'Y' AND now() BETWEEN a.disp_start_dtime AND a.disp_end_dtime
+        LEFT OUTER JOIN tb_album_img b ON a.album_id = b.album_id
+        LEFT OUTER JOIN ted_trackartist c ON rcmmd_track_rank_table.track_id =c.track_id
+        AND c.rp_yn = 'Y'
+        LEFT OUTER JOIN ted_artist d ON c.artist_id = d.artist_id
+        LEFT OUTER JOIN ted_artist e ON e.artist_id = rcmmd_track_rank_table.reprsnt_artist_id
+        WHERE
+        rank <![CDATA[<=]]> #{trackLimitSize}
+    </select>
+
 </mapper>

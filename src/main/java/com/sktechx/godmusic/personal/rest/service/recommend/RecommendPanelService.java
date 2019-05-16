@@ -27,8 +27,10 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
  * @date 2018. 07. 09.
  */
 public interface RecommendPanelService {
-    List<Panel> createRecommendPanelList(Long characterNo, OsType osType);
 
+	List<Panel> createRecommendPanelList(Long characterNo, OsType osType);
+
+	List<Panel> createRecommendV2PanelList(Long characterNo, OsType osType);
 
     // added by bob 2018.08.01
     // edited by bob 2018.08.02
@@ -49,4 +51,7 @@ public interface RecommendPanelService {
 	void addPreferArtistPanel(Long characterNo);
 
 	void addPreferGenrePanel(Long characterNo);
+
+	List<Panel> getRecommendPanelList(Long characterNo, RecommendPanelContentType recommendPanelType, OsType osType);
+
 }

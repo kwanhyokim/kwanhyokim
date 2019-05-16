@@ -10,16 +10,16 @@
 
 package com.sktechx.godmusic.personal.rest.repository;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.sktechx.godmusic.lib.domain.code.OsType;
-import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
 import com.sktechx.godmusic.lib.mybatis.annotation.ReadOnlyMapper;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
-import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 /**
  * 설명 :  추천 관련 Read only Repository
@@ -87,5 +87,24 @@ public interface RecommendReadMapper {
 
     RecommendDuplicateCountDto selectSimilarTrackPanelBetweenDuplicateCount(@Param("characterNo") Long characterNo);
     RecommendDuplicateCountDto selectPreferGenreSimilarTrackPanelBetweenDuplicateCount(@Param("characterNo") Long characterNo);
+
+
+    // 2-C 선호 아티스트 인기곡 리스트 by characterNo
+    List<RecommendArtistDto> selectRecommendArtistByCharacterNo(@Param("characterNo") Long characterNo);
+
+    // 3-A 청취 CF 패널 조회 by characterNo
+    List<RecommendTrackDto> selectRecommendCfTrackListByCharacterNo(
+            @Param("characterNo") Long characterNo,
+            @Param("recommendLimitSize") int recommendLimitSize,
+            @Param("trackLimitSize") int trackLimitSize,
+            @Param("osType") OsType osType
+    );
+
+    // 2-A 유사곡 패널 조회 by characterNo
+    List<RecommendTrackDto> selectRecommendSimilarTrackListByCharacterNo(
+            @Param("characterNo") Long characterNo,
+            @Param("recommendLimitSize") int recommendLimitSize,
+            @Param("trackLimitSize") int trackLimitSize,
+            @Param("osType") OsType osType);
 
 }

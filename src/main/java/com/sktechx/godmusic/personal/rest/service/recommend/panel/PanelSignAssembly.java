@@ -124,7 +124,7 @@ public abstract class PanelSignAssembly extends PanelAssembly {
         }
     }
 
-    private boolean isArtistPopularTrackPanelAppend(RecommendArtistDto recommendArtistDto){
+    public boolean isArtistPopularTrackPanelAppend(RecommendArtistDto recommendArtistDto){
 
         List<ArtistDto> artistList = recommendArtistDto.getArtistList();
 
@@ -260,7 +260,7 @@ public abstract class PanelSignAssembly extends PanelAssembly {
         return new PreferGenreSimilarTrackPanel(preferGenreSimilarTrack,
                                                 getDefaultBgImageList(preferGenreSimilarTrack.getImgList(),personalPhaseMeta.getOsType()));
     }
-    private Panel createSimilarTrackPanel(final PersonalPhaseMeta personalPhaseMeta,
+    public Panel createSimilarTrackPanel(final PersonalPhaseMeta personalPhaseMeta,
                                           final RecommendTrackDto similarTrack){
         return new PreferSimilarTrackPanel( similarTrack, getDefaultBgImageList(similarTrack.getImgList(),personalPhaseMeta.getOsType()));
     }
@@ -279,4 +279,6 @@ public abstract class PanelSignAssembly extends PanelAssembly {
         return new PreferGenrePopularChannelPanel(channel,genre,
                 getDefaultBgImageList( channel.getImgList(), personalPhaseMeta.getOsType()));
     }
+
+
 }

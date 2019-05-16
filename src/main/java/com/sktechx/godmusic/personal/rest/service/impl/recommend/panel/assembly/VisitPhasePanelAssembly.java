@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly;
 
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
@@ -59,6 +60,10 @@ public class VisitPhasePanelAssembly extends PanelSignAssembly {
         }
 
         return panelList;
+    }
+    @Override
+    public List<Panel> getRecommendPanelList(Long characterNo, OsType osType) {
+        return null;
     }
 
     @Override

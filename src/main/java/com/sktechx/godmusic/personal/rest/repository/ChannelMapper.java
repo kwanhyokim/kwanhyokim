@@ -10,17 +10,17 @@
 
 package com.sktechx.godmusic.personal.rest.repository;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
-import com.sktechx.godmusic.personal.common.domain.type.DayType;
 import com.sktechx.godmusic.personal.common.domain.type.PopularChnlType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlListDto;
-import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 /**
  * 설명 :  채널 Repository
@@ -46,4 +46,6 @@ public interface ChannelMapper {
 //    List<PreferGenrePopularChnlDto> selectPreferGenrePopularChannel(@Param("preferGenrePopularChnlList") List<PreferGenrePopularChnlDto> preferGenrePopularChnlList,@Param("osType") OsType osType);
 
     ChnlDto selectChannelById(@Param("channelId") Long channelId);
+
+    void deleteLastListenHistory(@Param("memberNo") Long memberNo, @Param("characterNo") Long characterNo, @Param("listenType") String listenType, @Param("listenId") Long listenId);
 }

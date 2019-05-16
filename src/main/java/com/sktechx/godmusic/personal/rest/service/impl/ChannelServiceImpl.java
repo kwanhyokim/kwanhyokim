@@ -10,9 +10,17 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
-import com.sktechx.godmusic.personal.common.domain.type.DayType;
 import com.sktechx.godmusic.personal.common.domain.type.PopularChnlType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto;
@@ -25,14 +33,6 @@ import com.sktechx.godmusic.personal.rest.repository.ChannelMapper;
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
 import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.*;
@@ -276,5 +276,9 @@ public class ChannelServiceImpl implements ChannelService {
 
         }
         return uniquePopularChannelList;
+    }
+
+    public void removeLastListenHistory(Long memberNo, Long characterNo, String listenType, Long listenId){
+        channelMapper.deleteLastListenHistory(memberNo, characterNo, listenType, listenId);
     }
 }
