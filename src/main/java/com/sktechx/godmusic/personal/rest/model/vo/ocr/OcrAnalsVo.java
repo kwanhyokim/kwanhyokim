@@ -24,11 +24,18 @@ public class OcrAnalsVo {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class OcrAnalsResultVo{
+        private Integer ocrFileNo;
+        private YnType  completeJobYn;
+        private List<OcrAnalsResultDetailVo> ocrAnalsResultDetailList;
+    }
 
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class OcrAnalsResultDetailVo{
         @JsonIgnore
         private Long ocrAnalsResultNo;
-
-        private Integer ocrFileNo;
         private Integer leftTopXAxis;
         private Integer leftTopYAxis;
         private Integer rightBottomXAxis;
@@ -36,19 +43,9 @@ public class OcrAnalsVo {
 
         private YnType trackNmSkipYn;
         private YnType albumNmSkipYn;
-        private YnType artistMatchingYn;
 
         private YnType duplicateYn;
 
         private TrackDto track;
-    }
-
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class OcrAnalsResultTrackVo{
-        private Long trackId;
-        private Float matchingRate;
     }
 }

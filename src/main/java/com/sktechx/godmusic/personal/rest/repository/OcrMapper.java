@@ -19,5 +19,7 @@ public interface OcrMapper {
 
     int countOcrFile(@Param("ocrNo") Long ocrNo);
 
+    OcrFileDto selectOcrFile(@Param("ocrNo")Long ocrNo, @Param("ocrFileNo")Integer ocrFileNo);
+
 }
 

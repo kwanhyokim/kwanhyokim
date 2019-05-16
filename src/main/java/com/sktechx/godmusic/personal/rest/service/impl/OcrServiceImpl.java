@@ -4,6 +4,7 @@ import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.AwsBucketType;
+import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
 import com.sktechx.godmusic.personal.rest.model.dto.member.MemberDvcDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrDto;
@@ -12,14 +13,12 @@ import com.sktechx.godmusic.personal.rest.model.vo.external.AwsFileVo;
 import com.sktechx.godmusic.personal.rest.model.vo.ocr.GetOcrStatusResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.ocr.OcrAnalsVo;
 import com.sktechx.godmusic.personal.rest.repository.OcrMapper;
-import com.sktechx.godmusic.personal.rest.service.ExternalApiProxy;
-import com.sktechx.godmusic.personal.rest.service.MemberApiProxy;
-import com.sktechx.godmusic.personal.rest.service.OcrHelperService;
-import com.sktechx.godmusic.personal.rest.service.OcrService;
+import com.sktechx.godmusic.personal.rest.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -63,7 +62,18 @@ public class OcrServiceImpl implements OcrService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AwsFileVo uploadOcrFile(Long memberNo, MultipartFile multipartFile, Long ocrNo, Integer ocrFileNo){
+
+        OcrFileDto ocrFileDto = ocrMapper.selectOcrFile(ocrNo, ocrFileNo);
+        if(ObjectUtils.isEmpty(ocrFileDto)) {
+            log.error("OcrServiceImpl::uploadOcrFile - not found ocrFile! ocrNo:{}, ocrFileNo:{}", ocrNo, ocrFileNo);
+            throw new CommonBusinessException(PersonalErrorDomain.NOT_FOUND_OCR_FILE);
+        }
+        if(ocrFileDto.getUploadYn() == YnType.Y) {
+            log.error("OcrServiceImpl::uploadOcrFile - already upload ocrFile! ocrNo:{}, ocrFileNo:{}", ocrNo, ocrFileNo);
+            throw new CommonBusinessException(PersonalErrorDomain.ALREADY_UPLOAD_OCR_FILE);
+        }
 
         log.info(multipartFile.getOriginalFilename());
         AwsFileVo awsFileVo = uploadFile(multipartFile, AwsBucketType.OCR, memberNo);
@@ -84,7 +94,8 @@ public class OcrServiceImpl implements OcrService {
     public void requestAnalysisToOcrServer(Long ocrNo, Integer ocrFileNo, AwsFileVo awsFileVo){
 
         //TODO send FileInfo to OCR Server
-
+        int fileCount = ocrMapper.countOcrFile(ocrNo);
+        ocrRecognize(ocrNo, ocrFileNo, fileCount, awsFileVo.getBucket(), awsFileVo.getBucketKey());
 
         ocrHelperService.updateOcrFile(OcrFileDto.builder()
                 .ocrNo(ocrNo)
@@ -110,11 +121,11 @@ public class OcrServiceImpl implements OcrService {
     public GetOcrStatusResponse getOcrStatus(Long characterNo, Long ocrNo){
 
         int totalCount = ocrMapper.countOcrFile(ocrNo);
-        int jobDoneCount = ocrMapper.countDoneProcessionOcrFile(ocrNo);
+        int completeJobCount = ocrMapper.countDoneProcessionOcrFile(ocrNo);
 
         return GetOcrStatusResponse.builder()
                 .totalCount(totalCount)
-                .jobDoneCount(jobDoneCount)
+                .completeJobCount(completeJobCount)
                 .build();
     }
 
@@ -143,8 +154,14 @@ public class OcrServiceImpl implements OcrService {
         return response.getData();
     }
 
+    private void ocrRecognize( Long ocrNo, Integer ocrFileNo, Integer imageCount, String bucketKey, String bucketName){
+        log.debug("ocrRecognize start:");
 
+        CommonApiResponse<AwsFileVo> response = externalApiProxy.ocrRecognize(ocrNo, ocrFileNo, imageCount, bucketKey, bucketName);
+        log.debug("ocrRecognize end");
 
-
+        if(StringUtils.isEmpty(response) || StringUtils.isEmpty(response.getCode())
+                || !"2000000".equals(response.getCode()) || CommonUtils.empty(response.getData())) throw new CommonBusinessException("ocrRecognize fail ");
+    }
 
 }

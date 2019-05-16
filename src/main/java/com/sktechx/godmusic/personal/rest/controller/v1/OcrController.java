@@ -3,7 +3,6 @@ package com.sktechx.godmusic.personal.rest.controller.v1;
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.CommonConstant;
 import com.sktechx.godmusic.lib.domain.GMContext;
-import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrDto;
 import com.sktechx.godmusic.personal.rest.model.vo.external.AwsFileVo;
@@ -22,6 +21,8 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
+
 @Slf4j
 @RestController
 @RequestMapping(Naming.serviceCode + "/v1/ocr")
@@ -35,8 +36,8 @@ public class OcrController {
     @ApiOperation(value = "OCR 세션 정보 생성", httpMethod = "POST", notes = "OCR 분석할 파일을 올리기 위한, 세션 아이디를 생성 한다")
     @PostMapping("")
     public CommonApiResponse<CreateOcrSessionResponse> createOcrSession(
-            @ApiParam(value = "디바이스 아이디", required = true, defaultValue = "test_device") @RequestHeader(value = CommonConstant.X_GM_DEVICE_ID) OsType deviceId,
-            @RequestBody CreateOcrSessionRequest request){
+            @ApiParam(value = "디바이스 아이디", required = true, defaultValue = "test_device") @RequestHeader(value = CommonConstant.X_GM_DEVICE_ID) String deviceId,
+            @Valid @RequestBody CreateOcrSessionRequest request){
 
         //OcrDto ocrDto = ocrService.createOcr(2100981L, 2101151L, "test_device", request.getTotalFileCnt());
         OcrDto ocrDto = ocrService.createOcr(GMContext.getContext().getMemberNo(), GMContext.getContext().getCharacterNo(), GMContext.getContext().getDeviceId(), request.getTotalFileCnt());
