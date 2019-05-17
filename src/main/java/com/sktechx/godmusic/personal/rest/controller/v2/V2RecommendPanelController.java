@@ -25,6 +25,7 @@ import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ChannelListResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
@@ -97,7 +98,7 @@ public class V2RecommendPanelController {
 		    return null;
 	    }
 
-		return new CommonApiResponse<>(recommendPanelList);
+		return new CommonApiResponse<>(new ListDto<>(recommendPanelList));
 	}
 
 	@ApiOperation(value = "선호 장르 테마리스트 리스트 ")

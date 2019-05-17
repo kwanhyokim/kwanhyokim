@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
@@ -139,7 +140,26 @@ public class ChannelServiceImpl implements ChannelService {
             return null;
         }
 
-        return preferGenrePopularChannelList.stream().map( x -> x.getChannel()).collect(Collectors.toList());
+        List<ChnlDto> chnlDtoList = preferGenrePopularChannelList.stream().map(x -> x.getChannel())
+                .collect(Collectors.toList());
+
+        for(ChnlDto chnlDto : chnlDtoList){
+            chnlDto.setChnlDispNm(null);
+            chnlDto.setTrackCount(null);
+            chnlDto.setTrackList(null);
+            chnlDto.setUpdateDtime(null);
+            chnlDto.setCreateDtime(null);
+            chnlDto.setRenewTrackCnt(null);
+
+            // 앨범 이미지가 있을 경우, 우선 적용
+            if( !ObjectUtils.isEmpty(chnlDto.getAlbum()) && !CollectionUtils.isEmpty(chnlDto.getAlbum().getImgList())){
+                chnlDto.setImgList(chnlDto.getAlbum().getImgList());
+            }
+
+            chnlDto.setAlbum(null);
+        }
+
+        return chnlDtoList;
 
     }
 
