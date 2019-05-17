@@ -39,10 +39,10 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
  * @date 2019. 5. 8.
  */
 @Slf4j
-@Service("tpoPanelAssembly")
-public class TpoPanelAssembly extends PanelNonSignAssembly {
+@Service("operationTpoPanelAssembly")
+public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
 
-    private TpoPanelAssembly(){}
+    private OperationTpoPanelAssembly(){}
 
     @Autowired
     DisplayClient displayClient;

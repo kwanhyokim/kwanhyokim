@@ -13,7 +13,6 @@ package com.sktechx.godmusic.personal.rest.model.vo.recommend.phase;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import lombok.Data;
 
@@ -36,7 +35,5 @@ public class PersonalPanel {
     //청취 무드 무드 아이디
     private Long moodId;
 
-
-    @JsonIgnore
     private Date createDtime;
 }

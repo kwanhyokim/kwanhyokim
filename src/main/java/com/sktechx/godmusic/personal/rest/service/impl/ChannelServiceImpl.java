@@ -131,6 +131,17 @@ public class ChannelServiceImpl implements ChannelService {
         return null;
     }
 
+    @Override
+    public List<ChnlDto> getPreferGenreThemeList(List<Long> preferGenreIdList , int trackLimitSize, OsType osType) {
+        List<PreferGenrePopularChnlDto> preferGenrePopularChannelList = getPreferGenrePopularChannelList(preferGenreIdList, trackLimitSize, osType);
+
+        if(CollectionUtils.isEmpty(preferGenrePopularChannelList)){
+            return null;
+        }
+
+        return preferGenrePopularChannelList.stream().map( x -> x.getChannel()).collect(Collectors.toList());
+
+    }
 
 
     public List<MoodPopularChnlDto> getListenMoodPopularChannelIdList(List<Long> moodIdList , int trackLimitSize , OsType osType){
