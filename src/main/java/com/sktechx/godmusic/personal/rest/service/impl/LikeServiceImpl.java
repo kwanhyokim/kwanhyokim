@@ -160,7 +160,7 @@ public class LikeServiceImpl implements LikeService {
 		likeMapper.insertLike(request.getLikeType(), request.getLikeTypeId(), characterNo);
 
 		try {
-			sendUserEvent(UserEventType.LIKE, AppNameType.FLO.getCode(), GMContext.getContext().getMemberNo(),
+			sendUserEvent(UserEventType.LIKE, AppNameType.FLO_APP.getCode(), GMContext.getContext().getMemberNo(),
 					characterNo, request.getLikeTypeId(), UserEventTarget.valueOf(request.getLikeType()));
 		}catch (Exception e){
 			log.warn("Like :: like add UserEvent :: failed Message :: {}", e.getMessage());
@@ -193,7 +193,7 @@ public class LikeServiceImpl implements LikeService {
 
 		try {
 			IntStream.range(0, request.getLikeTypeList().size()).forEach(
-					index -> sendUserEvent(UserEventType.UNLIKE, AppNameType.FLO.getCode(),
+					index -> sendUserEvent(UserEventType.UNLIKE, AppNameType.FLO_APP.getCode(),
 							GMContext.getContext().getMemberNo(), characterNo,
 							request.getLikeTypeList().get(index).getLikeTypeId(),
 							UserEventTarget.valueOf(request.getLikeTypeList().get(index).getLikeType())));
