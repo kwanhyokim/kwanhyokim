@@ -31,5 +31,7 @@ public interface ChannelService {
     List<MoodPopularChnlDto> getListenMoodPopularChannelIdList(List<Long> moodIdList , int trackLimitSize , OsType osType);
     List<LastListenHistoryDto> getLastListenHistory(Long memberNo, Long characterNo, OsType osType);
 
+
+    List<ChnlDto> getPreferGenreThemeList(List<Long> preferGenreIdList, int trackLimitSize, OsType osType);
     void removeLastListenHistory(Long memberNo, Long characterNo, String listenType, Long listenId);
 }

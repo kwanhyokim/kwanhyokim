@@ -14,22 +14,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
-import com.google.common.primitives.Ints;
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.RequestGMContext;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
-import com.sktechx.godmusic.personal.common.domain.ListResponse;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ChannelListResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
@@ -37,8 +33,6 @@ import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDataService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -107,32 +101,21 @@ public class V2RecommendPanelController {
 	}
 
 	@ApiOperation(value = "선호 장르 테마리스트 리스트 ")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "page", required = false, dataType = "int", paramType = "query", value = "페이지", defaultValue = "1"),
-			@ApiImplicitParam(name = "size", required = false, dataType = "int", paramType = "query", value = "사이즈", defaultValue = "20")
-	})
 	@GetMapping("/preferGenreChnl/list")
-	public CommonApiResponse<ListResponse> getPreferGenreChannelList(
-			@ApiIgnore @RequestGMContext GMContext ctx, @ApiIgnore @PageableDefault(size=50, page=0) Pageable pageable){
-
-		int start = Ints.checkedCast(pageable.getOffset());
-		int end = Ints.checkedCast(pageable.getOffset()) + pageable.getPageSize();
+	public CommonApiResponse<ChannelListResponse> getPreferGenreChannelList(
+			@ApiIgnore @RequestGMContext GMContext ctx){
 
 		PersonalPhaseMeta personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(ctx.getCharacterNo(),ctx.getOsType());
 
 		List<Long> preferGenreIdList = personalPhaseMeta.getPreferGenreList().stream().map( x -> x.getPreferGenreId()).collect(
 				Collectors.toList());
 
-		List<PreferGenrePopularChnlDto> preferGenrePopularChannelList = channelService.getPreferGenrePopularChannelList(preferGenreIdList, 50, ctx.getOsType());
+		List<ChnlDto> preferGenrePopularChannelList = channelService.getPreferGenreThemeList(preferGenreIdList, 50, ctx.getOsType());
 
 		if(CollectionUtils.isEmpty(preferGenrePopularChannelList)) throw new CommonBusinessException(
 				CommonErrorDomain.EMPTY_DATA);
 
-		if(start >= preferGenrePopularChannelList.size() || start >= end) throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
-
-		if(end > preferGenrePopularChannelList.size()) end = preferGenrePopularChannelList.size();
-
-		return new CommonApiResponse<>(new ListResponse(new PageImpl<>(preferGenrePopularChannelList.subList(start, end), pageable, preferGenrePopularChannelList.size())));
+		return new CommonApiResponse<>(ChannelListResponse.builder().list(preferGenrePopularChannelList).build());
 
 	}
 

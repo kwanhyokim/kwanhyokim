@@ -79,7 +79,7 @@ public class RecommendPanelAssemblyFactory {
             return applicationContextProvider.getContext().getBean(PreferGenreThemePanelAssembly.class);
         }
 
-        return applicationContextProvider.getContext().getBean(TpoPanelAssembly.class);
+        return applicationContextProvider.getContext().getBean(OperationTpoPanelAssembly.class);
 
     }
 
