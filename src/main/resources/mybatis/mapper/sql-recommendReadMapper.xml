@@ -870,26 +870,26 @@
 
     <select id="selectRecommendArtistByCharacterNo" resultMap="rcmmdArtistResultMap">
       SELECT
-          a.rcmmd_artist_id,
-          b.artist_id ,
-          b.artist_type,
-          c.artist_nm,
-          d.size,
-          d.url,
-          a.create_dtime
+            aa.*, d.size, d.url
+        FROM
+            (SELECT
+                a.rcmmd_artist_id,
+                    b.artist_id,
+                    b.artist_type,
+                    c.artist_nm,
+                    a.create_dtime
+            FROM
+                tb_rcmmd_artist a
+            INNER JOIN tb_rcmmd_artist_list b ON a.rcmmd_artist_id = b.rcmmd_artist_id
+            INNER JOIN ted_artist c ON b.artist_id = c.artist_id
+            WHERE
+                a.character_no = #{characterNo}
+            ORDER BY a.create_dtime DESC
+            LIMIT 5) aa
+                LEFT OUTER JOIN
+            ted_artistimage d ON aa.artist_id = d.artist_id
 
-      FROM
-        tb_rcmmd_artist a
-            INNER JOIN
-        tb_rcmmd_artist_list b ON a.rcmmd_artist_id = b.rcmmd_artist_id
-            INNER JOIN
-        ted_artist c ON b.artist_id = c.artist_id
-            LEFT OUTER JOIN
-        ted_artistimage d ON c.artist_id = d.artist_id
-      WHERE
-          a.character_no = #{characterNo}
-      ORDER BY
-         a.create_dtime DESC
+
     </select>
 
     <select id="selectRecommendCfTrackListByCharacterNo" resultMap="rcmmdTrackResultMap">
@@ -1003,7 +1003,7 @@
         LEFT OUTER JOIN tb_map_img_rcmmd_img b ON rcmmd_table.svc_genre_id = b.img_content_id
         AND b.rcmmd_type_id = 'RC_CF_TR'
         AND b.os_type = #{osType}
-        AND b.img_disp_type = 'MAIN_TOP'
+        AND b.img_disp_type = 'MAIN_MID'
         AND b.img_content_type = 'GENRE'
 
         ORDER BY rcmmd_table.disp_sn
@@ -1158,7 +1158,7 @@
         LEFT OUTER JOIN tb_rcmmd_img_mang b ON rcmmd_table.week = b.dfk_type
         AND rcmmd_table.panel_disp_sn = b.disp_sn
         AND b.rcmmd_type_id = 'RC_SML_TR'
-        AND b.img_disp_type = 'MAIN_TOP'
+        AND b.img_disp_type = 'MAIN_MID'
         AND b.os_type = #{osType}
         ORDER BY rcmmd_table.disp_sn
 
