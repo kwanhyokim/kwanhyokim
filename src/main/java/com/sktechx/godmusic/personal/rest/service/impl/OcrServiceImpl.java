@@ -95,7 +95,7 @@ public class OcrServiceImpl implements OcrService {
 
         //TODO send FileInfo to OCR Server
         int fileCount = ocrMapper.countOcrFile(ocrNo);
-        ocrRecognize(ocrNo, ocrFileNo, fileCount, awsFileVo.getBucket(), awsFileVo.getBucketKey());
+        ocrRecognize(ocrNo, ocrFileNo, fileCount, awsFileVo.getBucketKey(), awsFileVo.getBucket());
 
         ocrHelperService.updateOcrFile(OcrFileDto.builder()
                 .ocrNo(ocrNo)
@@ -157,7 +157,7 @@ public class OcrServiceImpl implements OcrService {
     private void ocrRecognize( Long ocrNo, Integer ocrFileNo, Integer imageCount, String bucketKey, String bucketName){
         log.debug("ocrRecognize start:");
 
-        CommonApiResponse<AwsFileVo> response = externalApiProxy.ocrRecognize(ocrNo, ocrFileNo, imageCount, bucketKey, bucketName);
+        CommonApiResponse<AwsFileVo> response = externalApiProxy.ocrRecognize(ocrNo, imageCount, ocrFileNo, bucketKey, bucketName);
         log.debug("ocrRecognize end");
 
         if(StringUtils.isEmpty(response) || StringUtils.isEmpty(response.getCode())
