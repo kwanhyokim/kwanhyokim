@@ -156,12 +156,11 @@ public class OcrServiceImpl implements OcrService {
 
     private void ocrRecognize( Long ocrNo, Integer ocrFileNo, Integer imageCount, String bucketKey, String bucketName){
         log.debug("ocrRecognize start:");
-
         CommonApiResponse<AwsFileVo> response = externalApiProxy.ocrRecognize(ocrNo, imageCount, ocrFileNo, bucketKey, bucketName);
         log.debug("ocrRecognize end");
 
         if(StringUtils.isEmpty(response) || StringUtils.isEmpty(response.getCode())
-                || !"2000000".equals(response.getCode()) || CommonUtils.empty(response.getData())) throw new CommonBusinessException("ocrRecognize fail ");
+                || !"2000000".equals(response.getCode())) throw new CommonBusinessException("ocrRecognize fail");
     }
 
 }
