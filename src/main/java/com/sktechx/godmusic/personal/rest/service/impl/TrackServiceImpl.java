@@ -10,6 +10,14 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
@@ -19,13 +27,6 @@ import com.sktechx.godmusic.personal.rest.model.dto.MostListenedTrackDto;
 import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
 import com.sktechx.godmusic.personal.rest.service.TrackService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -69,5 +70,11 @@ public class TrackServiceImpl implements TrackService {
         long totalCount = trackMapper.selectMyRecentTrackTotalCount(memberNo, characterNo);
 
         return new PageImpl<>(recentListenedTrackList, pageable, totalCount);
+    }
+
+    @Override
+    public void deleteMyRecentTrackList(Long memberNo, Long characterNo, Long trackId) {
+        trackMapper.deleteMyRecentTrackList(memberNo, characterNo, trackId);
+
     }
 }

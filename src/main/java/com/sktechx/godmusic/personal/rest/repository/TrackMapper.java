@@ -10,14 +10,14 @@
 
 package com.sktechx.godmusic.personal.rest.repository;
 
-import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
-import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
-import com.sktechx.godmusic.personal.rest.model.dto.MostListenedTrackDto;
-import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
+import com.sktechx.godmusic.personal.rest.model.dto.MostListenedTrackDto;
+import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 
 /**
  * 설명 : 트랙
@@ -41,4 +41,6 @@ public interface TrackMapper {
 
     List<MostListenedTrackDto> selectMyRecentTrackList(@Param("memberNo") Long memberNo, @Param("characterNo") Long characterNo, @Param("pageable") Pageable pageable);
     long selectMyRecentTrackTotalCount(@Param("memberNo") Long memberNo, @Param("characterNo") Long characterNo);
+
+    void deleteMyRecentTrackList(@Param("memberNo") Long memberNo, @Param("characterNo") Long characterNo, @Param("trackId") Long trackId);
 }

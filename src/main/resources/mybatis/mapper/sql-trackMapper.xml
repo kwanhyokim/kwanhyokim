@@ -322,4 +322,13 @@
                   AND a.character_no = #{characterNo}
                 LIMIT 500 ) a
     </select>
+
+    <update id="deleteMyRecentTrackList">
+        DELETE
+        FROM tb_most_listen_track
+        WHERE
+          member_no = #{memberNo}
+          AND character_no = #{characterNo}
+          AND track_id = #{trackId}
+    </update>
 </mapper>
