@@ -107,4 +107,6 @@ public interface RecommendReadMapper {
             @Param("trackLimitSize") int trackLimitSize,
             @Param("osType") OsType osType);
 
+
+    RecommendSimilarTrackDto selectRecommendSimilarTrack(@Param("rcmmdId") Long rcmmdId);
 }

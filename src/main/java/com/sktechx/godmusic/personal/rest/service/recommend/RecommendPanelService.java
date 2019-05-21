@@ -42,7 +42,7 @@ public interface RecommendPanelService {
 	ListDto<List<RecommendPanelTrackDto>> getRecommendPanelTrackList(Long characterNo, RecommendPanelContentType recommendPanelType, Long panelContentId);
 
 	// added by bob 2018.08.16
-	RecommendPanelInfoDto getRecommendPanelInfo(Long characterNo,RecommendPanelContentType recommendPanelContentType, Long panelContentId, OsType osType);
+	RecommendPanelInfoDto getRecommendPanelInfo(Long characterNo,RecommendPanelContentType recommendPanelContentType, Long panelContentId, OsType osType, String appVer);
 
 
 	// 홈패널 기본 이미지

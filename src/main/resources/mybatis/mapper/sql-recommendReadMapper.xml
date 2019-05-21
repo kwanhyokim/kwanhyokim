@@ -46,6 +46,10 @@
         </collection>
     </resultMap>
 
+    <resultMap id="RecommendSimilarTrackResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendSimilarTrackDto">
+        <id property="rcmmdSimilarTrackId" column="rcmmd_similar_track_id"/>
+    </resultMap>
+
     <select id="selectPersonalRecommendPanelMeta" resultMap="personalPanelResultMap" >
         <![CDATA[
             SELECT
@@ -290,6 +294,22 @@
             LEFT OUTER JOIN ted_artist e ON e.artist_id = rcmmd_track_rank_table.reprsnt_artist_id
         WHERE
           rank <![CDATA[<=]]> #{trackLimitSize}
+    </select>
+
+    <select id="selectRecommendSimilarTrack" resultMap="personalPanelResultMap">
+        SELECT
+            A.rcmmd_similar_track_id,
+            B.track_nm as seedTrackNm,
+            C.artist_nm as seedArtistNm,
+            A.disp_sn,
+            A.create_dtime
+        FROM
+          tb_rcmmd_similar_track A
+        LEFT OUTER JOIN tb_track B ON A.seed_track_id = B.track_id
+        LEFT OUTER JOIN ted_artist C ON B.reprsnt_artist_id = C.artist_id
+
+        WHERE A.rcmmd_similar_track_id=#{rcmmdId}
+
     </select>
 
     <select id="selectRecommendSimilarTrackListByIdList" resultMap="rcmmdTrackResultMap">
@@ -810,7 +830,8 @@
     <select id="selectRecommendGenreByRcmmdId" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendGenreVo">
         SELECT
             b.svc_genre_nm,
-            a.disp_std_start_dt
+            a.disp_std_start_dt,
+            a.create_dtime
         FROM
             tb_rcmmd_mforu a INNER JOIN tb_svc_genre b ON a.svc_genre_id = b.svc_genre_id
         WHERE

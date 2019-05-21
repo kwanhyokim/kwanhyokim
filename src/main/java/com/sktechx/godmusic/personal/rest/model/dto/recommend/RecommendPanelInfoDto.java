@@ -21,6 +21,7 @@ import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -31,6 +32,7 @@ import lombok.Data;
  */
 
 @Data
+@Builder
 @ApiModel(value="Panel")
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class RecommendPanelInfoDto {
@@ -52,14 +54,6 @@ public class RecommendPanelInfoDto {
 	@ApiModelProperty(value = "아티스트 수")
 	private Integer artistCount;
 
-//	@JsonProperty("createDateTime")
-//	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
-//	private Date createDtime;
-//
-//	@JsonProperty("updateDateTime")
-//	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
-//	private Date updateDtime;
-
 	@ApiModelProperty(value = "갱신일")
 	@JsonProperty("renewDateTime")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
@@ -68,75 +62,6 @@ public class RecommendPanelInfoDto {
 	@ApiModelProperty(value = "업데이트 여부")
 	private YnType newYn;
 
-
-	public static class Builder {
-
-
-		private String title;
-		private String subTtitle;
-		private List<ImageInfo> imgList;
-		private Integer trackCount;
-		private List<ArtistDto> artistList;
-		private Integer artistCount;
-		private Date renewDtime;
-		private YnType newYn;
-
-		public Builder title(String val){
-			title = val;
-			return this;
-		}
-
-		public Builder subTitle(String val){
-			subTtitle = val;
-			return this;
-		}
-		public Builder imgList(List<ImageInfo> val){
-			imgList = val;
-			return this;
-		}
-
-		public Builder trackCount(Integer val){
-			trackCount = val;
-			return this;
-		}
-
-		public Builder artistList(List<ArtistDto> val){
-			artistList = val;
-			return this;
-		}
-
-		public Builder artistCount(Integer val){
-			artistCount = val;
-			return this;
-		}
-
-		public Builder renewDtime(Date val){
-			renewDtime = val;
-			return this;
-		}
-
-		public Builder newYn(YnType val){
-			newYn = val;
-			return this;
-		}
-
-		public RecommendPanelInfoDto build(){
-			return new RecommendPanelInfoDto(this);
-		}
-
-	}
-
-	private RecommendPanelInfoDto(Builder builder){
-
-		title = builder.title;
-		subTitle = builder.subTtitle;
-		imgList = builder.imgList;
-		trackCount = builder.trackCount;
-		artistList = builder.artistList;
-		artistCount = builder.artistCount;
-		renewDtime = builder.renewDtime;
-		newYn = builder.newYn;
-
-	}
+	private String seedInfo;
 
 }
