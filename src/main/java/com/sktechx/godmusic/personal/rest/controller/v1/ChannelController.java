@@ -23,6 +23,8 @@ import com.sktechx.godmusic.personal.rest.model.dto.MemberChannelDto;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
@@ -43,10 +45,18 @@ public class ChannelController {
     @Autowired
     private ChannelService channelService;
 
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", dataType = "integer", paramType = "query",
+                    value = "Results page you want to retrieve (0..N)", defaultValue = "0"),
+            @ApiImplicitParam(name = "size", dataType = "integer", paramType = "query",
+                    value = "Number of records per page.", defaultValue = "5")
+    })
     @ApiOperation(value = "최근 들은 플레이리스트 상세 by Peter ( 기존 /v2/my/channel/recent/list GET )")
     @GetMapping("recentListened")
     public CommonApiResponse<ListResponse> getLastListenHistory(
-            @ApiIgnore @RequestGMContext GMContext ctx, @PageableDefault(size=50, page=0) Pageable pageable){
+            @ApiIgnore @RequestGMContext GMContext ctx,
+            @ApiIgnore @PageableDefault(size=50, page=0) Pageable pageable){
 
         int start = Ints.checkedCast(pageable.getOffset());
         int end = Ints.checkedCast(pageable.getOffset()) + pageable.getPageSize();
