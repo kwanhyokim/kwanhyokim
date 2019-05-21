@@ -46,7 +46,7 @@
         </collection>
     </resultMap>
 
-    <resultMap id="RecommendSimilarTrackResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendSimilarTrackDto">
+    <resultMap id="recommendSimilarTrackResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendSimilarTrackDto">
         <id property="rcmmdSimilarTrackId" column="rcmmd_similar_track_id"/>
     </resultMap>
 
@@ -296,7 +296,7 @@
           rank <![CDATA[<=]]> #{trackLimitSize}
     </select>
 
-    <select id="selectRecommendSimilarTrack" resultMap="personalPanelResultMap">
+    <select id="selectRecommendSimilarTrack" resultMap="recommendSimilarTrackResultMap">
         SELECT
             A.rcmmd_similar_track_id,
             B.track_nm as seedTrackNm,
@@ -905,7 +905,7 @@
             INNER JOIN ted_artist c ON b.artist_id = c.artist_id
             WHERE
                 a.character_no = #{characterNo}
-            ORDER BY a.create_dtime DESC
+            ORDER BY a.create_dtime DESC, b.disp_sn ASC
             LIMIT 5) aa
                 LEFT OUTER JOIN
             ted_artistimage d ON aa.artist_id = d.artist_id

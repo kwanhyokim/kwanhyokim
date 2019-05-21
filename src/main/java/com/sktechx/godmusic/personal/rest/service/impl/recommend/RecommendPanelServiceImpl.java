@@ -41,6 +41,7 @@ import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.common.domain.type.ArtistType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
+import com.sktechx.godmusic.personal.common.util.BooleanComparator;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
@@ -265,7 +266,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     public RecommendPanelInfoDto getRecommendPanelInfo(Long characterNo, RecommendPanelContentType recommendPanelContentType,
             Long panelContentId, OsType osType, String appVer) {
 
-        if ( new ComparableVersion(appVer).compareTo(new ComparableVersion("4.6.0")) < 0 ) {
+        if( ObjectUtils.isEmpty(appVer) || new ComparableVersion(appVer).compareTo(new ComparableVersion("4.6.0")) < 0 ) {
             return getRecommendPanelInfo(characterNo, recommendPanelContentType, panelContentId,
                     osType);
         }else{
@@ -288,7 +289,6 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         if( trackList != null && !CollectionUtils.isEmpty(trackList.getList())){
             trackCount = trackList.getList().size();
         }
-
 
 
         switch (recommendPanelContentType){
@@ -412,6 +412,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             trackCount = trackList.getList().size();
         }
 
+        String title;
 
         switch (recommendPanelContentType){
             // 아티스트 FLO
@@ -427,29 +428,33 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                     artistDtoList = recommendArtistDto.getArtistList();
                 }
 
-                List<String> artistNameList = artistDtoList.stream().map(x -> x.getArtistName()).limit(5).collect(
-                        Collectors.toList());
+                if (!CollectionUtils.isEmpty(artistDtoList)) {
+                    try {
 
-                // 아티스트 이미지가 default 이미지인것은 목록에서 뒷 부분으로 위치를 변경한다
-                List<ArtistDto> normalImageArtistList = new LinkedList<>();
-                List<ArtistDto> defaultImageArtistList = new LinkedList<>();
-                artistDtoList.stream().forEach(x ->  {
-                    if( x.hasDefaultImage() ) {
-                        defaultImageArtistList.add(x);
-                    } else {
-                        normalImageArtistList.add(x);
+                        artistDtoList.sort(
+                                (ArtistDto a, ArtistDto b) -> (BooleanComparator.TRUE_HIGH.compare(a.hasDefaultImage(), b.hasDefaultImage()))
+                        );
+
+
+                    } catch (Exception e) {
+                        log.error("PanelSignAssembly appendPreferArtistPanel artistPanel create error : {}", e.getMessage());
                     }
-                });
-                if(defaultImageArtistList.size() > 0)   {
-                    normalImageArtistList.addAll(defaultImageArtistList);
+                }
+
+                List<String> artistNameList = artistDtoList.stream().map(x -> x.getArtistName()).limit(5).collect(Collectors.toList());
+
+                title = RecommendConstant.ARTIST_PANEL_TITLE;
+
+                if(!ObjectUtils.isEmpty(recommendArtistDto)){
+                    title = makeRecommendPanelTitleWithDtime(recommendArtistDto.getCreateDtime(), title);
                 }
 
                 // 아티스트의 첫 이미지를 배경 이미지로 사용
                 panel =  RecommendPanelInfoDto.builder()
-                        .title(makeRecommendPanelTitleWithDtime(recommendArtistDto.getCreateDtime(), RecommendConstant.ARTIST_PANEL_TITLE))
+                        .title(title)
                         .subTitle(String.join(",", artistNameList))
                         .imgList((artistDtoList == null || artistDtoList.get(0) == null? null : artistDtoList.get(0).getImgList()))
-                        .artistList(normalImageArtistList)
+                        .artistList(artistDtoList)
                         .artistCount(artistDtoList.size())
                         .newYn(YnType.Y)
                         .build();
@@ -462,11 +467,24 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
                 int dispSn = recommendSimilarTrackDto.getDispSn();
 
+                title = RecommendConstant.SIMILAR_TRACK_PANEL_TITLE;
+
+                if(!ObjectUtils.isEmpty(recommendSimilarTrackDto)){
+
+                    title = makeRecommendPanelTitleWithDtime(recommendSimilarTrackDto.getCreateDtime(), title);
+                }
+
+                String seedInfo = null;
+
+                // 시드값이 둘다 존재하는 경우에만 시드 정보를 만들어서 내림
+                if(!ObjectUtils.isEmpty(recommendSimilarTrackDto.getSeedTrackNm())
+                        && !ObjectUtils.isEmpty(recommendSimilarTrackDto.getSeedArtistNm())){
+                    seedInfo = recommendSimilarTrackDto.getSeedTrackNm() + "-" + recommendSimilarTrackDto.getSeedArtistNm();
+                }
+
                 panel = RecommendPanelInfoDto.builder()
-                        .title( makeRecommendPanelTitleWithDtime(recommendSimilarTrackDto.getCreateDtime(),
-                                RecommendConstant.SIMILAR_TRACK_PANEL_TITLE)
-                        )
-                        .seedInfo(recommendSimilarTrackDto.getSeedTrackNm() + "-" + recommendSimilarTrackDto.getSeedArtistNm())
+                        .title(title)
+                        .seedInfo(seedInfo)
 
                         .subTitle(RecommendConstant.SIMILAR_TRACK_PANEL_SUB_TITLE_NEW)
                         .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType , dispSn))
@@ -483,7 +501,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 String genreNm = "";
                 Date createDTime = new Date();
                 YnType newYn = YnType.N;
-                String title = RecommendConstant.RCMMD_TRACK_PANEL_TITLE;
+                title = RecommendConstant.RCMMD_TRACK_PANEL_TITLE;
+
                 if(!ObjectUtils.isEmpty(recommendGenreVo)){
                     genreNm = recommendGenreVo.getSvcGenreNm();
                     createDTime = recommendGenreVo.getDispStdStartDt();
@@ -494,7 +513,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                     }
 
                     title = makeRecommendPanelTitleWithDtime(recommendGenreVo.getCreateDtime(),
-                            RecommendConstant.RCMMD_TRACK_PANEL_TITLE);
+                            title);
 
                 }
 
@@ -825,11 +844,11 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     }
 
     private void fillSimilarArtist(int count, List<RecommendArtistListDto> recommendArtistListDto, List<Long> ids) {
-        List<SimilarArtistDto> similaArtistList = recommendReadMapper.selectSimilarArtistByIdList(ids);
+        List<SimilarArtistDto> similarArtistList = recommendReadMapper.selectSimilarArtistByIdList(ids);
 
-        if (!CollectionUtils.isEmpty(similaArtistList)) {
-            Collections.shuffle(similaArtistList);
-            for (SimilarArtistDto s : similaArtistList) {
+        if (!CollectionUtils.isEmpty(similarArtistList)) {
+            Collections.shuffle(similarArtistList);
+            for (SimilarArtistDto s : similarArtistList) {
                 if (count++ > 4) break;
 
                 recommendArtistListDto.add(RecommendArtistListDto.builder()
