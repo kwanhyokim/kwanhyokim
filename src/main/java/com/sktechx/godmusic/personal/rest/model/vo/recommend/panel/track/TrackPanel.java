@@ -46,8 +46,6 @@ public abstract class TrackPanel extends Panel {
         this.imgList = bgImgList;
         this.title = title;
         this.subTitle = subTitle;
-        this.seedArtistNm = recommendTrackDto.getSeedArtistNm();
-        this.seedTrackNm = recommendTrackDto.getSeedTrackNm();
         initialPanel();
     }
 

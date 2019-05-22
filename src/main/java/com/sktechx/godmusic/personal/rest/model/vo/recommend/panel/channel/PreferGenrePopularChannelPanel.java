@@ -29,4 +29,7 @@ public class PreferGenrePopularChannelPanel extends ChannelPanel {
     public PreferGenrePopularChannelPanel(ChnlDto channel, GenreVo genre , List<ImageInfo> imgList) throws CommonBusinessException {
         super(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL, channel , genre, imgList);
     }
+    @Override
+    public void makeInfoV2() {
+    }
 }

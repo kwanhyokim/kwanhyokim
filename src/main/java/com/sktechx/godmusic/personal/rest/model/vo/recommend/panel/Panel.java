@@ -18,6 +18,9 @@ import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedArtistVo;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedGenreVo;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedTrackVo;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.PanelOrderSnService;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -53,12 +56,17 @@ public abstract class Panel {
     protected PanelContentVo content;
 
     @Getter
-    @ApiModelProperty(required = true, value = "시드 아티스트명")
-    protected String seedArtistNm;
+    @ApiModelProperty(required = true, value = "시드 아티스트 정보")
+    protected SeedArtistVo seedArtist;
 
     @Getter
-    @ApiModelProperty(required = true, value = "시드 트랙명")
-    protected String seedTrackNm;
+    @ApiModelProperty(required = true, value = "시드 트랙 정보")
+    protected SeedTrackVo seedTrack;
+
+    @Getter
+    @ApiModelProperty(required = true, value = "시드 트랙 정보")
+    protected SeedGenreVo seedGenre;
+
 
     public Integer getPanelOrderSn(PersonalPhaseType personalPhaseType){
         return PanelOrderSnService.getPanelOrderSn(personalPhaseType, this.type);
@@ -70,4 +78,5 @@ public abstract class Panel {
     abstract protected void initialPanel() throws CommonBusinessException;
     abstract protected PanelContentVo createPanelContent();
 
+    abstract public void makeInfoV2();
 }

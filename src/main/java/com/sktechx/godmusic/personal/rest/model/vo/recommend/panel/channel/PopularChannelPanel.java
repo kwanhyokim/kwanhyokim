@@ -27,4 +27,7 @@ public class PopularChannelPanel  extends ChannelPanel{
     public PopularChannelPanel( ChnlDto channel , List<ImageInfo> imgList) throws CommonBusinessException {
         super(RecommendPanelType.POPULAR_CHANNEL, channel , null , imgList);
     }
+    @Override
+    public void makeInfoV2() {
+    }
 }

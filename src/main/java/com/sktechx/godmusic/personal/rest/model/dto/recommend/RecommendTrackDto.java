@@ -37,8 +37,6 @@ public class RecommendTrackDto {
 
     private List<TrackDto> trackList;
     private int trackCount;
-    private String seedArtistNm;
-    private String seedTrackNm;
 
     private ServiceGenreDto svcGenreDto;
 

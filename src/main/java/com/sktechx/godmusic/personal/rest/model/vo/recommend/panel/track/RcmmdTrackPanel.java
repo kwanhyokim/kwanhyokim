@@ -10,15 +10,20 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track;
 
+import java.util.List;
+
+import org.springframework.util.ObjectUtils;
+
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedGenreVo;
 
-import java.util.List;
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
+
 /**
- * 설명 : 추천 CBF
+ * 설명 : 나를 위한 FLO 패널
  *
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 10.
@@ -30,5 +35,22 @@ public class RcmmdTrackPanel extends TrackPanel {
                 String.format(RCMMD_TRACK_PANEL_SUB_TITLE,neverRecommdnTrackNull(recommendTrackDto).getSvcGenreDto().getSvcGenreNm()),
                 recommendTrackDto,
                 bgImgList);
+    }
+
+    @Override
+    public void makeInfoV2() {
+
+        if(ObjectUtils.isEmpty(this.content) || ObjectUtils.isEmpty(this.content.getGenre())){
+            return;
+        }
+
+        this.subTitle = String.format(RCMMD_TRACK_PANEL_SUB_TITLE_NEW,this.content.getGenre().getName());
+
+        this.seedGenre = SeedGenreVo.builder()
+                .name(this.content.getGenre().getName())
+                .suffix(RCMMD_TRACK_PANEL_SEED_SUFFIX)
+                .build();
+
+
     }
 }

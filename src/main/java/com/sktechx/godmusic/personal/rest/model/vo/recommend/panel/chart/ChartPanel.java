@@ -10,6 +10,12 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.chart;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.util.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
@@ -19,12 +25,8 @@ import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
-import org.springframework.util.StringUtils;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.CHART_PANEL_HOURLY_BASIS_PHRASES;
 /**
  * 설명 : 차트형 추천 패널
  *
@@ -62,6 +64,9 @@ public class ChartPanel extends Panel {
         content.setTrackCount(chart.getTrackCount());
 
         return content;
+    }
+    @Override
+    public void makeInfoV2() {
     }
 
     private static ChartDto neverNullChart(ChartDto chart) throws CommonBusinessException {

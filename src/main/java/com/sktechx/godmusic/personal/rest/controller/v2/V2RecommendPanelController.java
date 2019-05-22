@@ -161,19 +161,4 @@ public class V2RecommendPanelController {
 		return CommonApiResponse.emptySuccess();
 	}
 
-
-	@ApiOperation(value = "FLOANDDATA 테마 리스트 ")
-	@GetMapping("/floAndDataChnl/list")
-	public CommonApiResponse<ChannelListResponse> getFloAndDataChannelList(
-			@ApiIgnore @RequestGMContext GMContext ctx){
-
-		List<ChnlDto> floAndDataChannelList = channelService.getFloAndDataChannelList(5,50, ctx.getOsType(), null);
-
-		if(CollectionUtils.isEmpty(floAndDataChannelList)) throw new CommonBusinessException(
-				CommonErrorDomain.EMPTY_DATA);
-
-		return new CommonApiResponse<>(ChannelListResponse.builder().list(floAndDataChannelList).build());
-
-	}
-
 }

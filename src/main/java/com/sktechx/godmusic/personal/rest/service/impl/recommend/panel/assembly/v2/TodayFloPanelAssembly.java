@@ -20,6 +20,7 @@ import org.springframework.util.CollectionUtils;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.PreferSimilarTrackPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelSignAssembly;
 import lombok.extern.slf4j.Slf4j;
@@ -69,7 +70,11 @@ public class TodayFloPanelAssembly extends PanelSignAssembly {
                     .forEach(similarTrack ->{
                         try {
                             if(similarTrack.getTrackCount() >= SIMILAR_TRACK_DISP_STANDARD_COUNT){
-                                panelList.add(createSimilarTrackPanel (personalPhaseMeta, similarTrack));
+                                PreferSimilarTrackPanel panel = (PreferSimilarTrackPanel) createSimilarTrackPanel (personalPhaseMeta, similarTrack);
+
+                                panel.makeInfoV2();
+
+                                panelList.add(panel);
                             }
                         } catch (Exception e) {
                             log.error("appendSimilarTrackPanelList error : {}", e.getMessage());

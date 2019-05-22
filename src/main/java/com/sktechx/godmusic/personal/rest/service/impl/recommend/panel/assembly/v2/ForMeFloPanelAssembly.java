@@ -25,7 +25,6 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelSignAssembly;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.RCMMD_CF_TRACK_DISP_STANDARD_COUNT;
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.RCMMD_CF_TRACK_LIMIT_SIZE;
 
 /**
@@ -68,10 +67,10 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
                     .forEach(cfTrack -> {
                         try {
 
-                            if(cfTrack.getTrackCount() >= RCMMD_CF_TRACK_DISP_STANDARD_COUNT){
+                            RcmmdTrackPanel rcmmdTrackPanel = createRecommendCfTrackPanel(personalPhaseMeta,cfTrack);
+                            rcmmdTrackPanel.makeInfoV2();
 
-                                panelList.add(createRecommendCfTrackPanel(personalPhaseMeta,cfTrack));
-                            }
+                            panelList.add(rcmmdTrackPanel);
 
                         } catch (Exception e) {
                             log.error("RecommendPhasePanelAssembly appendRecommendCfTrackPanelList error : {}", e.getMessage());
@@ -81,7 +80,7 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
 
     }
 
-    private Panel createRecommendCfTrackPanel(final PersonalPhaseMeta personalPhaseMeta,
+    private RcmmdTrackPanel createRecommendCfTrackPanel(final PersonalPhaseMeta personalPhaseMeta,
             final RecommendTrackDto cfTrack){
 
         return new RcmmdTrackPanel(cfTrack, getDefaultBgImageList( cfTrack.getImgList() , personalPhaseMeta.getOsType()));

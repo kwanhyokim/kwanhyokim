@@ -10,6 +10,14 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.artist;
 
+import java.util.List;
+import java.util.StringJoiner;
+import java.util.stream.IntStream;
+
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
@@ -18,14 +26,10 @@ import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedArtistVo;
 
-import java.util.List;
-import java.util.StringJoiner;
-import java.util.stream.IntStream;
-
-import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.ARTIST_PANEL_TITLE;
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.ARTIST_POPULAR_ARTIST_NAME_COUNT;
 /**
  * 설명 : 아티스트형 추천 패널
  *
@@ -70,7 +74,18 @@ public class ArtistPanel extends Panel{
 
         return content;
     }
+    @Override
+    public void makeInfoV2() {
 
+        if(ObjectUtils.isEmpty(content) || CollectionUtils.isEmpty(content.getArtistList()) || content.getArtistCount() <=0){
+            return;
+        }
+
+        this.seedArtist = SeedArtistVo.builder()
+                .name(this.subTitle)
+                .suffix("")
+                .build();
+    }
 
     private String getArtistSubTitle(RecommendArtistDto recommendArtistDto){
         List<ArtistDto> artistList = recommendArtistDto.getArtistList();

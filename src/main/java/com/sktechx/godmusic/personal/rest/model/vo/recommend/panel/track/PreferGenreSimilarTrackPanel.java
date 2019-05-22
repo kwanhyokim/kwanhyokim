@@ -36,4 +36,7 @@ public class PreferGenreSimilarTrackPanel extends TrackPanel {
         );
     }
 
+    @Override
+    public void makeInfoV2() {
+    }
 }
