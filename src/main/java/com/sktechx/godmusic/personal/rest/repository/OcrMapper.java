@@ -10,6 +10,8 @@ import org.apache.ibatis.annotations.Param;
 public interface OcrMapper {
 
     void insertOcr(OcrDto ocrDto);
+    void updateOcr(OcrDto ocrDto);
+
     void insertOcrFile(OcrFileDto ocrFileDto);
     void updateOcrFile(OcrFileDto ocrFileDto);
 

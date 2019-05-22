@@ -29,6 +29,16 @@
 		)
 	</insert>
 
+	<update id="updateOcr" parameterType="com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrDto">
+		UPDATE tb_ocr
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="confrmYn != null">confrm_yn = #{confrmYn},  </if>
+			update_dtime = now()
+		</trim>
+		WHERE
+			ocr_no = #{ocrNo}
+	</update>
+
     <insert id="insertOcrFile" parameterType="com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrFileDto">
 		INSERT INTO tb_ocr_file (
 		  	  ocr_no

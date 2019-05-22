@@ -19,5 +19,7 @@ public interface OcrService {
 
     GetOcrStatusResponse getOcrStatus(Long characterNo, Long ocrNo);
 
+    void noMorePush(Long characterNo, Long ocrNo);
+
 
 }
