@@ -210,8 +210,15 @@
           a.rank  <![CDATA[<=]]> #{trackLimitSize}
     </select>
 
-    <select id="selectPopularChannelListByIdList" resultMap="channelResultMap">
+    <select id="selectFloAndDataChannelIdList" resultType="Long">
+        SELECT
+            chnl_id
+        FROM
+            tb_chnl A
+        WHERE
+            a.disp_status_type = 'Y' AND a.chnl_type = 'FLAC'
 
+        ORDER BY A.create_dtime desc
     </select>
     <select id="selectPopularChannelIdList" resultType="Long">
        SELECT

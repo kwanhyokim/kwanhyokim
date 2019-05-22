@@ -86,7 +86,8 @@ public class PersonalPhaseMeta {
                     })
                     .sorted(Comparator.comparing(PersonalPanel::getCreateDtime, (dtime1, dtime2) -> {
                         return dtime1.compareTo(dtime2);
-                    }))
+                    }).reversed())
+
                     .findFirst().get();
         }
 

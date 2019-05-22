@@ -23,6 +23,9 @@ public class RedisKeyConstant {
 	public static final String PREFER_GENRE_POPULAR_CHNL_KEY ="godmusic.personalapi.recommend.prefer.genre.popular.chnllist";
 	public static final String MOOD_POPULAR_CHNL_KEY = "godmusic.personalapi.recommend.mood.popular.chnllist";
 	public static final String ALL_POPULAR_CHNL_KEY ="godmusic.personalapi.recommend.all.popular.chnllist";
+
+	public static final String FLOANDDATA_CHNL_KEY ="godmusic.personalapi.recommend.floanddata.chnllist";
+
 	public static final String REALTIME_CHART_KEY = "godmusic.personalapi.recommend.chart.realtime";
 	public static final String KIDS_CHART_KEY = "godmusic.personalapi.recommend.chart.kids";
 

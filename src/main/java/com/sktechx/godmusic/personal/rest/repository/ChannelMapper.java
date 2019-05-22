@@ -48,4 +48,6 @@ public interface ChannelMapper {
     ChnlDto selectChannelById(@Param("channelId") Long channelId);
 
     void deleteLastListenHistory(@Param("memberNo") Long memberNo, @Param("characterNo") Long characterNo, @Param("listenType") String listenType, @Param("listenId") Long listenId);
+
+    List<Long> selectFloAndDataChannelIdList();
 }

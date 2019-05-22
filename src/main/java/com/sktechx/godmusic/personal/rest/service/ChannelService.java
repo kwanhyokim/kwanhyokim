@@ -26,6 +26,7 @@ import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopular
  */
 public interface ChannelService {
 
+    List<ChnlDto> getFloAndDataChannelList(int channelLimitSize,int trackLimitSize, OsType osType,List<Long> filterChnlIdList);
     List<ChnlDto> getPopularChannelList(int channelLimitSize,int trackLimitSize, OsType osType,List<Long> filterChnlIdList);
     List<PreferGenrePopularChnlDto> getPreferGenrePopularChannelList(List<Long> preferGenreIdList, int trackLimitSize, OsType osType);
     List<MoodPopularChnlDto> getListenMoodPopularChannelIdList(List<Long> moodIdList , int trackLimitSize , OsType osType);

@@ -10,6 +10,11 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
@@ -19,14 +24,12 @@ import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentTyp
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendDummyDataRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendV2DummyDataRequest;
 import com.sktechx.godmusic.personal.rest.repository.RecommendDummyDataMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDataService;
+import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * 설명 : XXXXXXXX
@@ -46,6 +49,8 @@ public class RecommendDataServiceImpl implements RecommendDataService {
     @Autowired
     private RecommendDummyDataMapper recommendDummyDataMapper;
 
+    @Autowired
+    private RecommendPanelService recommendPanelService;
 
     @Override
     public void updateRecommendDataRemovePrevent(ListenRequest request, Long characterNo) {
@@ -127,6 +132,75 @@ public class RecommendDataServiceImpl implements RecommendDataService {
                     recommendDummyDataMapper.insertRcmmdMforuSubData( recommendTrackDto.getRcmmdId());
                 }
             }
+        }
+
+        //캐시 삭제
+        String personalRecommendPhaseKey = String.format(RedisKeyConstant.PERSONAL_RECOMMEND_PHASE_KEY, characterNo);
+        redisService.delWithPrefix(personalRecommendPhaseKey);
+    }
+
+    @Override
+    public void createRecommendV2DummyData(Long characterNo, RecommendV2DummyDataRequest recommendV2DummyDataRequest) {
+
+        List<Long> svcGenreIdList;
+
+        switch(recommendV2DummyDataRequest.getType()){
+            // 나를 위한 FLO
+            case "RC_CF_TR":
+                svcGenreIdList = recommendDummyDataMapper.selectRandomSvcGenreId(recommendV2DummyDataRequest.getPanelCount());
+                for( int i = 0 ; i < recommendV2DummyDataRequest.getPanelCount() ; i++){
+                    RecommendTrackDto recommendTrackDto = new RecommendTrackDto();
+                    recommendTrackDto.setCharacterNo(characterNo);
+                    recommendTrackDto.setDispSn(i+1);
+                    recommendTrackDto.setSvcGenreId(svcGenreIdList.get(i));
+                    recommendDummyDataMapper.insertRcmmdMforuData(recommendTrackDto);
+                    recommendDummyDataMapper.insertRcmmdMforuSubData( recommendTrackDto.getRcmmdId());
+                }
+                break;
+            // 오늘의 FLO
+            case "RC_SML_TR":
+                svcGenreIdList = recommendDummyDataMapper.selectRandomSvcGenreId(recommendV2DummyDataRequest.getPanelCount());
+                for( int i = 0 ; i < recommendV2DummyDataRequest.getPanelCount() ; i++){
+                    RecommendTrackDto recommendTrackDto = new RecommendTrackDto();
+                    recommendTrackDto.setCharacterNo(characterNo);
+                    recommendTrackDto.setDispSn(i+1);
+                    recommendTrackDto.setSvcGenreId(svcGenreIdList.get(i));
+                    recommendDummyDataMapper.insertRcmmdSimilarTrackData(recommendTrackDto);
+                    recommendDummyDataMapper.insertRcmmdSimilarTrackSubData( recommendTrackDto.getRcmmdId());
+                }
+                break;
+
+            case "RC_ATST_TR":
+                recommendPanelService.addPreferArtistPanel(characterNo);
+                break;
+        }
+
+        //캐시 삭제
+        String personalRecommendPhaseKey = String.format(RedisKeyConstant.PERSONAL_RECOMMEND_PHASE_KEY, characterNo);
+        redisService.delWithPrefix(personalRecommendPhaseKey);
+    }
+
+    @Override
+    public void deleteRecommendV2DummyData(Long characterNo, RecommendV2DummyDataRequest recommendV2DummyDataRequest) {
+
+        List<Long> svcGenreIdList;
+
+        switch(recommendV2DummyDataRequest.getType()){
+            // 나를 위한 FLO
+            case "RC_CF_TR":
+                    recommendDummyDataMapper.deleteRcmmdMforuData(characterNo);
+                    recommendDummyDataMapper.deleteRcmmdMforuSubData(characterNo);
+                break;
+            // 오늘의 FLO
+            case "RC_SML_TR":
+                recommendDummyDataMapper.deleteRcmmdSimilarTrackData(characterNo);
+                recommendDummyDataMapper.deleteRcmmdSimilarTrackSubData(characterNo);
+                break;
+
+            case "RC_ATST_TR":
+                recommendDummyDataMapper.deleteArtistFlo(characterNo);
+                break;
+
         }
 
         //캐시 삭제

@@ -12,6 +12,7 @@ package com.sktechx.godmusic.personal.rest.service.recommend;
 
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendDummyDataRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendV2DummyDataRequest;
 
 /**
  * 설명 : 추천 데이터
@@ -25,4 +26,7 @@ public interface RecommendDataService {
 
     int addTpoRecommendDummyData(Long characterNo);
     int deleteTpoRecommendDummyData(Long characterNo);
+
+    void createRecommendV2DummyData(Long characterNo , RecommendV2DummyDataRequest recommendDummyDataRequest);
+    void deleteRecommendV2DummyData(Long characterNo , RecommendV2DummyDataRequest recommendDummyDataRequest);
 }

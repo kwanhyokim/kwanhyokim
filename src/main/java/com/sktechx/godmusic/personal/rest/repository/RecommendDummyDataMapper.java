@@ -10,13 +10,12 @@
 
 package com.sktechx.godmusic.personal.rest.repository;
 
-import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
-import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
-import java.util.Date;
-import java.util.List;
+import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 
 /**
  * 설명 :  추천 더미 데이터 관련 Repository
@@ -53,4 +52,6 @@ public interface RecommendDummyDataMapper {
     int deleteTpoRecommendData(@Param("characterNo") Long characterNo);
 
     int selectTpoRecommendDataCount(@Param("characterNo") Long characterNo);
+
+    void deleteArtistFlo(@Param("characterNo") Long characterNo);
 }

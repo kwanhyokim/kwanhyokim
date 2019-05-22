@@ -31,7 +31,6 @@ import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopular
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlListDto;
 import com.sktechx.godmusic.personal.rest.repository.AlbumMapper;
 import com.sktechx.godmusic.personal.rest.repository.ChannelMapper;
-import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,14 +50,41 @@ public class ChannelServiceImpl implements ChannelService {
     private ChannelMapper channelMapper;
 
     @Autowired
-    private ChartMapper chartMapper;
-
-    @Autowired
     private AlbumMapper albumMapper;
 
     @Autowired
     private RedisService redisService;
 
+    @Override
+    public List<ChnlDto> getFloAndDataChannelList(int channelLimitSize, int trackLimitSize ,OsType osType , List<Long> filterChnlIdList){
+
+        List<ChnlDto> floAndDataChannelList = null;
+        try{
+            floAndDataChannelList = redisService.getListWithPrefix(ALL_POPULAR_CHNL_KEY,ChnlDto.class);
+        }catch( Exception e){
+            log.error("getFloAndDataChannelList error : {}",e.getMessage());
+        }finally {
+            if(CollectionUtils.isEmpty(floAndDataChannelList)){
+                List<Long> floAndDataChnlIdList = channelMapper.selectFloAndDataChannelIdList();
+                if(!CollectionUtils.isEmpty(floAndDataChnlIdList)){
+                    floAndDataChnlIdList = slicePopularChannelIdLimit(floAndDataChnlIdList);
+
+                    floAndDataChannelList = channelMapper.selectChannelListByIdList(floAndDataChnlIdList,trackLimitSize, osType , PopularChnlType.ALL);
+                    if(!CollectionUtils.isEmpty(floAndDataChannelList)){
+                        redisService.setWithPrefix(FLOANDDATA_CHNL_KEY,floAndDataChannelList,POPULAR_CHNL_EXPIRED_SECONDS);
+                    }
+                }
+            }
+        }
+
+        filterDuplicatePopularChnlList(filterChnlIdList, floAndDataChannelList);
+
+        if(!CollectionUtils.isEmpty(floAndDataChannelList) && floAndDataChannelList.size() > channelLimitSize){
+            floAndDataChannelList = floAndDataChannelList.subList(0,channelLimitSize);
+        }
+
+        return floAndDataChannelList;
+    }
 
     public List<ChnlDto> getPopularChannelList(int channelLimitSize, int trackLimitSize ,OsType osType , List<Long> filterChnlIdList){
         List<ChnlDto> popularChannelList = null;

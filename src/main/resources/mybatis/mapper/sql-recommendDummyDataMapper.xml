@@ -211,4 +211,12 @@
           FROM tb_rcmmd_tpo
          WHERE character_no = #{characterNo}
     </delete>
+
+
+    <delete id="deleteArtistFlo">
+        DELETE
+        FROM TB_RCMMD_ARTIST
+        WHERE CHARACTER_NO = #{characterNo};
+
+    </delete>
 </mapper>
