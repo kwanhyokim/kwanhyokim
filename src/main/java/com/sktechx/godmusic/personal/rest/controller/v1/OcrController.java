@@ -73,4 +73,13 @@ public class OcrController {
         return new CommonApiResponse<>(ocrService.getOcrStatus(GMContext.getContext().getCharacterNo(), ocrNo));
     }
 
+    @ApiOperation(value = "OCR 분석 완료 후 push받지 않음. 사용자가 중간확인 하여 더이상 필요 없을 때", httpMethod = "PUT", notes = "OCR 분석 완료 후 push받지 않음. 사용자가 중간확인 하여 더이상 필요 없을 때")
+    @PutMapping("/{ocrNo}/no-more-push")
+    public CommonApiResponse noMorePush(@PathVariable Long ocrNo){
+
+        ocrService.noMorePush(GMContext.getContext().getCharacterNo(), ocrNo);
+
+        return new CommonApiResponse<>().emptySuccess();
+    }
+
 }

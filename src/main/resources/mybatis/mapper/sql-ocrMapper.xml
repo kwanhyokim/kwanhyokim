@@ -29,6 +29,16 @@
 		)
 	</insert>
 
+	<update id="updateOcr" parameterType="com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrDto">
+		UPDATE tb_ocr
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="confrmYn != null">confrm_yn = #{confrmYn},  </if>
+			update_dtime = now()
+		</trim>
+		WHERE
+			ocr_no = #{ocrNo}
+	</update>
+
     <insert id="insertOcrFile" parameterType="com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrFileDto">
 		INSERT INTO tb_ocr_file (
 		  	  ocr_no
@@ -92,6 +102,7 @@
             a.ocr_no,
             a.ocr_file_no,
             IF(a.anals_end_dtime IS NULL , 'N', 'Y') 						AS completeJobYn,
+            a.anals_status_type,
             b.ocr_anals_result_no,
             b.left_top_x_axis,
             b.left_top_y_axis,
@@ -127,7 +138,7 @@
             LEFT JOIN ted_albumstyle f ON f.album_id = e.album_id
 			LEFT JOIN ted_style g ON g.style_id = f.style_id
             LEFT JOIN tb_album_img h ON h.album_id = e.album_id
-            LEFT JOIN ted_trackartist i ON i.artist_id = e.artist_id AND i.rp_yn = 'Y'
+            LEFT JOIN ted_trackartist i ON i.track_id = d.track_id AND i.rp_yn = 'Y'
             LEFT JOIN ted_artist j ON j.artist_id = i.artist_id
 		WHERE a.ocr_no =  #{ocrNo}
 	</select>

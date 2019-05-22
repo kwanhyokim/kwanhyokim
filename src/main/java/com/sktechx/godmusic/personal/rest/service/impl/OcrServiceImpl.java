@@ -129,6 +129,12 @@ public class OcrServiceImpl implements OcrService {
                 .build();
     }
 
+    @Override
+    @Transactional
+    public void noMorePush(Long characterNo, Long ocrNo){
+        ocrMapper.updateOcr(OcrDto.builder().ocrNo(ocrNo).confrmYn(YnType.Y).build());
+    }
+
 
     private AwsFileVo uploadFile(MultipartFile file, AwsBucketType awsBucketType, Long memberNo) {
 
