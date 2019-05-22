@@ -2,6 +2,7 @@ package com.sktechx.godmusic.personal.rest.model.vo.ocr;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sktechx.godmusic.lib.domain.code.YnType;
+import com.sktechx.godmusic.personal.common.domain.type.AnalsStatusType;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +27,7 @@ public class OcrAnalsVo {
     public static class OcrAnalsResultVo{
         private Integer ocrFileNo;
         private YnType  completeJobYn;
+        private AnalsStatusType analsStatusType;
         private List<OcrAnalsResultDetailVo> ocrAnalsResultDetailList;
     }
 
