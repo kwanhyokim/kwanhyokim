@@ -61,7 +61,10 @@ public class RecommendPanelController {
 	@ApiOperation(value = "추천 개인화 정보 조회 ( New )", httpMethod = "GET" , hidden = true)
 	@GetMapping(value = "/phase/meta")
     public CommonApiResponse<PersonalPhaseMeta> personalPhaseMeta(@ApiIgnore @RequestGMContext GMContext ctx){
-		return new CommonApiResponse<>(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(ctx.getCharacterNo(),ctx.getOsType()));
+
+		// APP Version 체크로 personalmeta의 추천 패널 disp end date 사용 여부를 조절..
+
+		return new CommonApiResponse<>(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(ctx.getCharacterNo(),ctx.getOsType(), ctx.getAppVer()));
 	}
 
     @ApiOperation(value = "추천 홈 패널 조회 ( New )", httpMethod = "GET",response = RecommendPanelResponse.class,
@@ -76,7 +79,7 @@ public class RecommendPanelController {
     public CommonApiResponse<RecommendPanelResponse> recommendHomePanels(@ApiIgnore @RequestGMContext GMContext ctx){
 		RecommendPanelResponse recommendPanelResponse = new RecommendPanelResponse();
 	    List<Panel> recommendPanelList = recommendPanelService
-			    .createRecommendPanelList(ctx.getCharacterNo(), ctx.getOsType());
+			    .createRecommendPanelList(ctx.getCharacterNo(), ctx.getOsType(), ctx.getAppVer());
 
 	    if(CollectionUtils.isEmpty(recommendPanelList)){
 	    	return null;

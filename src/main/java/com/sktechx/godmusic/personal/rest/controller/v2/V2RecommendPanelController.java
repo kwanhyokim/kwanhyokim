@@ -61,8 +61,9 @@ public class V2RecommendPanelController {
 
 	@ApiOperation(value = "추천 개인화 정보 조회 ( New )", httpMethod = "GET" , hidden = true)
 	@GetMapping(value = "/phase/meta")
-    public CommonApiResponse<PersonalPhaseMeta> personalPhaseMeta(@ApiIgnore @RequestGMContext GMContext ctx){
-		return new CommonApiResponse<>(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(ctx.getCharacterNo(),ctx.getOsType()));
+    public CommonApiResponse<PersonalPhaseMeta> personalPhaseMeta(
+    		@ApiIgnore @RequestGMContext GMContext ctx){
+		return new CommonApiResponse<>(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(ctx.getCharacterNo(),ctx.getOsType(), ctx.getAppVer()));
 	}
 
     @ApiOperation(value = "추천 홈 패널 조회 ( New )", httpMethod = "GET",response = RecommendPanelResponse.class,
@@ -74,13 +75,15 @@ public class V2RecommendPanelController {
 					"3단계 : 추천 단계 ( 3-A : 청취CF, 2-A : 유사곡 , 2-A' : 선호장르 유사곡 , 2-C : 선호/유사아티스트 인기곡, 차트 )"
 	)
     @GetMapping(value = "/home/panels")
-    public CommonApiResponse<RecommendPanelResponse> recommendHomePanels(@ApiIgnore @RequestGMContext GMContext ctx,
-    @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO) Long characterNo,
-    @RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType
+    public CommonApiResponse<RecommendPanelResponse> recommendHomePanels(
+    		@ApiIgnore @RequestGMContext GMContext ctx,
+		    @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO) Long characterNo,
+		    @RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType,
+		    @RequestHeader(value = CommonConstant.X_GM_APP_VERSION) String appVer
     ){
 		RecommendPanelResponse recommendPanelResponse = new RecommendPanelResponse();
 	    List<Panel> recommendPanelList = recommendPanelService
-			    .createRecommendV2PanelList(ctx.getCharacterNo(), ctx.getOsType());
+			    .createRecommendV2PanelList(ctx.getCharacterNo(), ctx.getOsType(), ctx.getAppVer());
 
 	    if(CollectionUtils.isEmpty(recommendPanelList)){
 	    	return null;
@@ -116,9 +119,11 @@ public class V2RecommendPanelController {
 	public CommonApiResponse<ChannelListResponse> getPreferGenreChannelList(
 			@ApiIgnore @RequestGMContext GMContext ctx,
 			@RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO) Long characterNo,
-			@RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType){
+			@RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType,
+			@RequestHeader(value = CommonConstant.X_GM_APP_VERSION) String appVer
+	){
 
-		PersonalPhaseMeta personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(ctx.getCharacterNo(),ctx.getOsType());
+		PersonalPhaseMeta personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(ctx.getCharacterNo(),ctx.getOsType(), ctx.getAppVer());
 
 		List<Long> preferGenreIdList = personalPhaseMeta.getPreferGenreList().stream().map( x -> x.getPreferGenreId()).collect(
 				Collectors.toList());

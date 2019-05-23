@@ -28,6 +28,6 @@ public class TPOChannelPanel extends ChannelPanel{
         super(RecommendPanelType.TPO_CHANNEL, channel , null , imgList);
     }
     @Override
-    public void makeInfoV2() {
+    public void makeSeedInfo() {
     }
 }

@@ -10,12 +10,12 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel;
 
+import java.util.List;
+
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
-
-import java.util.List;
 
 /**
  * 설명 : 인기 채널 패널
@@ -28,6 +28,6 @@ public class PopularChannelPanel  extends ChannelPanel{
         super(RecommendPanelType.POPULAR_CHANNEL, channel , null , imgList);
     }
     @Override
-    public void makeInfoV2() {
+    public void makeSeedInfo() {
     }
 }

@@ -13,6 +13,7 @@ package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
@@ -56,16 +57,19 @@ public abstract class Panel {
     protected PanelContentVo content;
 
     @Getter
-    @ApiModelProperty(required = true, value = "시드 아티스트 정보")
-    protected SeedArtistVo seedArtist;
+    @ApiModelProperty(value = "시드 아티스트 정보")
+    @JsonProperty("seedArtist")
+    protected SeedArtistVo seedArtistVo;
+
+    @Getter
+    @ApiModelProperty(value = "시드 트랙 정보")
+    @JsonProperty("seedTrack")
+    protected SeedTrackVo seedTrackVo;
 
     @Getter
     @ApiModelProperty(required = true, value = "시드 트랙 정보")
-    protected SeedTrackVo seedTrack;
-
-    @Getter
-    @ApiModelProperty(required = true, value = "시드 트랙 정보")
-    protected SeedGenreVo seedGenre;
+    @JsonProperty("seedGenre")
+    protected SeedGenreVo seedGenreVo;
 
 
     public Integer getPanelOrderSn(PersonalPhaseType personalPhaseType){
@@ -78,5 +82,5 @@ public abstract class Panel {
     abstract protected void initialPanel() throws CommonBusinessException;
     abstract protected PanelContentVo createPanelContent();
 
-    abstract public void makeInfoV2();
+    abstract public void makeSeedInfo();
 }

@@ -54,7 +54,7 @@ public class RecommendPanelAssemblyFactory {
         return applicationContextProvider.getContext().getBean(GuestPhasePanelAssembly.class);
     }
 
-    public PanelAssembly getRecommendV2PanelAssembly(PersonalPhaseMeta personalPhaseMeta){
+    public PanelAssembly getV2RecommendPanelAssembly(PersonalPhaseMeta personalPhaseMeta){
 
         PersonalPanel personalPanel = personalPhaseMeta.getRecommendPersonalPanelTopItem();
 
@@ -83,7 +83,7 @@ public class RecommendPanelAssemblyFactory {
 
     }
 
-    public PanelAssembly getRecommendV2PanelAssembly(RecommendPanelContentType recommendPanelContentType){
+    public PanelAssembly getV2RecommendPanelAssembly(RecommendPanelContentType recommendPanelContentType){
 
         switch (recommendPanelContentType){
             // 나를 위한 FLO

@@ -10,8 +10,21 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.phase;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
+
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
+import com.sktechx.godmusic.lib.utils.ComparableVersion;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
@@ -30,16 +43,6 @@ import com.sktechx.godmusic.personal.rest.service.impl.recommend.RecommendPanelA
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
 import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.PERSONAL_RECOMMEND_PHASE_KEY;
@@ -67,9 +70,17 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
     private RedisService redisService;
 
     @Override
-    public PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType){
-        PersonalPhaseMeta personalPhaseMeta = null;
+    public PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType, String appVer) {
 
+        if( ObjectUtils.isEmpty(appVer) || new ComparableVersion(appVer).compareTo(new ComparableVersion("4.6.0")) < 0 ) {
+            return getPersonalRecommendPhaseMetaWithOption(characterNo, osType, true);
+        }else{
+            return getPersonalRecommendPhaseMetaWithOption(characterNo, osType, false);
+        }
+    }
+
+    private PersonalPhaseMeta getPersonalRecommendPhaseMetaWithOption(Long characterNo , OsType osType, Boolean checkDispEndDate){
+        PersonalPhaseMeta personalPhaseMeta = null;
 
         if(characterNo == null){
             return getGuestPhaseMeta(osType);
@@ -104,7 +115,7 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
             personalPhaseMeta.setPreferDispList(characterPreferDispList);
 
             //개인화 추천 패널
-            List<PersonalPanel> rcmmdPanelList = recommendReadMapper.selectPersonalRecommendPanelMeta(characterNo, SIMILAR_TRACK_DISP_STANDARD_COUNT , RCMMD_CF_TRACK_DISP_STANDARD_COUNT);
+            List<PersonalPanel> rcmmdPanelList = recommendReadMapper.selectPersonalRecommendPanelMeta(characterNo, SIMILAR_TRACK_DISP_STANDARD_COUNT , RCMMD_CF_TRACK_DISP_STANDARD_COUNT, checkDispEndDate);
             personalPhaseMeta.setRcmmdPanelList(rcmmdPanelList);
 
             filterRecommendPanelDuplicateTracks(personalPhaseMeta);
@@ -127,6 +138,7 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
         }
         return personalPhaseMeta;
     }
+
 
     public void filterRecommendPanelDuplicateTracks(PersonalPhaseMeta personalPhaseMeta){
 

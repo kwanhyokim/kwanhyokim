@@ -71,7 +71,7 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
                 );
 
                 ArtistPanel artistPanel = new ArtistPanel(recommendArtistDto);
-                artistPanel.makeInfoV2();
+                artistPanel.makeSeedInfo();
 
                 panelList.add(artistPanel);
 

@@ -51,7 +51,7 @@
     </resultMap>
 
     <select id="selectPersonalRecommendPanelMeta" resultMap="personalPanelResultMap" >
-        <![CDATA[
+
             SELECT
                 'RC_CF_TR' as recommendPanelContentType,
                 a.rcmmd_mforu_id as recommendId,
@@ -67,9 +67,13 @@
             WHERE
                 a.character_no = #{characterNo}
             AND
-                NOW() BETWEEN a.disp_std_start_dt AND a.disp_std_end_dt
+                a.disp_std_start_dt <![CDATA[<=]]> NOW()
+            <if test="checkDispEndDt">
+            AND
+                a.disp_std_end_dt <![CDATA[>=]]> NOW()
+            </if>
             GROUP BY a.rcmmd_mforu_id
-            HAVING contentCount >= #{rcmmdCfTrackDispStandardCount}
+            HAVING contentCount <![CDATA[>=]]> #{rcmmdCfTrackDispStandardCount}
             UNION ALL
             SELECT
                 'RC_SML_TR' as recommendPanelContentType,
@@ -86,11 +90,13 @@
             WHERE
                 a.character_no =#{characterNo}
             AND
-                a.disp_std_start_dt <= NOW()
+                a.disp_std_start_dt <![CDATA[<=]]> NOW()
+            <if test="checkDispEndDt">
             AND
-                a.disp_std_end_dt >= NOW()
+                a.disp_std_end_dt <![CDATA[>=]]> NOW()
+            </if>
             GROUP BY a.rcmmd_similar_track_id
-            HAVING contentCount >= #{similarTrackDispStandardCount}
+            HAVING contentCount <![CDATA[>=]]> #{similarTrackDispStandardCount}
             UNION ALL
             SELECT
                 'RC_ATST_TR' as recommendPanelContentType,
@@ -105,9 +111,11 @@
             WHERE
                 character_no = #{characterNo}
             AND
-                disp_std_start_dt <= NOW()
+                disp_std_start_dt <![CDATA[<=]]> NOW()
+            <if test="checkDispEndDt">
             AND
-                disp_std_end_dt >= NOW()
+                disp_std_end_dt <![CDATA[>=]]> NOW()
+            </if>
             UNION ALL
             SELECT
                 'RC_MD_CN' as recommendPanelContentType,
@@ -122,9 +130,11 @@
             WHERE
                 character_no = #{characterNo}
             AND
-                disp_std_start_dt <= NOW()
+                disp_std_start_dt <![CDATA[<=]]> NOW()
+            <if test="checkDispEndDt">
             AND
-                disp_std_end_dt >= NOW()
+                disp_std_end_dt <![CDATA[>=]]> NOW()
+            </if>
             UNION ALL
             SELECT
                 'RC_GR_TR' as recommendPanelContentType,
@@ -139,10 +149,16 @@
             WHERE
                 character_no = #{characterNo}
             AND
-                disp_std_start_dt <= NOW()
+                disp_std_start_dt <![CDATA[<=]]> NOW()
+            <if test="checkDispEndDt">
             AND
-                disp_std_end_dt >= NOW()
-         ]]>
+                disp_std_end_dt <![CDATA[>=]]> NOW()
+            </if>
+
+            <if test="!checkDispEndDt">
+            order by create_dtime desc, dispSn asc
+            </if>
+
     </select>
 
     <select id="selectRecommendPreferGenreSimilarTrackListByIdList" resultMap="rcmmdTrackResultMap">

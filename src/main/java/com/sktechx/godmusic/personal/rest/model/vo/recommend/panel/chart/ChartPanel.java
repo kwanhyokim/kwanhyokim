@@ -66,7 +66,7 @@ public class ChartPanel extends Panel {
         return content;
     }
     @Override
-    public void makeInfoV2() {
+    public void makeSeedInfo() {
     }
 
     private static ChartDto neverNullChart(ChartDto chart) throws CommonBusinessException {

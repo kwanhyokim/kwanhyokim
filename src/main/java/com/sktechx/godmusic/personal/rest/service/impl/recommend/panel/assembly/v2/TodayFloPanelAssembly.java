@@ -72,7 +72,7 @@ public class TodayFloPanelAssembly extends PanelSignAssembly {
                             if(similarTrack.getTrackCount() >= SIMILAR_TRACK_DISP_STANDARD_COUNT){
                                 PreferSimilarTrackPanel panel = (PreferSimilarTrackPanel) createSimilarTrackPanel (personalPhaseMeta, similarTrack);
 
-                                panel.makeInfoV2();
+                                panel.makeSeedInfo();
 
                                 panelList.add(panel);
                             }

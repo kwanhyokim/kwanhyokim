@@ -75,13 +75,13 @@ public class ArtistPanel extends Panel{
         return content;
     }
     @Override
-    public void makeInfoV2() {
+    public void makeSeedInfo() {
 
         if(ObjectUtils.isEmpty(content) || CollectionUtils.isEmpty(content.getArtistList()) || content.getArtistCount() <=0){
             return;
         }
 
-        this.seedArtist = SeedArtistVo.builder()
+        this.seedArtistVo = SeedArtistVo.builder()
                 .name(this.subTitle)
                 .suffix("")
                 .build();

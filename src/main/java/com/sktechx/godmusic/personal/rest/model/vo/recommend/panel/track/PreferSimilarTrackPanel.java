@@ -44,10 +44,11 @@ public class PreferSimilarTrackPanel extends TrackPanel {
     }
 
     @Override
-    public void makeInfoV2() {
+    public void makeSeedInfo() {
         if(ObjectUtils.isEmpty(this.content) || CollectionUtils.isEmpty(this.content.getTrackList()) || this.content.getTrackCount() <= 0){
             return;
         }
+
         TrackDto trackDto = this.content.getTrackList().get(0);
         String artistName = null;
 
@@ -57,7 +58,7 @@ public class PreferSimilarTrackPanel extends TrackPanel {
         }
 
 
-        this.seedTrack = SeedTrackVo.builder()
+        this.seedTrackVo = SeedTrackVo.builder()
                 .id(trackDto.getTrackId())
                 .name(trackDto.getTrackNm())
                 .artistName(artistName)

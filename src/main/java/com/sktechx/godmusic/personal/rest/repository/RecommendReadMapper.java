@@ -33,7 +33,10 @@ public interface RecommendReadMapper {
                                                          @Param("similarTrackDispStandardCount") int
                                                                  similarTrackDispStandardCount,
                                                          @Param("rcmmdCfTrackDispStandardCount") int
-                                                                 rcmmdCfTrackDispStandardCount);
+                                                                 rcmmdCfTrackDispStandardCount,
+                                                         @Param("checkDispEndDt") Boolean checkDispEndDt
+
+    );
 
     // 2-A' 선호장르 유사곡 패널
     List<RecommendTrackDto> selectRecommendPreferGenreSimilarTrackListByIdList(@Param("recommendIdList") List<Long>

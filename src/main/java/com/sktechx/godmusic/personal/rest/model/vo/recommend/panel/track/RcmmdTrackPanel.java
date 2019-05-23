@@ -38,7 +38,7 @@ public class RcmmdTrackPanel extends TrackPanel {
     }
 
     @Override
-    public void makeInfoV2() {
+    public void makeSeedInfo() {
 
         if(ObjectUtils.isEmpty(this.content) || ObjectUtils.isEmpty(this.content.getGenre())){
             return;
@@ -46,7 +46,7 @@ public class RcmmdTrackPanel extends TrackPanel {
 
         this.subTitle = String.format(RCMMD_TRACK_PANEL_SUB_TITLE_NEW,this.content.getGenre().getName());
 
-        this.seedGenre = SeedGenreVo.builder()
+        this.seedGenreVo = SeedGenreVo.builder()
                 .name(this.content.getGenre().getName())
                 .suffix(RCMMD_TRACK_PANEL_SEED_SUFFIX)
                 .build();

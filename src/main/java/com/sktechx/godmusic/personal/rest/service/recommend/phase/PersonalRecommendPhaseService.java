@@ -20,7 +20,5 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase
  * @date 2018. 07. 19.
  */
 public interface PersonalRecommendPhaseService {
-    PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType);
-
-
+    PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType, String appVer);
 }

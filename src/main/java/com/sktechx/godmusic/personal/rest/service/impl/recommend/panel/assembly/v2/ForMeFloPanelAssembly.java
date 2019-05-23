@@ -68,7 +68,7 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
                         try {
 
                             RcmmdTrackPanel rcmmdTrackPanel = createRecommendCfTrackPanel(personalPhaseMeta,cfTrack);
-                            rcmmdTrackPanel.makeInfoV2();
+                            rcmmdTrackPanel.makeSeedInfo();
 
                             panelList.add(rcmmdTrackPanel);
 

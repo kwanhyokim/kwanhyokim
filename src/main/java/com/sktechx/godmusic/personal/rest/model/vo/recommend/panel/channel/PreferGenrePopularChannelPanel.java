@@ -10,13 +10,13 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel;
 
+import java.util.List;
+
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.GenreVo;
-
-import java.util.List;
 
 /**
  * 설명 : 선호 인기 장르 인기 채널
@@ -30,6 +30,6 @@ public class PreferGenrePopularChannelPanel extends ChannelPanel {
         super(RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL, channel , genre, imgList);
     }
     @Override
-    public void makeInfoV2() {
+    public void makeSeedInfo() {
     }
 }

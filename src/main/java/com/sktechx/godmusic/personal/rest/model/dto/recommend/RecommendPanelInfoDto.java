@@ -19,6 +19,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedArtistVo;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedGenreVo;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedTrackVo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
@@ -33,7 +36,7 @@ import lombok.Data;
 
 @Data
 @Builder
-@ApiModel(value="Panel")
+@ApiModel(value="RecommendPanelInfoDto")
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class RecommendPanelInfoDto {
 
@@ -62,6 +65,13 @@ public class RecommendPanelInfoDto {
 	@ApiModelProperty(value = "업데이트 여부")
 	private YnType newYn;
 
-	private String seedInfo;
+	@JsonProperty("seedGenre")
+	private SeedGenreVo seedGenreVo;
+
+	@JsonProperty("seedArtist")
+	private SeedArtistVo seedArtistVo;
+
+	@JsonProperty("seedTrack")
+	private SeedTrackVo seedTrackVo;
 
 }

@@ -79,16 +79,8 @@ public class PersonalPhaseMeta {
 
     public PersonalPanel getRecommendPersonalPanelTopItem() {
 
-        if(!CollectionUtils.isEmpty(rcmmdPanelList)) {
-            return rcmmdPanelList.stream()
-                    .filter(personalPanel -> {
-                        return Objects.nonNull(personalPanel) ;
-                    })
-                    .sorted(Comparator.comparing(PersonalPanel::getCreateDtime, (dtime1, dtime2) -> {
-                        return dtime1.compareTo(dtime2);
-                    }).reversed())
-
-                    .findFirst().get();
+        if(!CollectionUtils.isEmpty(rcmmdPanelList) && rcmmdPanelList.size() > 0) {
+            return rcmmdPanelList.get(0);
         }
 
         return null;
