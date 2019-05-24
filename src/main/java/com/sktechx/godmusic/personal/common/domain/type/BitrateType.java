@@ -1,9 +1,10 @@
 package com.sktechx.godmusic.personal.common.domain.type;
 
+import org.apache.ibatis.type.MappedTypes;
+
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnum;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnumTypeHandler;
-import org.apache.ibatis.type.MappedTypes;
 
 /**
  * Created by Kobe.
@@ -13,9 +14,14 @@ import org.apache.ibatis.type.MappedTypes;
  * @time AM 10:35
  */
 public enum BitrateType implements CodeEnum {
+
 	BITRATE_AAC("aac","aac"),
 	BITRATE_192K("192k","192k"),
-	BITRATE_320K("320k","320k");
+	BITRATE_320K("320k","320k"),
+	BITRATE_FLAC16("flac16bit", "flac16bit"),
+	BITRATE_FLAC24("flac24bit", "flac24bit")
+
+	;
 
 	private final String code;
 	private final String value;
