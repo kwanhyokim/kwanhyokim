@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.*;
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.RequestGMContext;
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
+import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.personal.common.domain.ListResponse;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenTrackRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenDeleteTrackRequest;
 import com.sktechx.godmusic.personal.rest.service.TrackService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -63,9 +65,14 @@ public class TrackController {
     @DeleteMapping("/recentlistened")
     public CommonApiResponse<ListResponse> deleteMyrecentListenedTrackList(
             @ApiIgnore @RequestGMContext GMContext ctx,
-            @RequestBody ListenTrackRequest listenTrackRequest) {
+            @RequestBody ListenDeleteTrackRequest listenDeleteTrackRequest) {
 
-        trackService.deleteMyRecentTrackList(ctx.getMemberNo(), ctx.getCharacterNo(), listenTrackRequest.getTrackId());
+        if(listenDeleteTrackRequest == null){
+            throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
+        }
+
+
+        trackService.deleteMyRecentTrackList(ctx.getMemberNo(), ctx.getCharacterNo(), listenDeleteTrackRequest.getTrackIds());
 
         return CommonApiResponse.emptySuccess();
     }

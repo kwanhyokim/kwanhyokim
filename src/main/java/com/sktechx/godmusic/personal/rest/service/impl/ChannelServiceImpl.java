@@ -10,17 +10,21 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import org.apache.ibatis.session.ExecutorType;
+import org.apache.ibatis.session.SqlSession;
+import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
+import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.type.PopularChnlType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
@@ -29,6 +33,7 @@ import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlDto
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlListDto;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
 import com.sktechx.godmusic.personal.rest.repository.AlbumMapper;
 import com.sktechx.godmusic.personal.rest.repository.ChannelMapper;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
@@ -45,6 +50,9 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConst
 @Service
 @Slf4j
 public class ChannelServiceImpl implements ChannelService {
+
+    @Autowired
+    private SqlSessionTemplate sqlSessionTemplate;
 
     @Autowired
     private ChannelMapper channelMapper;
@@ -305,7 +313,40 @@ public class ChannelServiceImpl implements ChannelService {
         return uniquePopularChannelList;
     }
 
-    public void removeLastListenHistory(Long memberNo, Long characterNo, String listenType, Long listenId){
-        channelMapper.deleteLastListenHistory(memberNo, characterNo, listenType, listenId);
+    @Override
+    public void removeLastListenHistory(Long memberNo, Long characterNo, List<ListenRequest> listenRequestList){
+
+        if(listenRequestList == null){
+            throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
+        }
+
+
+        Map<String, Object> batchParam = new HashMap<>();
+
+        try(
+            SqlSession sqlSession = sqlSessionTemplate.getSqlSessionFactory().openSession(
+                ExecutorType.BATCH, false)){
+            IntStream.range(0, listenRequestList.size())
+                    .forEach(index ->
+                            {
+                                batchParam.clear();
+                                batchParam.put("memberNo", memberNo);
+                                batchParam.put("characterNo", characterNo);
+                                batchParam.put("listenType", listenRequestList.get(index).getListenType());
+                                batchParam.put("listenTypeId", listenRequestList.get(index).getListenTypeId());
+
+                                log.info("listenDeleteRequestList batchParam : " + batchParam.toString());
+                                sqlSession.update("deleteLastListenHistory", batchParam);
+                            }
+                    );
+
+            sqlSession.flushStatements();
+            sqlSession.commit();
+        } catch(Exception e) {
+            e.printStackTrace();
+            log.error("Channel :: remove last listen history :: Error Message", e.getMessage());
+            throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
+        }
     }
+
 }

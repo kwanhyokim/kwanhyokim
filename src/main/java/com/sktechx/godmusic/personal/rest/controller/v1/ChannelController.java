@@ -20,7 +20,7 @@ import com.sktechx.godmusic.personal.common.domain.ListResponse;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto;
 import com.sktechx.godmusic.personal.rest.model.dto.MemberChannelDto;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenDeleteRequest;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -76,12 +76,16 @@ public class ChannelController {
     @ApiOperation(value = "최근 들은 플레이리스트 삭제", httpMethod = "DELETE", response = MemberChannelDto.class)
     public CommonApiResponse<MemberChannelDto> deleteMyLastListenHistory(
             @ApiIgnore @RequestGMContext GMContext ctx,
-            @Valid @RequestBody ListenRequest listenRequest) {
+            @Valid @RequestBody ListenDeleteRequest listenDeleteRequest) {
 
         Long memberNo = ctx.getMemberNo();
         Long characterNo = ctx.getCharacterNo();
 
-        channelService.removeLastListenHistory(memberNo, characterNo, listenRequest.getListenType(), listenRequest.getListenTypeId());
+        if(listenDeleteRequest == null){
+            throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
+        }
+
+        channelService.removeLastListenHistory(memberNo, characterNo, listenDeleteRequest.getListenRequests());
 
         return new CommonApiResponse<>(null);
     }

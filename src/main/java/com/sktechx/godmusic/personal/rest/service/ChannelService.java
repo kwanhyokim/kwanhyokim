@@ -17,6 +17,7 @@ import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
 
 /**
  * 설명 : 채널 서비스
@@ -32,5 +33,6 @@ public interface ChannelService {
     List<LastListenHistoryDto> getLastListenHistory(Long memberNo, Long characterNo, OsType osType);
 
     List<ChnlDto> getPreferGenreThemeList(List<Long> preferGenreIdList, int trackLimitSize, OsType osType);
-    void removeLastListenHistory(Long memberNo, Long characterNo, String listenType, Long listenId);
+    void removeLastListenHistory(Long memberNo, Long characterNo, List<ListenRequest> listenRequestList);
+
 }

@@ -10,6 +10,8 @@
 
 package com.sktechx.godmusic.personal.rest.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
@@ -20,5 +22,5 @@ public interface TrackService {
 
     PageImpl<?> getMyRecentTrackList(Long memberNo, Long characterNo, Pageable pageable);
 
-    void deleteMyRecentTrackList(Long memberNo, Long characterNo, Long trackId);
+    void deleteMyRecentTrackList(Long memberNo, Long characterNo, List<Long> trackIds);
 }
