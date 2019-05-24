@@ -87,7 +87,7 @@ public class ChannelController {
 
         channelService.removeLastListenHistory(memberNo, characterNo, listenDeleteRequest.getListenRequests());
 
-        return new CommonApiResponse<>(null);
+        return CommonApiResponse.emptySuccess();
     }
 
 }
