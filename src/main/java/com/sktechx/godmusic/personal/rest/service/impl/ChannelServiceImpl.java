@@ -55,36 +55,6 @@ public class ChannelServiceImpl implements ChannelService {
     @Autowired
     private RedisService redisService;
 
-    @Override
-    public List<ChnlDto> getFloAndDataChannelList(int channelLimitSize, int trackLimitSize ,OsType osType , List<Long> filterChnlIdList){
-
-        List<ChnlDto> floAndDataChannelList = null;
-        try{
-            floAndDataChannelList = redisService.getListWithPrefix(ALL_POPULAR_CHNL_KEY,ChnlDto.class);
-        }catch( Exception e){
-            log.error("getFloAndDataChannelList error : {}",e.getMessage());
-        }finally {
-            if(CollectionUtils.isEmpty(floAndDataChannelList)){
-                List<Long> floAndDataChnlIdList = channelMapper.selectFloAndDataChannelIdList();
-                if(!CollectionUtils.isEmpty(floAndDataChnlIdList)){
-                    floAndDataChnlIdList = slicePopularChannelIdLimit(floAndDataChnlIdList);
-
-                    floAndDataChannelList = channelMapper.selectChannelListByIdList(floAndDataChnlIdList,trackLimitSize, osType , PopularChnlType.ALL);
-                    if(!CollectionUtils.isEmpty(floAndDataChannelList)){
-                        redisService.setWithPrefix(FLOANDDATA_CHNL_KEY,floAndDataChannelList,POPULAR_CHNL_EXPIRED_SECONDS);
-                    }
-                }
-            }
-        }
-
-        filterDuplicatePopularChnlList(filterChnlIdList, floAndDataChannelList);
-
-        if(!CollectionUtils.isEmpty(floAndDataChannelList) && floAndDataChannelList.size() > channelLimitSize){
-            floAndDataChannelList = floAndDataChannelList.subList(0,channelLimitSize);
-        }
-
-        return floAndDataChannelList;
-    }
 
     public List<ChnlDto> getPopularChannelList(int channelLimitSize, int trackLimitSize ,OsType osType , List<Long> filterChnlIdList){
         List<ChnlDto> popularChannelList = null;

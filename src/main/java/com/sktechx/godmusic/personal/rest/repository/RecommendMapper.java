@@ -10,16 +10,12 @@
 
 package com.sktechx.godmusic.personal.rest.repository;
 
-import java.util.List;
-
 import org.apache.ibatis.annotations.Param;
 
-import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
-import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPreferGenreSimilarTrackDto;
 
 /**
  * 설명 :  추천 관련 Repository
@@ -90,8 +86,8 @@ public interface RecommendMapper {
             , @Param("characterNo") Long characterNo);
 
 //    String selectRecommendPanelInfoBgImageUrl(@Param("recommendPanelContentType") RecommendPanelContentType recommendPanelContentType
-//            , @Param("rcmmdId") Long rcmmdId
-//            , @Param("osType") OsType osType);
-//
+    ////            , @Param("rcmmdId") Long rcmmdId
+    ////            , @Param("osType") OsType osType);
+    ////
 //    String selectRecommendGenreByRcmmdId(@Param("rcmmdId") Long rcmmdId);
 }

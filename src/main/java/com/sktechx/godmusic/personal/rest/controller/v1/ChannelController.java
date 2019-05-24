@@ -18,10 +18,8 @@ import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.personal.common.domain.ListResponse;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
-import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto;
 import com.sktechx.godmusic.personal.rest.model.dto.MemberChannelDto;
-import com.sktechx.godmusic.personal.rest.model.vo.ChannelListResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import io.swagger.annotations.Api;
@@ -87,19 +85,5 @@ public class ChannelController {
 
         return new CommonApiResponse<>(null);
     }
-
-	@ApiOperation(value = "FLO AND DATA 테마 리스트 ")
-	@GetMapping("/floAndDataChnl/list")
-	public CommonApiResponse<ChannelListResponse> getFloAndDataChannelList(
-			@ApiIgnore @RequestGMContext GMContext ctx){
-
-		List<ChnlDto> floAndDataChannelList = channelService.getFloAndDataChannelList(5,50, ctx.getOsType(), null);
-
-		if(CollectionUtils.isEmpty(floAndDataChannelList)) throw new CommonBusinessException(
-				CommonErrorDomain.EMPTY_DATA);
-
-		return new CommonApiResponse<>(ChannelListResponse.builder().list(floAndDataChannelList).build());
-
-	}
 
 }
