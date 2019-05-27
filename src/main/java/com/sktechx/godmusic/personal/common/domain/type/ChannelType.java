@@ -10,10 +10,11 @@
 
 package com.sktechx.godmusic.personal.common.domain.type;
 
+import org.apache.ibatis.type.MappedTypes;
+
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnum;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnumTypeHandler;
-import org.apache.ibatis.type.MappedTypes;
 
 /**
  *  * 설명 : 채널(플레이리스트) 타입
@@ -23,7 +24,8 @@ import org.apache.ibatis.type.MappedTypes;
  */
 public enum ChannelType implements CodeEnum {
     GENERAL("GENERAL", "일반 채널"),
-    MY("MY", "사용자 개인 채널");
+    MY("MY", "사용자 개인 채널"),
+    FLAC("FLAC", "FLONDATA 전용 채널");
 
     private final String code;
     private final String value;

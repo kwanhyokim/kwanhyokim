@@ -26,6 +26,7 @@ import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
+import com.sktechx.godmusic.personal.common.domain.type.ChannelType;
 import com.sktechx.godmusic.personal.common.domain.type.PopularChnlType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto;
@@ -63,6 +64,38 @@ public class ChannelServiceImpl implements ChannelService {
     @Autowired
     private RedisService redisService;
 
+    @Override
+    public ChnlDto getFloAndDataChannel(int trackLimitSize ,OsType osType){
+
+        ChnlDto floAndDataChnlDto = null;
+
+        List<Long> floAndDataChnlIdList = channelMapper.selectFloAndDataChannelRecentId();
+        if(!CollectionUtils.isEmpty(floAndDataChnlIdList)){
+
+            floAndDataChnlDto = channelMapper.selectFlacChannelById(floAndDataChnlIdList.get(0));
+
+            if(!ObjectUtils.isEmpty(floAndDataChnlDto)){
+
+                floAndDataChnlDto.setChnlType(ChannelType.FLAC);
+//                    floAndDataChnlDto.setChnlDispNm(null);
+                floAndDataChnlDto.setTrackCount(null);
+                floAndDataChnlDto.setTrackList(null);
+                floAndDataChnlDto.setUpdateDtime(null);
+                floAndDataChnlDto.setCreateDtime(null);
+                floAndDataChnlDto.setRenewTrackCnt(null);
+
+                    // 앨범 이미지가 있을 경우, 우선 적용
+//                    if (!ObjectUtils.isEmpty(floAndDataChnlDto.getAlbum()) && !CollectionUtils
+//                            .isEmpty(floAndDataChnlDto.getAlbum().getImgList())) {
+//                        chnlDto.setImgList(floAndDataChnlDto.getAlbum().getImgList());
+//                    }
+//                    floAndDataChnlDto.setAlbum(null);
+
+            }
+        }
+
+        return floAndDataChnlDto;
+    }
 
     public List<ChnlDto> getPopularChannelList(int channelLimitSize, int trackLimitSize ,OsType osType , List<Long> filterChnlIdList){
         List<ChnlDto> popularChannelList = null;

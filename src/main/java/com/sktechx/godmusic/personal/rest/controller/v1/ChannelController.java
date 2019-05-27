@@ -1,5 +1,6 @@
 package com.sktechx.godmusic.personal.rest.controller.v1;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
 
@@ -8,6 +9,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import com.google.common.primitives.Ints;
@@ -18,8 +20,10 @@ import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.personal.common.domain.ListResponse;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
+import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto;
 import com.sktechx.godmusic.personal.rest.model.dto.MemberChannelDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ChannelListResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenDeleteRequest;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import io.swagger.annotations.Api;
@@ -90,4 +94,22 @@ public class ChannelController {
         return CommonApiResponse.emptySuccess();
     }
 
+
+    @ApiOperation(value = "FLO AND DATA 테마 리스트 ")
+    @GetMapping("/floAndDataChnl/list")
+    public CommonApiResponse<ChannelListResponse> getFloAndDataChannelList(
+            @ApiIgnore @RequestGMContext GMContext ctx){
+
+        ChnlDto floAndDataChannel = channelService.getFloAndDataChannel(50, ctx.getOsType());
+
+        if(ObjectUtils.isEmpty(floAndDataChannel)){
+            throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
+        }
+
+        List<ChnlDto> floAndDataChannelList = new ArrayList<>();
+        floAndDataChannelList.add(floAndDataChannel);
+
+        return new CommonApiResponse<>(ChannelListResponse.builder().list(floAndDataChannelList).build());
+
+    }
 }
