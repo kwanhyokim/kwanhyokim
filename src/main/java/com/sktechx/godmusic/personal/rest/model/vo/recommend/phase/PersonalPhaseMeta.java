@@ -100,7 +100,6 @@ public class PersonalPhaseMeta {
                         return dispSn1.compareTo(dispSn2);
                     }))
                     .map(PersonalPanel::getRecommendId)
-                    .map(x -> Long.valueOf(x))
                     .distinct()
                     .collect(Collectors.toList());
         }
@@ -110,7 +109,7 @@ public class PersonalPhaseMeta {
     public Long getRecommendPersonalPanelRcmmdId(RecommendPanelContentType recommendPanelContentType){
         PersonalPanel personalPanel = getRecommendPersonalPanel(recommendPanelContentType);
         if(personalPanel != null && personalPanel.getRecommendId() != null){
-            return Long.valueOf(personalPanel.getRecommendId());
+            return personalPanel.getRecommendId();
         }
         return null;
     }

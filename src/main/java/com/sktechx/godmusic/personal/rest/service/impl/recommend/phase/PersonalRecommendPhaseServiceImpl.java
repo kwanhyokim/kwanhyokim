@@ -89,16 +89,13 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
         try {
 
             String personalRecommendPhaseKey = String.format(PERSONAL_RECOMMEND_PHASE_KEY, characterNo);
+            PersonalPhaseMeta cachePersonalPhaseMeta = redisService.getWithPrefix(personalRecommendPhaseKey, PersonalPhaseMeta.class);
 
-            if (redisService.exists(personalRecommendPhaseKey)) {
-
-                PersonalPhaseMeta cachePersonalPhaseMeta = redisService.get(personalRecommendPhaseKey, PersonalPhaseMeta.class);
+            if (!ObjectUtils.isEmpty(cachePersonalPhaseMeta)) {
 
                 cachePersonalPhaseMeta.setOsType(osType);
-
                 return cachePersonalPhaseMeta;
             }
-
 
             personalPhaseMeta = new PersonalPhaseMeta();
 
@@ -130,7 +127,9 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
                 }
             }
 
-            redisService.setWithPrefix(personalRecommendPhaseKey, personalPhaseMeta, "NX", "PX", hourlyRemainMillisecond());
+            boolean result = redisService.setWithPrefix(personalRecommendPhaseKey, personalPhaseMeta, "NX", "PX", hourlyRemainMillisecond());
+
+            log.info("{}", result);
 
         }catch(Exception ex){
             log.error("getPersonalRecommendPhaseMeta not catched exception : {}",ex.getMessage());
