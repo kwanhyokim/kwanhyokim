@@ -28,6 +28,10 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.code.YnType;
@@ -119,6 +123,17 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             panelAssembly = recommendPanelAssemblyFactory.getRecommendPanelAssembly(personalPhaseMeta.getFirstPhaseType());
             panelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
 
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true);
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+            objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+            objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+            String a = objectMapper.writeValueAsString(personalPhaseMeta);
+
+            log.info(a);
         }catch(CommonBusinessException cbex){
             log.error("createRecommendPanel business exception : {}", cbex.getDisplayMessage());
         }catch(Exception ex){

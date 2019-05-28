@@ -30,7 +30,7 @@ public class PersonalPanel {
     private Date avaliableDateTime;
     private int dispSn;
     //패널 별 추천 아이디
-    private Long recommendId;
+    private String recommendId;
 
     //청취 무드 무드 아이디
     private Long moodId;

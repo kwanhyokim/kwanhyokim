@@ -100,7 +100,7 @@ public abstract class PanelSignAssembly extends PanelAssembly {
     }
 
     protected void appendPreferArtistPopularTrackPanel(final PersonalPhaseMeta personalPhaseMeta, final List<Panel> panelList) {
-        Long rcmmdId = personalPhaseMeta.getRecommendPersonalPanelRcmmdId(RC_ATST_TR);
+        Long rcmmdId = Long.valueOf(personalPhaseMeta.getRecommendPersonalPanelRcmmdId(RC_ATST_TR));
 
         if (rcmmdId != null) {
             RecommendArtistDto recommendArtistDto = recommendReadMapper.selectRecommendArtistById(rcmmdId);
