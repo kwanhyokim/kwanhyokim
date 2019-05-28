@@ -131,7 +131,7 @@
 			j.artist_nm
 		FROM
 			tb_ocr_file a
-			LEFT JOIN tb_ocr_anals_result b ON b.ocr_no = a.ocr_no
+			LEFT JOIN tb_ocr_anals_result b ON b.ocr_no = a.ocr_no AND b.ocr_file_no = a.ocr_file_no
 			LEFT JOIN tb_ocr_anals_result_track c ON c.ocr_anals_result_no = b.ocr_anals_result_no AND c.pick_yn = 'Y'
             LEFT JOIN tb_track d ON d.track_id = c.track_id AND d.disp_status_yn= 'Y' AND now() BETWEEN d.disp_start_dtime AND d.disp_end_dtime
             LEFT JOIN ted_album e ON e.album_id = d.album_id AND e.disp_status_yn= 'Y' AND now() BETWEEN e.disp_start_dtime AND e.disp_end_dtime
