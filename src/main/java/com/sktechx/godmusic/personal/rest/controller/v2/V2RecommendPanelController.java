@@ -77,7 +77,7 @@ public class V2RecommendPanelController {
     @GetMapping(value = "/home/panels")
     public CommonApiResponse<RecommendPanelResponse> recommendHomePanels(
     		@ApiIgnore @RequestGMContext GMContext ctx,
-		    @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO) Long characterNo,
+		    @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo,
 		    @RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType,
 		    @RequestHeader(value = CommonConstant.X_GM_APP_VERSION) String appVer
     ){
@@ -100,7 +100,7 @@ public class V2RecommendPanelController {
 	public CommonApiResponse recommendPanelTrackList(
 			@ApiIgnore @RequestGMContext GMContext ctx,
 			@ApiParam(value = "추천 패널 컨텐트 타입", allowableValues = "RC_ATST_TR, RC_SML_TR, RC_CF_TR") @RequestParam(value = "type") RecommendPanelContentType recommendPanelContentType,
-            @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO) Long characterNo,
+            @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo,
 		    @RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType
     ){
 
@@ -118,7 +118,7 @@ public class V2RecommendPanelController {
 	@GetMapping("/preferGenreChnl/list")
 	public CommonApiResponse<ChannelListResponse> getPreferGenreChannelList(
 			@ApiIgnore @RequestGMContext GMContext ctx,
-			@RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO) Long characterNo,
+			@RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo,
 			@RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType,
 			@RequestHeader(value = CommonConstant.X_GM_APP_VERSION) String appVer
 	){
