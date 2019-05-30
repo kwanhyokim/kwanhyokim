@@ -26,6 +26,7 @@ import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.PanelOrde
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * 설명 : 추천 패널
@@ -49,6 +50,7 @@ public abstract class Panel {
     protected String subTitle;
 
     @Getter
+    @Setter
     @ApiModelProperty(required = true, value = "패널 배경 이미지 리스트")
     protected List<ImageInfo> imgList;
 

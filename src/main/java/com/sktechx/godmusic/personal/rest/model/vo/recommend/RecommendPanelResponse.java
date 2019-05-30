@@ -10,11 +10,11 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend;
 
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
-import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
+import lombok.Data;
 
 /**
  * 설명 : 추천 패널 API 응답
@@ -23,6 +23,8 @@ import java.util.List;
  * @date 2018. 07. 09.
  */
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RecommendPanelResponse {
     List<Panel> list;
+    Integer mostRecentPanelIndex;
 }
