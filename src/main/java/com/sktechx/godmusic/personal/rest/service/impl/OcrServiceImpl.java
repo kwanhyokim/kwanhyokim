@@ -109,9 +109,26 @@ public class OcrServiceImpl implements OcrService {
     @Transactional(readOnly = true)
     public OcrAnalsVo getOcrAnals(Long characterNo, Long ocrNo){
 
-        OcrAnalsVo ocrResultVo=  ocrMapper.selectOcrAnals(ocrNo);
+        OcrAnalsVo ocrResultVo = ocrMapper.selectOcrAnals(ocrNo);
 
-        // TODO duplicateYn 처리 필요.
+        // 중복 곡 duplicateYn 처리
+        if(!ObjectUtils.isEmpty(ocrResultVo) && !ObjectUtils.isEmpty(ocrResultVo.getOcrAnalsResultList())){
+
+            Set<Long> duplicateTrackIdSet = new HashSet<>();
+            ocrResultVo.getOcrAnalsResultList().stream().forEach(i ->{
+                if(!ObjectUtils.isEmpty(i.getOcrAnalsResultDetailList())){
+                    i.getOcrAnalsResultDetailList().stream().forEach(r ->{
+                        if(!ObjectUtils.isEmpty(r.getTrack()) && !ObjectUtils.isEmpty(r.getTrack().getTrackId())){
+                            boolean nonDup = duplicateTrackIdSet.add(r.getTrack().getTrackId());
+                            if(nonDup == false){
+                                r.setDuplicateYn(YnType.Y);
+                            }
+                        }
+                    });
+                }
+            });
+
+        }
 
         return ocrResultVo;
     }
