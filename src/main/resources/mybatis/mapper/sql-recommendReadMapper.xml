@@ -1222,4 +1222,17 @@
         rank <![CDATA[<=]]> #{trackLimitSize}
     </select>
 
+    <select id="selectTpoAndThemeImageList" resultType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo">
+    SELECT img_url as url,
+           img_size as size
+
+    FROM tb_map_img_rcmmd_img
+
+    WHERE rcmmd_type_id = 'RC_OP_TR'
+                        AND os_type = #{osType}
+                        AND img_disp_type = 'MAIN_TOP'
+                        AND img_content_type = 'THEME'
+    ORDER BY rand()
+    LIMIT 5
+    </select>
 </mapper>

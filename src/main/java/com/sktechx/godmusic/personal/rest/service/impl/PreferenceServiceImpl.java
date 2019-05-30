@@ -128,7 +128,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     @Override
     public ChartResponse getPreferenceArtistList(Long characterNo) {
-        String personalPreferenceArtistKey = String.format(PERSONAL_RREFERENCE_ARTIST_KEY, characterNo);
+        String personalPreferenceArtistKey = String.format(PERSONAL_PREFERENCE_ARTIST_KEY, characterNo);
         List<ArtistDto> artistDtoList = redisService.getListWithPrefix(personalPreferenceArtistKey, ArtistDto.class);
 
         if (CollectionUtils.isEmpty(artistDtoList)) {
