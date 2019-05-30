@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,9 +25,11 @@ import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.client.DisplayClient;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ChannelListResponse;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.TPOChannelPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
+import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelNonSignAssembly;
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,6 +50,9 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
     @Autowired
     DisplayClient displayClient;
 
+    @Autowired
+    private RecommendReadMapper recommendReadMapper;
+
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
 
@@ -57,7 +63,22 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
             panelList.add(0,chartPanel);
         }
 
-        appendTPOPanel(personalPhaseMeta, panelList, 4);
+        appendTPOPanel(personalPhaseMeta, panelList, 5);
+
+        List<ImageInfo> imageInfoList = recommendReadMapper.selectTpoAndThemeImageList(personalPhaseMeta.getOsType());
+
+        for(int i =0; i<panelList.size(); i++){
+            ImageInfo imageInfo;
+
+            try {
+                imageInfo = imageInfoList.get(i);
+            }catch (Exception e){
+                imageInfo = imageInfoList.get(0);
+            }
+
+            panelList.get(i).setImgList(new ArrayList<>(Arrays.asList(imageInfo)));
+
+        }
 
         return panelList;
     }
@@ -85,7 +106,7 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
                             try{
                                 panelList.add( createPopularChannelPanel( channel,personalPhaseMeta ) );
                             }catch(Exception e){
-                                log.error("GuestPhasePanel defaultPanelSetting Exception : {}",e.getMessage());
+                                log.error("TPO Panel defaultPanelSetting Exception : {}",e.getMessage());
                             }
                         });
 
