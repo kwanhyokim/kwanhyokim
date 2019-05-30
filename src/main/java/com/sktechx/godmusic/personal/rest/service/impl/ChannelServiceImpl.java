@@ -80,8 +80,6 @@ public class ChannelServiceImpl implements ChannelService {
 //                    floAndDataChnlDto.setChnlDispNm(null);
                 floAndDataChnlDto.setTrackCount(null);
                 floAndDataChnlDto.setTrackList(null);
-                floAndDataChnlDto.setDispDTime(floAndDataChnlDto.getUpdateDtime());
-                floAndDataChnlDto.setUpdateDtime(null);
                 floAndDataChnlDto.setCreateDtime(null);
                 floAndDataChnlDto.setRenewTrackCnt(null);
 

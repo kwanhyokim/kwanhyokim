@@ -90,8 +90,4 @@ public class ChnlDto {
         return YnType.N;
     }
 
-    @JsonProperty("dispDate")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd", timezone="Asia/Seoul")
-    private Date dispDTime;
-
 }
