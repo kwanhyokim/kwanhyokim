@@ -65,7 +65,7 @@ public class ChannelController {
         int start = Ints.checkedCast(pageable.getOffset());
         int end = Ints.checkedCast(pageable.getOffset()) + pageable.getPageSize();
 
-        List<LastListenHistoryDto> lastListenHistory = channelService.getLastListenHistory(ctx.getMemberNo(), ctx.getCharacterNo(), ctx.getOsType());
+        List<LastListenHistoryDto> lastListenHistory = channelService.getLastListenHistory(ctx.getMemberNo(), ctx.getCharacterNo(), ctx.getOsType(), ctx.getAppVer());
         if(CollectionUtils.isEmpty(lastListenHistory)) throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
 
         if(start >= lastListenHistory.size() || start >= end) throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);

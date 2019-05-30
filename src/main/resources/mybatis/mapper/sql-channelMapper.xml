@@ -621,6 +621,9 @@
                   ORDER BY last_listen_dtime DESC
                   LIMIT 300 ) a
           JOIN tb_chnl b ON a.listen_type_id = b.chnl_id AND a.listen_type = 'CHNL'AND b.disp_status_type = 'Y'
+          <if test="exceptFlacChnl">
+            AND b.chnl_type !='FLAC'
+          </if>
           JOIN ted_album c ON b.album_id = c.album_id AND c.disp_status_yn= 'Y' AND now() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
           LEFT JOIN tb_album_img d
             ON c.album_id = d.album_id

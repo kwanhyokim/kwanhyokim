@@ -26,6 +26,7 @@ import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
+import com.sktechx.godmusic.lib.utils.ComparableVersion;
 import com.sktechx.godmusic.personal.common.domain.type.ChannelType;
 import com.sktechx.godmusic.personal.common.domain.type.PopularChnlType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
@@ -219,10 +220,16 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
-    public List<LastListenHistoryDto> getLastListenHistory(Long memberNo, Long characterNo, OsType osType){
+    public List<LastListenHistoryDto> getLastListenHistory(Long memberNo, Long characterNo, OsType osType, String appVersion){
+
+        Boolean exceptFlacChnl = false;
+
+        if(!ObjectUtils.isEmpty(appVersion) && new ComparableVersion(appVersion).compareTo( new ComparableVersion("4.6.0")) >= 0 ){
+            exceptFlacChnl = true;
+        }
 
         List<LastListenHistoryDto> lastListenHistory = channelMapper.selectLastListenHistory(memberNo, characterNo, osType);
-        List<LastListenHistoryDto> lastListenHistoryByChannel = channelMapper.selectLastListenHistoryByChannel(memberNo, characterNo, osType);
+        List<LastListenHistoryDto> lastListenHistoryByChannel = channelMapper.selectLastListenHistoryByChannel(memberNo, characterNo, osType, exceptFlacChnl);
         List<LastListenHistoryDto> lastListenHistoryByAlbum = albumMapper.selectLastListenHistory(memberNo, characterNo);
 
 

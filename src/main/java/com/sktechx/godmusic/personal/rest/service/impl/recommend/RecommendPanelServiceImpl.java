@@ -491,7 +491,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         RecommendPanelTrackDto recommendTrackDto = trackCount > 0 ? trackList.getList().get(0) : null;
         panel = RecommendPanelInfoDto.builder()
                 .title(title)
-                .subTitle(RecommendConstant.SIMILAR_TRACK_PANEL_SUB_TITLE_NEW)
+                .subTitle(RecommendConstant.SIMILAR_TRACK_PANEL_DETAIL_SUB_TITLE)
                 .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType , dispSn))
                 .trackCount(trackCount)
                 .newYn(YnType.Y)

@@ -292,7 +292,7 @@
                          ON L.LIKE_TYPE_ID = A.CHNL_ID
                        AND A.DISP_STATUS_TYPE = 'Y'
         <if test="exceptFlacChnl">
-            AND A.CHNL_TYPE='CHNL'
+            AND A.CHNL_TYPE !='FLAC'
         </if>
 
                      INNER JOIN TB_ALBUM_IMG I

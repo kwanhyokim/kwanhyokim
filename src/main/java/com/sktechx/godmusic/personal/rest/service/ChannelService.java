@@ -32,7 +32,7 @@ public interface ChannelService {
     List<ChnlDto> getPopularChannelList(int channelLimitSize,int trackLimitSize, OsType osType,List<Long> filterChnlIdList);
     List<PreferGenrePopularChnlDto> getPreferGenrePopularChannelList(List<Long> preferGenreIdList, int trackLimitSize, OsType osType);
     List<MoodPopularChnlDto> getListenMoodPopularChannelIdList(List<Long> moodIdList , int trackLimitSize , OsType osType);
-    List<LastListenHistoryDto> getLastListenHistory(Long memberNo, Long characterNo, OsType osType);
+    List<LastListenHistoryDto> getLastListenHistory(Long memberNo, Long characterNo, OsType osType, String appVersion);
 
     List<ChnlDto> getPreferGenreThemeList(List<Long> preferGenreIdList, int trackLimitSize, OsType osType);
     void removeLastListenHistory(Long memberNo, Long characterNo, List<ListenRequest> listenRequestList);
