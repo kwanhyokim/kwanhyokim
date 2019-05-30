@@ -12,6 +12,12 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.util.CollectionUtils;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -20,15 +26,6 @@ import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.domain.type.ChannelType;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import lombok.Data;
-import org.springframework.util.CollectionUtils;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
 /**
  * 설명 :
@@ -92,5 +89,9 @@ public class ChnlDto {
         }
         return YnType.N;
     }
+
+    @JsonProperty("dispDate")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd", timezone="Asia/Seoul")
+    private Date dispDTime;
 
 }

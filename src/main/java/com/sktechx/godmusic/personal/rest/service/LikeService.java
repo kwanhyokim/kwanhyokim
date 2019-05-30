@@ -1,15 +1,8 @@
 package com.sktechx.godmusic.personal.rest.service;
 
-import com.sktechx.godmusic.personal.rest.model.dto.AlbumDto;
-import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
-import com.sktechx.godmusic.personal.rest.model.dto.PlayListDto;
-import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
-import com.sktechx.godmusic.personal.rest.model.vo.like.*;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+import com.sktechx.godmusic.personal.rest.model.vo.like.*;
 
 /**
  * Created by Kobe.
@@ -19,7 +12,7 @@ import java.util.List;
  * @time PM 3:39
  */
 public interface LikeService {
-	LikePlaylistListResponse getPlayListLikeListByLikeType(Long characterNo, Pageable pageable);
+	LikePlaylistListResponse getPlayListLikeListByLikeType(Long characterNo, String appVersion, Pageable pageable);
 	LikeAlbumListResponse getAlbumLikeListByLikeType(Long characterNo, Pageable pageable);
 	LikeArtistListResponse getArtistLikeListByLikeType(Long characterNo, Pageable pageable);
 	LikeTrackListResponse getTrackLikeListByLikeType(Long characterNo, Pageable pageable);

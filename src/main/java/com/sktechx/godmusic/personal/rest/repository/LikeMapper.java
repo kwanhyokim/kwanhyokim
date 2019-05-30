@@ -1,15 +1,16 @@
 package com.sktechx.godmusic.personal.rest.repository;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+import org.springframework.data.domain.Pageable;
+
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
 import com.sktechx.godmusic.personal.rest.model.dto.AlbumDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.PlayListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.like.LikeTypeVo;
-import org.apache.ibatis.annotations.Param;
-import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 /**
  * Created by Kobe.
@@ -35,6 +36,8 @@ public interface LikeMapper {
 	List<TrackDto> getLikeTrackByLikeType(@Param("characterNo") Long characterNo, @Param("pageable") Pageable pageable);
 	List<AlbumDto> getLikeAlbumByLikeType(@Param("characterNo") Long characterNo, @Param("pageable") Pageable pageable);
 	List<ArtistDto> getLikeArtistByLikeType(@Param("characterNo") Long characterNo, @Param("pageable") Pageable pageable);
-	List<PlayListDto> getLikePlaylistByLikeType(@Param("characterNo") Long characterNo, @Param("chnlIds") List<Long> chnlIds, @Param("chartIds") List<Long> chartIds);
+
+	List<PlayListDto> getLikePlaylistByLikeType(@Param("characterNo") Long characterNo, @Param("chnlIds") List<Long> chnlIds, @Param("chartIds") List<Long> chartIds, @Param("exceptFlacChnl") Boolean exceptFlacChnl);
+
 	List<LikeTypeVo> getLikePlaylistIdsByLikeType(@Param("characterNo") Long characterNo, @Param("pageable") Pageable pageable);
 }

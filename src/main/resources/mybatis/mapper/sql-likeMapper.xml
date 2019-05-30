@@ -291,6 +291,10 @@
                      INNER JOIN TB_CHNL A
                          ON L.LIKE_TYPE_ID = A.CHNL_ID
                        AND A.DISP_STATUS_TYPE = 'Y'
+        <if test="exceptFlacChnl">
+            AND A.CHNL_TYPE='CHNL'
+        </if>
+
                      INNER JOIN TB_ALBUM_IMG I
                          ON A.ALBUM_ID = I.ALBUM_ID) AA
         ORDER BY AA.DISPSN ASC, AA.LIKEUPDATEDTIME ASC

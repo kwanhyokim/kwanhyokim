@@ -80,16 +80,10 @@ public class ChannelServiceImpl implements ChannelService {
 //                    floAndDataChnlDto.setChnlDispNm(null);
                 floAndDataChnlDto.setTrackCount(null);
                 floAndDataChnlDto.setTrackList(null);
+                floAndDataChnlDto.setDispDTime(floAndDataChnlDto.getUpdateDtime());
                 floAndDataChnlDto.setUpdateDtime(null);
                 floAndDataChnlDto.setCreateDtime(null);
                 floAndDataChnlDto.setRenewTrackCnt(null);
-
-                    // 앨범 이미지가 있을 경우, 우선 적용
-//                    if (!ObjectUtils.isEmpty(floAndDataChnlDto.getAlbum()) && !CollectionUtils
-//                            .isEmpty(floAndDataChnlDto.getAlbum().getImgList())) {
-//                        chnlDto.setImgList(floAndDataChnlDto.getAlbum().getImgList());
-//                    }
-//                    floAndDataChnlDto.setAlbum(null);
 
             }
         }

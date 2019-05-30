@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -20,6 +21,7 @@ import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
+import com.sktechx.godmusic.lib.utils.ComparableVersion;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEvent;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEventTarget;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEventType;
@@ -65,7 +67,7 @@ public class LikeServiceImpl implements LikeService {
 	private AmqpService amqpService;
 
 	@Override
-	public LikePlaylistListResponse getPlayListLikeListByLikeType(Long characterNo, Pageable pageable) {
+	public LikePlaylistListResponse getPlayListLikeListByLikeType(Long characterNo, String appVersion, Pageable pageable) {
 		int totalCount = 0;
 
 		List<LikeTypeVo> likeTypeVos = likeMapper.getLikePlaylistIdsByLikeType(characterNo, pageable);
@@ -83,8 +85,17 @@ public class LikeServiceImpl implements LikeService {
 			}
 		}
 
+		Boolean exceptFlacChnl = false;
+
+		if(!ObjectUtils.isEmpty(appVersion) && new ComparableVersion(appVersion).compareTo( new ComparableVersion("4.6.0")) >= 0 ){
+			exceptFlacChnl = true;
+		}
+
 		List<PlayListDto> playListDtos = likeMapper.getLikePlaylistByLikeType(characterNo,
-				CollectionUtils.isEmpty(chnlIds) ? null : chnlIds, CollectionUtils.isEmpty(chartIds) ? null : chartIds);
+				(CollectionUtils.isEmpty(chnlIds) ? null : chnlIds),
+				(CollectionUtils.isEmpty(chartIds) ? null : chartIds),
+				exceptFlacChnl
+		);
 
 		if (CollectionUtils.isEmpty(playListDtos)) return null;
 

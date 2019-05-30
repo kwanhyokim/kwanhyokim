@@ -88,7 +88,8 @@
             a.chnl_nm,
             a.chnl_disp_nm,
             c.album_img_size AS img_size,
-            c.album_img_url AS img_url
+            c.album_img_url AS img_url,
+            a.update_dtime
         FROM
             (SELECT
                 *

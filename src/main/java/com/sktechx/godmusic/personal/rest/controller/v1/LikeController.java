@@ -1,5 +1,10 @@
 package com.sktechx.godmusic.personal.rest.controller.v1;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.*;
+
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
@@ -7,11 +12,6 @@ import com.sktechx.godmusic.personal.rest.model.vo.like.*;
 import com.sktechx.godmusic.personal.rest.service.LikeService;
 import com.sktechx.godmusic.personal.rest.validate.Validator;
 import io.swagger.annotations.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.web.bind.annotation.*;
 
 /**
  * Created by Kobe.
@@ -42,7 +42,7 @@ public class LikeController {
 
 		Validator.loginValidate(currentContext);
 
-		return new CommonApiResponse(likeService.getPlayListLikeListByLikeType(currentContext.getCharacterNo(), pageable));
+		return new CommonApiResponse(likeService.getPlayListLikeListByLikeType(currentContext.getCharacterNo(), currentContext.getAppVer(), pageable));
 	}
 
 	@ApiOperation(value = "좋아요 앨범 목록 by Kobe ( 기존 /v2/my/album/like/list GET )", response = LikeAlbumListResponse.class
