@@ -44,5 +44,5 @@ public class RedisKeyConstant {
 	public static final String PERSONAL_SIMILAR_ARTIST_HISTORY_KEY = "godmusic.personalapi.similar.artist.history:%s";
 
 	// 선호장르테마, 운영tpo 홈패널 배경 이미지
-	public static final String PERSONAL_TPOANDTHEME_IMAGELIST_KEY = "godmusic.personalapi.recommend.home.panel.tpoandtheme.imglist";
+	public static final String PERSONAL_TPOANDTHEME_IMAGELIST_KEY = "personalapi.recommend.home.panel.tpoandtheme.imglist";
 }
