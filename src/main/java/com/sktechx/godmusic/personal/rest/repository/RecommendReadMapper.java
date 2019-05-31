@@ -114,6 +114,6 @@ public interface RecommendReadMapper {
 
     RecommendSimilarTrackDto selectRecommendSimilarTrack(@Param("rcmmdId") Long rcmmdId);
 
-    @RedisCacheable(prefix = "godmusic", format = RedisKeyConstant.PERSONAL_TPOANDTHEME_IMAGELIST_KEY, expireSeconds = 3600)
+    @RedisCacheable(prefix = RedisKeyConstant.PREFIX, format = RedisKeyConstant.PERSONAL_TPOANDTHEME_IMAGELIST_KEY, expireSeconds = 3600)
     List<ImageInfo> selectTpoAndThemeImageList(@Param("osType") OsType osType);
 }

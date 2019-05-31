@@ -15,6 +15,7 @@ package com.sktechx.godmusic.personal.common.domain.constant;
  * @since on 2018. 7. 13..
  */
 public class RedisKeyConstant {
+	public static final String PREFIX = "godmusic";
 	//추천
 	public static final String PERSONAL_RECOMMEND_PHASE_KEY ="godmusic.personalapi.recommend.phase:%s";
 	public static final String RECOMMEND_PANEL_DEFAULT_IMGLIST_KEY ="godmusic.personalapi.recommend.home.panel.default.imglist";
