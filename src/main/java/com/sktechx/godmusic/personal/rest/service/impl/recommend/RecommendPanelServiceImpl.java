@@ -46,6 +46,7 @@ import com.sktechx.godmusic.personal.common.util.CommonUtils;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedArtistVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedGenreVo;
@@ -138,8 +139,11 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         return panelList;
     }
     @Override
-    public List<Panel> createRecommendV2PanelList(Long characterNo, OsType osType, String appVer) {
-        List<Panel> panelList = null;
+    public RecommendPanelResponse createRecommendV2PanelList(Long characterNo, OsType osType, String appVer) {
+
+        RecommendPanelResponse recommendPanelResponse = new RecommendPanelResponse();
+
+        List<Panel> recommendPanelList = null;
         PersonalPhaseMeta personalPhaseMeta = null;
         PanelAssembly panelAssembly = null;
         try{
@@ -148,25 +152,44 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
             panelAssembly = recommendPanelAssemblyFactory.getV2RecommendPanelAssembly(personalPhaseMeta);
 
-            panelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
+            recommendPanelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
 
         }catch(CommonBusinessException cbex){
             log.error("createRecommendPanel business exception : {}", cbex.getDisplayMessage());
         }catch(Exception ex){
             log.error("createRecommendPanel not catched exception : {}",ex.getMessage());
         }finally{
-            if(CollectionUtils.isEmpty(panelList)){
+            if(CollectionUtils.isEmpty(recommendPanelList)){
                 if(panelAssembly == null)
                     panelAssembly = recommendPanelAssemblyFactory.getRecommendPanelAssembly();
                 try{
-                    panelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
+                    recommendPanelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
                 }catch(Exception e){
                     log.error("createRecommendPanel recovery not catched exception : {}",e.getMessage());
                 }
             }
         }
 
-        return panelList;
+        if(CollectionUtils.isEmpty(recommendPanelList)){
+            return null;
+        }
+
+        Integer mostRecentPanelIndex = 0;
+        Date updateDtime = null;
+
+        Optional<Panel> firstPanel = recommendPanelList.stream().max(
+                Comparator.comparing(o -> o.getContent().getUpdateDtime()));
+
+        if(firstPanel.isPresent()){
+            mostRecentPanelIndex = recommendPanelList.indexOf(firstPanel.get());
+            updateDtime = firstPanel.get().getContent().getUpdateDtime();
+        }
+
+        recommendPanelResponse.setList(recommendPanelList);
+        recommendPanelResponse.setMostRecentPanelIndex(mostRecentPanelIndex);
+        recommendPanelResponse.setUpdateDtime(updateDtime);
+
+        return recommendPanelResponse;
     }
 
     private List<ImageInfo> makePanelBackGroundImageList(String url){
