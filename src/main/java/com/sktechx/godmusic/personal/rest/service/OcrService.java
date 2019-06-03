@@ -11,9 +11,9 @@ public interface OcrService {
 
     OcrDto createOcr(Long memberNo, Long characterNo, String deviceId, int totalFileCnt);
 
-    void requestAnalysisToOcrServer(Long ocrNo, Integer ocrFileNo, AwsFileVo awsFileVo);
+    void requestAnalysisToOcrServer(Long characterNo, Long ocrNo, Integer ocrFileNo, AwsFileVo awsFileVo);
 
-    AwsFileVo uploadOcrFile(Long memberNo, MultipartFile multipartFile, Long ocrNo, Integer ocrFileNo);
+    AwsFileVo uploadOcrFile(Long memberNo, Long characterNo, MultipartFile multipartFile, Long ocrNo, Integer ocrFileNo);
 
     OcrAnalsVo getOcrAnals(Long characterNo, Long ocrNo);
 

@@ -15,13 +15,13 @@ public interface OcrMapper {
     void insertOcrFile(OcrFileDto ocrFileDto);
     void updateOcrFile(OcrFileDto ocrFileDto);
 
-    OcrAnalsVo selectOcrAnals(@Param("ocrNo")Long ocrNo);
+    OcrAnalsVo selectOcrAnals(@Param("characterNo")Long characterNo, @Param("ocrNo")Long ocrNo);
 
     int countDoneProcessionOcrFile(@Param("ocrNo") Long ocrNo);
 
-    int countOcrFile(@Param("ocrNo") Long ocrNo);
+    int countOcrFile(@Param("characterNo")Long characterNo, @Param("ocrNo") Long ocrNo);
 
-    OcrFileDto selectOcrFile(@Param("ocrNo")Long ocrNo, @Param("ocrFileNo")Integer ocrFileNo);
+    OcrFileDto selectOcrFile(@Param("characterNo")Long characterNo, @Param("ocrNo")Long ocrNo, @Param("ocrFileNo")Integer ocrFileNo);
 
 }
 

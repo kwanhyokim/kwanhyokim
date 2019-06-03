@@ -140,25 +140,27 @@
             LEFT JOIN tb_album_img h ON h.album_id = e.album_id
             LEFT JOIN ted_trackartist i ON i.track_id = d.track_id AND i.rp_yn = 'Y'
             LEFT JOIN ted_artist j ON j.artist_id = i.artist_id
+          	JOIN tb_ocr k ON a.ocr_no = k.ocr_no AND k.character_no = #{characterNo}
 		WHERE a.ocr_no =  #{ocrNo}
 	</select>
 
 	<select id="selectOcrFile" resultType="com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrFileDto">
 		SELECT
-			ocr_no,
-			ocr_file_no,
-			upload_yn,
-			anals_status_type,
-			anals_start_dtime,
-			anals_end_dtime,
-			aws_bucket_nm,
-			aws_bucket_key,
-			send_push_dtime
+			a.ocr_no,
+			a.ocr_file_no,
+			a.upload_yn,
+			a.anals_status_type,
+			a.anals_start_dtime,
+			a.anals_end_dtime,
+			a.aws_bucket_nm,
+			a.aws_bucket_key,
+			a.send_push_dtime
 		FROM
-			tb_ocr_file
+			tb_ocr_file a
+			JOIN tb_ocr b ON a.ocr_no = b.ocr_no AND b.character_no = #{characterNo}
 		WHERE
-			ocr_no = #{ocrNo}
-			AND ocr_file_no = #{ocrFileNo}
+			a.ocr_no = #{ocrNo}
+			AND a.ocr_file_no = #{ocrFileNo}
 	</select>
 
 	<select id="countDoneProcessionOcrFile" resultType="int">
@@ -173,11 +175,12 @@
 
 	<select id="countOcrFile" resultType="int">
         SELECT
-        	COUNT(*)
+        	COUNT(1)
         FROM
-			tb_ocr_file
+			tb_ocr_file a
+			JOIN tb_ocr b ON a.ocr_no = b.ocr_no AND b.character_no = #{characterNo}
 		WHERE
-			ocr_no = #{ocrNo}
+			a.ocr_no = #{ocrNo}
     </select>
 
 </mapper>

@@ -39,7 +39,6 @@ public class OcrController {
             @ApiParam(value = "디바이스 아이디", required = true, defaultValue = "test_device") @RequestHeader(value = CommonConstant.X_GM_DEVICE_ID) String deviceId,
             @Valid @RequestBody CreateOcrSessionRequest request){
 
-        //OcrDto ocrDto = ocrService.createOcr(2100981L, 2101151L, "test_device", request.getTotalFileCnt());
         OcrDto ocrDto = ocrService.createOcr(GMContext.getContext().getMemberNo(), GMContext.getContext().getCharacterNo(), GMContext.getContext().getDeviceId(), request.getTotalFileCnt());
         return new CommonApiResponse<>(CreateOcrSessionResponse.builder().ocrNo(ObjectUtils.isEmpty(ocrDto) ? null : ocrDto.getOcrNo() ).build());
     }
@@ -49,10 +48,8 @@ public class OcrController {
     public CommonApiResponse uploadOcrFile( MultipartFile file, @RequestParam("ocrNo") Long ocrNo, @RequestParam("ocrFileNo") Integer ocrFileNo ){
 
         // select 로 검색 하여 기 처리된 데이터 인지 확인 upload 여부, 분석 요청 여부.
-        // for test
-        //AwsFileVo awsFileVo = ocrService.uploadOcrFile(1000190L, file, ocrNo, ocrFileNo);
-        AwsFileVo awsFileVo = ocrService.uploadOcrFile(GMContext.getContext().getMemberNo(), file, ocrNo, ocrFileNo);
-        ocrService.requestAnalysisToOcrServer(ocrNo, ocrFileNo, awsFileVo);
+        AwsFileVo awsFileVo = ocrService.uploadOcrFile(GMContext.getContext().getMemberNo(), GMContext.getContext().getCharacterNo(), file, ocrNo, ocrFileNo);
+        ocrService.requestAnalysisToOcrServer(GMContext.getContext().getCharacterNo(), ocrNo, ocrFileNo, awsFileVo);
 
         return new CommonApiResponse<>().emptySuccess();
     }

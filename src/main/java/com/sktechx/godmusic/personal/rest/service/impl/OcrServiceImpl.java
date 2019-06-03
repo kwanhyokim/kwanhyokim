@@ -3,6 +3,7 @@ package com.sktechx.godmusic.personal.rest.service.impl;
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
+import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.personal.common.domain.type.AwsBucketType;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
@@ -63,11 +64,14 @@ public class OcrServiceImpl implements OcrService {
 
     @Override
     @Transactional(readOnly = true)
-    public AwsFileVo uploadOcrFile(Long memberNo, MultipartFile multipartFile, Long ocrNo, Integer ocrFileNo){
+    public AwsFileVo uploadOcrFile(Long memberNo, Long characterNo, MultipartFile multipartFile, Long ocrNo, Integer ocrFileNo){
 
-        OcrFileDto ocrFileDto = ocrMapper.selectOcrFile(ocrNo, ocrFileNo);
+        if(ObjectUtils.isEmpty(memberNo) || ObjectUtils.isEmpty(characterNo))
+            throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
+
+        OcrFileDto ocrFileDto = ocrMapper.selectOcrFile(characterNo, ocrNo, ocrFileNo);
         if(ObjectUtils.isEmpty(ocrFileDto)) {
-            log.error("OcrServiceImpl::uploadOcrFile - not found ocrFile! ocrNo:{}, ocrFileNo:{}", ocrNo, ocrFileNo);
+            log.error("OcrServiceImpl::uploadOcrFile - not found ocrFile! characterNo:{}, ocrNo:{}, ocrFileNo:{}", characterNo, ocrNo, ocrFileNo);
             throw new CommonBusinessException(PersonalErrorDomain.NOT_FOUND_OCR_FILE);
         }
         if(ocrFileDto.getUploadYn() == YnType.Y) {
@@ -91,10 +95,10 @@ public class OcrServiceImpl implements OcrService {
 
 
     @Override
-    public void requestAnalysisToOcrServer(Long ocrNo, Integer ocrFileNo, AwsFileVo awsFileVo){
+    public void requestAnalysisToOcrServer(Long characterNo, Long ocrNo, Integer ocrFileNo, AwsFileVo awsFileVo){
 
         //TODO send FileInfo to OCR Server
-        int fileCount = ocrMapper.countOcrFile(ocrNo);
+        int fileCount = ocrMapper.countOcrFile(characterNo, ocrNo);
         ocrRecognize(ocrNo, ocrFileNo, fileCount, awsFileVo.getBucketKey(), awsFileVo.getBucket());
 
         ocrHelperService.updateOcrFile(OcrFileDto.builder()
@@ -109,11 +113,14 @@ public class OcrServiceImpl implements OcrService {
     @Transactional(readOnly = true)
     public OcrAnalsVo getOcrAnals(Long characterNo, Long ocrNo){
 
-        OcrAnalsVo ocrResultVo = ocrMapper.selectOcrAnals(ocrNo);
+        OcrAnalsVo ocrResultVo = ocrMapper.selectOcrAnals(characterNo, ocrNo);
+
+        if(ObjectUtils.isEmpty(ocrResultVo)){
+            throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
+        }
 
         // 중복 곡 duplicateYn 처리
         if(!ObjectUtils.isEmpty(ocrResultVo) && !ObjectUtils.isEmpty(ocrResultVo.getOcrAnalsResultList())){
-
             Set<Long> duplicateTrackIdSet = new HashSet<>();
             ocrResultVo.getOcrAnalsResultList().stream().forEach(i ->{
                 if(!ObjectUtils.isEmpty(i.getOcrAnalsResultDetailList())){
@@ -137,7 +144,10 @@ public class OcrServiceImpl implements OcrService {
     @Transactional(readOnly = true)
     public GetOcrStatusResponse getOcrStatus(Long characterNo, Long ocrNo){
 
-        int totalCount = ocrMapper.countOcrFile(ocrNo);
+        int totalCount = ocrMapper.countOcrFile(characterNo, ocrNo);
+        if(totalCount == 0){
+            throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
+        }
         int completeJobCount = ocrMapper.countDoneProcessionOcrFile(ocrNo);
 
         return GetOcrStatusResponse.builder()
@@ -149,7 +159,9 @@ public class OcrServiceImpl implements OcrService {
     @Override
     @Transactional
     public void noMorePush(Long characterNo, Long ocrNo){
-        ocrMapper.updateOcr(OcrDto.builder().ocrNo(ocrNo).confrmYn(YnType.Y).build());
+        int totalCount = ocrMapper.countOcrFile(characterNo, ocrNo);
+        if(totalCount > 0)
+            ocrMapper.updateOcr(OcrDto.builder().ocrNo(ocrNo).confrmYn(YnType.Y).build());
     }
 
 
