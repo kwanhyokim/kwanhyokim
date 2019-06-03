@@ -110,6 +110,7 @@ public class V2RecommendPanelController {
 
 	    recommendPanelResponse.setList(recommendPanelList);
 	    recommendPanelResponse.setMostRecentPanelIndex(mostRecentPanelIndex);
+	    recommendPanelResponse.setUpdateDtime(updateDtime);
 
 		return new CommonApiResponse<>(recommendPanelResponse);
     }
