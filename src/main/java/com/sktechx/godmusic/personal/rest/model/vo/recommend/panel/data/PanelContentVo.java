@@ -10,6 +10,9 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data;
 
+import java.util.Date;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -18,9 +21,6 @@ import com.sktechx.godmusic.lib.mybatis.code.CodeEnum;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import lombok.Data;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  * 설명 : 추천 패널에서 사용할 공통 컨텐츠

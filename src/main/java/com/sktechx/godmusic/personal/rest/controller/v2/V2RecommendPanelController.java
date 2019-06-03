@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.controller.v2;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -92,6 +93,7 @@ public class V2RecommendPanelController {
 	    }
 
 	    Integer mostRecentPanelIndex = 0;
+	    Date updateDtime = null;
 
 	    PersonalPhaseMeta personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(ctx.getCharacterNo(),ctx.getOsType(), ctx.getAppVer());
 	    if(!ObjectUtils.isEmpty(personalPhaseMeta)) {
@@ -101,6 +103,7 @@ public class V2RecommendPanelController {
 
 			   if(panel.isPresent()){
 			   	    mostRecentPanelIndex = recommendPanelList.indexOf(panel.get());
+			   	    updateDtime = panel.get().getContent().getUpdateDtime();
 			   }
 		    }
 	    }
