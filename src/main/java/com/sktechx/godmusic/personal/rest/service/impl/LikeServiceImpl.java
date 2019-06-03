@@ -342,6 +342,8 @@ public class LikeServiceImpl implements LikeService {
 			case LikeConstant.LIKE_FLAC :
 			case LikeConstant.LIKE_CHANNEL :
 				response = metaApiProxy.channel(likeTypeId);
+				log.info("XXXXXXXXXX {}", response);
+
 				break;
 			case LikeConstant.LIKE_ALBUM :
 				response = metaApiProxy.album(likeTypeId);
