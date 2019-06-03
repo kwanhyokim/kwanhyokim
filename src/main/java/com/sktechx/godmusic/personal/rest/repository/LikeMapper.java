@@ -25,7 +25,7 @@ public interface LikeMapper {
 	int getLikeTrackCountByLikeType(@Param("characterNo") Long characterNo);
 	int getLikeAlbumCountByLikeType(@Param("characterNo") Long characterNo);
 	int getLikeArtistCountByLikeType(@Param("characterNo") Long characterNo);
-	int getLikeChannelCountByLikeType(@Param("characterNo") Long characterNo);
+	int getLikeChannelCountByLikeType(@Param("likeType") String likeType, @Param("characterNo") Long characterNo);
 	int getLikeChartCountByLikeType(@Param("characterNo") Long characterNo);
 	int updateLikeDispSn(@Param("likeType") String likeType, @Param("characterNo") Long characterNo);
 	int insertLike(@Param("likeType") String likeType, @Param("likeTypeId") Long likeTypeId, @Param("characterNo") Long characterNo);

@@ -256,7 +256,10 @@ public class LikeServiceImpl implements LikeService {
 
 		int likeTotalCnt = getLikeTotalCount(request.getLikeType(), characterNo);
 
-		if(LikeConstant.LIKE_CHANNEL.equals(request.getLikeType())) {
+		if(LikeConstant.LIKE_CHANNEL.equals(request.getLikeType()) ||
+				LikeConstant.LIKE_FLAC.equals(request.getLikeType())
+
+		) {
 			likeTotalCnt += getLikeTotalCount(LikeConstant.LIKE_CHART, characterNo);
 		} else if(LikeConstant.LIKE_CHART.equals(request.getLikeType())) {
 			likeTotalCnt += getLikeTotalCount(LikeConstant.LIKE_CHANNEL, characterNo);
@@ -269,8 +272,9 @@ public class LikeServiceImpl implements LikeService {
 
 	private int getLikeTotalCount(String likeType, Long characterNo) {
 		switch (likeType) {
+			case LikeConstant.LIKE_FLAC :
 			case LikeConstant.LIKE_CHANNEL :
-				return likeMapper.getLikeChannelCountByLikeType(characterNo);
+				return likeMapper.getLikeChannelCountByLikeType(likeType, characterNo);
 			case LikeConstant.LIKE_ALBUM :
 				return likeMapper.getLikeAlbumCountByLikeType(characterNo);
 			case LikeConstant.LIKE_CHART :
@@ -286,6 +290,7 @@ public class LikeServiceImpl implements LikeService {
 
 	private PersonalErrorDomain getLikeTypeNotFoundMessage(String likeType) {
 		switch (likeType) {
+			case LikeConstant.LIKE_FLAC :
 			case LikeConstant.LIKE_CHANNEL :
 				return PersonalErrorDomain.CHANNEL_NOT_FOUND;
 			case LikeConstant.LIKE_ALBUM :
@@ -303,6 +308,7 @@ public class LikeServiceImpl implements LikeService {
 
 	private PersonalErrorDomain getLikeTypeDuplicated(String likeType) {
 		switch (likeType) {
+			case LikeConstant.LIKE_FLAC :
 			case LikeConstant.LIKE_CHANNEL :
 				return PersonalErrorDomain.CHANNEL_DUPLICATED_LIKE;
 			case LikeConstant.LIKE_ALBUM :
@@ -320,6 +326,7 @@ public class LikeServiceImpl implements LikeService {
 
 	private PersonalErrorDomain getLikeTypeOverAdd(String likeType) {
 		switch (likeType) {
+			case LikeConstant.LIKE_FLAC :
 			case LikeConstant.LIKE_CHANNEL :
 				return PersonalErrorDomain.CHANNEL_OVER_ADD_LIKE;
 			case LikeConstant.LIKE_ALBUM :
