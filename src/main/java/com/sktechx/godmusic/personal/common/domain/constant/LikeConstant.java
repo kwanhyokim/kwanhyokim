@@ -14,4 +14,7 @@ public class LikeConstant {
 	public final static String LIKE_ARTIST = "ARTIST";
 	public final static String LIKE_TRACK = "TRACK";
 	public final static String LIKE_PLAYLIST = "PLAYLIST";
+
+	public final static String LIKE_FLAC = "FLAC";
+
 }
