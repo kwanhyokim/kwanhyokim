@@ -178,11 +178,11 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         Date updateDtime = null;
 
         Optional<Panel> firstPanel = recommendPanelList.stream().max(
-                Comparator.comparing(o -> o.getContent().getUpdateDtime()));
+                Comparator.comparing(o -> o.getContent().getCreateDtime()));
 
         if(firstPanel.isPresent()){
             mostRecentPanelIndex = recommendPanelList.indexOf(firstPanel.get());
-            updateDtime = firstPanel.get().getContent().getUpdateDtime();
+            updateDtime = firstPanel.get().getContent().getCreateDtime();
         }
 
         recommendPanelResponse.setList(recommendPanelList);
