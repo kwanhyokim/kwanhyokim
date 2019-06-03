@@ -78,16 +78,19 @@ public class LikeServiceImpl implements LikeService {
 		List<Long> chartIds = new ArrayList<>();
 
 		for (LikeTypeVo l : likeTypeVos) {
-			if (l.getLikeType().equals("CHNL")) {
+			if (LikeConstant.LIKE_CHANNEL.equals(l.getLikeType()) ||
+					LikeConstant.LIKE_FLAC.equals(l.getLikeType())
+			) {
 				chnlIds.add(l.getLikeTypeId());
-			} else if (l.getLikeType().equals("CHART")) {
+
+			} else if (LikeConstant.LIKE_CHART.equals(l.getLikeType())) {
 				chartIds.add(l.getLikeTypeId());
 			}
 		}
 
 		Boolean exceptFlacChnl = false;
 
-		if(!ObjectUtils.isEmpty(appVersion) && new ComparableVersion(appVersion).compareTo( new ComparableVersion("4.6.0")) >= 0 ){
+		if(!ObjectUtils.isEmpty(appVersion) && new ComparableVersion(appVersion).compareTo( new ComparableVersion("4.6.0")) < 0 ){
 			exceptFlacChnl = true;
 		}
 
