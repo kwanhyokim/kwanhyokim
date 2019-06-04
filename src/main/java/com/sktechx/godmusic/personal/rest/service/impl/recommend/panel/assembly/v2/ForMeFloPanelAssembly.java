@@ -10,10 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -57,6 +54,18 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
 
         appendRecommendCfTrackPanelList(personalPhaseMeta, myPanelList, 4);
         appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
+
+        if(!CollectionUtils.isEmpty(myPanelList)){
+
+            for(int i=0; i<myPanelList.size(); i++){
+
+                if( !CollectionUtils.isEmpty(myPanelList.get(i).getImgList()) && myPanelList.get(i).getImgList().size() >=2 ) {
+                    myPanelList.get(i).setImgList(
+                            Arrays.asList(myPanelList.get(i).getImgList().get(i%2)));
+                }
+
+            }
+        }
 
         Optional<Panel> liveChartPanel = null;
         Optional<Panel> kidsChartPanel = null;

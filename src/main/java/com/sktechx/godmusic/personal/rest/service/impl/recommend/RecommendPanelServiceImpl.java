@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
@@ -51,6 +50,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedArtistVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedGenreVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedTrackVo;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.repository.ArtistMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
@@ -284,12 +284,20 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
 	private List<ImageInfo> getRecommendPanelInfoBgImage(RecommendPanelContentType recommendPanelContentType,Long panelContentId, OsType osType , int dispSn){
 
-        String imgUrl = recommendReadMapper.selectRecommendPanelInfoBgImageUrl(recommendPanelContentType, panelContentId, osType , dispSn);
+        List<String> imgUrlList = recommendReadMapper.selectRecommendPanelInfoBgImageUrl(recommendPanelContentType, panelContentId, osType , dispSn);
 
-        if(StringUtils.isEmpty(imgUrl)) {
+        String imgUrl;
+        if(CollectionUtils.isEmpty(imgUrlList)) {
             List<ImageInfo> imageInfoList = getRecommendPanelDefaultImageList(osType);
 
             imgUrl = imageInfoList.get(0).getUrl();
+        }else{
+
+            if(dispSn < imgUrlList.size()) {
+                imgUrl = imgUrlList.get(dispSn);
+            }else{
+                imgUrl = imgUrlList.get(0);
+            }
         }
 
         return makePanelBackGroundImageList(imgUrl);
@@ -438,14 +446,16 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         ListDto<List<RecommendPanelTrackDto>> trackList = getRecommendPanelTrackList(characterNo, recommendPanelContentType, panelContentId);
 
 
-        return getRecommendPanelInfoDto(recommendPanelContentType, panelContentId, osType, trackList);
+        return getRecommendPanelInfoDto(recommendPanelContentType, panelContentId, characterNo, osType, trackList);
     }
 
     private RecommendPanelInfoDto getRecommendPanelInfoDto(
-            RecommendPanelContentType recommendPanelContentType, Long panelContentId, OsType osType,
+            RecommendPanelContentType recommendPanelContentType, Long panelContentId, Long characterNo, OsType osType,
             ListDto<List<RecommendPanelTrackDto>> trackList) {
         RecommendPanelInfoDto panel = null;
         String title;
+
+        PersonalPhaseMeta personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType, "4.6.0");
 
         int trackCount = 0;
 
@@ -494,10 +504,25 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
                 }
 
+
+                Optional<PersonalPanel> optionalPersonalPanel = personalPhaseMeta.getRecommendPersonalPanelList(RecommendPanelContentType.RC_CF_TR).stream().filter(
+                        personalPanel -> panelContentId.equals(personalPanel.getRecommendId())
+                ).findFirst();
+
+                int dispSn = 0;
+
+                if(!ObjectUtils.isEmpty(optionalPersonalPanel) && optionalPersonalPanel.isPresent()){
+                    dispSn = personalPhaseMeta.getRecommendPersonalPanelList(RecommendPanelContentType.RC_CF_TR).indexOf(optionalPersonalPanel.get());
+
+                    if(dispSn >= 2){
+                        dispSn %= 2;
+                    }
+                }
+
                 panel = RecommendPanelInfoDto.builder()
                         .title(title)
                         .subTitle(subTitle)
-                        .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType , 0))
+                        .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType , dispSn))
                         .trackCount(trackCount)
                         .newYn(newYn)
                         .renewDtime(createDTime)

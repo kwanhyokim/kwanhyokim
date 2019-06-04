@@ -82,7 +82,7 @@ public interface RecommendReadMapper {
     List<SimilarTrackDto> selectSimilarTrackListByIdList(@Param("trackIds") List<Long> trackIds);
 
 
-    String selectRecommendPanelInfoBgImageUrl(@Param("recommendPanelContentType") RecommendPanelContentType recommendPanelContentType
+    List<String> selectRecommendPanelInfoBgImageUrl(@Param("recommendPanelContentType") RecommendPanelContentType recommendPanelContentType
             , @Param("rcmmdId") Long rcmmdId
             , @Param("osType") OsType osType
             , @Param("dispSn") int dispSn);
