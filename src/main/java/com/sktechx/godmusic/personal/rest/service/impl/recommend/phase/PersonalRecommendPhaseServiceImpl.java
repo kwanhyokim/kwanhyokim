@@ -10,6 +10,17 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.phase;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
@@ -30,16 +41,6 @@ import com.sktechx.godmusic.personal.rest.service.impl.recommend.RecommendPanelA
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
 import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.PERSONAL_RECOMMEND_PHASE_KEY;
@@ -176,7 +177,7 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
         }).map(panel->{
             PanelContentVo content = panel.getContent();
             if(content != null && content.getId() != null){
-                return content.getId();
+                return (Long) content.getId();
             }
             return null;
         }).collect(Collectors.toList());
