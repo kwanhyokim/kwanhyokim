@@ -23,5 +23,7 @@ public interface OcrMapper {
 
     OcrFileDto selectOcrFile(@Param("characterNo")Long characterNo, @Param("ocrNo")Long ocrNo, @Param("ocrFileNo")Integer ocrFileNo);
 
+    OcrDto selectOcr(@Param("ocrNo") Long ocrNo);
+
 }
 

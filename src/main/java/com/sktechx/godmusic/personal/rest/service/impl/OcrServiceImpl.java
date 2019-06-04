@@ -4,6 +4,7 @@ import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
+import com.sktechx.godmusic.personal.common.domain.type.AnalsStatusType;
 import com.sktechx.godmusic.personal.common.domain.type.AwsBucketType;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
@@ -80,7 +81,18 @@ public class OcrServiceImpl implements OcrService {
         }
 
         log.info(multipartFile.getOriginalFilename());
-        AwsFileVo awsFileVo = uploadFile(multipartFile, AwsBucketType.OCR, memberNo);
+        AwsFileVo awsFileVo = null;
+        try {
+            awsFileVo = uploadFile(multipartFile, AwsBucketType.OCR, memberNo);
+        }catch (Exception e){
+            //한번이라도 파일 업로드 시도시 파일업로드 상태를 Y로 함
+            ocrHelperService.updateOcrFile(OcrFileDto.builder()
+                    .ocrNo(ocrNo)
+                    .ocrFileNo(ocrFileNo)
+                    .analsStatusType(AnalsStatusType.FAIL_UPLOAD)
+                    .build());
+            throw new CommonBusinessException(PersonalErrorDomain.FAIL_UPLOAD_OCR_FILE);
+        }
 
         ocrHelperService.updateOcrFile(OcrFileDto.builder()
                 .ocrNo(ocrNo)
@@ -149,10 +161,12 @@ public class OcrServiceImpl implements OcrService {
             throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
         }
         int completeJobCount = ocrMapper.countDoneProcessionOcrFile(ocrNo);
+        OcrDto ocrDto = ocrMapper.selectOcr(ocrNo);
 
         return GetOcrStatusResponse.builder()
                 .totalCount(totalCount)
                 .completeJobCount(completeJobCount)
+                .confrmYn(ocrDto.getConfrmYn())
                 .build();
     }
 
