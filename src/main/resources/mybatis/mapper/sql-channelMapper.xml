@@ -95,6 +95,8 @@
             d.track_nm,
             d.agency_id,
             d.album_id,
+            h.artist_id,
+            h.artist_nm,
             f.album_img_size as size,
             f.album_img_url as url,
             d.reprsnt_artist_id,
@@ -109,6 +111,9 @@
                     AND e.disp_status_yn = 'Y'
                     AND now() BETWEEN e.disp_start_dtime AND e.disp_end_dtime
                     LEFT OUTER JOIN tb_album_img f ON e.album_id = f.album_id
+                    LEFT OUTER JOIN ted_trackartist g ON d.track_id = g.track_id
+                    AND g.rp_yn = 'Y'
+                    LEFT OUTER JOIN ted_artist h ON g.artist_id = h.artist_id
         WHERE
             a.chnl_id IN
         <foreach item="channelId" index="index" collection="channelIdList" open="(" separator="," close=")">

@@ -10,10 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,8 +109,8 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
 
             Collections.shuffle(imageInfoList);
 
-            if( imageInfoList.size() > 5){
-                imageInfoList = imageInfoList.subList(0,5);
+            if( imageInfoList.size() > 1){
+                imageInfoList = Arrays.asList(imageInfoList.get(0));
             }
 
             TPOChannelPanel tpoChannelPanel = new TPOChannelPanel(channel, imageInfoList);
