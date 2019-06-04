@@ -19,9 +19,11 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.client.DisplayClient;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ChannelListResponse;
@@ -114,10 +116,13 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
                 imageInfoList = imageInfoList.subList(0,5);
             }
 
-            return new TPOChannelPanel(
-                    channel ,
-                    imageInfoList
-            );
+            TPOChannelPanel tpoChannelPanel = new TPOChannelPanel(channel, imageInfoList);
+
+            if(!ObjectUtils.isEmpty(tpoChannelPanel)){
+                tpoChannelPanel.setType(RecommendPanelType.POPULAR_CHANNEL);
+            }
+
+            return tpoChannelPanel;
         }
 
 }
