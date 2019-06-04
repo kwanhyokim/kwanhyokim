@@ -13,9 +13,13 @@ package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.util.ObjectUtils;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnum;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
@@ -51,4 +55,15 @@ public class PanelContentVo {
     private YnType renewYn;
 
     private GenreVo genre;
+
+    @JsonIgnore
+    private OsType osType;
+
+    public Object getId(){
+        if(ObjectUtils.isEmpty(osType) || !OsType.WEB.equals(osType)){
+            return id;
+        }else{
+            return String.valueOf(id);
+        }
+    }
 }

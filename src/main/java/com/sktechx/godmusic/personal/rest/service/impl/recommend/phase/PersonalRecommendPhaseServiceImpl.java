@@ -187,7 +187,7 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
         }).map(panel->{
             PanelContentVo content = panel.getContent();
             if(content != null && content.getId() != null){
-                return content.getId();
+                return (Long) content.getId();
             }
             return null;
         }).collect(Collectors.toList());

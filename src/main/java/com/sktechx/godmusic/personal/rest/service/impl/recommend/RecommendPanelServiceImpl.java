@@ -136,6 +136,12 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             }
         }
 
+        if(!CollectionUtils.isEmpty(panelList)){
+            panelList.stream().forEach(
+                    panel -> panel.getContent().setOsType(osType)
+            );
+        }
+
         return panelList;
     }
     @Override
