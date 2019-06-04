@@ -11,7 +11,6 @@
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -96,29 +95,16 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
                             }
                         });
 
-
-                List<ImageInfo> imageInfoList = recommendReadMapper.selectTpoAndThemeImageList(personalPhaseMeta.getOsType());
-
-                for(int i =0; i<panelList.size(); i++){
-                    ImageInfo imageInfo;
-
-                    try {
-                        imageInfo = imageInfoList.get(i);
-                    }catch (Exception e){
-                        imageInfo = imageInfoList.get(0);
-                    }
-
-                    panelList.get(i).setImgList(new ArrayList<>(Arrays.asList(imageInfo)));
-
-                }
-
             }
         }
 
         private Panel createPopularChannelPanel(final ChnlDto channel,final PersonalPhaseMeta personalPhaseMeta){
+
+            List<ImageInfo> imageInfoList = recommendReadMapper.selectTpoAndThemeImageList(personalPhaseMeta.getOsType());
+
             return new TPOChannelPanel(
                     channel ,
-                    getDefaultBgImageList( channel.getImgList(),personalPhaseMeta.getOsType() )
+                    imageInfoList
             );
         }
 
