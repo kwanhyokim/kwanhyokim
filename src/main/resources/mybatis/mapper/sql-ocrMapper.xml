@@ -183,4 +183,17 @@
 			a.ocr_no = #{ocrNo}
     </select>
 
+	<select id="selectOcr" resultType="com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrDto">
+		SELECT
+			ocr_no,
+			member_no,
+			character_no,
+			member_dvc_no,
+			confrm_yn
+		FROM
+			tb_ocr
+		WHERE
+			ocr_no = #{ocrNo}
+	</select>
+
 </mapper>
