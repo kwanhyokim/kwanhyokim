@@ -18,6 +18,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
@@ -88,11 +89,11 @@ public class PreferGenreThemePanelAssembly extends PanelSignAssembly {
             kidsChartPanel = chartPanelList.stream().filter(panel -> RecommendPanelType.KIDS_CHART.equals(panel.getType())).findFirst();
         }
 
-        if(liveChartPanel.isPresent()){
+        if(!ObjectUtils.isEmpty(liveChartPanel) && liveChartPanel.isPresent()){
             panelSize--;
         }
 
-        if(kidsChartPanel.isPresent()){
+        if(!ObjectUtils.isEmpty(kidsChartPanel) && kidsChartPanel.isPresent()){
             panelSize--;
         }
 
@@ -102,11 +103,11 @@ public class PreferGenreThemePanelAssembly extends PanelSignAssembly {
 
         panelList.addAll(myPanelList);
 
-        if(liveChartPanel.isPresent()) {
+        if(!ObjectUtils.isEmpty(liveChartPanel) && liveChartPanel.isPresent()) {
             panelList.add(0, liveChartPanel.get());
         }
 
-        if(kidsChartPanel.isPresent()){
+        if(!ObjectUtils.isEmpty(kidsChartPanel) && kidsChartPanel.isPresent()){
             panelList.add(kidsChartPanel.get());
         }
 

@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
@@ -54,10 +55,8 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
         List<Panel> myPanelList = new ArrayList<>();
         List<Panel> chartPanelList = new ArrayList<>();
 
-        appendRecommendCfTrackPanelList(personalPhaseMeta, myPanelList, 7);
+        appendRecommendCfTrackPanelList(personalPhaseMeta, myPanelList, 4);
         appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
-
-        int panelSize = 7;
 
         Optional<Panel> liveChartPanel = null;
         Optional<Panel> kidsChartPanel = null;
@@ -67,25 +66,13 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
             kidsChartPanel = chartPanelList.stream().filter(panel -> RecommendPanelType.KIDS_CHART.equals(panel.getType())).findFirst();
         }
 
-        if(liveChartPanel.isPresent()){
-            panelSize--;
-        }
-
-        if(kidsChartPanel.isPresent()){
-            panelSize--;
-        }
-
-        if(myPanelList.size() > panelSize){
-            myPanelList = myPanelList.subList(0, panelSize - 1);
-        }
-
         panelList.addAll(myPanelList);
 
-        if(liveChartPanel.isPresent()) {
+        if(!ObjectUtils.isEmpty(liveChartPanel) && liveChartPanel.isPresent()) {
             panelList.add(0, liveChartPanel.get());
         }
 
-        if(kidsChartPanel.isPresent()){
+        if(!ObjectUtils.isEmpty(kidsChartPanel) &&kidsChartPanel.isPresent()){
             panelList.add(kidsChartPanel.get());
         }
 

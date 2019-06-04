@@ -1040,7 +1040,7 @@
         LEFT OUTER JOIN tb_map_img_rcmmd_img b ON rcmmd_table.svc_genre_id = b.img_content_id
         AND b.rcmmd_type_id = 'RC_CF_TR'
         AND b.os_type = #{osType}
-        AND b.img_disp_type = 'MAIN_MID'
+        AND b.img_disp_type = 'MAIN_TOP'
         AND b.img_content_type = 'GENRE'
 
         ORDER BY rcmmd_table.disp_sn
@@ -1195,7 +1195,7 @@
         LEFT OUTER JOIN tb_rcmmd_img_mang b ON rcmmd_table.week = b.dfk_type
         AND rcmmd_table.panel_disp_sn = b.disp_sn
         AND b.rcmmd_type_id = 'RC_SML_TR'
-        AND b.img_disp_type = 'MAIN_MID'
+        AND b.img_disp_type = 'MAIN_TOP'
         AND b.os_type = #{osType}
         ORDER BY rcmmd_table.disp_sn
 
