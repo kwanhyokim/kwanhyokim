@@ -10,6 +10,10 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel;
 
+import java.util.List;
+
+import org.springframework.util.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sktechx.godmusic.lib.domain.code.YnType;
@@ -23,9 +27,6 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.GenreVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
 import lombok.Getter;
-import org.springframework.util.StringUtils;
-
-import java.util.List;
 
 /**
  * 설명 : 채널형 추천 패널
@@ -53,7 +54,7 @@ public abstract class ChannelPanel extends Panel{
 
     @Override
     protected void initialPanel(){
-        this.title = channel.getChnlDispNm();
+        this.title = (channel.getChnlDispNm() == null ? channel.getChnlNm() : channel.getChnlDispNm());
         this.subTitle = "";
         this.content = createPanelContent();
     }
@@ -77,7 +78,7 @@ public abstract class ChannelPanel extends Panel{
     }
 
     private static ChnlDto neverNullChannel(ChnlDto channel) throws CommonBusinessException {
-        if(channel == null || StringUtils.isEmpty(channel.getChnlDispNm()))
+        if(channel == null || (StringUtils.isEmpty(channel.getChnlDispNm()) && StringUtils.isEmpty(channel.getChnlNm())) )
             throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
         return channel;
     }

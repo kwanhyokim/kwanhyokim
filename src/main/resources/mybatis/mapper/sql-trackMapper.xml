@@ -180,7 +180,8 @@
 			    b.disp_status_yn displayYn,
 			    g.title albumTitle,
 			    h.artist_id repArtistId,
-				h.artist_nm repArtistNm
+				h.artist_nm repArtistNm,
+				b.svc_flac_yn
 			FROM
 				(
 				    SELECT
@@ -272,7 +273,8 @@
                IF(f.track_id is null, 'N', 'Y') AS likeYn,
                g.title AS albumTitle,
                h.artist_id AS repArtistId,
-               h.artist_nm AS repArtistNm
+               h.artist_nm AS repArtistNm,
+               a.svc_flac_yn
           FROM ( SELECT *
                    FROM ( SELECT a.member_no,
                                  a.character_no,
@@ -290,7 +292,8 @@
                                  b.album_id,
                                  b.reprsnt_artist_id,
                                  b.create_dtime,
-                                 b.update_dtime
+                                 b.update_dtime,
+                                 b.svc_flac_yn
                             FROM tb_most_listen_track a
                                 INNER JOIN tb_track b ON a.track_id = b.track_id AND b.disp_status_yn = 'Y' AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
                            WHERE a.member_no = #{memberNo}

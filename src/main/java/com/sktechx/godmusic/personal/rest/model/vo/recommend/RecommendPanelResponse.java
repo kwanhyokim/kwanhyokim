@@ -10,9 +10,12 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend;
 
+import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import lombok.Data;
 
@@ -27,4 +30,8 @@ import lombok.Data;
 public class RecommendPanelResponse {
     List<Panel> list;
     Integer mostRecentPanelIndex;
+
+    @JsonProperty("updateDateTime")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
+    private Date updateDtime;
 }

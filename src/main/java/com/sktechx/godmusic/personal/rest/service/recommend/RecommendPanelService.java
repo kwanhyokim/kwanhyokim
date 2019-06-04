@@ -18,6 +18,7 @@ import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelInfoDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 
 /**
@@ -30,7 +31,7 @@ public interface RecommendPanelService {
 
 	List<Panel> createRecommendPanelList(Long characterNo, OsType osType, String appVer);
 
-	List<Panel> createRecommendV2PanelList(Long characterNo, OsType osType, String appVer);
+	RecommendPanelResponse createRecommendV2PanelList(Long characterNo, OsType osType, String appVer);
 
     // added by bob 2018.08.01
     // edited by bob 2018.08.02

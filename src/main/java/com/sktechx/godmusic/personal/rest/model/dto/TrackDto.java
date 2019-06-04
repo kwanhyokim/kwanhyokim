@@ -10,16 +10,16 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import lombok.Data;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
 /**
  * 설명 : 트랙 DTO
@@ -89,6 +89,8 @@ public class TrackDto {
 
     @JsonIgnore
     private Date chnlRenewDtime;
+
+    private YnType svcFlacYn;
 
 }
 

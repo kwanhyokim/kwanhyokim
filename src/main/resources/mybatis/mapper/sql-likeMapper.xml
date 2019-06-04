@@ -67,54 +67,56 @@
     </resultMap>
 
     <select id="getLikeTrackByLikeType" resultMap="trackResultMap">
-        SELECT A.LIKE_TYPE_ID                                                          AS trackId
-             , A.DISP_SN
-             , A.TRACK_NM
-             , A.ALBUM_ID
-             , A.DISP_STATUS_YN                                                        AS displayYn
-             , A.AGENCY_ID
-             , IF(A.TITLE_YN = 'Y', 'Y', 'N')                                          AS titleYn
-             , A.CREATE_DTIME
-             , A.UPDATE_DTIME
-             , E.ALBUM_IMG_SIZE                                                        AS size
-             , E.ALBUM_IMG_URL                                                         AS url
+        SELECT A.like_type_id                                                          AS trackId
+             , A.disp_sn
+             , A.track_nm
+             , A.album_id
+             , A.disp_status_yn                                                        AS displayYn
+             , A.agency_id
+             , IF(A.title_yn = 'Y', 'Y', 'N')                                          AS titleYn
+             , A.create_dtime
+             , A.update_dtime
+             , E.album_img_size                                                        AS size
+             , E.album_img_url                                                         AS url
              , 'Y'                                                                     AS likeYn
-             , IF(A.STREAMING_PREMIUM_YN = 'Y' OR A.PPS_YN = 'Y', 'Y', 'N')            AS holdbackYn
-             , IF(A.ADULT_AUTH_NEED_TRACK_YN = 'Y', 'Y', 'N')                          AS adultAuthYn
-             , D.ARTIST_ID                                                             AS artistId
-             , D.ARTIST_NM                                                             AS artistNm
-             , F.TITLE                                                                 AS albumTitle
-             , G.ARTIST_ID                                                             AS repArtistId
-             , G.ARTIST_NM                                                             AS repArtistNm
+             , IF(A.streaming_premium_yn = 'Y' OR A.pps_yn = 'Y', 'Y', 'N')            AS holdbackYn
+             , IF(A.adult_auth_need_track_yn = 'Y', 'Y', 'N')                          AS adultAuthYn
+             , D.artist_id                                                             AS artistId
+             , D.artist_nm                                                             AS artistNm
+             , F.title                                                                 AS albumTitle
+             , G.artist_id                                                             AS repArtistId
+             , G.artist_nm                                                             AS repArtistNm
+             , A.svc_flac_yn
         FROM (
-             SELECT T1.LIKE_TYPE_ID
-                  , T1.DISP_SN
-                  , T1.UPDATE_DTIME AS LIKE_UPDATE_DTIME
-                  , T2.ALBUM_ID
-                  , T2.REPRSNT_ARTIST_ID
-                  , T2.TRACK_NM
-                  , T2.DISP_STATUS_YN
-                  , T2.AGENCY_ID
-                  , T2.TITLE_YN
-                  , T2.CREATE_DTIME
-                  , T2.UPDATE_DTIME
-                  , T2.STREAMING_PREMIUM_YN
-                  , T2.ADULT_AUTH_NEED_TRACK_YN
-                  , T2.PPS_YN
-             FROM TB_CHARACTER_LIKE T1
-                    INNER JOIN TB_TRACK T2 ON T1.LIKE_TYPE_ID = T2.TRACK_ID
-             WHERE T1.CHARACTER_NO = #{characterNo} AND T1.LIKE_TYPE = 'TRACK' AND T2.DISP_STATUS_YN = 'Y'
-                ORDER BY T1.DISP_SN ASC, T1.UPDATE_DTIME ASC
+             SELECT t1.like_type_id
+                  , t1.disp_sn
+                  , t1.update_dtime as like_update_dtime
+                  , t2.album_id
+                  , t2.reprsnt_artist_id
+                  , t2.track_nm
+                  , t2.disp_status_yn
+                  , t2.agency_id
+                  , t2.title_yn
+                  , t2.create_dtime
+                  , t2.update_dtime
+                  , t2.streaming_premium_yn
+                  , t2.adult_auth_need_track_yn
+                  , t2.pps_yn
+                  , t2.svc_flac_yn
+             FROM tb_character_like T1
+                    INNER JOIN tb_track T2 ON T1.like_type_id = T2.track_id
+             WHERE T1.character_no = #{characterNo} AND T1.like_type = 'TRACK' AND T2.disp_status_yn = 'Y'
+                ORDER BY T1.disp_sn ASC, T1.update_dtime ASC
                     LIMIT
                     #{pageable.offset} ,
                     #{pageable.pageSize}
              ) A
-               LEFT OUTER JOIN TED_TRACKARTIST C ON A.LIKE_TYPE_ID = C.TRACK_ID AND C.RP_YN = 'Y' AND C.DB_STS = 'A'
-               LEFT OUTER JOIN TED_ARTIST D ON C.ARTIST_ID = D.ARTIST_ID
-               LEFT OUTER JOIN TB_ALBUM_IMG E ON A.ALBUM_ID = E.ALBUM_ID
-               LEFT OUTER JOIN TED_ALBUM F ON A.ALBUM_ID = F.ALBUM_ID
-               LEFT OUTER JOIN TED_ARTIST G ON A.REPRSNT_ARTIST_ID = G.ARTIST_ID
-        ORDER BY A.DISP_SN ASC, A.LIKE_UPDATE_DTIME ASC, C.LISTORDER ASC
+               LEFT OUTER JOIN ted_trackartist C ON A.like_type_id = C.track_id AND C.rp_yn = 'Y' AND C.db_sts = 'A'
+               LEFT OUTER JOIN ted_artist D ON C.artist_id = D.artist_id
+               LEFT OUTER JOIN tb_album_img E ON A.album_id = E.album_id
+               LEFT OUTER JOIN ted_album F ON A.album_id = F.album_id
+               LEFT OUTER JOIN ted_artist G ON A.reprsnt_artist_id = G.artist_id
+        ORDER BY A.disp_sn ASC, A.like_update_dtime ASC, C.listorder ASC
     </select>
 
     <select id="getLikeAlbumByLikeType" resultMap="albumResultMap">
@@ -287,7 +289,7 @@
         <if test="chnlIds == null">
             AND 1 = 0
         </if>
-                               AND LIKE_TYPE = 'CHNL') L
+                               AND LIKE_TYPE IN ('CHNL', 'FLAC')) L
                      INNER JOIN TB_CHNL A
                          ON L.LIKE_TYPE_ID = A.CHNL_ID
                        AND A.DISP_STATUS_TYPE = 'Y'
@@ -340,9 +342,9 @@
                          , UPDATE_DTIME
                     FROM TB_CHARACTER_LIKE
                     WHERE CHARACTER_NO = #{characterNo}
-                            AND LIKE_TYPE = 'CHNL') L
+                            AND LIKE_TYPE IN ('CHNL','FLAC')) L
                     INNER JOIN TB_CHNL A
-                               ON L.LIKE_TYPE_ID = A.CHNL_ID AND A.DISP_STATUS_TYPE = 'Y' AND A.CHNL_TYPE IN ('MM', 'DJ')
+                               ON L.LIKE_TYPE_ID = A.CHNL_ID AND A.DISP_STATUS_TYPE = 'Y' AND A.CHNL_TYPE IN ('MM', 'DJ', 'FLAC')
                                    AND EXISTS(SELECT * FROM TB_ALBUM_IMG I WHERE A.ALBUM_ID = I.ALBUM_ID)) T1
         ORDER BY DISP_SN ASC, UPDATE_DTIME ASC
         LIMIT
@@ -389,9 +391,9 @@
                         LIKE_TYPE_ID
                 FROM TB_CHARACTER_LIKE
                 WHERE CHARACTER_NO = #{characterNo}
-                        AND LIKE_TYPE = 'CHNL') L
+                        AND LIKE_TYPE = #{likeType}) L
                     INNER JOIN TB_CHNL A
-                        ON L.LIKE_TYPE_ID = A.CHNL_ID AND A.DISP_STATUS_TYPE = 'Y' AND A.CHNL_TYPE IN ('MM', 'DJ')
+                        ON L.LIKE_TYPE_ID = A.CHNL_ID AND A.DISP_STATUS_TYPE = 'Y' AND A.CHNL_TYPE IN ('MM', 'DJ', 'FLAC')
                   AND EXISTS(SELECT * FROM TB_ALBUM_IMG I WHERE A.ALBUM_ID = I.ALBUM_ID)
     </select>
 

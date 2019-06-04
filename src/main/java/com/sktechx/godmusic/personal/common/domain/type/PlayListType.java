@@ -1,9 +1,10 @@
 package com.sktechx.godmusic.personal.common.domain.type;
 
+import org.apache.ibatis.type.MappedTypes;
+
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnum;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnumTypeHandler;
-import org.apache.ibatis.type.MappedTypes;
 
 /**
  * Created by Kobe.
@@ -16,6 +17,7 @@ public enum PlayListType implements CodeEnum {
 	CHNL("CHNL", "체널")
 	, CHART("CHART" , "차트")
 	, RANK_CHART("RANK_CHART" , "랭크 차트")
+	, FLAC ("FLAC", "FLAC 채널")
 	;
 
 	private final String value;

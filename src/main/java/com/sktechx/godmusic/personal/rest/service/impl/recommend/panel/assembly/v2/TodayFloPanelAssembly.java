@@ -13,11 +13,14 @@ package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.PreferSimilarTrackPanel;
@@ -43,14 +46,49 @@ public class TodayFloPanelAssembly extends PanelSignAssembly {
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
         final List<Panel> panelList = new ArrayList<>();
-
-
         return panelList;
     }
     @Override
     protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){
-        appendSimilarTrackPanelList(personalPhaseMeta, panelList, 7);
-        appendPreferenceChartPanel(personalPhaseMeta,panelList);
+
+        List<Panel> myPanelList = new ArrayList<>();
+        List<Panel> chartPanelList = new ArrayList<>();
+
+        appendSimilarTrackPanelList(personalPhaseMeta, myPanelList, 7);
+        appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
+
+        int panelSize = 7;
+
+        Optional<Panel> liveChartPanel = null;
+        Optional<Panel> kidsChartPanel = null;
+
+        if(!CollectionUtils.isEmpty(chartPanelList)){
+            liveChartPanel = chartPanelList.stream().filter(panel -> RecommendPanelType.LIVE_CHART.equals(panel.getType())).findFirst();
+            kidsChartPanel = chartPanelList.stream().filter(panel -> RecommendPanelType.KIDS_CHART.equals(panel.getType())).findFirst();
+        }
+
+        if(!ObjectUtils.isEmpty(liveChartPanel) && liveChartPanel.isPresent()){
+            panelSize--;
+        }
+
+        if(!ObjectUtils.isEmpty(kidsChartPanel) && kidsChartPanel.isPresent()){
+            panelSize--;
+        }
+
+        if(myPanelList.size() > panelSize){
+            myPanelList = myPanelList.subList(0, panelSize - 1);
+        }
+
+        panelList.addAll(myPanelList);
+
+        if(!ObjectUtils.isEmpty(liveChartPanel) &&liveChartPanel.isPresent()) {
+            panelList.add(0, liveChartPanel.get());
+        }
+
+        if(!ObjectUtils.isEmpty(kidsChartPanel) &&kidsChartPanel.isPresent()){
+            panelList.add(kidsChartPanel.get());
+        }
+
         sort(personalPhaseMeta , panelList);
 
     }

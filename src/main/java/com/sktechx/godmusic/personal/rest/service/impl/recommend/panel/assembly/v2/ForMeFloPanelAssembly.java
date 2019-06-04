@@ -13,11 +13,14 @@ package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.RcmmdTrackPanel;
@@ -48,8 +51,30 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
 
     @Override
     protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){
-        appendRecommendCfTrackPanelList(personalPhaseMeta, panelList, 4);
-        appendPreferenceChartPanel(personalPhaseMeta,panelList);
+
+        List<Panel> myPanelList = new ArrayList<>();
+        List<Panel> chartPanelList = new ArrayList<>();
+
+        appendRecommendCfTrackPanelList(personalPhaseMeta, myPanelList, 4);
+        appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
+
+        Optional<Panel> liveChartPanel = null;
+        Optional<Panel> kidsChartPanel = null;
+
+        if(!CollectionUtils.isEmpty(chartPanelList)){
+            liveChartPanel = chartPanelList.stream().filter(panel -> RecommendPanelType.LIVE_CHART.equals(panel.getType())).findFirst();
+            kidsChartPanel = chartPanelList.stream().filter(panel -> RecommendPanelType.KIDS_CHART.equals(panel.getType())).findFirst();
+        }
+
+        panelList.addAll(myPanelList);
+
+        if(!ObjectUtils.isEmpty(liveChartPanel) && liveChartPanel.isPresent()) {
+            panelList.add(0, liveChartPanel.get());
+        }
+
+        if(!ObjectUtils.isEmpty(kidsChartPanel) &&kidsChartPanel.isPresent()){
+            panelList.add(kidsChartPanel.get());
+        }
 
         sort(personalPhaseMeta , panelList);
 

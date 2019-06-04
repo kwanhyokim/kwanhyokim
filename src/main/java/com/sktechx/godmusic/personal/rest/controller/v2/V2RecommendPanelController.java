@@ -11,13 +11,11 @@
 package com.sktechx.godmusic.personal.rest.controller.v2;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
@@ -83,30 +81,8 @@ public class V2RecommendPanelController {
 		    @RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType,
 		    @RequestHeader(value = CommonConstant.X_GM_APP_VERSION) String appVer
     ){
-		RecommendPanelResponse recommendPanelResponse = new RecommendPanelResponse();
-	    List<Panel> recommendPanelList = recommendPanelService
+		RecommendPanelResponse recommendPanelResponse =  recommendPanelService
 			    .createRecommendV2PanelList(ctx.getCharacterNo(), ctx.getOsType(), ctx.getAppVer());
-
-	    if(CollectionUtils.isEmpty(recommendPanelList)){
-	    	return null;
-	    }
-
-	    Integer mostRecentPanelIndex = 0;
-
-	    PersonalPhaseMeta personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(ctx.getCharacterNo(),ctx.getOsType(), ctx.getAppVer());
-	    if(!ObjectUtils.isEmpty(personalPhaseMeta)) {
-	    	if(!ObjectUtils.isEmpty(personalPhaseMeta.getRecommendPersonalPanelTopItem())) {
-
-			   Optional<Panel> panel = recommendPanelList.stream().filter(x-> personalPhaseMeta.getRecommendPersonalPanelTopItem().getRecommendId().equals(x.getContent().getId())).findFirst();
-
-			   if(panel.isPresent()){
-			   	    mostRecentPanelIndex = recommendPanelList.indexOf(panel.get());
-			   }
-		    }
-	    }
-
-	    recommendPanelResponse.setList(recommendPanelList);
-	    recommendPanelResponse.setMostRecentPanelIndex(mostRecentPanelIndex);
 
 		return new CommonApiResponse<>(recommendPanelResponse);
     }

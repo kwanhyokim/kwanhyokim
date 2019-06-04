@@ -224,7 +224,7 @@ public class ChannelServiceImpl implements ChannelService {
 
         Boolean exceptFlacChnl = false;
 
-        if(!ObjectUtils.isEmpty(appVersion) && new ComparableVersion(appVersion).compareTo( new ComparableVersion("4.6.0")) >= 0 ){
+        if(!ObjectUtils.isEmpty(appVersion) && new ComparableVersion(appVersion).compareTo( new ComparableVersion("4.6.0")) < 0 ){
             exceptFlacChnl = true;
         }
 

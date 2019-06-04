@@ -25,6 +25,7 @@ import com.sktechx.godmusic.lib.mybatis.code.CodeEnumTypeHandler;
 public enum ChannelType implements CodeEnum {
     GENERAL("GENERAL", "일반 채널"),
     MY("MY", "사용자 개인 채널"),
+    CHNL("CHNL", "채널"),
     FLAC("FLAC", "FLONDATA 전용 채널");
 
     private final String code;

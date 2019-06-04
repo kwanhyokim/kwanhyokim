@@ -1,10 +1,11 @@
 package com.sktechx.godmusic.personal.rest.model.vo.like;
 
-import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import javax.validation.constraints.NotNull;
+
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.NotNull;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 /**
  * Created by Kobe.
@@ -19,7 +20,7 @@ public class LikeRequest {
 	@Length(max = 10)
 	@NotNull
 	@ApiModelProperty(name = "likeType", value = "좋아하는 타입(CHNL: 채널, ALBUM: 앨범, CHART: 차트, ARTIST: 아티스트, TRACK: 곡)",
-			allowableValues = "CHNL, ALBUM, CHART, ARTIST, TRACK")
+			allowableValues = "CHNL, ALBUM, CHART, ARTIST, TRACK, FLAC")
 	private String likeType;
 
 	@Length(max = 20)

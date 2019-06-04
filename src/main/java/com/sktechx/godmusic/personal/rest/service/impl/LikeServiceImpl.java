@@ -78,16 +78,19 @@ public class LikeServiceImpl implements LikeService {
 		List<Long> chartIds = new ArrayList<>();
 
 		for (LikeTypeVo l : likeTypeVos) {
-			if (l.getLikeType().equals("CHNL")) {
+			if (LikeConstant.LIKE_CHANNEL.equals(l.getLikeType()) ||
+					LikeConstant.LIKE_FLAC.equals(l.getLikeType())
+			) {
 				chnlIds.add(l.getLikeTypeId());
-			} else if (l.getLikeType().equals("CHART")) {
+
+			} else if (LikeConstant.LIKE_CHART.equals(l.getLikeType())) {
 				chartIds.add(l.getLikeTypeId());
 			}
 		}
 
 		Boolean exceptFlacChnl = false;
 
-		if(!ObjectUtils.isEmpty(appVersion) && new ComparableVersion(appVersion).compareTo( new ComparableVersion("4.6.0")) >= 0 ){
+		if(!ObjectUtils.isEmpty(appVersion) && new ComparableVersion(appVersion).compareTo( new ComparableVersion("4.6.0")) < 0 ){
 			exceptFlacChnl = true;
 		}
 
@@ -256,7 +259,10 @@ public class LikeServiceImpl implements LikeService {
 
 		int likeTotalCnt = getLikeTotalCount(request.getLikeType(), characterNo);
 
-		if(LikeConstant.LIKE_CHANNEL.equals(request.getLikeType())) {
+		if(LikeConstant.LIKE_CHANNEL.equals(request.getLikeType()) ||
+				LikeConstant.LIKE_FLAC.equals(request.getLikeType())
+
+		) {
 			likeTotalCnt += getLikeTotalCount(LikeConstant.LIKE_CHART, characterNo);
 		} else if(LikeConstant.LIKE_CHART.equals(request.getLikeType())) {
 			likeTotalCnt += getLikeTotalCount(LikeConstant.LIKE_CHANNEL, characterNo);
@@ -269,8 +275,9 @@ public class LikeServiceImpl implements LikeService {
 
 	private int getLikeTotalCount(String likeType, Long characterNo) {
 		switch (likeType) {
+			case LikeConstant.LIKE_FLAC :
 			case LikeConstant.LIKE_CHANNEL :
-				return likeMapper.getLikeChannelCountByLikeType(characterNo);
+				return likeMapper.getLikeChannelCountByLikeType(likeType, characterNo);
 			case LikeConstant.LIKE_ALBUM :
 				return likeMapper.getLikeAlbumCountByLikeType(characterNo);
 			case LikeConstant.LIKE_CHART :
@@ -286,6 +293,7 @@ public class LikeServiceImpl implements LikeService {
 
 	private PersonalErrorDomain getLikeTypeNotFoundMessage(String likeType) {
 		switch (likeType) {
+			case LikeConstant.LIKE_FLAC :
 			case LikeConstant.LIKE_CHANNEL :
 				return PersonalErrorDomain.CHANNEL_NOT_FOUND;
 			case LikeConstant.LIKE_ALBUM :
@@ -303,6 +311,7 @@ public class LikeServiceImpl implements LikeService {
 
 	private PersonalErrorDomain getLikeTypeDuplicated(String likeType) {
 		switch (likeType) {
+			case LikeConstant.LIKE_FLAC :
 			case LikeConstant.LIKE_CHANNEL :
 				return PersonalErrorDomain.CHANNEL_DUPLICATED_LIKE;
 			case LikeConstant.LIKE_ALBUM :
@@ -320,6 +329,7 @@ public class LikeServiceImpl implements LikeService {
 
 	private PersonalErrorDomain getLikeTypeOverAdd(String likeType) {
 		switch (likeType) {
+			case LikeConstant.LIKE_FLAC :
 			case LikeConstant.LIKE_CHANNEL :
 				return PersonalErrorDomain.CHANNEL_OVER_ADD_LIKE;
 			case LikeConstant.LIKE_ALBUM :
@@ -339,8 +349,11 @@ public class LikeServiceImpl implements LikeService {
 		CommonApiResponse response;
 		log.info("validMeta :: " + likeType);
 		switch (likeType) {
+			case LikeConstant.LIKE_FLAC :
 			case LikeConstant.LIKE_CHANNEL :
 				response = metaApiProxy.channel(likeTypeId);
+				log.info("XXXXXXXXXX {}", response);
+
 				break;
 			case LikeConstant.LIKE_ALBUM :
 				response = metaApiProxy.album(likeTypeId);
