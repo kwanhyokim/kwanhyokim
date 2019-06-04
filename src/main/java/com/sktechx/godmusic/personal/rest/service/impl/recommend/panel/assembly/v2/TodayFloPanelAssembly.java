@@ -53,8 +53,8 @@ public class TodayFloPanelAssembly extends PanelSignAssembly {
         List<Panel> myPanelList = new ArrayList<>();
         List<Panel> chartPanelList = new ArrayList<>();
 
-        appendSimilarTrackPanelList(personalPhaseMeta, panelList, 7);
-        appendPreferenceChartPanel(personalPhaseMeta,panelList);
+        appendSimilarTrackPanelList(personalPhaseMeta, myPanelList, 7);
+        appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
 
         int panelSize = 7;
 

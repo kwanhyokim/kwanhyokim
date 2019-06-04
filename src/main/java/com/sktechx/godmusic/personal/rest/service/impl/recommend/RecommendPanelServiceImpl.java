@@ -161,17 +161,20 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             recommendPanelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
 
         }catch(CommonBusinessException cbex){
-            log.error("createRecommendPanel business exception : {}", cbex.getDisplayMessage());
+            log.error("createRecommendPanelV2 business exception : {}", cbex.getDisplayMessage());
         }catch(Exception ex){
-            log.error("createRecommendPanel not catched exception : {}",ex.getMessage());
+            log.error("createRecommendPanelV2 not catched exception : {}",ex.getMessage());
         }finally{
             if(CollectionUtils.isEmpty(recommendPanelList)){
                 if(panelAssembly == null)
                     panelAssembly = recommendPanelAssemblyFactory.getRecommendPanelAssembly();
+
+                    log.info("recommendPanelAssembly chosen : {}", panelAssembly);
+
                 try{
                     recommendPanelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
                 }catch(Exception e){
-                    log.error("createRecommendPanel recovery not catched exception : {}",e.getMessage());
+                    log.error("createRecommendPanelV2 recovery not catched exception : {}",e.getMessage());
                 }
             }
         }
