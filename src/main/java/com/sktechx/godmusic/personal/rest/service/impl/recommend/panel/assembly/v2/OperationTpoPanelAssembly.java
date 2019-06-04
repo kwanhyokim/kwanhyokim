@@ -65,21 +65,6 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
 
         appendTPOPanel(personalPhaseMeta, panelList, 5);
 
-        List<ImageInfo> imageInfoList = recommendReadMapper.selectTpoAndThemeImageList(personalPhaseMeta.getOsType());
-
-        for(int i =0; i<panelList.size(); i++){
-            ImageInfo imageInfo;
-
-            try {
-                imageInfo = imageInfoList.get(i);
-            }catch (Exception e){
-                imageInfo = imageInfoList.get(0);
-            }
-
-            panelList.get(i).setImgList(new ArrayList<>(Arrays.asList(imageInfo)));
-
-        }
-
         return panelList;
     }
     @Override
@@ -110,6 +95,22 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
                                 log.error("TPO Panel defaultPanelSetting Exception : {}",e.getMessage());
                             }
                         });
+
+
+                List<ImageInfo> imageInfoList = recommendReadMapper.selectTpoAndThemeImageList(personalPhaseMeta.getOsType());
+
+                for(int i =0; i<panelList.size(); i++){
+                    ImageInfo imageInfo;
+
+                    try {
+                        imageInfo = imageInfoList.get(i);
+                    }catch (Exception e){
+                        imageInfo = imageInfoList.get(0);
+                    }
+
+                    panelList.get(i).setImgList(new ArrayList<>(Arrays.asList(imageInfo)));
+
+                }
 
             }
         }
