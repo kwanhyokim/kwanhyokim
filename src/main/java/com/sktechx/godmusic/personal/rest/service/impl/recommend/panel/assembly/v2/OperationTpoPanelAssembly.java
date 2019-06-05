@@ -20,6 +20,7 @@ import org.springframework.util.ObjectUtils;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.personal.common.domain.PreferPropsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.client.DisplayClient;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
@@ -27,10 +28,13 @@ import com.sktechx.godmusic.personal.rest.model.vo.ChannelListResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.TPOChannelPanel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelNonSignAssembly;
 import lombok.extern.slf4j.Slf4j;
+
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.PREFER_DISP_CHART_TRACK_LIMIT_SIZE;
 
 /**
  * 설명 : TPO 패널 생성기
@@ -55,12 +59,8 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
 
         final List<Panel> panelList = new ArrayList<>();
 
-//        Panel chartPanel = createChartPanel(RecommendPanelType.LIVE_CHART,personalPhaseMeta.getOsType(),PREFER_DISP_CHART_TRACK_LIMIT_SIZE);
-//        if(chartPanel != null){
-//            panelList.add(0,chartPanel);
-//        }
-
         appendTPOPanel(personalPhaseMeta, panelList, 5);
+        appendPreferenceChartPanel(personalPhaseMeta, panelList);
 
         return panelList;
     }
@@ -117,10 +117,49 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
 
             if(!ObjectUtils.isEmpty(tpoChannelPanel)){
                 tpoChannelPanel.setType(RecommendPanelType.POPULAR_CHANNEL);
+
+                PanelContentVo panelContentVo = tpoChannelPanel.getContent();
+
+                if( !ObjectUtils.isEmpty(panelContentVo) && !CollectionUtils.isEmpty(panelContentVo.getTrackList())) {
+                    panelContentVo.setTrackCount(panelContentVo.getTrackList().size());
+                }
+
             }
 
             return tpoChannelPanel;
         }
+
+
+    private void appendPreferenceChartPanel(final PersonalPhaseMeta personalPhaseMeta, final List<Panel> panelList) {
+        if(!CollectionUtils.isEmpty(personalPhaseMeta.getPreferDispList())) {
+
+            personalPhaseMeta.getPreferDispList()
+                    .stream()
+                    .filter(Objects::nonNull)
+                    .forEach(characterPreferDisp -> {
+
+                        RecommendPanelType recommendPanelType = getPreferRecommendPanelType(characterPreferDisp.getDispPropsType());
+                        if (recommendPanelType != null) {
+                            Panel panel = createChartPanel(recommendPanelType, personalPhaseMeta.getOsType(), PREFER_DISP_CHART_TRACK_LIMIT_SIZE);
+                            if (panel != null) {
+                                panelList.add(panel);
+                            }
+                        }
+
+                    });
+        }
+    }
+
+    private RecommendPanelType getPreferRecommendPanelType(String preferPropsType ){
+
+        if(PreferPropsType.TOP100.getCode().equals(preferPropsType)){
+            return RecommendPanelType.LIVE_CHART;
+        }else if(PreferPropsType.KIDS100.getCode().equals(preferPropsType)){
+            return RecommendPanelType.KIDS_CHART;
+        }
+        return null;
+
+    }
 
 }
 
