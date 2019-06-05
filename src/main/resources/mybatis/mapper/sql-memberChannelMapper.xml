@@ -45,7 +45,13 @@
 			a.member_chnl_sn 						AS channelPriority,
 			a.pin_type								AS pinType,
 			a.pin_type_id							AS pinTypeId,
-			IFNULL(a.track_cnt, 0) 					AS trackCount,
+			(
+		 		SELECT COUNT(*)
+				FROM tb_map_member_chnl_track aa
+				JOIN tb_track bb ON aa.track_id = bb.track_id AND bb.disp_status_yn= 'Y' AND now() BETWEEN bb.disp_start_dtime AND bb.disp_end_dtime
+				WHERE aa.member_chnl_id = a.member_chnl_id
+
+			) 										AS trackCount,
 			IFNULL(a.chnl_play_tm, 0)				AS channelPlayTime,
 			a.create_dtime							AS createDateTime,
 			a.update_dtime 							AS updateDateTime,

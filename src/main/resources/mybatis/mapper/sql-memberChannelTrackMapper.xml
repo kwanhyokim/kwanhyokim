@@ -93,8 +93,9 @@
 		SELECT
 			COUNT(*)
 		FROM
-			tb_member_chnl a INNER JOIN tb_map_member_chnl_track b
-				ON a.member_chnl_id =b.member_chnl_id
+			tb_member_chnl a
+			INNER JOIN tb_map_member_chnl_track b ON a.member_chnl_id =b.member_chnl_id
+			INNER JOIN tb_track c ON b.track_id = c.track_id AND c.disp_status_yn = 'Y' AND now() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
         WHERE a.character_no = #{characterNo}
 		AND a.member_no = #{memberNo}
 		AND a.member_chnl_id = #{channelId}
