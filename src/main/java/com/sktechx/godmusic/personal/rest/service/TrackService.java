@@ -15,10 +15,8 @@ import java.util.List;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import com.sktechx.godmusic.personal.common.domain.ListResponse;
-
 public interface TrackService {
-    ListResponse mostTrackList(Long characterNo, Long page, Long size);
+    PageImpl<?> mostTrackList(Long characterNo, Pageable pageable);
 
     PageImpl<?> getMyRecentTrackList(Long memberNo, Long characterNo, Pageable pageable);
 
