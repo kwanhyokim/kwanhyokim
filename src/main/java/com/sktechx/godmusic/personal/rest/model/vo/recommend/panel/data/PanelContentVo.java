@@ -59,11 +59,19 @@ public class PanelContentVo {
     @JsonIgnore
     private OsType osType;
 
+    // WEB 에서 추천 아이디가 너무 길 경우 Number 타입은 정확하게 변환이 안되어 web 요청일 경우 String 타입으로 내려줌
     public Object getId(){
         if(ObjectUtils.isEmpty(osType) || !OsType.WEB.equals(osType)){
             return id;
         }else{
             return String.valueOf(id);
         }
+    }
+
+    // WEB 요청으로 응답값 추가
+    @JsonProperty("renewDateTime")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
+    public Date getRenewDtime(){
+        return new Date();
     }
 }
