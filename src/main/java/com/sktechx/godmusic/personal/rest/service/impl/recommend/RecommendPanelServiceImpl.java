@@ -297,10 +297,12 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                                 1, osType);
 
                 int dispSn = 1;
+                Date similarTrackCreateDtime = null;
                 if(!CollectionUtils.isEmpty(similarTrackList)){
                     RecommendTrackDto recommendTrackDto = similarTrackList.get(0);
                     if(recommendTrackDto != null){
                         dispSn = recommendTrackDto.getDispSn();
+                        similarTrackCreateDtime = recommendTrackDto.getRcmmdCreateDtime();
                     }
                 }
                 panel = new RecommendPanelInfoDto.Builder()
@@ -309,6 +311,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                         .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType , dispSn))
                         .trackCount(trackCount)
                         .newYn(YnType.Y)
+                        .createDtime(similarTrackCreateDtime)
                         .renewDtime(new Date())
                         .build();
                 break;
@@ -320,7 +323,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                         .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType , 0) )
                         .trackCount(trackCount)
                         .newYn(YnType.Y)
-                        .renewDtime(new Date())
+                        .createDtime(createDateTime)
+                        .renewDtime(createDateTime)
                         .build();
 
                 break;
@@ -348,6 +352,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                         .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType , 0))
                         .trackCount(trackCount)
                         .newYn(newYn)
+                        .createDtime(recommendGenreVo.getCreateDtime())
                         .renewDtime(createDTime)
                         .build();
                 break;
