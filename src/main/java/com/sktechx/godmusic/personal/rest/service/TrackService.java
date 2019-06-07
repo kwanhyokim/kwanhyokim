@@ -15,7 +15,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 public interface TrackService {
-    ListResponse mostTrackList(Long characterNo, Long page, Long size);
+    PageImpl<?> mostTrackList(Long characterNo, Pageable pageable);
 
     PageImpl<?> getMyRecentTrackList(Long memberNo, Long characterNo, Pageable pageable);
 }
