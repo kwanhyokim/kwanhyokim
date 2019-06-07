@@ -57,6 +57,11 @@ public class RecommendPanelInfoDto {
 	@ApiModelProperty(value = "아티스트 수")
 	private Integer artistCount;
 
+	@ApiModelProperty(value = "생성일")
+	@JsonProperty("createDateTime")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
+	private Date createDtime;
+
 	@ApiModelProperty(value = "갱신일")
 	@JsonProperty("renewDateTime")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")

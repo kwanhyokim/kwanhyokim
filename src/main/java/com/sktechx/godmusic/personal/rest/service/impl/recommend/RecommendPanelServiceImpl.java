@@ -370,6 +370,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                         .imgList((artistDtoList == null || artistDtoList.get(0) == null? null : artistDtoList.get(0).getImgList()))
                         .artistList(normalImageArtistList)
                         .artistCount(artistDtoList.size())
+                        .createDtime(recommendArtistDto.getCreateDtime())
                         .newYn(YnType.Y)
                         .build();
                 break;

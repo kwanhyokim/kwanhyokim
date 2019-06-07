@@ -67,11 +67,4 @@ public class PanelContentVo {
             return String.valueOf(id);
         }
     }
-
-    // WEB 요청으로 응답값 추가
-    @JsonProperty("renewDateTime")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
-    public Date getRenewDtime(){
-        return new Date();
-    }
 }
