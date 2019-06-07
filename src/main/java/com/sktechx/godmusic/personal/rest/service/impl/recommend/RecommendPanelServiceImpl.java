@@ -439,7 +439,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                         .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType , 0))
                         .trackCount(trackCount)
                         .newYn(newYn)
-                        .createDtime(recommendGenreVo.getCreateDtime())
+                        .createDtime(recommendGenreVo.getDispStdStartDt())
                         .renewDtime(createDTime)
                         .build();
                 break;
