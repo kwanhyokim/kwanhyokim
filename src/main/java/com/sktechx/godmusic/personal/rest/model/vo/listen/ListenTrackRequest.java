@@ -36,13 +36,13 @@ public class ListenTrackRequest {
 	private TrackLogType trackLogType;
 
 	@NotNull
-	@ApiModelProperty(name = "bitrate", value = "재생할 비트레이트(aac, 192k, 320k)",
-			allowableValues = "aac, 192k, 320k")
+	@ApiModelProperty(name = "bitrate", value = "재생할 비트레이트(aac, 192k, 320k, flac16bit, flac24bit)",
+			allowableValues = "aac, 192k, 320k, flac16bit, flac24bit")
 	private BitrateType bitrate;
 
 	@NotNull
-	@ApiModelProperty(name = "osType", value = "OS Type(ALL, AOS, IOS)",
-			allowableValues = "ALL, AOS, IOS")
+	@ApiModelProperty(name = "osType", value = "OS Type(ALL, AOS, IOS, WEB)",
+			allowableValues = "ALL, AOS, IOS, WEB")
 	private OsType osType;
 
 	@NotNull

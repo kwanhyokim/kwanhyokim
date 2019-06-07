@@ -1,9 +1,10 @@
 package com.sktechx.godmusic.personal.common.domain.type;
 
+import org.apache.ibatis.type.MappedTypes;
+
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnum;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnumTypeHandler;
-import org.apache.ibatis.type.MappedTypes;
 
 /**
  * Created by Kobe.
@@ -15,7 +16,8 @@ import org.apache.ibatis.type.MappedTypes;
 public enum OsType implements CodeEnum {
 	ALL("ALL","ALL", "ALL"),
 	AOS("AOS", "A","Android"),
-	IOS("IOS","I" ,"iOS");
+	IOS("IOS","I" ,"iOS"),
+	WEB("WEB", "W", "WEB");
 
 	private final String code;
 	private final String shortCode;
