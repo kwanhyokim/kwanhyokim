@@ -317,9 +317,10 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 break;
             // 유사 장르
             case RC_GR_TR:
+                Date createDateTime = new Date();
                 panel = new RecommendPanelInfoDto.Builder()
-                        .title(RecommendConstant.PREFER_GENRE_SIMILAR_TRACK_PANEL_TITLE)
-                        .subTitle(RecommendConstant.PREFER_GENRE_SIMILAR_TRACK_PANEL_DETAIL_SUB_TITLE)
+                        .title(RecommendConstant.SIMILAR_TRACK_PANEL_TITLE)
+                        .subTitle(RecommendConstant.SIMILAR_TRACK_PANEL_DETAIL_SUB_TITLE)
                         .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType , 0) )
                         .trackCount(trackCount)
                         .newYn(YnType.Y)
