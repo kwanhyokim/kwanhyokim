@@ -207,7 +207,7 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
         Calendar cal = Calendar.getInstance();
 
         cal.set(Calendar.MINUTE , 59);
-        cal.set(Calendar.SECOND,56);
+        cal.set(Calendar.SECOND,59);
         cal.set(Calendar.MILLISECOND,999);
 
         long remainMillisecond = cal.getTimeInMillis() - System.currentTimeMillis();
