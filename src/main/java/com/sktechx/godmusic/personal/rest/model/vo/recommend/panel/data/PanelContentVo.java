@@ -35,7 +35,7 @@ import lombok.Data;
 @Data
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class PanelContentVo {
-    private Object id;
+    private Long id;
     private CodeEnum type;
     private Integer renewTrackCount;
 
