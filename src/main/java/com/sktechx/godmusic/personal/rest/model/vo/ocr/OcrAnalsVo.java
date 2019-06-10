@@ -48,6 +48,8 @@ public class OcrAnalsVo {
 
         private YnType duplicateYn;
 
+        private Float matchingRate;
+
         private TrackDto track;
     }
 }

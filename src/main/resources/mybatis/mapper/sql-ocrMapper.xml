@@ -110,6 +110,7 @@
             b.right_bottom_y_axis,
             b.track_nm_skip_yn,
             b.artist_nm_skip_yn,
+            c.matching_rate,
             d.track_id,
 			d.track_nm,
 			d.track_play_tm,
