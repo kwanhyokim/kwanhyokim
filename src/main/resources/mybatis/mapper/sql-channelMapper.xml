@@ -507,7 +507,7 @@
         ( SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
                  a.listen_type,
                  a.listen_type_id,
-                 CONCAT(DATE_FORMAT(a.create_dtime, '%c월 %e일'), ' 오늘의 FLO') AS content_title,
+                 CONCAT(DATE_FORMAT(b.disp_std_start_dt, '%c월 %e일'), ' 오늘의 FLO') AS content_title,
                  ( SELECT COUNT(*)
                         FROM tb_rcmmd_similar_track_list aa
                         JOIN tb_track bb ON bb.track_id = aa.track_id AND bb.disp_status_yn = 'Y' AND now() BETWEEN bb.disp_start_dtime AND bb.disp_end_dtime
@@ -546,7 +546,7 @@
         ( SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
                  a.listen_type,
                  a.listen_type_id,
-                 CONCAT(DATE_FORMAT(a.create_dtime, '%c월 %e일'), ' 오늘의 FLO') AS content_title,
+                 CONCAT(DATE_FORMAT(b.disp_std_start_dt, '%c월 %e일'), ' 오늘의 FLO') AS content_title,
                  ( SELECT COUNT(*)
                     FROM tb_rcmmd_prefer_genre_similar_track_list aa
                     JOIN tb_track b ON aa.track_id = b.track_id AND b.disp_status_yn = 'Y' AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
@@ -587,7 +587,7 @@
         ( SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
                  a.listen_type,
                  a.listen_type_id,
-                 CONCAT(DATE_FORMAT(a.create_dtime, '%c월 %e일'), ' 아티스트 FLO') AS content_title,
+                 CONCAT(DATE_FORMAT(b.disp_std_start_dt, '%c월 %e일'), ' 아티스트 FLO') AS content_title,
                  ( SELECT COUNT(*) FROM tb_rcmmd_artist_list WHERE rcmmd_artist_id = b.rcmmd_artist_id) AS track_count,
                  a.last_listen_dtime,
                  c.img_size,
