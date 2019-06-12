@@ -35,11 +35,9 @@ public class TrackServiceImpl implements TrackService {
     private TrackMapper trackMapper;
 
     @Override
-    public ListResponse mostTrackList(Long characterNo, Long page, Long size) {
+    public PageImpl<?> mostTrackList(Long characterNo, Pageable pageable) {
 
-        if(page <= 0) page = 1L;
-        Long offset = (page - 1) * size;
-        List<MostListenedTrackDto> mostTrackList = trackMapper.selectMostListenedTrackList(characterNo, offset, size);
+        List<MostListenedTrackDto> mostTrackList = trackMapper.selectMostListenedTrackList(characterNo, pageable);
 
         if(CollectionUtils.isEmpty(mostTrackList)){
             throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
@@ -49,12 +47,11 @@ public class TrackServiceImpl implements TrackService {
         // 1000곡 노출 (pagination 처리 하면 달라져야 함)
 //        long totalCount = mostTrackList.size() == pageable.getPageSize() ? pageable.getPageSize() : mostTrackList.size();
 
-        if(totalCount > TrackConstant.MOST_TRACK_LIST_MAX_COUNT)
+        if(totalCount > TrackConstant.MOST_TRACK_LIST_MAX_COUNT) {
             totalCount = TrackConstant.MOST_TRACK_LIST_MAX_COUNT;
+        }
 
-        YnType lastPage = (int)Math.ceil(totalCount / size  + 0.5) <= page ?YnType.Y : YnType.N;
-
-        return new ListResponse((int)totalCount, page.intValue(), lastPage,  mostTrackList);
+        return new PageImpl<>(mostTrackList, pageable, totalCount);
     }
 
     @Override

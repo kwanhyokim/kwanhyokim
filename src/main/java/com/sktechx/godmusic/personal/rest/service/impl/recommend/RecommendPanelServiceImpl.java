@@ -128,6 +128,12 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             }
         }
 
+        if(!CollectionUtils.isEmpty(panelList)){
+            panelList.stream().forEach(
+                    panel -> panel.getContent().setOsType(osType)
+            );
+        }
+
         return panelList;
     }
     @Override
@@ -310,6 +316,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                         .imgList((artistDtoList == null || artistDtoList.get(0) == null? null : artistDtoList.get(0).getImgList()))
                         .artistList(normalImageArtistList)
                         .artistCount(artistDtoList.size())
+                        .createDtime(recommendArtistDto.getCreateDtime())
                         .newYn(YnType.Y)
                         .build();
                 break;
@@ -321,10 +328,12 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                                 1, osType);
 
                 int dispSn = 1;
+                Date similarTrackCreateDtime = null;
                 if(!CollectionUtils.isEmpty(similarTrackList)){
                     RecommendTrackDto recommendTrackDto = similarTrackList.get(0);
                     if(recommendTrackDto != null){
                         dispSn = recommendTrackDto.getDispSn();
+                        similarTrackCreateDtime = recommendTrackDto.getRcmmdCreateDtime();
                     }
                 }
                 panel = new RecommendPanelInfoDto.Builder()
@@ -333,18 +342,21 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                         .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType , dispSn))
                         .trackCount(trackCount)
                         .newYn(YnType.Y)
+                        .createDtime(similarTrackCreateDtime)
                         .renewDtime(new Date())
                         .build();
                 break;
             // 유사 장르
             case RC_GR_TR:
+                Date createDateTime = new Date();
                 panel = new RecommendPanelInfoDto.Builder()
-                        .title(RecommendConstant.PREFER_GENRE_SIMILAR_TRACK_PANEL_TITLE)
-                        .subTitle(RecommendConstant.PREFER_GENRE_SIMILAR_TRACK_PANEL_DETAIL_SUB_TITLE)
+                        .title(RecommendConstant.SIMILAR_TRACK_PANEL_TITLE)
+                        .subTitle(RecommendConstant.SIMILAR_TRACK_PANEL_DETAIL_SUB_TITLE)
                         .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType , 0) )
                         .trackCount(trackCount)
                         .newYn(YnType.Y)
-                        .renewDtime(new Date())
+                        .createDtime(createDateTime)
+                        .renewDtime(createDateTime)
                         .build();
 
                 break;
@@ -372,6 +384,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                         .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType , 0))
                         .trackCount(trackCount)
                         .newYn(newYn)
+                        .createDtime(recommendGenreVo.getCreateDtime())
                         .renewDtime(createDTime)
                         .build();
                 break;

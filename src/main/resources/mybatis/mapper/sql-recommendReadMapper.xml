@@ -810,7 +810,8 @@
     <select id="selectRecommendGenreByRcmmdId" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendGenreVo">
         SELECT
             b.svc_genre_nm,
-            a.disp_std_start_dt
+            a.disp_std_start_dt,
+            a.create_dtime
         FROM
             tb_rcmmd_mforu a INNER JOIN tb_svc_genre b ON a.svc_genre_id = b.svc_genre_id
         WHERE

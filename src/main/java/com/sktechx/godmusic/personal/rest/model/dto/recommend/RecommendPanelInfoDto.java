@@ -52,13 +52,13 @@ public class RecommendPanelInfoDto {
 	@ApiModelProperty(value = "아티스트 수")
 	private Integer artistCount;
 
-//	@JsonProperty("createDateTime")
-//	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
-//	private Date createDtime;
-//
-//	@JsonProperty("updateDateTime")
-//	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
-//	private Date updateDtime;
+	@JsonProperty("createDateTime")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
+	private Date createDtime;
+
+	@JsonProperty("updateDateTime")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
+	private Date updateDtime;
 
 	@ApiModelProperty(value = "갱신일")
 	@JsonProperty("renewDateTime")
@@ -80,6 +80,9 @@ public class RecommendPanelInfoDto {
 		private Integer artistCount;
 		private Date renewDtime;
 		private YnType newYn;
+
+
+		private Date createDtime;
 
 		public Builder title(String val){
 			title = val;
@@ -120,6 +123,12 @@ public class RecommendPanelInfoDto {
 			return this;
 		}
 
+
+		public Builder createDtime(Date val){
+			createDtime = val;
+			return this;
+		}
+
 		public RecommendPanelInfoDto build(){
 			return new RecommendPanelInfoDto(this);
 		}
@@ -137,6 +146,10 @@ public class RecommendPanelInfoDto {
 		renewDtime = builder.renewDtime;
 		newYn = builder.newYn;
 
+		createDtime = builder.createDtime;
+
 	}
+
+
 
 }
