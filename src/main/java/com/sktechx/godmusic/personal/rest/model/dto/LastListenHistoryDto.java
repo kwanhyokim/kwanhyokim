@@ -1,5 +1,9 @@
 package com.sktechx.godmusic.personal.rest.model.dto;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.*;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
@@ -7,11 +11,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
-
-import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
 /**
  * 설명 : XXXXXXXXX
@@ -56,8 +55,7 @@ public class LastListenHistoryDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private AlbumDto album;
 
-    @ApiModelProperty(value = "업데이트 된 트랙 수")
-    @JsonProperty("renewTrackCount")
+    @JsonIgnore
     private Integer renewTrackCnt;
 
     @JsonIgnore
@@ -77,4 +75,15 @@ public class LastListenHistoryDto {
         else return YnType.N;
 
     }
+
+    @ApiModelProperty(value = "업데이트 된 트랙 수")
+    @JsonProperty("renewTrackCount")
+    public Integer getRenewTrackCnt(){
+        if(YnType.Y.equals(getRenewYn())){
+            return this.renewTrackCnt;
+        }else{
+            return 0;
+        }
+    }
+
 }
