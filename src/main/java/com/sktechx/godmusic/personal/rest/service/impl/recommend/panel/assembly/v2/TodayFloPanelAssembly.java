@@ -129,7 +129,7 @@ public class TodayFloPanelAssembly extends PanelSignAssembly {
 
         List<Panel> panelList = new ArrayList<>();
 
-        appendSimilarTrackPanelList(personalPhaseMeta, panelList, 7);
+        appendSimilarTrackPanelList(personalPhaseMeta, panelList, 4);
 
         return panelList;
 

@@ -128,7 +128,7 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
 
         List<Panel> panelList = new ArrayList<>();
 
-        appendRecommendCfTrackPanelList(personalPhaseMeta, panelList, 7);
+        appendRecommendCfTrackPanelList(personalPhaseMeta, panelList, 4);
 
         return panelList;
 
