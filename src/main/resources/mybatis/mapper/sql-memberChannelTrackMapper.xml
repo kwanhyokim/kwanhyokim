@@ -177,7 +177,7 @@
 		UPDATE TB_MAP_MEMBER_CHNL_TRACK
 		<trim prefix="SET" suffixOverrides=",">
 			<if test="viewPriority != null">track_sn = #{viewPriority},  </if>
-			<if test="updateDateTime != null">update_dtime = now(),  </if>
+			<if test="updateDateTime != null">update_dtime = #{updateDateTime},  </if>
 		</trim>
 
 		<trim prefix="WHERE" prefixOverrides="AND | OR ">
