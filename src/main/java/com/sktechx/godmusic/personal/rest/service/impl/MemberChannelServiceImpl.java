@@ -467,7 +467,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
                                 batchParam.put("channelId", memberChannelId);
                                 batchParam.put("trackId", modifyTrackIdList.get(index));
                                 batchParam.put("viewPriority", atomicInteger.getAndIncrement()+1);
-                                batchParam.put("updateDateTime", updateDateTime);
+//                                batchParam.put("updateDateTime", updateDateTime);
                                 sqlSession.update("updateTrack", batchParam);
                             }
                     );

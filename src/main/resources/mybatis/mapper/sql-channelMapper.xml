@@ -208,7 +208,13 @@
                     chnl.renew_dtime,
                     chnl.chnl_nm,
                     chnl.chnl_disp_nm,
-                    chnl.track_cnt,
+                    (
+                    SELECT COUNT(*)
+                    FROM tb_map_chnl_track aa
+                    JOIN tb_track bb ON aa.track_id = bb.track_id AND bb.disp_status_yn= 'Y' AND now() BETWEEN bb.disp_start_dtime AND bb.disp_end_dtime
+                    WHERE aa.chnl_id = chnl.chnl_id
+
+                    ) 		AS track_cnt,
                     chnl.create_dtime,
                     chnl.update_dtime,
                     chnl.img_url,
