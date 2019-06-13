@@ -165,6 +165,7 @@ public class ChannelServiceImpl implements ChannelService {
                 .collect(Collectors.toList());
 
         for(ChnlDto chnlDto : chnlDtoList){
+            chnlDto.setChnlType(ChannelType.CHNL);
             chnlDto.setChnlDispNm(null);
             chnlDto.setTrackCount(null);
             chnlDto.setTrackList(null);
