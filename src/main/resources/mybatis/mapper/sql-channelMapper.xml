@@ -124,30 +124,33 @@
         ORDER BY c.track_sn ASC
     </select>
 
-
-    <select id="selectFlacChannelById" resultMap="channelResultMap">
+    <select id="selectFlacChannel" resultMap="channelResultMap">
         SELECT
-            a.chnl_id,
-            a.chnl_nm,
-            a.chnl_disp_nm,
-            c.album_img_size AS img_size,
-            c.album_img_url AS img_url,
-            a.update_dtime
+            c.chnl_id,
+            c.chnl_nm,
+            c.chnl_disp_nm,
+            c.update_dtime,
+            d.album_img_size AS img_size,
+            d.album_img_url AS img_url
         FROM
             (SELECT
-                *
+                a.chnl_id,
+                    a.chnl_nm,
+                    a.chnl_disp_nm,
+                    a.update_dtime,
+                    b.album_id
             FROM
                 tb_chnl a
+            INNER JOIN ted_album b ON a.album_id = b.album_id
+                AND b.disp_status_yn = 'Y'
+                AND NOW() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
             WHERE
                 a.disp_status_type = 'Y'
                     AND a.chnl_type = 'FLAC'
-                    AND chnl_id = #{channelId} ) a
-                INNER JOIN
-            ted_album b ON a.album_id = b.album_id
-                AND b.disp_status_yn = 'Y'
-                AND NOW() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
+            ORDER BY a.update_dtime DESC
+            LIMIT 1) c
                 LEFT OUTER JOIN
-            tb_album_img c ON b.album_id = c.album_id
+          tb_album_img d ON c.album_id = d.album_id
     </select>
 
     <select id="selectChannelListByIdList" resultMap="channelResultMap">

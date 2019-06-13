@@ -68,23 +68,14 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     public ChnlDto getFloAndDataChannel(int trackLimitSize ,OsType osType){
 
-        ChnlDto floAndDataChnlDto = null;
+        ChnlDto floAndDataChnlDto = channelMapper.selectFlacChannel();
 
-        List<Long> floAndDataChnlIdList = channelMapper.selectFloAndDataChannelRecentId();
-        if(!CollectionUtils.isEmpty(floAndDataChnlIdList)){
-
-            floAndDataChnlDto = channelMapper.selectFlacChannelById(floAndDataChnlIdList.get(0));
-
-            if(!ObjectUtils.isEmpty(floAndDataChnlDto)){
-
-                floAndDataChnlDto.setChnlType(ChannelType.FLAC);
-//                    floAndDataChnlDto.setChnlDispNm(null);
-                floAndDataChnlDto.setTrackCount(null);
-                floAndDataChnlDto.setTrackList(null);
-                floAndDataChnlDto.setCreateDtime(null);
-                floAndDataChnlDto.setRenewTrackCnt(null);
-
-            }
+        if(!ObjectUtils.isEmpty(floAndDataChnlDto)){
+            floAndDataChnlDto.setChnlType(ChannelType.FLAC);
+            floAndDataChnlDto.setTrackCount(null);
+            floAndDataChnlDto.setTrackList(null);
+            floAndDataChnlDto.setCreateDtime(null);
+            floAndDataChnlDto.setRenewTrackCnt(null);
         }
 
         return floAndDataChnlDto;
