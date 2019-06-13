@@ -59,8 +59,44 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
 
         final List<Panel> panelList = new ArrayList<>();
 
-        appendTPOPanel(personalPhaseMeta, panelList, 5);
-        appendPreferenceChartPanel(personalPhaseMeta, panelList);
+        List<Panel> myPanelList = new ArrayList<>();
+        List<Panel> chartPanelList = new ArrayList<>();
+
+        appendTPOPanel(personalPhaseMeta, myPanelList, 5);
+        appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
+
+        int panelSize = 7;
+
+        Optional<Panel> liveChartPanel = null;
+        Optional<Panel> kidsChartPanel = null;
+
+        if(!CollectionUtils.isEmpty(chartPanelList)){
+            liveChartPanel = chartPanelList.stream().filter(panel -> RecommendPanelType.LIVE_CHART.equals(panel.getType())).findFirst();
+            kidsChartPanel = chartPanelList.stream().filter(panel -> RecommendPanelType.KIDS_CHART.equals(panel.getType())).findFirst();
+        }
+
+        if(!ObjectUtils.isEmpty(liveChartPanel) && liveChartPanel.isPresent()){
+            panelSize--;
+        }
+
+        if(!ObjectUtils.isEmpty(kidsChartPanel) && kidsChartPanel.isPresent()){
+            panelSize--;
+        }
+
+        if(myPanelList.size() > panelSize){
+            myPanelList = myPanelList.subList(0, panelSize - 1);
+        }
+
+        panelList.addAll(myPanelList);
+
+        if(!ObjectUtils.isEmpty(liveChartPanel) && liveChartPanel.isPresent()) {
+            panelList.add(0, liveChartPanel.get());
+        }
+
+        if(!ObjectUtils.isEmpty(kidsChartPanel) && kidsChartPanel.isPresent()){
+            panelList.add(kidsChartPanel.get());
+        }
+
 
         return panelList;
     }
