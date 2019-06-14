@@ -922,6 +922,7 @@
             WHERE
                 a.character_no = #{characterNo}
             ORDER BY a.create_dtime DESC, b.disp_sn ASC
+            LIMIT 5
             ) aa
                 LEFT OUTER JOIN
             ted_artistimage d ON aa.artist_id = d.artist_id
