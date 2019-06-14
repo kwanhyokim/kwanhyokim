@@ -352,7 +352,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
         Long albumId = getMemberChannelAlbumId(memberChannelId);
         memberChannelMapper.updateMemberChannelList(memberNo, characterNo, memberChannelId, null, albumId, true, true, new Date());
 
-        return memberChannelMapper.selectMemberChannel(memberNo, characterNo, memberChannelId);
+        return getMemberChannel(memberNo, characterNo, memberChannelId);
     }
 
     @Override
@@ -443,7 +443,10 @@ public class MemberChannelServiceImpl implements MemberChannelService {
 
     @Override
     public MemberChannelDto modifyTrackList(Long memberNo, Long characterNo, Long memberChannelId, List<Long> modifyTrackIdList){
-        if(ObjectUtils.isEmpty(memberChannelMapper.selectMemberChannel(memberNo, characterNo, memberChannelId))){
+
+        MemberChannelDto memberChannelDto = memberChannelMapper.selectMemberChannel(memberNo, characterNo, memberChannelId);
+
+        if(ObjectUtils.isEmpty(memberChannelDto)){
             throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
         }
 
@@ -478,10 +481,11 @@ public class MemberChannelServiceImpl implements MemberChannelService {
             log.error("MyChannel :: track id list order modify :: Error Message", e.getMessage());
             throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
         }
+
         // 첫번째 이미지 트랙으로 채널 이미지 변경
         memberChannelMapper.updateMemberChannelImg(memberChannelId, 1);
 
-        return memberChannelMapper.selectMemberChannel(memberNo, characterNo, memberChannelId);
+        return getMemberChannel(memberNo, characterNo, memberChannelId);
     }
 
     private Long getMemberChannelAlbumId(Long memberChannelId){
