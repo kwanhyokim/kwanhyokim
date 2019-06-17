@@ -318,7 +318,8 @@
             B.track_nm as seedTrackNm,
             C.artist_nm as seedArtistNm,
             A.disp_sn,
-            A.create_dtime
+            A.create_dtime,
+            A.disp_std_start_dt
         FROM
           tb_rcmmd_similar_track A
         LEFT OUTER JOIN tb_track B ON A.seed_track_id = B.track_id
@@ -628,6 +629,7 @@
           d.size,
           d.url,
           a.create_dtime,
+          a.disp_std_start_dt
           (
             SELECT
               COUNT(*)

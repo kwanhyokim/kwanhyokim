@@ -30,4 +30,6 @@ public class RecommendSimilarTrackDto {
 	private String seedArtistNm;
 	private Integer dispSn;
 	private Date createDtime;
+
+	private Date dispStdStartDt;
 }
