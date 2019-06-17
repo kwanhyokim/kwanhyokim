@@ -163,13 +163,8 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
         }
     }
     private boolean isRcmmdUsageChannelIdFilter(PersonalPhaseType personalPhaseType){
-
-        if(PersonalPhaseType.VISIT.equals(personalPhaseType)  ||
-                PersonalPhaseType.LISTEN.equals(personalPhaseType) ||
-                    PersonalPhaseType.RECOMMEND.equals(personalPhaseType) ){
-            return true;
-        }
-        return false;
+	    return PersonalPhaseType.VISIT.equals(personalPhaseType) || PersonalPhaseType.LISTEN
+			    .equals(personalPhaseType) || PersonalPhaseType.RECOMMEND.equals(personalPhaseType);
     }
     private List<Long> getRcmmdUsageChannelIdList(List<Panel> panelList){
         if(CollectionUtils.isEmpty(panelList)){
@@ -178,13 +173,12 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
         return panelList.stream()
                 .filter(panel->{
                     RecommendPanelType recommendPanelType = panel.getType();
-            if(RecommendPanelType.POPULAR_CHANNEL.equals(recommendPanelType)
-                    || RecommendPanelType.LISTEN_MOOD_POPULAR_CHANNEL.equals(recommendPanelType)
-                        || RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL.equals(recommendPanelType)){
-                return true;
-            }
-            return false;
-        }).map(panel->{
+	                return RecommendPanelType.POPULAR_CHANNEL.equals(recommendPanelType)
+			                || RecommendPanelType.LISTEN_MOOD_POPULAR_CHANNEL
+			                .equals(recommendPanelType)
+			                || RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL
+			                .equals(recommendPanelType);
+                }).map(panel->{
             PanelContentVo content = panel.getContent();
             if(content != null && content.getId() != null){
                 return (Long) content.getId();
@@ -216,9 +210,11 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
     private long hourlyRemainMillisecond(){
         Calendar cal = Calendar.getInstance();
 
+        cal.set(Calendar.HOUR_OF_DAY, 5);
         cal.set(Calendar.MINUTE , 59);
         cal.set(Calendar.SECOND,59);
         cal.set(Calendar.MILLISECOND,999);
+        cal.add(Calendar.DAY_OF_YEAR, 1);
 
         long remainMillisecond = cal.getTimeInMillis() - System.currentTimeMillis();
         if(remainMillisecond > 0)
