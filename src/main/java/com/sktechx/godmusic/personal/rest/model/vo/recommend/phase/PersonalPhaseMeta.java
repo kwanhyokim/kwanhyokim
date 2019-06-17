@@ -69,12 +69,8 @@ public class PersonalPhaseMeta {
     }
 
     public boolean isRecommendPersonalPanelPresent(RecommendPanelContentType recommendPanelContentType){
-
-        if(CollectionUtils.isEmpty(getRecommendPersonalPanelRcmmdIdList(recommendPanelContentType))){
-            return false;
-        }else{
-            return true;
-        }
+	    return !CollectionUtils
+			    .isEmpty(getRecommendPersonalPanelRcmmdIdList(recommendPanelContentType));
     }
 
     public PersonalPanel getRecommendPersonalPanelTopItem() {
@@ -96,6 +92,38 @@ public class PersonalPhaseMeta {
                     .filter(personalPanel -> {
                         return Objects.nonNull(personalPanel) && recommendPanelContentType.equals(personalPanel.getRecommendPanelContentType());
                     })
+                    .sorted(Comparator.comparing(PersonalPanel::getCreateDtime).reversed())
+                    .sorted(Comparator.comparing(PersonalPanel::getRecommendPanelContentType, (r1,r2)->{
+                        Integer i1=0;
+                        Integer i2=0;
+
+                        switch (r1){
+                            case RC_CF_TR:
+                                i1=3;
+                                break;
+                            case RC_SML_TR:
+                                i1=2;
+                                break;
+                            case RC_ATST_TR:
+                                i1=3;
+                                break;
+                        }
+
+                        switch (r2){
+                            case RC_CF_TR:
+                                i2=3;
+                                break;
+                            case RC_SML_TR:
+                                i2=2;
+                                break;
+                            case RC_ATST_TR:
+                                i2=3;
+                                break;
+                        }
+
+                    return i1.compareTo(i2);
+
+                    }))
                     .sorted(Comparator.comparing(PersonalPanel::getDispSn, (dispSn1, dispSn2) -> {
                         return dispSn1.compareTo(dispSn2);
                     }))
@@ -170,11 +198,9 @@ public class PersonalPhaseMeta {
     public void removeRecommendPersonalPanel(RecommendPanelContentType recommendPanelContentType ,Long rcmmdId){
         if(!CollectionUtils.isEmpty(rcmmdPanelList)){
             rcmmdPanelList.removeIf(personalPanel -> {
-                if(personalPanel.getRecommendPanelContentType().equals(recommendPanelContentType)
-                        && personalPanel.getRecommendId().equals(rcmmdId)){
-                    return true;
-                }
-                return false;
+	            return personalPanel.getRecommendPanelContentType()
+			            .equals(recommendPanelContentType) && personalPanel.getRecommendId()
+			            .equals(rcmmdId);
             });
 
 
