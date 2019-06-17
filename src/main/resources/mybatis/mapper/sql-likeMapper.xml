@@ -289,7 +289,7 @@
         <if test="chnlIds == null">
             AND 1 = 0
         </if>
-                               AND LIKE_TYPE IN ('CHNL', 'FLAC')) L
+                               AND LIKE_TYPE = 'CHNL') L
                      INNER JOIN TB_CHNL A
                          ON L.LIKE_TYPE_ID = A.CHNL_ID
                        AND A.DISP_STATUS_TYPE = 'Y'
@@ -342,7 +342,7 @@
                          , UPDATE_DTIME
                     FROM TB_CHARACTER_LIKE
                     WHERE CHARACTER_NO = #{characterNo}
-                            AND LIKE_TYPE IN ('CHNL','FLAC')) L
+                            AND LIKE_TYPE = 'CHNL') L
                     INNER JOIN TB_CHNL A
                                ON L.LIKE_TYPE_ID = A.CHNL_ID AND A.DISP_STATUS_TYPE = 'Y' AND A.CHNL_TYPE IN ('MM', 'DJ', 'FLAC')
                                    AND EXISTS(SELECT * FROM TB_ALBUM_IMG I WHERE A.ALBUM_ID = I.ALBUM_ID)) T1

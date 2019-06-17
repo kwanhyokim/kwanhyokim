@@ -78,8 +78,7 @@ public class LikeServiceImpl implements LikeService {
 		List<Long> chartIds = new ArrayList<>();
 
 		for (LikeTypeVo l : likeTypeVos) {
-			if (LikeConstant.LIKE_CHANNEL.equals(l.getLikeType()) ||
-					LikeConstant.LIKE_FLAC.equals(l.getLikeType())
+			if (LikeConstant.LIKE_CHANNEL.equals(l.getLikeType())
 			) {
 				chnlIds.add(l.getLikeTypeId());
 
@@ -249,33 +248,38 @@ public class LikeServiceImpl implements LikeService {
 	}
 
 	private void validCheckAddLike(LikeRequest request, Long characterNo){
-		validMeta(request.getLikeType(), request.getLikeTypeId(), getLikeTypeNotFoundMessage(request.getLikeType()));
 
-		int likeCnt = likeMapper.getLikeCountByLikeTypeAndLikeTypeId(request.getLikeType(), request.getLikeTypeId(), characterNo);
+		String likeType = request.getLikeType();
 
-		if(likeCnt > 0){
-			throw new CommonBusinessException(getLikeTypeDuplicated(request.getLikeType()));
+		if(LikeConstant.LIKE_FLAC.equals(likeType)){
+			likeType = LikeConstant.LIKE_CHANNEL;
 		}
 
-		int likeTotalCnt = getLikeTotalCount(request.getLikeType(), characterNo);
+		validMeta(likeType, request.getLikeTypeId(), getLikeTypeNotFoundMessage(likeType));
 
-		if(LikeConstant.LIKE_CHANNEL.equals(request.getLikeType()) ||
-				LikeConstant.LIKE_FLAC.equals(request.getLikeType())
+		int likeCnt = likeMapper.getLikeCountByLikeTypeAndLikeTypeId(likeType, request.getLikeTypeId(), characterNo);
+
+		if(likeCnt > 0){
+			throw new CommonBusinessException(getLikeTypeDuplicated(likeType));
+		}
+
+		int likeTotalCnt = getLikeTotalCount(likeType, characterNo);
+
+		if(LikeConstant.LIKE_CHANNEL.equals(likeType)
 
 		) {
 			likeTotalCnt += getLikeTotalCount(LikeConstant.LIKE_CHART, characterNo);
-		} else if(LikeConstant.LIKE_CHART.equals(request.getLikeType())) {
+		} else if(LikeConstant.LIKE_CHART.equals(likeType)) {
 			likeTotalCnt += getLikeTotalCount(LikeConstant.LIKE_CHANNEL, characterNo);
 		}
 
 		if(likeTotalCnt >= 1000){
-			throw new CommonBusinessException(getLikeTypeOverAdd(request.getLikeType()));
+			throw new CommonBusinessException(getLikeTypeOverAdd(likeType));
 		}
 	}
 
 	private int getLikeTotalCount(String likeType, Long characterNo) {
 		switch (likeType) {
-			case LikeConstant.LIKE_FLAC :
 			case LikeConstant.LIKE_CHANNEL :
 				return likeMapper.getLikeChannelCountByLikeType(likeType, characterNo);
 			case LikeConstant.LIKE_ALBUM :
@@ -293,7 +297,6 @@ public class LikeServiceImpl implements LikeService {
 
 	private PersonalErrorDomain getLikeTypeNotFoundMessage(String likeType) {
 		switch (likeType) {
-			case LikeConstant.LIKE_FLAC :
 			case LikeConstant.LIKE_CHANNEL :
 				return PersonalErrorDomain.CHANNEL_NOT_FOUND;
 			case LikeConstant.LIKE_ALBUM :
@@ -311,7 +314,6 @@ public class LikeServiceImpl implements LikeService {
 
 	private PersonalErrorDomain getLikeTypeDuplicated(String likeType) {
 		switch (likeType) {
-			case LikeConstant.LIKE_FLAC :
 			case LikeConstant.LIKE_CHANNEL :
 				return PersonalErrorDomain.CHANNEL_DUPLICATED_LIKE;
 			case LikeConstant.LIKE_ALBUM :
@@ -329,7 +331,6 @@ public class LikeServiceImpl implements LikeService {
 
 	private PersonalErrorDomain getLikeTypeOverAdd(String likeType) {
 		switch (likeType) {
-			case LikeConstant.LIKE_FLAC :
 			case LikeConstant.LIKE_CHANNEL :
 				return PersonalErrorDomain.CHANNEL_OVER_ADD_LIKE;
 			case LikeConstant.LIKE_ALBUM :
@@ -349,7 +350,6 @@ public class LikeServiceImpl implements LikeService {
 		CommonApiResponse response;
 		log.info("validMeta :: " + likeType);
 		switch (likeType) {
-			case LikeConstant.LIKE_FLAC :
 			case LikeConstant.LIKE_CHANNEL :
 				response = metaApiProxy.channel(likeTypeId);
 				log.info("XXXXXXXXXX {}", response);
