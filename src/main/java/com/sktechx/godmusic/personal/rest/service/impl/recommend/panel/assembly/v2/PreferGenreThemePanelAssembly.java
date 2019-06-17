@@ -59,7 +59,7 @@ public class PreferGenreThemePanelAssembly extends PanelSignAssembly {
         List<Panel> myPanelList = new ArrayList<>();
         List<Panel> chartPanelList = new ArrayList<>();
 
-        this.appendPreferGenreChannelPanelList(personalPhaseMeta, myPanelList, 7 );
+        this.appendPreferGenreChannelPanelList(personalPhaseMeta, myPanelList, 5 );
 
         List<ImageInfo> imageInfoList = recommendReadMapper.selectTpoAndThemeImageList(personalPhaseMeta.getOsType());
 
@@ -135,9 +135,13 @@ public class PreferGenreThemePanelAssembly extends PanelSignAssembly {
                 personalPhaseMeta.getOsType());
 
         if (!CollectionUtils.isEmpty(appendChannelList)) {
+
+            Collections.shuffle(appendChannelList);
+
             appendChannelList
                     .stream()
                     .filter(Objects::nonNull)
+		            .limit(panelLimitSize)
                     .forEach(channel -> {
                         try{
                             panelList.add(createPreferGenrePopularChannelPanel(personalPhaseMeta,channel));

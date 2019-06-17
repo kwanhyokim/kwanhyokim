@@ -281,26 +281,45 @@ public class ChannelServiceImpl implements ChannelService {
         List<PreferGenrePopularChnlDto> uniquePopularChannelList = new ArrayList<>();
 
         if(!CollectionUtils.isEmpty(preferGenrePopularChannelList)){
-            preferGenrePopularChannelList
-                    .stream()
-                    .filter(preferGenre -> Objects.nonNull(preferGenre) && !CollectionUtils.isEmpty(preferGenre.getChnlIdList()))
-                    .filter(preferGenre -> preferGenreIdList.contains(preferGenre.getPreferGenreId()))
-                    .forEach(preferGenre -> {
-                        Long chnlId = preferGenre.getChnlIdList()
-                                .stream()
-                                .filter(id-> !uniquePopularChannelList.contains(id) && isUnique )
-                                .findFirst()
-                                .orElse(null)
 
-                                ;
-                        if(chnlId!= null){
-                            try{
-                                uniquePopularChannelList.add(new PreferGenrePopularChnlDto(preferGenre.getPreferGenreId(),chnlId));
-                            }catch(Exception e){
-                                log.error("getPreferGenreUniqueChannelList error : {}",e.getMessage());
-                            }
+            if(isUnique) {
+                preferGenrePopularChannelList.stream()
+                        .filter(preferGenre -> Objects.nonNull(preferGenre) && !CollectionUtils.isEmpty(preferGenre.getChnlIdList()))
+                        .filter(preferGenre -> preferGenreIdList.contains(preferGenre.getPreferGenreId())).forEach(preferGenre -> {
+                    Long chnlId = preferGenre.getChnlIdList().stream().filter(id -> (!uniquePopularChannelList.contains(id))).findFirst()
+                            .orElse(null);
+                    if (chnlId != null) {
+                        try {
+                            uniquePopularChannelList.add(new PreferGenrePopularChnlDto(preferGenre.getPreferGenreId(),
+                                    chnlId));
+                        } catch (Exception e) {
+                            log.error("getPreferGenreUniqueChannelList error : {}", e.getMessage());
                         }
-                    });
+                    }
+                });
+            }else{
+                preferGenrePopularChannelList.stream()
+                        .filter(preferGenre -> Objects.nonNull(preferGenre) && !CollectionUtils.isEmpty(preferGenre.getChnlIdList()))
+                        .filter(preferGenre -> preferGenreIdList.contains(preferGenre.getPreferGenreId())).forEach(preferGenre -> {
+
+                            List<Long> chnlIdList = preferGenre.getChnlIdList().stream().limit(5).collect(Collectors.toList());
+
+                    if (chnlIdList != null) {
+                        try {
+
+                            for(Long chnlId: chnlIdList) {
+                                if(uniquePopularChannelList.contains(chnlId)){
+                                    continue;
+                                }
+                                uniquePopularChannelList.add(new PreferGenrePopularChnlDto(
+                                        preferGenre.getPreferGenreId(), chnlId));
+                            }
+                        } catch (Exception e) {
+                            log.error("getPreferGenreUniqueChannelList error : {}", e.getMessage());
+                        }
+                    }
+                });
+            }
 
             attachPreferGenreChannelInfo(uniquePopularChannelList,trackLimitSize,osType);
         }
