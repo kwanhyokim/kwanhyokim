@@ -25,8 +25,6 @@ import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
-
-import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.CHART_PANEL_HOURLY_BASIS_PHRASES;
 /**
  * 설명 : 차트형 추천 패널
  *
@@ -89,7 +87,7 @@ public class ChartPanel extends Panel {
     private String getChartUpdateHourly(Date updateDateTime){
         if(updateDateTime != null){
 
-            return DateUtil.dateToString(updateDateTime, "HH")+CHART_PANEL_HOURLY_BASIS_PHRASES;
+            return DateUtil.dateToString(updateDateTime, "yyyy.MM.dd");
         }
         return "";
     }
