@@ -266,7 +266,7 @@
                      , A.UPDATE_DTIME                                                          AS updateDateTime
                      , A.ES_ALBUM_APPLY_DTIME                                                  AS registDateTime
                      , A.CHNL_PLAY_TM                                                          AS playTime
-                     , L.LIKE_TYPE                                                             AS playListType
+                     , IF(A.CHNL_TYPE !='FLAC', 'CHNL', 'FLAC')                                AS playListType
                      , L.DISP_SN                                                               AS dispSn
                      , L.UPDATE_DTIME                                                          AS likeUpdateDtime
                      , A.RENEW_DTIME                                                           AS renewDateTime
