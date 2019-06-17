@@ -184,6 +184,15 @@ public class LikeServiceImpl implements LikeService {
 
 	@Override
 	public void deleteLike(LikeTypeIdListRequest request, Long characterNo) {
+
+		if(!ObjectUtils.isEmpty(request) && !CollectionUtils.isEmpty(request.getLikeTypeList())){
+			for(LikeTypeVo likeTypeVo: request.getLikeTypeList()){
+				if(LikeConstant.LIKE_FLAC.equals(likeTypeVo.getLikeType())){
+					likeTypeVo.setLikeType(LikeConstant.LIKE_CHANNEL);
+				}
+			}
+		}
+
 		Map<String, Object> batchParam = new HashMap<>();
 
 		try(SqlSession sqlSession = sqlSessionTemplate.getSqlSessionFactory().openSession(ExecutorType.BATCH, false)){
