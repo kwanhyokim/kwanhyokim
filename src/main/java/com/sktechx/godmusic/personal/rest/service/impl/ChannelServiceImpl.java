@@ -120,9 +120,7 @@ public class ChannelServiceImpl implements ChannelService {
     private void filterDuplicatePopularChnlList(List<Long> filterChnlIdList , List<ChnlDto> popularChnlList){
         if( !CollectionUtils.isEmpty(filterChnlIdList) && !CollectionUtils.isEmpty(popularChnlList) ){
             popularChnlList.removeIf(chnlDto -> {
-                if(filterChnlIdList.contains(chnlDto.getChnlId()))
-                    return true;
-                return false;
+                return filterChnlIdList.contains(chnlDto.getChnlId());
             });
         }
     }
@@ -150,6 +148,35 @@ public class ChannelServiceImpl implements ChannelService {
         if(!CollectionUtils.isEmpty(preferGenrePopularChannelList)){
             return getPreferGenreUniqueChannelList(preferGenreIdList ,preferGenrePopularChannelList, trackLimitSize, osType);
         }
+
+        return null;
+    }
+
+    @Override
+    public List<PreferGenrePopularChnlDto> getPreferGenrePopularChannelListV2(List<Long> preferGenreIdList , int trackLimitSize, OsType osType) {
+        List<PreferGenrePopularChnlListDto> preferGenrePopularChannelList = null;
+
+        if(CollectionUtils.isEmpty(preferGenreIdList)){
+            return null;
+        }
+
+        try{
+            preferGenrePopularChannelList = redisService.getListWithPrefix(PREFER_GENRE_POPULAR_CHNL_KEY,PreferGenrePopularChnlListDto.class);
+        }catch(Exception e){
+            log.error("getPreferGenrePopularChannelIdList error : {}",e.getMessage());
+        }finally {
+            if(CollectionUtils.isEmpty(preferGenrePopularChannelList)){
+                preferGenrePopularChannelList = channelMapper.selectAllPreferGenrePopularChannelIdList();
+                if(!CollectionUtils.isEmpty(preferGenrePopularChannelList)){
+                    redisService.setWithPrefix(PREFER_GENRE_POPULAR_CHNL_KEY, preferGenrePopularChannelList , PREFER_GENRE_POPULAR_CHNL_EXPIRED_SECONDS);
+                }
+            }
+        }
+
+        if(!CollectionUtils.isEmpty(preferGenrePopularChannelList)){
+            return getPreferGenreNonUniqueChannelList(preferGenreIdList ,preferGenrePopularChannelList, trackLimitSize, osType);
+        }
+
         return null;
     }
 
@@ -236,6 +263,21 @@ public class ChannelServiceImpl implements ChannelService {
                                                                             final List<PreferGenrePopularChnlListDto> preferGenrePopularChannelList,
                                                                             int trackLimitSize ,
                                                                             OsType osType){
+        return getPreferGenreChannelList(preferGenreIdList, preferGenrePopularChannelList, trackLimitSize, osType, true);
+    }
+
+    private List<PreferGenrePopularChnlDto> getPreferGenreNonUniqueChannelList(final List<Long> preferGenreIdList ,
+            final List<PreferGenrePopularChnlListDto> preferGenrePopularChannelList,
+            int trackLimitSize ,
+            OsType osType){
+        return getPreferGenreChannelList(preferGenreIdList, preferGenrePopularChannelList, trackLimitSize, osType, false);
+    }
+
+    private List<PreferGenrePopularChnlDto> getPreferGenreChannelList(final List<Long> preferGenreIdList ,
+            final List<PreferGenrePopularChnlListDto> preferGenrePopularChannelList,
+            int trackLimitSize ,
+            OsType osType,
+            Boolean isUnique){
         List<PreferGenrePopularChnlDto> uniquePopularChannelList = new ArrayList<>();
 
         if(!CollectionUtils.isEmpty(preferGenrePopularChannelList)){
@@ -244,11 +286,13 @@ public class ChannelServiceImpl implements ChannelService {
                     .filter(preferGenre -> Objects.nonNull(preferGenre) && !CollectionUtils.isEmpty(preferGenre.getChnlIdList()))
                     .filter(preferGenre -> preferGenreIdList.contains(preferGenre.getPreferGenreId()))
                     .forEach(preferGenre -> {
-                        Long chnlId = preferGenre.getChnlIdList().
-                                stream().
-                                filter(id-> !uniquePopularChannelList.contains(id) ).
-                                findFirst().
-                                orElse(null);
+                        Long chnlId = preferGenre.getChnlIdList()
+                                .stream()
+                                .filter(id-> !uniquePopularChannelList.contains(id) && isUnique )
+                                .findFirst()
+                                .orElse(null)
+
+                                ;
                         if(chnlId!= null){
                             try{
                                 uniquePopularChannelList.add(new PreferGenrePopularChnlDto(preferGenre.getPreferGenreId(),chnlId));
@@ -264,6 +308,8 @@ public class ChannelServiceImpl implements ChannelService {
 
         return uniquePopularChannelList;
     }
+
+
     private void attachPreferGenreChannelInfo(final List<PreferGenrePopularChnlDto> popularChnlList, int trackLimitSize, OsType osType){
         List<Long> channelIdList = popularChnlList.stream().map(dto -> dto.getChnlId()).collect(Collectors.toList());
         if(!CollectionUtils.isEmpty( channelIdList )){

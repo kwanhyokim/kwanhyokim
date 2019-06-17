@@ -10,10 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,12 +19,15 @@ import org.springframework.util.ObjectUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelSignAssembly;
 import lombok.extern.slf4j.Slf4j;
+
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.POPULAR_CHNL_TRACK_LIMIT_SIZE;
 
 /**
  * 설명 : 선호 장르 패널 생성기
@@ -44,6 +44,8 @@ public class PreferGenreThemePanelAssembly extends PanelSignAssembly {
     @Autowired
     private RecommendReadMapper recommendReadMapper;
 
+
+
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
         final List<Panel> panelList = new ArrayList<>();
@@ -57,7 +59,7 @@ public class PreferGenreThemePanelAssembly extends PanelSignAssembly {
         List<Panel> myPanelList = new ArrayList<>();
         List<Panel> chartPanelList = new ArrayList<>();
 
-        appendPreferGenreChannelPanelList(personalPhaseMeta, myPanelList, 7 );
+        this.appendPreferGenreChannelPanelList(personalPhaseMeta, myPanelList, 7 );
 
         List<ImageInfo> imageInfoList = recommendReadMapper.selectTpoAndThemeImageList(personalPhaseMeta.getOsType());
 
@@ -120,5 +122,31 @@ public class PreferGenreThemePanelAssembly extends PanelSignAssembly {
         return null;
     }
 
+    @Override
+    protected void appendPreferGenreChannelPanelList(final PersonalPhaseMeta personalPhaseMeta,
+            final List<Panel> panelList,
+            int panelLimitSize) {
+
+        List<Long> preferGenreIdList = personalPhaseMeta.getPreferGenreIdList(panelLimitSize);
+
+        List<PreferGenrePopularChnlDto> appendChannelList = channelService.getPreferGenrePopularChannelListV2(
+                preferGenreIdList,
+                POPULAR_CHNL_TRACK_LIMIT_SIZE,
+                personalPhaseMeta.getOsType());
+
+        if (!CollectionUtils.isEmpty(appendChannelList)) {
+            appendChannelList
+                    .stream()
+                    .filter(Objects::nonNull)
+                    .forEach(channel -> {
+                        try{
+                            panelList.add(createPreferGenrePopularChannelPanel(personalPhaseMeta,channel));
+                        }catch(Exception e){
+                            log.error("appendPreferGenreChannelPanelList error : {}", e.getMessage());
+                        }
+                    });
+        }
+
+    }
 }
 

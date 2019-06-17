@@ -129,26 +129,17 @@ public abstract class PanelSignAssembly extends PanelAssembly {
         List<ArtistDto> artistList = recommendArtistDto.getArtistList();
 
         long representationArtistCount = artistList.stream().filter(artistDto -> {
-            if("REPRSNT".equals(artistDto.getArtistType())){
-                return true;
-            }
-            return false;
+            return "REPRSNT".equals(artistDto.getArtistType());
         }).count();
 
         long trackCount = recommendArtistDto.getTrackCount();
 
         if(representationArtistCount == 1){
-            if(trackCount >= ARTIST_POPULAR_TRACK_DISP_ONE_ARTIST_COUNT){
-                return true;
-            }
+            return trackCount >= ARTIST_POPULAR_TRACK_DISP_ONE_ARTIST_COUNT;
         }else if(representationArtistCount == 2){
-            if(trackCount >= ARTIST_POPULAR_TRACK_DISP_TWO_ARTIST_COUNT){
-                return true;
-            }
+            return trackCount >= ARTIST_POPULAR_TRACK_DISP_TWO_ARTIST_COUNT;
         }else if(representationArtistCount >= 3){
-            if(trackCount >= ARTIST_POPULAR_TRACK_DISP_STANDARD_COUNT){
-                return true;
-            }
+            return trackCount >= ARTIST_POPULAR_TRACK_DISP_STANDARD_COUNT;
         }
 
         return false;
@@ -270,7 +261,7 @@ public abstract class PanelSignAssembly extends PanelAssembly {
         return new ListenMoodPopularChannelPanel(channel, getDefaultBgImageList(channel.getImgList(), personalPhaseMeta.getOsType()));
     }
 
-    private Panel createPreferGenrePopularChannelPanel(final PersonalPhaseMeta personalPhaseMeta,
+    public Panel createPreferGenrePopularChannelPanel(final PersonalPhaseMeta personalPhaseMeta,
                                                        final PreferGenrePopularChnlDto preferGenrePopularChannel) {
 
         ChnlDto channel = preferGenrePopularChannel.getChannel();

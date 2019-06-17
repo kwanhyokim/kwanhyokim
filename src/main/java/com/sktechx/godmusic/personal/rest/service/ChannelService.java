@@ -37,4 +37,6 @@ public interface ChannelService {
     List<ChnlDto> getPreferGenreThemeList(List<Long> preferGenreIdList, int trackLimitSize, OsType osType);
     void removeLastListenHistory(Long memberNo, Long characterNo, List<ListenRequest> listenRequestList);
 
+    List<PreferGenrePopularChnlDto> getPreferGenrePopularChannelListV2(List<Long> preferGenreIdList , int trackLimitSize, OsType osType);
+
 }
