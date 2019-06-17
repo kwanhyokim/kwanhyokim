@@ -262,6 +262,7 @@ public class LikeServiceImpl implements LikeService {
 
 		if(LikeConstant.LIKE_FLAC.equals(likeType)){
 			likeType = LikeConstant.LIKE_CHANNEL;
+			request.setLikeType(likeType);
 		}
 
 		validMeta(likeType, request.getLikeTypeId(), getLikeTypeNotFoundMessage(likeType));
