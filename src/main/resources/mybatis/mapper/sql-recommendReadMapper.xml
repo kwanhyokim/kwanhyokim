@@ -629,7 +629,7 @@
           d.size,
           d.url,
           a.create_dtime,
-          a.disp_std_start_dt
+          a.disp_std_start_dt,
           (
             SELECT
               COUNT(*)

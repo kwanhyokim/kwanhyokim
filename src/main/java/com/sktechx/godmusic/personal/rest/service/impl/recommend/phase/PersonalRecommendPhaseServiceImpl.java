@@ -210,9 +210,11 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
     private long hourlyRemainMillisecond(){
         Calendar cal = Calendar.getInstance();
 
+        cal.set(Calendar.HOUR_OF_DAY, 5);
         cal.set(Calendar.MINUTE , 59);
         cal.set(Calendar.SECOND,59);
         cal.set(Calendar.MILLISECOND,999);
+        cal.add(Calendar.DAY_OF_YEAR, 1);
 
         long remainMillisecond = cal.getTimeInMillis() - System.currentTimeMillis();
         if(remainMillisecond > 0)
