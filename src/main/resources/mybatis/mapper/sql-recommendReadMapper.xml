@@ -1201,7 +1201,7 @@
         AND b.rcmmd_type_id = 'RC_SML_TR'
         AND b.img_disp_type = 'MAIN_TOP'
         AND b.os_type = #{osType}
-        ORDER BY rcmmd_table.disp_sn
+        ORDER BY rcmmd_table.disp_sn, b.disp_sn ASC
 
         -- 2. rcmmd_img_table end
         ) rcmmd_img_table
