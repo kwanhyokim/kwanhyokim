@@ -177,10 +177,14 @@ public class MemberChannelServiceImpl implements MemberChannelService {
         List<Long> trackIdList = null;
         List<ImageManagementDto> recommendImageList = Collections.EMPTY_LIST;
 
-        if (PinType.CHNL == pinType || PinType.MY_CHNL == pinType) {
+        if (PinType.CHNL == pinType || PinType.MY_CHNL == pinType || PinType.FLAC == pinType) {
             ChnlDto chnlDto = channelMapper.selectChannelById(pinTypeId);
             memberChannelName = chnlDto.getChnlNm(); // TODO : chnlDispNm?
             trackIdList = chnlDto.getTrackList().stream().map(x -> x.getTrackId()).collect(Collectors.toList());
+
+            if(PinType.FLAC == pinType){
+            	pinType = PinType.CHNL;
+            }
 
         } if (PinType.RC_SML_TR == pinType) {
             memberChannelName = pinType.getTitle();
@@ -251,7 +255,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
         int duplicateChannelNameCount = memberChannelMapper.selectMemberChannelEqualsName(memberNo, characterNo, memberChannelName);
 
         if (duplicateChannelNameCount > 0) {
-            String likeCondition = new String(memberChannelName).concat("(%)");
+            String likeCondition = memberChannelName.concat("(%)");
             List<String> likeConditionChannelList = memberChannelMapper.selectMemberChannelLikeNameList(memberNo, characterNo, likeCondition);
             int channelNumber = getMemberChannelNameNumbering(memberChannelName, likeConditionChannelList);
             memberChannel.setMemberChannelName(memberChannelName + "(" + channelNumber + ")");

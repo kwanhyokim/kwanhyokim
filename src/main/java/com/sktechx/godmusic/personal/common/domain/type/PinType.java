@@ -26,7 +26,8 @@ public enum PinType implements CodeEnum {
     RC_ATST_TR("RC_ATST_TR", "아티스트 FLO"),
     RC_CF_TR("RC_CF_TR", "나를 위한 FLO"),
     CHNL("CHNL", "채널"),
-    MY_CHNL("MY_CHNL", "마이 채널");
+    MY_CHNL("MY_CHNL", "마이 채널"),
+    FLAC("FLAC", "FLAC채널");
 //    CHART("CHART" , "차트");
 
     private final String code;
