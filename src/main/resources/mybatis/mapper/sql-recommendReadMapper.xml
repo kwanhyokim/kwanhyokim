@@ -839,6 +839,7 @@
             AND c.os_type = #{osType}
             AND c.img_disp_type = 'MAIN_TOP'
             AND c.img_content_type = 'GENRE'
+            AND c.disp_sn = #{dispSn}
 
             WHERE
             rcmmd_mforu_id = #{rcmmdId}

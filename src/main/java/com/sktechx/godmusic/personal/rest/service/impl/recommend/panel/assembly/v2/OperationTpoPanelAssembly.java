@@ -63,6 +63,24 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
         List<Panel> chartPanelList = new ArrayList<>();
 
         appendTPOPanel(personalPhaseMeta, myPanelList, 5);
+
+        List<ImageInfo> imageInfoList = recommendReadMapper.selectTpoAndThemeImageList(personalPhaseMeta.getOsType());
+
+        if(CollectionUtils.isEmpty(imageInfoList)){
+            imageInfoList = new ArrayList<>();
+        }
+
+        if(imageInfoList.size() < 5){
+            List<ImageInfo> tempImageInfoList = Arrays.asList(new ImageInfo[5]);
+            Collections.fill(tempImageInfoList, imageInfoList.get(0));
+            imageInfoList = tempImageInfoList;
+        }
+
+        for(int i=0; i<myPanelList.size(); i++) {
+            ImageInfo imageInfo = imageInfoList.get(i);
+            myPanelList.get(i).setImgList(Arrays.asList(imageInfo));
+        }
+
         appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
 
         int panelSize = 7;

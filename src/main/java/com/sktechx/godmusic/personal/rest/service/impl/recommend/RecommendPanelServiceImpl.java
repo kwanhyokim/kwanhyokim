@@ -472,8 +472,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     private RecommendPanelInfoDto getRecommendPanelInfoDto(
             RecommendPanelContentType recommendPanelContentType, Long panelContentId, Long characterNo, OsType osType,
             ListDto<List<RecommendPanelTrackDto>> trackList) {
+
         RecommendPanelInfoDto panel = null;
-        String title;
 
         PersonalPhaseMeta personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType, "4.6.0");
 
@@ -507,6 +507,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     private RecommendPanelInfoDto getForMeRecommendPanelInfoDto(
             RecommendPanelContentType recommendPanelContentType, Long panelContentId, OsType osType,
             PersonalPhaseMeta personalPhaseMeta, int trackCount) {
+
         String title;
         RecommendPanelInfoDto panel;
         RecommendGenreVo recommendGenreVo = recommendReadMapper.selectRecommendGenreByRcmmdId(panelContentId);
@@ -532,7 +533,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 personalPanel -> panelContentId.equals(personalPanel.getRecommendId())
         ).findFirst();
 
-        int dispSn = 0;
+        Integer dispSn = 0;
+
         if(!ObjectUtils.isEmpty(optionalPersonalPanel) && optionalPersonalPanel.isPresent()){
             dispSn = personalPhaseMeta.getRecommendPersonalPanelList(RecommendPanelContentType.RC_CF_TR).indexOf(optionalPersonalPanel.get());
 
@@ -540,6 +542,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 dispSn %= 2;
             }
         }
+
+        dispSn++;
         panel = RecommendPanelInfoDto.builder()
                 .title(title)
                 .subTitle(subTitle)

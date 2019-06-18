@@ -44,8 +44,6 @@ public class PreferGenreThemePanelAssembly extends PanelSignAssembly {
     @Autowired
     private RecommendReadMapper recommendReadMapper;
 
-
-
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
         final List<Panel> panelList = new ArrayList<>();
