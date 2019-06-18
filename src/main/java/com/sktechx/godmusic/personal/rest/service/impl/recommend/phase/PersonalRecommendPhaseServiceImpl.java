@@ -113,6 +113,47 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
 
             //개인화 추천 패널
             List<PersonalPanel> rcmmdPanelList = recommendReadMapper.selectPersonalRecommendPanelMeta(characterNo, SIMILAR_TRACK_DISP_STANDARD_COUNT , RCMMD_CF_TRACK_DISP_STANDARD_COUNT, checkDispEndDate);
+
+
+            rcmmdPanelList = rcmmdPanelList.stream()
+                    .sorted(Comparator.comparing(PersonalPanel::getCreateDtime).reversed()
+                            .thenComparing(
+                            PersonalPanel::getRecommendPanelContentType, (r1,r2)->{
+                                Integer i1=0;
+                                Integer i2=0;
+
+                                switch (r1){
+                                    case RC_CF_TR:
+                                        i1=1;
+                                        break;
+                                    case RC_SML_TR:
+                                        i1=2;
+                                        break;
+                                    case RC_ATST_TR:
+                                        i1=3;
+                                        break;
+                                }
+
+                                switch (r2){
+                                    case RC_CF_TR:
+                                        i2=1;
+                                        break;
+                                    case RC_SML_TR:
+                                        i2=2;
+                                        break;
+                                    case RC_ATST_TR:
+                                        i2=3;
+                                        break;
+                                }
+
+                                return i1.compareTo(i2);
+
+                            })
+
+                    )
+                    .collect(Collectors.toList());
+
+
             personalPhaseMeta.setRcmmdPanelList(rcmmdPanelList);
 
             filterRecommendPanelDuplicateTracks(personalPhaseMeta);
