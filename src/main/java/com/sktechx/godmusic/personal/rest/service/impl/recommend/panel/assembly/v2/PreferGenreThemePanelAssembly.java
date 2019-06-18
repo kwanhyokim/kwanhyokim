@@ -67,17 +67,16 @@ public class PreferGenreThemePanelAssembly extends PanelSignAssembly {
             imageInfoList = new ArrayList<>();
         }
 
-        Collections.shuffle(imageInfoList);
-
-        if( imageInfoList.size() > 5){
-            imageInfoList = imageInfoList.subList(0,5);
+        if(imageInfoList.size() < 5){
+            List<ImageInfo> tempImageInfoList = new ArrayList<>();
+            Collections.fill(tempImageInfoList, imageInfoList.get(0));
+            imageInfoList = tempImageInfoList;
         }
 
-        List<ImageInfo> finalImageInfoList = imageInfoList;
-
-        myPanelList.stream().forEach(x-> {
-            x.setImgList(finalImageInfoList);
-        });
+        for(int i=0; i<5; i++) {
+            ImageInfo imageInfo = imageInfoList.get(i);
+            myPanelList.get(i).setImgList(Arrays.asList(imageInfo));
+        }
 
         appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
 
