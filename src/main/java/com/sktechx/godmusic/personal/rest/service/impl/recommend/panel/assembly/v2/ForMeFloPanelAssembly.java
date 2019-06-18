@@ -66,7 +66,7 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
                         myPanel.getImgList().size() >=2 ) {
                     ImageInfo tempImageInfo;
 
-                    if( (i%2) != 0) {
+                    if( (i%2) == 0) {
                         tempImageInfo = myPanel.getImgList().get(0);
                     }else{
                         tempImageInfo = myPanel.getImgList().get(1);
