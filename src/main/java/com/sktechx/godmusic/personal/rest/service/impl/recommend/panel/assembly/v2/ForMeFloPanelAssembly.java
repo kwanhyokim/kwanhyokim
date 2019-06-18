@@ -19,6 +19,7 @@ import org.springframework.util.ObjectUtils;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.RcmmdTrackPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
@@ -59,9 +60,19 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
 
             for(int i=0; i<myPanelList.size(); i++){
 
-                if( !CollectionUtils.isEmpty(myPanelList.get(i).getImgList()) && myPanelList.get(i).getImgList().size() >=2 ) {
-                    myPanelList.get(i).setImgList(
-                            Arrays.asList(myPanelList.get(i).getImgList().get(i%2)));
+                Panel myPanel = myPanelList.get(i);
+
+                if( !CollectionUtils.isEmpty(myPanel.getImgList()) &&
+                        myPanel.getImgList().size() >=2 ) {
+                    ImageInfo tempImageInfo;
+
+                    if( (i%2) == 0) {
+                        tempImageInfo = myPanel.getImgList().get(0);
+                    }else{
+                        tempImageInfo = myPanel.getImgList().get(1);
+                    }
+
+                    myPanel.setImgList(Arrays.asList(tempImageInfo));
                 }
 
             }
