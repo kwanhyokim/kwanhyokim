@@ -68,12 +68,12 @@ public class PreferGenreThemePanelAssembly extends PanelSignAssembly {
         }
 
         if(imageInfoList.size() < 5){
-            List<ImageInfo> tempImageInfoList = new ArrayList<>();
+            List<ImageInfo> tempImageInfoList = Arrays.asList(new ImageInfo[5]);
             Collections.fill(tempImageInfoList, imageInfoList.get(0));
             imageInfoList = tempImageInfoList;
         }
 
-        for(int i=0; i<5; i++) {
+        for(int i=0; i<myPanelList.size(); i++) {
             ImageInfo imageInfo = imageInfoList.get(i);
             myPanelList.get(i).setImgList(Arrays.asList(imageInfo));
         }
