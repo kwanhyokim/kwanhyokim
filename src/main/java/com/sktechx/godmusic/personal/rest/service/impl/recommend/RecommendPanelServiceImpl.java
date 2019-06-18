@@ -296,20 +296,16 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
 	private List<ImageInfo> getRecommendPanelInfoBgImage(RecommendPanelContentType recommendPanelContentType,Long panelContentId, OsType osType , int dispSn){
 
-        List<String> imgUrlList = recommendReadMapper.selectRecommendPanelInfoBgImageUrl(recommendPanelContentType, panelContentId, osType , dispSn);
+        if(dispSn == 0){
+            dispSn = 1;
+        }
 
-        String imgUrl;
-        if(CollectionUtils.isEmpty(imgUrlList)) {
+        String imgUrl = recommendReadMapper.selectRecommendPanelInfoBgImageUrl(recommendPanelContentType, panelContentId, osType , dispSn);
+
+        if(ObjectUtils.isEmpty(imgUrl)) {
             List<ImageInfo> imageInfoList = getRecommendPanelDefaultImageList(osType);
 
             imgUrl = imageInfoList.get(0).getUrl();
-        }else{
-
-            if(dispSn < imgUrlList.size()) {
-                imgUrl = imgUrlList.get(dispSn);
-            }else{
-                imgUrl = imgUrlList.get(0);
-            }
         }
 
         return makePanelBackGroundImageList(imgUrl);
@@ -533,17 +529,19 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 personalPanel -> panelContentId.equals(personalPanel.getRecommendId())
         ).findFirst();
 
-        Integer dispSn = 0;
+        Integer dispSn = 1;
 
         if(!ObjectUtils.isEmpty(optionalPersonalPanel) && optionalPersonalPanel.isPresent()){
-            dispSn = personalPhaseMeta.getRecommendPersonalPanelList(RecommendPanelContentType.RC_CF_TR).indexOf(optionalPersonalPanel.get());
+            Integer panelIndex = personalPhaseMeta.getRecommendPersonalPanelList(RecommendPanelContentType.RC_CF_TR).indexOf(optionalPersonalPanel.get());
 
-            if(dispSn >= 2){
-                dispSn %= 2;
+            // 홀수패널이면 1, 짝수패널이면 2
+            if ((panelIndex % 2) != 0) {
+                dispSn = 1;
+            } else {
+                dispSn = 2;
             }
         }
 
-        dispSn++;
         panel = RecommendPanelInfoDto.builder()
                 .title(title)
                 .subTitle(subTitle)
