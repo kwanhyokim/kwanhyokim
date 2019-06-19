@@ -92,9 +92,14 @@ public class PersonalPhaseMeta {
                     .filter(personalPanel -> {
                         return Objects.nonNull(personalPanel) && recommendPanelContentType.equals(personalPanel.getRecommendPanelContentType());
                     })
-                    .sorted(Comparator.comparing(PersonalPanel::getDispSn, (dispSn1, dispSn2) -> {
+                    .sorted(
+                            Comparator.comparing(PersonalPanel::getRecommendId, (r1, r2) -> {
+                                return r1.compareTo(r2);
+                                    }).reversed()
+                                    .thenComparing(
+                            Comparator.comparing(PersonalPanel::getDispSn, (dispSn1, dispSn2) -> {
                         return dispSn1.compareTo(dispSn2);
-                    }))
+                    })))
                     .map(PersonalPanel::getRecommendId)
                     .distinct()
                     .collect(Collectors.toList());
