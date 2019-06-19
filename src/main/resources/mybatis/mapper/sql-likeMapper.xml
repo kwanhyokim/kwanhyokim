@@ -446,4 +446,19 @@
               AND LIKE_TYPE_ID = #{likeTypeId}
     </update>
 
+    <select id="countLikeByCharacterNo" resultType="int">
+        SELECT
+        	COUNT(*)
+        FROM
+			tb_character_like
+		WHERE
+			character_no = #{characterNo}
+    </select>
+
+   <insert id="insertSelectLike">
+    INSERT INTO
+      tb_character_like (character_no, like_type, like_type_id, disp_sn)
+    SELECT #{toCharacterNo}, like_type, like_type_id, disp_sn from tb_character_like where character_no = #{fromCharacterNo}
+   </insert>
+
 </mapper>

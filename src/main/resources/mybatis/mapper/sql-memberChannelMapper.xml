@@ -298,4 +298,27 @@
 			a.member_chnl_id = #{channelId}
 	</update>
 
+	<select id="selectLimitedMemberChannelIdList" resultType="java.lang.Long">
+		SELECT
+			member_chnl_id
+		FROM
+			tb_member_chnl
+		WHERE
+			character_no = #{characterNo}
+			AND member_no = #{memberNo}
+			AND pin_type IS NULL
+		ORDER BY member_chnl_sn ASC
+		LIMIT 10
+	</select>
+
+	<select id="countMemberChannelIdList" resultType="int">
+    SELECT
+    	COUNT(*)
+    FROM
+        tb_member_chnl
+    WHERE
+    	character_no = #{characterNo}
+		AND member_no = #{memberNo}
+    </select>
+
 </mapper>
