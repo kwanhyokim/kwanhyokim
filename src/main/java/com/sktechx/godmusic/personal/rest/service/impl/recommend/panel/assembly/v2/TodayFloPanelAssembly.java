@@ -10,10 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -105,6 +102,7 @@ public class TodayFloPanelAssembly extends PanelSignAssembly {
             similarTrackList
                     .stream()
                     .filter(Objects::nonNull)
+                    .sorted(Comparator.comparing(RecommendTrackDto::getRcmmdCreateDtime).reversed())
                     .forEach(similarTrack ->{
                         try {
                             if(similarTrack.getTrackCount() >= SIMILAR_TRACK_DISP_STANDARD_COUNT){

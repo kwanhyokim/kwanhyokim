@@ -141,6 +141,7 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
                 tpoChnlList
                         .stream()
                         .filter(Objects::nonNull)
+                        .sorted(Comparator.comparing(ChnlDto::getCreateDtime).reversed())
                         .forEach(channel -> {
                             try{
                                 log.info("XXXXXXX {}", channel);
