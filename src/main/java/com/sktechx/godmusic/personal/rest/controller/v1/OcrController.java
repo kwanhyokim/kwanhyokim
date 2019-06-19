@@ -1,27 +1,27 @@
 package com.sktechx.godmusic.personal.rest.controller.v1;
 
-import com.sktechx.godmusic.lib.domain.CommonApiResponse;
-import com.sktechx.godmusic.lib.domain.CommonConstant;
-import com.sktechx.godmusic.lib.domain.GMContext;
-import com.sktechx.godmusic.personal.common.domain.domain.Naming;
-import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrDto;
-import com.sktechx.godmusic.personal.rest.model.vo.external.AwsFileVo;
-import com.sktechx.godmusic.personal.rest.model.vo.ocr.CreateOcrSessionRequest;
-import com.sktechx.godmusic.personal.rest.model.vo.ocr.CreateOcrSessionResponse;
-import com.sktechx.godmusic.personal.rest.model.vo.ocr.OcrAnalsVo;
-import com.sktechx.godmusic.personal.rest.model.vo.ocr.GetOcrStatusResponse;
-import com.sktechx.godmusic.personal.rest.service.OcrService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import lombok.extern.slf4j.Slf4j;
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
+import com.sktechx.godmusic.lib.domain.CommonApiResponse;
+import com.sktechx.godmusic.lib.domain.CommonConstant;
+import com.sktechx.godmusic.lib.domain.GMContext;
+import com.sktechx.godmusic.personal.common.domain.domain.Naming;
+import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ocr.CreateOcrSessionRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.ocr.CreateOcrSessionResponse;
+import com.sktechx.godmusic.personal.rest.model.vo.ocr.GetOcrStatusResponse;
+import com.sktechx.godmusic.personal.rest.model.vo.ocr.OcrAnalsVo;
+import com.sktechx.godmusic.personal.rest.service.OcrService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
@@ -48,8 +48,8 @@ public class OcrController {
     public CommonApiResponse uploadOcrFile( MultipartFile file, @RequestParam("ocrNo") Long ocrNo, @RequestParam("ocrFileNo") Integer ocrFileNo ){
 
         // select 로 검색 하여 기 처리된 데이터 인지 확인 upload 여부, 분석 요청 여부.
-        AwsFileVo awsFileVo = ocrService.uploadOcrFile(GMContext.getContext().getMemberNo(), GMContext.getContext().getCharacterNo(), file, ocrNo, ocrFileNo);
-        ocrService.requestAnalysisToOcrServer(GMContext.getContext().getCharacterNo(), ocrNo, ocrFileNo, awsFileVo);
+//        AwsFileVo awsFileVo = ocrService.uploadOcrFile(GMContext.getContext().getMemberNo(), GMContext.getContext().getCharacterNo(), file, ocrNo, ocrFileNo);
+//        ocrService.requestAnalysisToOcrServer(GMContext.getContext().getCharacterNo(), ocrNo, ocrFileNo, awsFileVo);
 
         return new CommonApiResponse<>().emptySuccess();
     }
