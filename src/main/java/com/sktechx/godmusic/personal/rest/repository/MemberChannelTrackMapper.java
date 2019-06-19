@@ -42,4 +42,6 @@ public interface MemberChannelTrackMapper {
     int insertTrackMemberChannel(@Param("channelId")Long memberChannelId, @Param("trackId")Long trackId, @Param("viewPriority")Integer viewPriority);
 
     List<Long> selectMemberChannelTrackIdList(@Param("memberNo")Long memberNo, @Param("characterNo") Long characterNo, @Param("channelId")Long memberChannelId);
+
+    void insertSelectMemberChannelTrack(@Param("fromMemberChannelId") Long fromMemberChannelId, @Param("toMemberChannelId") Long toMemberChannelId);
 }

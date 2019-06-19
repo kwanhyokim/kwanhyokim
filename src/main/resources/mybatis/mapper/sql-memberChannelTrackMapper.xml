@@ -186,4 +186,10 @@
 		</trim>
 	</update>
 
+	<insert id="insertSelectMemberChannelTrack">
+    INSERT INTO
+      tb_map_member_chnl_track (member_chnl_id, track_id, track_sn, title_yn)
+    SELECT #{toMemberChannelId}, track_id, track_sn,  title_yn FROM tb_map_member_chnl_track WHERE member_chnl_id = #{fromMemberChannelId}
+   </insert>
+
 </mapper>
