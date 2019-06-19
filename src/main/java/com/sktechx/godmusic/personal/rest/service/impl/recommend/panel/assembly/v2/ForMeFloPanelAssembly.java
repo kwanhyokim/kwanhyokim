@@ -109,6 +109,7 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
             recommendCfTrackList
                     .stream()
                     .filter(Objects::nonNull)
+                    .sorted(Comparator.comparing(RecommendTrackDto::getRcmmdCreateDtime).reversed())
                     .forEach(cfTrack -> {
                         try {
 

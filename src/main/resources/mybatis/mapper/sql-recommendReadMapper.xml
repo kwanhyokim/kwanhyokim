@@ -1055,7 +1055,7 @@
         JOIN (SELECT @curRank:=0, @prevRcmmdId:=0) r
         WHERE
         c.disp_status_yn = 'Y'AND now() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
-        ORDER BY rcmmd_img_table.rcmmd_id , b.disp_sn
+        ORDER BY rcmmd_img_table.rcmmd_id DESC, b.disp_sn
         -- 3. rcmmd_track_table end
         ) rcmmd_track_table
         -- 4. rcmmd_tank_table end
@@ -1192,7 +1192,7 @@
         tb_rcmmd_similar_track a
         WHERE
           a.character_no = #{characterNo}
-
+        ORDER BY a.create_dtime DESC
         LIMIT #{recommendLimitSize}
         -- 1. rcmmd_table end;
         ) rcmmd_table
@@ -1211,7 +1211,7 @@
         WHERE
         c.disp_status_yn = 'Y'
         AND now() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
-        ORDER BY rcmmd_img_table.rcmmd_id , b.disp_sn
+        ORDER BY rcmmd_img_table.rcmmd_id DESC
         -- 3. rcmmd_track_table end
         ) rcmmd_track_table
         -- 4. rcmmd_tank_table end
