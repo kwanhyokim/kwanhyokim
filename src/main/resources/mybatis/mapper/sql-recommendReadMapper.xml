@@ -1211,7 +1211,7 @@
         WHERE
         c.disp_status_yn = 'Y'
         AND now() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
-        ORDER BY rcmmd_img_table.rcmmd_id DESC
+        ORDER BY rcmmd_img_table.rcmmd_id DESC, b.disp_sn ASC
         -- 3. rcmmd_track_table end
         ) rcmmd_track_table
         -- 4. rcmmd_tank_table end
