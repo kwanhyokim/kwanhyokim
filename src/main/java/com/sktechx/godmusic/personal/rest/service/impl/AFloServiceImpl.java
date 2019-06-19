@@ -30,7 +30,7 @@ public class AFloServiceImpl implements AFloService {
 
     @Override
     @Transactional
-    public void migrateArtistFlo(Long memberNo, Long fromCharacterNo, Long toCharacterNo){
+    public void migrateAFloCharacter(Long memberNo, Long fromCharacterNo, Long toCharacterNo){
 
         // 아티스트 좋아요
         int likeCount = likeMapper.countLikeByCharacterNo(toCharacterNo);

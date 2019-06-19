@@ -2,7 +2,7 @@ package com.sktechx.godmusic.personal.rest.controller.v1.inner;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
-import com.sktechx.godmusic.personal.rest.model.vo.aflo.MigrateAFloRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.aflo.MigrateAFloCharacterRequest;
 import com.sktechx.godmusic.personal.rest.service.AFloService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -26,10 +26,10 @@ public class InnerPersonalController {
     @ApiOperation(value = "개인 정보 좋아요"
             , httpMethod = "POST", notes = "타입별 좋아요 추가")
     @PostMapping("/migrate-aflo")
-    public CommonApiResponse migrateFlo(@RequestBody MigrateAFloRequest request) {
+    public CommonApiResponse migrateAFloCharacter(@RequestBody MigrateAFloCharacterRequest request) {
 
         if(!ObjectUtils.isEmpty(request)){
-            aFloService.migrateArtistFlo(request.getMemberNo(), request.getFromCharacterNo(), request.getToCharacterNo());
+            aFloService.migrateAFloCharacter(request.getMemberNo(), request.getFromCharacterNo(), request.getToCharacterNo());
         }
 
         return CommonApiResponse.emptySuccess();
