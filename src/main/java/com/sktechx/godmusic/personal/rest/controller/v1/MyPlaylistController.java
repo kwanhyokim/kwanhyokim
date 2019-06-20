@@ -16,6 +16,7 @@ import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.common.domain.type.AppNameType;
+import com.sktechx.godmusic.personal.common.domain.type.PinType;
 import com.sktechx.godmusic.personal.rest.model.dto.MemberChannelDto;
 import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistCreateRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.myplaylist.MyPlaylistDeleteRequest;
@@ -39,6 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -97,7 +99,14 @@ public class MyPlaylistController {
             @ApiParam(value = "memberChannelName - 회원 플레이리스트 명", defaultValue = CREATE_MY_PLAYLIST_DEFAULT_REQUEST) @Valid @RequestBody MyPlaylistCreateRequest myPlaylistCreateRequest) {
         Long memberNo = getMemberNo();
         Long characterNo = getCharacterNo();
-        MemberChannelDto memberChannel = memberChannelService.createMemberChannel(memberNo, characterNo, myPlaylistCreateRequest.getMemberChannelName());
+        MemberChannelDto memberChannel;
+
+        if(!ObjectUtils.isEmpty(myPlaylistCreateRequest.getPinType()) && myPlaylistCreateRequest.getPinType() == PinType.OCR){
+            memberChannel = memberChannelService.createMemberChannel(memberNo, characterNo, myPlaylistCreateRequest.getMemberChannelName(), PinType.OCR, null);
+        }else{
+            memberChannel = memberChannelService.createMemberChannel(memberNo, characterNo, myPlaylistCreateRequest.getMemberChannelName());
+        }
+
 
         return new CommonApiResponse<>(memberChannelService.getMemberChannel(memberNo, characterNo, memberChannel.getMemberChannelId()));
     }
