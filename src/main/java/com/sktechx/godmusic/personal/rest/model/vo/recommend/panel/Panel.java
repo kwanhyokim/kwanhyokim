@@ -41,7 +41,7 @@ public abstract class Panel {
     @Setter
     @ApiModelProperty(required = true, value = "추천 패널 타입(POPULAR_CHANNEL:인기 채널, PREFER_SIMILAR_TRACK:유사, PREFER_GENRE_SIMILAR_TRACK:선호장르 유사곡, " +
             "RCMMD_TRACK:청취 추천, ARRIST_POPULAR_TRACK:선호 아티스트 인기곡, LIVE_CHART:top100, KIDS_CHART:키즈 )")
-    protected RecommendPanelType type;
+    public RecommendPanelType type;
 
     @Getter
     @ApiModelProperty(required = true, value = "패널 제목")

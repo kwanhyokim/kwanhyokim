@@ -66,7 +66,31 @@ public class ChannelServiceImpl implements ChannelService {
     private RedisService redisService;
 
     @Override
-    public ChnlDto getFloAndDataChannel(int trackLimitSize ,OsType osType){
+    public List<ChnlDto> getAfloChannelList(int channelLimitSize, int trackLimitSize ,OsType osType){
+
+        List<ChnlDto> afloChnlList = null;
+        try{
+            afloChnlList = redisService.getListWithPrefix(ALL_POPULAR_CHNL_KEY,ChnlDto.class);
+        }catch( Exception e){
+            log.error("getPopularChannelList error : {}",e.getMessage());
+        }finally {
+            if(CollectionUtils.isEmpty(afloChnlList)){
+                afloChnlList = channelMapper.selectAfloChannelList();
+                if(!CollectionUtils.isEmpty(afloChnlList)){
+                    redisService.setWithPrefix(ALL_POPULAR_CHNL_KEY,afloChnlList,POPULAR_CHNL_EXPIRED_SECONDS);
+                }
+            }
+        }
+
+        if(!CollectionUtils.isEmpty(afloChnlList) && afloChnlList.size() > channelLimitSize){
+            afloChnlList = afloChnlList.subList(0,channelLimitSize);
+        }
+
+        return afloChnlList;
+    }
+
+    @Override
+    public ChnlDto getFloAndDataChannel(){
 
         ChnlDto floAndDataChnlDto = channelMapper.selectFlacChannel();
 

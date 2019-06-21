@@ -52,5 +52,6 @@ public interface ChannelMapper {
     void deleteLastListenHistory(@Param("memberNo") Long memberNo, @Param("characterNo") Long characterNo, @Param("listenType") String listenType, @Param("listenTypeId") Long listenTypeId);
 
     ChnlDto selectFlacChannel();
+    List<ChnlDto> selectAfloChannelList();
 
 }

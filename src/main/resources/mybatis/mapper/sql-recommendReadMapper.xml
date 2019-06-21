@@ -53,6 +53,21 @@
     <select id="selectPersonalRecommendPanelMeta" resultMap="personalPanelResultMap" >
 
             SELECT
+                'AFLO' as recommendPanelContentType,
+                a.chnl_id as recommendId,
+                a.create_dtime as avaliableDateTime,
+                1 as dispSn,
+                a.create_dtime,
+                0 as moodId,
+                0 as contentCount
+                FROM
+                tb_chnl a
+                WHERE
+                a.chnl_type = 'AFLO'
+                AND a.disp_status_type='Y'
+            UNION ALL
+
+            SELECT
                 'RC_CF_TR' as recommendPanelContentType,
                 a.rcmmd_mforu_id as recommendId,
                 a.disp_std_end_dt as avaliableDateTime,
