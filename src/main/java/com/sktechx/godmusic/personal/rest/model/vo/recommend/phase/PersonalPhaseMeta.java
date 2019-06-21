@@ -40,15 +40,15 @@ public class PersonalPhaseMeta {
     protected Long characterNo;
     protected OsType osType;
 
-    //선호 장르
+    // 선호 장르
     private List<CharacterPreferGenreDto> preferGenreList;
-    //선호 노출
+    // 선호 노출
     private List<CharacterPreferDispDto> preferDispList;
-    //추천 단계
+    // 추천 단계
     private List<PersonalPhase> personalPhaseList;
-    //개인화 추천 패널
+    // 개인 패널
     private List<PersonalPanel> rcmmdPanelList;
-    //추천 패널에 노출되는 채널 아이디 리스트
+    // 추천 패널에 노출되는 채널 아이디 리스트
     private List<Long> rcmmdPanelDispChnlIdList;
 
     public void setRcmmdPanelList(List<PersonalPanel> rcmmdPanelList){
@@ -66,11 +66,6 @@ public class PersonalPhaseMeta {
                     .orElse(PersonalPhaseType.GUEST);
         }
         return PersonalPhaseType.GUEST;
-    }
-
-    public boolean isRecommendPersonalPanelPresent(RecommendPanelContentType recommendPanelContentType){
-	    return !CollectionUtils
-			    .isEmpty(getRecommendPersonalPanelRcmmdIdList(recommendPanelContentType));
     }
 
     public PersonalPanel getRecommendPersonalPanelTopItem() {

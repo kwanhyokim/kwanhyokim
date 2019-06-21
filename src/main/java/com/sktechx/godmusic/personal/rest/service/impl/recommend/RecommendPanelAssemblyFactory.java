@@ -60,17 +60,10 @@ public class RecommendPanelAssemblyFactory {
 
         if(!ObjectUtils.isEmpty(personalPanel)) {
 
-            switch (personalPanel.getRecommendPanelContentType()){
-                // 나를 위한 FLO
-                case RC_CF_TR:
-                    return applicationContextProvider.getContext().getBean(ForMeFloPanelAssembly.class);
+            PanelAssembly panelAssembly = getV2RecommendPanelAssembly(personalPanel.getRecommendPanelContentType());
 
-                // 오늘의 FLO
-                case RC_SML_TR:
-                    return applicationContextProvider.getContext().getBean(TodayFloPanelAssembly.class);
-                // 아티스트 FLO
-                case RC_ATST_TR:
-                    return applicationContextProvider.getContext().getBean(ArtistFloPanelAssembly.class);
+            if(panelAssembly != null){
+                return panelAssembly;
             }
         }
 
@@ -86,6 +79,8 @@ public class RecommendPanelAssemblyFactory {
     public PanelAssembly getV2RecommendPanelAssembly(RecommendPanelContentType recommendPanelContentType){
 
         switch (recommendPanelContentType){
+            case AFLO:
+                return applicationContextProvider.getContext().getBean(AfloPanelAssembly.class);
             // 나를 위한 FLO
             case RC_CF_TR:
                 return applicationContextProvider.getContext().getBean(ForMeFloPanelAssembly.class);

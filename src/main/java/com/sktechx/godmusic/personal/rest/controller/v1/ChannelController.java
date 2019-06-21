@@ -100,7 +100,7 @@ public class ChannelController {
     public CommonApiResponse<ChannelListResponse> getFloAndDataChannelList(
             @ApiIgnore @RequestGMContext GMContext ctx){
 
-        ChnlDto floAndDataChannel = channelService.getFloAndDataChannel(50, ctx.getOsType());
+        ChnlDto floAndDataChannel = channelService.getFloAndDataChannel();
 
         if(ObjectUtils.isEmpty(floAndDataChannel)){
             throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);

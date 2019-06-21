@@ -37,7 +37,9 @@ public enum RecommendPanelType implements CodeEnum{
     LIVE_CHART("LIVE_CHART" , "실시간 차트" ),
     KIDS_CHART("KIDS_CHART" , "키즈 차트" ),
 
-    TPO_CHANNEL("TPO_CHANNEL", "TPO 채널");
+    TPO_CHANNEL("TPO_CHANNEL", "TPO 채널"),
+    ARTIST_FLO_TRACK("ARTIST_FLO_TRACK", "AFLO 채널"),
+    ;
 
 
     private final String code;
