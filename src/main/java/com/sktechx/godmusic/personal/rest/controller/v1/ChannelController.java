@@ -112,4 +112,19 @@ public class ChannelController {
         return new CommonApiResponse<>(ChannelListResponse.builder().list(floAndDataChannelList).build());
 
     }
+
+    @ApiOperation(value = "AFLO 테마 리스트 ")
+    @GetMapping("/afloChnl/list")
+    public CommonApiResponse<ChannelListResponse> getAfloChannelList(
+            @ApiIgnore @RequestGMContext GMContext ctx){
+
+        List<ChnlDto> afloChnlList = channelService.getAfloChannelList(10,10, ctx.getOsType());
+
+        if(CollectionUtils.isEmpty(afloChnlList)){
+            throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
+        }
+
+        return new CommonApiResponse<>(ChannelListResponse.builder().list(afloChnlList).build());
+
+    }
 }
