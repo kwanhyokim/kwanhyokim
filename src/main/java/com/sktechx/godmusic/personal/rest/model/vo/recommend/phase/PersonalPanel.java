@@ -36,4 +36,6 @@ public class PersonalPanel {
     private Long moodId;
 
     private Date createDtime;
+
+    private Date dispStdStartDt;
 }
