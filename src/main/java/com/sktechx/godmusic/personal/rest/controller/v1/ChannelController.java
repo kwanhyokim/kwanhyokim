@@ -14,22 +14,25 @@ import org.springframework.web.bind.annotation.*;
 
 import com.google.common.primitives.Ints;
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
+import com.sktechx.godmusic.lib.domain.CommonConstant;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.RequestGMContext;
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.personal.common.domain.ListResponse;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto;
 import com.sktechx.godmusic.personal.rest.model.dto.MemberChannelDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ChannelListResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenDeleteRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
+import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -48,6 +51,9 @@ public class ChannelController {
 
     @Autowired
     private ChannelService channelService;
+
+    @Autowired
+    private RecommendPanelService recommendPanelService;
 
 
     @ApiImplicitParams({
@@ -115,16 +121,22 @@ public class ChannelController {
 
     @ApiOperation(value = "AFLO 테마 리스트 ")
     @GetMapping("/afloChnl/list")
-    public CommonApiResponse<ChannelListResponse> getAfloChannelList(
-            @ApiIgnore @RequestGMContext GMContext ctx){
+    public CommonApiResponse recommendPanelTrackList(
+            @ApiIgnore @RequestGMContext GMContext ctx,
+            @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo,
+            @RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType
+    ){
 
-        List<ChnlDto> afloChnlList = channelService.getAfloChannelList(10,10, ctx.getOsType());
+        List<Panel> recommendPanelList = recommendPanelService.getRecommendPanelList(ctx.getCharacterNo(), RecommendPanelContentType.AFLO, ctx.getOsType());
 
-        if(CollectionUtils.isEmpty(afloChnlList)){
-            throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
+        if(CollectionUtils.isEmpty(recommendPanelList)){
+            return null;
         }
 
-        return new CommonApiResponse<>(ChannelListResponse.builder().list(afloChnlList).build());
+        recommendPanelList.stream().forEach(panel ->
+            panel.getContent().setType(RecommendPanelContentType.AFLO)
+        );
 
+        return new CommonApiResponse<>(new ListDto<>(recommendPanelList));
     }
 }

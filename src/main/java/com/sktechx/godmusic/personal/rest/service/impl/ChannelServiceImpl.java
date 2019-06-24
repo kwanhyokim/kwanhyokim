@@ -72,7 +72,7 @@ public class ChannelServiceImpl implements ChannelService {
         try{
             afloChnlList = redisService.getListWithPrefix(ALL_POPULAR_CHNL_KEY,ChnlDto.class);
         }catch( Exception e){
-            log.error("getPopularChannelList error : {}",e.getMessage());
+            log.error("getAfloChannelList error : {}",e.getMessage());
         }finally {
             if(CollectionUtils.isEmpty(afloChnlList)){
                 afloChnlList = channelMapper.selectAfloChannelList();

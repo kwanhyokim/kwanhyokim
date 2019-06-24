@@ -96,7 +96,15 @@ public class AfloPanelAssembly extends PanelSignAssembly {
 
     @Override
     public List<Panel> getRecommendPanelList(Long characterNo, OsType osType) {
-        return null;
+        PersonalPhaseMeta personalPhaseMeta = new PersonalPhaseMeta();
+        personalPhaseMeta.setCharacterNo(characterNo);
+        personalPhaseMeta.setOsType(osType);
+
+        List<Panel> panelList = new ArrayList<>();
+
+        appendAfloChannelPanelList(personalPhaseMeta, panelList, 4);
+
+        return panelList;
     }
 
     public List<Panel> appendAfloChannelPanelList(final PersonalPhaseMeta personalPhaseMeta,
