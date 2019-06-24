@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2018 SK TECHX.
+  ~ All right reserved.
+  ~
+  ~ This software is the confidential and proprietary information of SK TECHX.
+  ~ You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with SK TECHX.
+  -->
+
+<configuration>
+
+    <!--<include resource="org/springframework/boot/logging/logback/defaults.xml"/>-->
+    ​
+    <!--<springProperty scope="context" name="springAppName" source="spring.application.name"/>-->
+
+    <property name="LOG_FILE" value="${catalina.home}/logs/service/api.${HOSTNAME}.log"/>​
+    <property name="LOG_PATTERN"
+              value="${HOSTNAME} | %d{${datestamp}} | ${LOG_LEVEL_PATTERN:-%5p} | %X{transactionId} | %X{resCode} | %X{memberNo} | %X{characterNo} | %msg%n"/>
+
+    <!-- Appender to log to console -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <!-- Appender to log to file -->​
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${catalina.home}/logs/service/api.${HOSTNAME}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>200MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>620</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <logger name="org.springframework" level="info" />
+    <logger name="org.springframework.jdbc" level="info" />
+
+    <logger name="java.sql" level="error" />
+    <logger name="jdbc.sqlonly" level="debug"/>
+    <logger name="com.spring.ibatis" level="debug" />
+    <logger name="org.apache.ibatis" level="debug" />
+    <logger name="org.mybatis.spring" level="debug" />
+    <logger name="com.netflix.discovery" level="off" />
+
+    <logger name="springfox.documentation" level="off" />
+    <logger name="io.swagger.models.parameters.AbstractSerializableParameter" level="error" />
+
+    <logger name="com.sktechx" level="debug" />
+
+    <root level="info">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </root>
+
+</configuration>
