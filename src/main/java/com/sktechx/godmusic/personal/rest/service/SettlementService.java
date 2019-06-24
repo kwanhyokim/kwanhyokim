@@ -1,5 +1,7 @@
 package com.sktechx.godmusic.personal.rest.service;
 
+import com.sktechx.godmusic.personal.rest.model.dto.listen.SettlementInfoDto;
+
 /**
  * 정산 처리를 위한 서비스
  * 향후 별도 서버로 분리 필요
@@ -11,4 +13,5 @@ public interface SettlementService {
 	// 정산 정보 조회
 	String getServiceCode(Long memberNo, String settlementTypeCode);
 	String getServiceCodeByPrchsId(Long prchsId, String settlementTypeCode);
+	SettlementInfoDto getSettlementInfo(Long memberNo, String settlementTypeCode);
 }

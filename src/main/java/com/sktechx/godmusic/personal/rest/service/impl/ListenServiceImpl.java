@@ -8,10 +8,11 @@ import com.sktechx.godmusic.personal.common.amqp.domain.UserEventTarget;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEventType;
 import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
 import com.sktechx.godmusic.personal.common.domain.type.AppNameType;
+import com.sktechx.godmusic.personal.common.domain.type.BitrateType;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.common.domain.type.TrackLogType;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
-import com.sktechx.godmusic.personal.rest.model.dto.listen.PurchasePassDto;
+import com.sktechx.godmusic.personal.rest.model.dto.listen.SettlementInfoDto;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.TrackListen;
 import com.sktechx.godmusic.personal.rest.model.vo.drm.OwnerTokenClaim;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
@@ -30,6 +31,8 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.Optional;
+
 import static com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType.*;
 /**
  * Created by Kobe.
@@ -43,6 +46,11 @@ import static com.sktechx.godmusic.personal.common.domain.type.RecommendPanelCon
 @Slf4j
 @Service
 public class ListenServiceImpl implements ListenService {
+	
+	private final String FLAC_ALTERTIVE_STREAMING_SERVCIE_ID = "TS2";
+	private final String FLAC_ALTERTIVE_DRM_SERVCIE_ID = "TD2";
+	private final String FLAC_ALTERTIVE_MUSIC_VIDEOD_SERVCIE_ID = "TM2";
+	
 	@Autowired
 	ListenMapper listenMapper;
 
@@ -85,6 +93,8 @@ public class ListenServiceImpl implements ListenService {
 		String clientIp = httpServletRequest.getHeader("client_ip") != null ? httpServletRequest.getHeader("client_ip") : "";
 		String chnlType = StringUtils.isEmpty(request.getChannelType()) ? null : request.getChannelType();
 		String listenSessionId = StringUtils.isEmpty(request.getListenSessionId()) ? null : request.getListenSessionId();
+		String playType = Optional.ofNullable(request.getSourceType()).map(SourceType::getPlayType).orElse(null);
+		
 		TrackListen trackListen = TrackListen.builder()
 				.playChnl(playChannel)
 				.memberNo(memberNo)
@@ -114,33 +124,36 @@ public class ListenServiceImpl implements ListenService {
 
 		log.info("addListenHistByTrack...");
 		if(request.getTrackLogType() == TrackLogType.ONEMIN){
-			String pssrlCd = purchaseService.getPssrlCd(memberNo);
-			String serviceId = getServiceCode(memberNo, request);
+			SettlementInfoDto settlementInfo = settlementService.getSettlementInfo(memberNo, playType);
+			
+			if(ObjectUtils.isEmpty(settlementInfo)){
+				log.warn("정산 정보 조회 실패 : request={}", request);
+				throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
+			}
+			
+			String serviceId = evaluateServiceId(request, settlementInfo);
+			
 			if(ObjectUtils.isEmpty(serviceId)){
+				log.warn("serviceId 조회 실패 : request={}", request);
 				throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
 			}
-			PurchasePassDto purchasePassDto = purchaseService.getInUsePurchaseIdByMemberNo(memberNo);
-
-			if(purchasePassDto == null){
-				throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
-			}
-
+			
 			trackListenBuilder
-					.pssrlCd(pssrlCd)
+					.pssrlCd(serviceId)	// todo evtTrackCharge 에서 제거시 같이 제거 필요
 					.serviceId(serviceId)
-					.prchsId(purchasePassDto.getPrchsId())
-					.goodsId(purchasePassDto.getGoodsId());
+					.prchsId(settlementInfo.getPrchsId())
+					.goodsId(settlementInfo.getGoodsId());
 			
 			if (SourceType.DN == request.getSourceType()) {
 				if (StringUtils.isEmpty(request.getOwnerToken())) {
-					// todo throw error ???
-					log.warn("OwnerToken이 존재하지 않습니다. (DRM 스트리밍)");
+					log.warn("OwnerToken 없음 (DRM 스트리밍)");
+//					throw new CommonBusinessException(PersonalErrorDomain.OWNER_TOKEN_INVALID);
 				} else {
 					OwnerTokenClaim ownerToken = drmService.getOwnerTokenInfo(request.getOwnerToken());
 					
 					if (ObjectUtils.isEmpty(ownerToken)) {
-						// todo throw error ???
-						log.warn("OwnerToken 값이 유효하지 않습니다. (DRM 스트리밍)");
+						log.warn("OwnerToken Parse 실패 (DRM 스트리밍)");
+//						throw new CommonBusinessException(PersonalErrorDomain.OWNER_TOKEN_INVALID);
 					} else {
 						trackListenBuilder.drmMemberNo(ownerToken.getMemberNo());
 						trackListenBuilder.drmGoodsId(ownerToken.getGoodsId());
@@ -188,12 +201,34 @@ public class ListenServiceImpl implements ListenService {
 		return false;
 	}
 	
-	private String getServiceCode(Long memberNo, ListenTrackRequest request) {
+	private String evaluateServiceId(ListenTrackRequest request, SettlementInfoDto settlement) {
+		if (ObjectUtils.isEmpty(request.getBitrate())) {
+			log.info("1분 청취 요청 Bitrate 없음");
+			return null;
+		}
+
+		if (ObjectUtils.isEmpty(request.getSourceType())) {
+			log.info("1분 청취 요청 SourceType 없음");
+			return null;
+		}
+		
 		// todo 무료곡 서비스 시점에 다시 수정 필요
 //		if (YnType.Y == request.getFreeYn()) {
 //			return "FREE_SVC";
-//		} else {
-			return settlementService.getServiceCode(memberNo, request.getSourceType().getPlayType());
 //		}
+		
+		// flac 요청일 경우 대체
+		if (request.getBitrate() == BitrateType.BITRATE_FLAC16 || request.getBitrate() == BitrateType.BITRATE_FLAC24) {
+			switch (request.getSourceType()) {
+				case STRM:
+					return FLAC_ALTERTIVE_STREAMING_SERVCIE_ID;
+				case DN:
+					return FLAC_ALTERTIVE_DRM_SERVCIE_ID;
+				case MV:
+					return FLAC_ALTERTIVE_MUSIC_VIDEOD_SERVCIE_ID;
+			}
+		}
+		
+		return settlement.getSvcId();
 	}
 }

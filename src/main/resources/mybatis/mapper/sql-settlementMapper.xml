@@ -15,9 +15,15 @@
 
 <mapper namespace="com.sktechx.godmusic.personal.rest.repository.SettlementMapper" >
 
-	<select id="selectServiceCode" resultType="string" parameterType="map">
+	<select id="selectSettlementInfo" parameterType="map"
+            resultType="com.sktechx.godmusic.personal.rest.model.dto.listen.SettlementInfoDto">
         SELECT
-            c.svc_id
+            a.prchs_id
+            , a.member_no
+            , a.pass_id
+            , b.goods_id
+            , b.play_type
+            , c.svc_id
         FROM
             tb_prchs_pass a
             JOIN tb_goods b ON a.goods_id = b.goods_id
@@ -29,9 +35,15 @@
             AND a.goods_status = 'INUSE'
 	</select>
     
-    <select id="selectServiceCodeByPrchsId" resultType="string" parameterType="map">
+    <select id="selectSettlementInfoByPrchsId" parameterType="map"
+            resultType="com.sktechx.godmusic.personal.rest.model.dto.listen.SettlementInfoDto" >
         SELECT
-            c.svc_id
+            a.prchs_id
+            , a.member_no
+            , a.pass_id
+            , b.goods_id
+            , b.play_type
+            , c.svc_id
         FROM
             tb_prchs_pass a
             JOIN tb_goods b ON a.goods_id = b.goods_id
