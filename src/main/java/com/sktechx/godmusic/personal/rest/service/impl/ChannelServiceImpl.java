@@ -82,8 +82,13 @@ public class ChannelServiceImpl implements ChannelService {
             }
         }
 
-        if(!CollectionUtils.isEmpty(afloChnlList) && afloChnlList.size() > channelLimitSize){
-            afloChnlList = afloChnlList.subList(0,channelLimitSize);
+        if(!CollectionUtils.isEmpty(afloChnlList)){
+
+            if(afloChnlList.size() > channelLimitSize){
+                afloChnlList = afloChnlList.subList(0, channelLimitSize);
+            }
+
+            afloChnlList.stream().forEach(chnlDto -> chnlDto.setChnlType(ChannelType.AFLO));
         }
 
         return afloChnlList;
