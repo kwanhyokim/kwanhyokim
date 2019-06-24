@@ -72,6 +72,8 @@ public class DrmServiceImpl implements DrmService {
 	private void addServiceIdToOwnerToken(OwnerTokenClaim ownerTokenClaim) {
 		if (ObjectUtils.isEmpty(ownerTokenClaim.getPurchaseId()) == false
 				&& StringUtils.isEmpty(ownerTokenClaim.getServiceId())) {
+			// todo 테스크 코드 이 로그가 찍히지 않는 걸 확인 하고 해당 메소드 삭제 처리
+			log.info("Service Id Extract, token={}", ownerTokenClaim);
 			String serviceId = settlementService.getServiceCodeByPrchsId(ownerTokenClaim.getPurchaseId(), SourceType.DN.getPlayType());
 			
 			ownerTokenClaim.setServiceId(serviceId);

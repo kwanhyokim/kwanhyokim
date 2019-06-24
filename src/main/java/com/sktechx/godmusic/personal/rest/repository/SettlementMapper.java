@@ -1,6 +1,7 @@
 package com.sktechx.godmusic.personal.rest.repository;
 
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
+import com.sktechx.godmusic.personal.rest.model.dto.listen.SettlementInfoDto;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -11,6 +12,6 @@ import org.apache.ibatis.annotations.Param;
  */
 @BaseMapper
 public interface SettlementMapper {
-	String selectServiceCode(@Param("memberNo")Long memberNo, @Param("playType")String playType);
-	String selectServiceCodeByPrchsId(@Param("prchsId")Long prchsId, @Param("playType")String playType);
+	SettlementInfoDto selectSettlementInfo(@Param("memberNo")Long memberNo, @Param("playType")String playType);
+	SettlementInfoDto selectSettlementInfoByPrchsId(@Param("prchsId")Long prchsId, @Param("playType")String playType);
 }
