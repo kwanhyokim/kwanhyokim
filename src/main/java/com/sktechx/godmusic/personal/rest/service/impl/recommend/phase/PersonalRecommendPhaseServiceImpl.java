@@ -114,13 +114,6 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
             //개인화 추천 패널
             List<PersonalPanel> rcmmdPanelList = recommendReadMapper.selectPersonalRecommendPanelMeta(characterNo, SIMILAR_TRACK_DISP_STANDARD_COUNT , RCMMD_CF_TRACK_DISP_STANDARD_COUNT, checkDispEndDate);
 
-
-            rcmmdPanelList = rcmmdPanelList.stream()
-                    .sorted(Comparator.comparing(PersonalPanel::getCreateDtime).reversed()
-                            .thenComparing(PersonalPanel::getRecommendPanelContentType, Comparator.naturalOrder()))
-                    .collect(Collectors.toList());
-
-
             personalPhaseMeta.setRcmmdPanelList(rcmmdPanelList);
 
             filterRecommendPanelDuplicateTracks(personalPhaseMeta);
