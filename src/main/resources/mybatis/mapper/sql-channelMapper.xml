@@ -155,109 +155,129 @@
 
     <select id="selectAfloChannelList" resultMap="channelResultMap">
         SELECT
-        a.chnl_id,
-        a.chnl_nm,
-        a.chnl_disp_nm,
-        a.track_id,
-        a.track_nm,
-        f.artist_id reqArtistId,
-        f.artist_nm reqArtsitNm,
-        a.agency_id,
-        b.album_id,
-        e.artist_id,
-        e.artist_nm,
-        c.album_img_size size,
-        c.album_img_url url,
-        a.create_dtime,
-        a.update_dtime,
-        a.track_cnt trackCount,
-        a.img_size,
-        a.img_url,
-        a.track_sn,
-        a.renew_track_cnt,
-        a.renew_dtime,
-        a.trackCreateDtime,
-        a.trackUpdateDtime,
-        a.trackRenewDtime,
-        a.rank
-        FROM (
-        SELECT
-        a.chnl_id,
-        a.chnl_nm,
-        a.chnl_disp_nm,
-        a.renew_track_cnt,
-        a.renew_dtime,
-        a.track_id,
-        a.track_nm,
-        a.agency_id,
-        a.album_id,
-        a.create_dtime,
-        a.update_dtime,
-        a.track_cnt,
-        a.track_sn,
-        a.reprsnt_artist_id,
-        a.img_size,
-        a.img_url,
-        a.trackCreateDtime trackCreateDtime,
-        a.trackUpdateDtime trackUpdateDtime,
-        a.trackRenewDtime trackRenewDtime,
-        @curRank:=IF(@prevChnlId = a.chnl_id,@curRank + 1,1) AS rank,
-        @prevChnlId:=a.chnl_id
+            a.chnl_id,
+            a.chnl_nm,
+            a.chnl_disp_nm,
+            a.track_id,
+            a.track_nm,
+            f.artist_id reqArtistId,
+            f.artist_nm reqArtsitNm,
+            a.agency_id,
+            b.album_id,
+            e.artist_id,
+            e.artist_nm,
+            c.album_img_size size,
+            c.album_img_url url,
+            a.create_dtime,
+            a.update_dtime,
+            a.track_cnt trackCount,
+            a.img_size,
+            a.img_url,
+            a.track_sn,
+            a.title_yn,
+            a.renew_track_cnt,
+            a.renew_dtime,
+            a.trackCreateDtime,
+            a.trackUpdateDtime,
+            a.trackRenewDtime,
+            a.rank
         FROM
-        (
-        SELECT
-        chnl.chnl_id,
-        chnl.renew_track_cnt,
-        chnl.renew_dtime,
-        chnl.chnl_nm,
-        chnl.chnl_disp_nm,
-        (
-        SELECT COUNT(*)
-        FROM tb_map_chnl_track aa
-        JOIN tb_track bb ON aa.track_id = bb.track_id AND bb.disp_status_yn= 'Y' AND now() BETWEEN bb.disp_start_dtime AND bb.disp_end_dtime
-        WHERE aa.chnl_id = chnl.chnl_id
+            (SELECT
+            a.chnl_id,
+            a.chnl_nm,
+            a.chnl_disp_nm,
+            a.renew_track_cnt,
+            a.renew_dtime,
+            a.track_id,
+            a.track_nm,
+            a.agency_id,
+            a.album_id,
+            a.create_dtime,
+            a.update_dtime,
+            a.track_cnt,
+            a.track_sn,
+            a.reprsnt_artist_id,
+            a.img_size,
+            a.img_url,
+            a.trackCreateDtime trackCreateDtime,
+            a.trackUpdateDtime trackUpdateDtime,
+            a.trackRenewDtime trackRenewDtime,
+            a.title_yn,
+            @curRank:=IF(@prevChnlId = a.chnl_id, @curRank + 1, 1) AS rank,
+            @prevChnlId:=a.chnl_id
+            FROM
+                (SELECT
+                chnl.chnl_id,
+                chnl.renew_track_cnt,
+                chnl.renew_dtime,
+                chnl.chnl_nm,
+                chnl.chnl_disp_nm,
 
-        ) 		AS track_cnt,
-        chnl.create_dtime,
-        chnl.update_dtime,
-        chnl.img_url,
-        chnl.img_size,
-        c.track_id,
-        c.track_nm,
-        c.agency_id,
-        c.album_id,
-        c.reprsnt_artist_id,
-        c.create_dtime trackCreateDtime,
-        c.update_dtime trackUpdateDtime,
-        b.create_dtime trackRenewDtime,
-        b.track_sn
-        FROM
-        (
-        SELECT
-        a.*,
-        IF(c.img_url is null, '', c.img_url) as img_url,
-        '600' as img_size
-        FROM
-        tb_chnl a
-        INNER JOIN tb_chnl_img c ON a.chnl_id = c.chnl_id AND c.chnl_img_type='PANNEL'
-        AND a.chnl_type='AFLO'
-        AND a.disp_status_type = 'Y'
+                (SELECT
+                    COUNT(*)
+                FROM
+                    tb_map_chnl_track aa
+                JOIN
+                    tb_track bb ON aa.track_id = bb.track_id
+                    AND bb.disp_status_yn = 'Y'
+                    AND NOW() BETWEEN bb.disp_start_dtime AND bb.disp_end_dtime WHERE aa.chnl_id = chnl.chnl_id) AS track_cnt,
 
-        ) chnl
-        INNER JOIN tb_map_chnl_track b ON chnl.chnl_id = b.chnl_id
-        INNER JOIN tb_track c ON b.track_id = c.track_id AND c.disp_status_yn = 'Y' AND now() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
-        ORDER BY chnl.create_dtime DESC, b.track_sn ASC
-        ) a
-        ) a
-        INNER JOIN ted_album b ON a.album_id = b.album_id
+                chnl.create_dtime,
+                chnl.update_dtime,
+                chnl.img_url,
+                chnl.img_size,
+                c.track_id,
+                c.track_nm,
+                c.agency_id,
+                c.album_id,
+                c.reprsnt_artist_id,
+                c.create_dtime trackCreateDtime,
+                c.update_dtime trackUpdateDtime,
+                b.create_dtime trackRenewDtime,
+                b.track_sn,
+                b.title_yn
+                FROM
+                    (SELECT
+                        g.*,
+                        IF(h.img_url IS NULL, '', h.img_url) AS img_url,
+                        '600' AS img_size
+                        FROM
+                        tb_character a
+                        INNER JOIN tb_aflo_character b ON a.character_no = b.character_no
+                        AND b.expire_dtime >= NOW()
+                        AND a.character_no = #{characterNo}
+                        INNER JOIN tb_aflo c ON b.sale_vas_id = c.sale_vas_id
+                        AND c.del_yn = 'N'
+                        AND NOW() BETWEEN c.svc_start_dtime AND c.svc_end_dtime
+                        INNER JOIN tb_aflo d
+                        INNER JOIN tb_aflo_artist e ON d.aflo_id = e.aflo_id AND d.del_yn = 'N'
+                        INNER JOIN tb_aflo_chnl f ON e.aflo_artist_id = f.aflo_artist_id
+                        INNER JOIN tb_chnl g ON f.chnl_id = g.chnl_id
+                        INNER JOIN tb_chnl_img h ON g.chnl_id = h.chnl_id
+                        AND h.chnl_img_type = 'PANNEL'
+                        AND g.chnl_type = 'AFLO'
+                        AND g.disp_status_type = 'Y') chnl
+                INNER JOIN tb_map_chnl_track b ON chnl.chnl_id = b.chnl_id
+                INNER JOIN tb_track c ON b.track_id = c.track_id
+                AND c.disp_status_yn = 'Y'
+                AND NOW() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
+                ORDER BY chnl.create_dtime DESC , b.track_sn ASC
+                ) a
+            ) a
+        INNER JOIN
+        ted_album b ON a.album_id = b.album_id
         AND b.disp_status_yn = 'Y'
-        AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
-        LEFT OUTER JOIN tb_album_img c ON b.album_id = c.album_id
-        LEFT OUTER JOIN ted_trackartist d ON a.track_id =d.track_id
+        AND NOW() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
+        LEFT OUTER JOIN
+        tb_album_img c ON b.album_id = c.album_id
+        LEFT OUTER JOIN
+        ted_trackartist d ON a.track_id = d.track_id
         AND d.rp_yn = 'Y'
-        LEFT OUTER JOIN ted_artist e ON d.artist_id = e.artist_id
-        LEFT OUTER JOIN ted_artist f ON f.artist_id = a.reprsnt_artist_id
-        , (SELECT @curRank:=0, @prevChnlId:=0) r
+        LEFT OUTER JOIN
+        ted_artist e ON d.artist_id = e.artist_id
+        LEFT OUTER JOIN
+        ted_artist f ON f.artist_id = a.reprsnt_artist_id,
+        (SELECT @curRank:=0, @prevChnlId:=0) r
         WHERE
         a.rank  <![CDATA[<=]]> 10
 

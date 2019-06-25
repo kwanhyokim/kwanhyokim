@@ -133,10 +133,6 @@ public class ChannelController {
             return null;
         }
 
-        recommendPanelList.stream().forEach(panel ->
-            panel.getContent().setType(RecommendPanelContentType.AFLO)
-        );
-
         return new CommonApiResponse<>(new ListDto<>(recommendPanelList));
     }
 }

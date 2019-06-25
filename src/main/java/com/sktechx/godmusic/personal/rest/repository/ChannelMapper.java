@@ -42,16 +42,12 @@ public interface ChannelMapper {
     List<LastListenHistoryDto> selectLastListenHistory(@Param("memberNo") Long memberNo, @Param("characterNo") Long characterNo, @Param("osType") OsType osType);
     List<LastListenHistoryDto> selectLastListenHistoryByChannel(@Param("memberNo") Long memberNo, @Param("characterNo") Long characterNo, @Param("osType") OsType osType, @Param("exceptFlacChnl") Boolean exceptFlacChnl);
 
-//    List<PreferGenrePopularChnlDto> selectPreferGenrePopularChannelIdList(@Param("preferGenreIdList") List<Long> preferGenreIdList,@Param("osType") OsType osType);
-//    List<PreferGenrePopularChnlDto> selectPreferGenrePopularChannel(@Param("preferGenrePopularChnlList") List<PreferGenrePopularChnlDto> preferGenrePopularChnlList,@Param("osType") OsType osType);
-
     ChnlDto selectChannelById(@Param("channelId") Long channelId);
 
     List<ChnlDto> selectChannelByIds(@Param("channelIdList") List<Long> channelIdList);
 
-    void deleteLastListenHistory(@Param("memberNo") Long memberNo, @Param("characterNo") Long characterNo, @Param("listenType") String listenType, @Param("listenTypeId") Long listenTypeId);
-
     ChnlDto selectFlacChannel();
-    List<ChnlDto> selectAfloChannelList();
+
+    List<ChnlDto> selectAfloChannelList(@Param("characterNo") Long characterNo);
 
 }

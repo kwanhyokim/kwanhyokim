@@ -14,14 +14,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
+import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.AfloChannelPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
@@ -54,7 +57,7 @@ public class AfloPanelAssembly extends PanelSignAssembly {
         List<Panel> myPanelList = new ArrayList<>();
         List<Panel> chartPanelList = new ArrayList<>();
 
-        appendAfloChannelPanelList(personalPhaseMeta, myPanelList, 5 );
+        appendAfloChannelPanelList(personalPhaseMeta.getCharacterNo(), personalPhaseMeta.getOsType(), myPanelList, 5 );
 
         appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
 
@@ -96,22 +99,32 @@ public class AfloPanelAssembly extends PanelSignAssembly {
 
     @Override
     public List<Panel> getRecommendPanelList(Long characterNo, OsType osType) {
-        PersonalPhaseMeta personalPhaseMeta = new PersonalPhaseMeta();
-        personalPhaseMeta.setCharacterNo(characterNo);
-        personalPhaseMeta.setOsType(osType);
 
         List<Panel> panelList = new ArrayList<>();
 
-        appendAfloChannelPanelList(personalPhaseMeta, panelList, 4);
+        appendAfloChannelPanelList(characterNo, osType, panelList, 4);
+
+        // 패널의 트랙리스트에서 대표곡을 제외하고 정보 제거
+        if(!CollectionUtils.isEmpty(panelList)){
+            panelList.stream().forEach(
+                    panel -> {
+                        PanelContentVo panelContentVo = panel.getContent();
+                        List<TrackDto> trackDtoList = panelContentVo.getTrackList().stream().filter(trackDto -> "Y".equals(trackDto.getTitleYn())).collect(
+                                Collectors.toList());
+
+                        panelContentVo.setTrackList(trackDtoList);
+                        panelContentVo.setType(RecommendPanelContentType.AFLO);
+                    }
+
+            );
+        }
 
         return panelList;
     }
 
-    public List<Panel> appendAfloChannelPanelList(final PersonalPhaseMeta personalPhaseMeta,
-            final List<Panel> panelList,
-            int panelLimitSize) {
+    public List<Panel> appendAfloChannelPanelList(Long characterNo, OsType osType, final List<Panel> panelList, int panelLimitSize) {
 
-        List<ChnlDto> appendChannelList = channelService.getAfloChannelList(panelLimitSize,10, personalPhaseMeta.getOsType());
+        List<ChnlDto> appendChannelList = channelService.getAfloChannelList(characterNo, panelLimitSize,10, osType);
 
         if (!CollectionUtils.isEmpty(appendChannelList)) {
 
@@ -121,7 +134,7 @@ public class AfloPanelAssembly extends PanelSignAssembly {
 		            .limit(panelLimitSize)
                     .forEach(channel -> {
                         try{
-                            panelList.add(createAfloChannelPanel(channel, personalPhaseMeta));
+                            panelList.add(createAfloChannelPanel(channel));
                         }catch(Exception e){
                             log.error("appendPreferGenreChannelPanelList error : {}", e.getMessage());
                         }
@@ -131,7 +144,7 @@ public class AfloPanelAssembly extends PanelSignAssembly {
         return panelList;
     }
 
-    private Panel createAfloChannelPanel(final ChnlDto channel,final PersonalPhaseMeta personalPhaseMeta){
+    private Panel createAfloChannelPanel(final ChnlDto channel){
 
 
         AfloChannelPanel afloChannelPanel = new AfloChannelPanel(channel, channel.getImgList());

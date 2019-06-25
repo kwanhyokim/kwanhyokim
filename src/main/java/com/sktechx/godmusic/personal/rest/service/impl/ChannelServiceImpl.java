@@ -66,7 +66,7 @@ public class ChannelServiceImpl implements ChannelService {
     private RedisService redisService;
 
     @Override
-    public List<ChnlDto> getAfloChannelList(int channelLimitSize, int trackLimitSize ,OsType osType){
+    public List<ChnlDto> getAfloChannelList(Long characterNo, int channelLimitSize, int trackLimitSize ,OsType osType){
 
         List<ChnlDto> afloChnlList = null;
         try{
@@ -75,7 +75,7 @@ public class ChannelServiceImpl implements ChannelService {
             log.error("getAfloChannelList error : {}",e.getMessage());
         }finally {
             if(CollectionUtils.isEmpty(afloChnlList)){
-                afloChnlList = channelMapper.selectAfloChannelList();
+                afloChnlList = channelMapper.selectAfloChannelList(characterNo);
                 if(!CollectionUtils.isEmpty(afloChnlList)){
                     redisService.setWithPrefix(ALL_POPULAR_CHNL_KEY,afloChnlList,POPULAR_CHNL_EXPIRED_SECONDS);
                 }
