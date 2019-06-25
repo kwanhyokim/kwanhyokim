@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -54,6 +55,9 @@ public class ChannelController {
 
     @Autowired
     private RecommendPanelService recommendPanelService;
+
+    @Value("${spring.profiles.active}")
+    private String activeProfile;
 
 
     @ApiImplicitParams({
@@ -127,7 +131,14 @@ public class ChannelController {
             @RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType
     ){
 
-        List<Panel> recommendPanelList = recommendPanelService.getRecommendPanelList(ctx.getCharacterNo(), RecommendPanelContentType.AFLO, ctx.getOsType());
+
+        if( "local".equals(activeProfile) ||
+                "dev".equals(activeProfile)
+        ) {
+            characterNo = 190526002003230373L;
+        }
+
+        List<Panel> recommendPanelList = recommendPanelService.getRecommendPanelList(characterNo, RecommendPanelContentType.AFLO, ctx.getOsType());
 
         if(CollectionUtils.isEmpty(recommendPanelList)){
             return null;
