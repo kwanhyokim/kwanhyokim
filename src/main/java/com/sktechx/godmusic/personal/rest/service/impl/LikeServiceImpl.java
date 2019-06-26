@@ -186,11 +186,13 @@ public class LikeServiceImpl implements LikeService {
 	public void deleteLike(LikeTypeIdListRequest request, Long characterNo) {
 
 		if(!ObjectUtils.isEmpty(request) && !CollectionUtils.isEmpty(request.getLikeTypeList())){
-			for(LikeTypeVo likeTypeVo: request.getLikeTypeList()){
-				if(LikeConstant.LIKE_FLAC.equals(likeTypeVo.getLikeType())){
+			request.getLikeTypeList().stream().forEach(likeTypeVo -> {
+
+				if(needToChangeLikeTypeToChannel(likeTypeVo.getLikeType())){
 					likeTypeVo.setLikeType(LikeConstant.LIKE_CHANNEL);
 				}
-			}
+
+			});
 		}
 
 		Map<String, Object> batchParam = new HashMap<>();
@@ -256,11 +258,17 @@ public class LikeServiceImpl implements LikeService {
 		return new LikeYnResponse("N");
 	}
 
+	private Boolean needToChangeLikeTypeToChannel(String likeType){
+
+		return LikeConstant.LIKE_FLAC.equals(likeType) ||
+				LikeConstant.LIKE_AFLO.equals(likeType);
+	}
+
 	private void validCheckAddLike(LikeRequest request, Long characterNo){
 
 		String likeType = request.getLikeType();
 
-		if(LikeConstant.LIKE_FLAC.equals(likeType)){
+		if( needToChangeLikeTypeToChannel(likeType)){
 			likeType = LikeConstant.LIKE_CHANNEL;
 			request.setLikeType(likeType);
 		}
