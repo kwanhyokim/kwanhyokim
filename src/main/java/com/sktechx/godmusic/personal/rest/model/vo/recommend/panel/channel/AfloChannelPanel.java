@@ -12,7 +12,10 @@ package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel;
 
 import java.util.List;
 
+import org.springframework.util.ObjectUtils;
+
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
@@ -25,7 +28,13 @@ import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
  */
 public class AfloChannelPanel extends ChannelPanel{
     public AfloChannelPanel( ChnlDto channel , List<ImageInfo> imgList) throws CommonBusinessException {
+
         super(RecommendPanelType.ARTIST_FLO_TRACK, channel , null , imgList);
+
+        if (!ObjectUtils.isEmpty(this.content)) {
+            this.content.setType(RecommendPanelContentType.AFLO);
+        }
+
     }
 
     @Override

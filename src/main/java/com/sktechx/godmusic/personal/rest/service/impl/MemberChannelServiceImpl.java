@@ -177,12 +177,12 @@ public class MemberChannelServiceImpl implements MemberChannelService {
         List<Long> trackIdList = null;
         List<ImageManagementDto> recommendImageList = Collections.EMPTY_LIST;
 
-        if (PinType.CHNL == pinType || PinType.MY_CHNL == pinType || PinType.FLAC == pinType) {
+        if (PinType.CHNL == pinType || PinType.MY_CHNL == pinType || PinType.FLAC == pinType || PinType.AFLO == pinType) {
             ChnlDto chnlDto = channelMapper.selectChannelById(pinTypeId);
             memberChannelName = chnlDto.getChnlNm(); // TODO : chnlDispNm?
             trackIdList = chnlDto.getTrackList().stream().map(x -> x.getTrackId()).collect(Collectors.toList());
 
-            if(PinType.FLAC == pinType){
+            if(PinType.FLAC == pinType || PinType.AFLO == pinType){
             	pinType = PinType.CHNL;
             }
 
