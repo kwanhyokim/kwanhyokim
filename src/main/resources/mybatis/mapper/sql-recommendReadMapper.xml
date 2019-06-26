@@ -59,9 +59,9 @@
                 a.create_dtime as avaliableDateTime,
                 1 as dispSn,
                 a.create_dtime,
+                a.update_dtime as disp_std_start_dt,
                 0 as moodId,
-                0 as contentCount,
-                a.update_dtime as disp_std_start_dt
+                0 as contentCount
                 FROM
                 tb_chnl a
                 WHERE
