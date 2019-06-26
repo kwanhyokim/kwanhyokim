@@ -534,7 +534,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
-                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR', 'FLAC')
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR', 'FLAC', 'AFLO')
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN tb_member_chnl b
@@ -559,7 +559,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
-                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR', 'FLAC')
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR', 'FLAC', 'AFLO')
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN ( SELECT chart_id, music_content_cnt
@@ -591,7 +591,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
-                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR', 'FLAC')
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR', 'FLAC', 'AFLO')
                     ORDER BY last_listen_dtime DESC
                     LIMIT 20 ) a
             JOIN ted_artist b
@@ -620,7 +620,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
-                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR', 'FLAC')
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR', 'FLAC', 'AFLO')
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN ( SELECT chart_id, svc_content_id, chart_nm, music_content_cnt,
@@ -659,7 +659,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
-                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR', 'FLAC')
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR', 'FLAC', 'AFLO')
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN tb_rcmmd_similar_track b
@@ -699,7 +699,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
-                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR', 'FLAC')
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR', 'FLAC', 'AFLO')
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN tb_rcmmd_prefer_genre_similar_track b
@@ -736,7 +736,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
-                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR', 'FLAC')
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR', 'FLAC', 'AFLO')
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN tb_rcmmd_artist b
@@ -767,7 +767,7 @@
                      FROM tb_member_last_listen_hist
                     WHERE member_no = #{memberNo}
                       AND character_no = #{characterNo}
-                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR', 'FLAC')
+                      AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR', 'FLAC', 'AFLO')
                     ORDER BY last_listen_dtime DESC
                     LIMIT 300 ) a
             JOIN tb_rcmmd_mforu b
@@ -800,13 +800,16 @@
                    FROM tb_member_last_listen_hist
                   WHERE member_no = #{memberNo}
                     AND character_no = #{characterNo}
-                    AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR', 'FLAC')
+                    AND listen_type IN ('MY_CHNL', 'CHNL', 'ALBUM', 'ARTIST', 'CHART', 'RC_SML_TR', 'RC_GR_TR', 'RC_ATST_TR', 'RC_CF_TR', 'FLAC', 'AFLO')
                   ORDER BY last_listen_dtime DESC
                   LIMIT 300 ) a
-          JOIN tb_chnl b ON a.listen_type_id = b.chnl_id AND a.listen_type IN ('CHNL', 'FLAC') AND b.disp_status_type = 'Y'
+          JOIN tb_chnl b ON a.listen_type_id = b.chnl_id AND a.listen_type = 'CHNL' AND b.disp_status_type = 'Y'
           <if test="exceptFlacChnl">
             AND b.chnl_type !='FLAC'
           </if>
+            <if test="exceptAfloChnl">
+            AND b.chnl_type !='AFLO'
+            </if>
           JOIN ted_album c ON b.album_id = c.album_id AND c.disp_status_yn= 'Y' AND now() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
           LEFT JOIN tb_album_img d
             ON c.album_id = d.album_id

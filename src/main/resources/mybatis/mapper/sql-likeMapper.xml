@@ -266,7 +266,7 @@
                      , A.UPDATE_DTIME                                                          AS updateDateTime
                      , A.ES_ALBUM_APPLY_DTIME                                                  AS registDateTime
                      , A.CHNL_PLAY_TM                                                          AS playTime
-                     , IF(A.CHNL_TYPE !='FLAC', 'CHNL', 'FLAC')                                AS playListType
+                     , IF(A.CHNL_TYPE !='FLAC', IF(A.CHNL_TYPE !='AFLO', 'CHNL', 'AFLO'), 'FLAC') AS playListType
                      , L.DISP_SN                                                               AS dispSn
                      , L.UPDATE_DTIME                                                          AS likeUpdateDtime
                      , A.RENEW_DTIME                                                           AS renewDateTime
@@ -295,6 +295,9 @@
                        AND A.DISP_STATUS_TYPE = 'Y'
         <if test="exceptFlacChnl">
             AND A.CHNL_TYPE !='FLAC'
+        </if>
+        <if test="exceptAfloChnl">
+            AND A.CHNL_TYPE !='AFLO'
         </if>
 
                      INNER JOIN TB_ALBUM_IMG I
@@ -344,7 +347,7 @@
                     WHERE CHARACTER_NO = #{characterNo}
                             AND LIKE_TYPE = 'CHNL') L
                     INNER JOIN TB_CHNL A
-                               ON L.LIKE_TYPE_ID = A.CHNL_ID AND A.DISP_STATUS_TYPE = 'Y' AND A.CHNL_TYPE IN ('MM', 'DJ', 'FLAC')
+                               ON L.LIKE_TYPE_ID = A.CHNL_ID AND A.DISP_STATUS_TYPE = 'Y' AND A.CHNL_TYPE IN ('MM', 'DJ', 'FLAC', 'AFLO')
                                    AND EXISTS(SELECT * FROM TB_ALBUM_IMG I WHERE A.ALBUM_ID = I.ALBUM_ID)) T1
         ORDER BY DISP_SN ASC, UPDATE_DTIME ASC
         LIMIT
@@ -393,7 +396,7 @@
                 WHERE CHARACTER_NO = #{characterNo}
                         AND LIKE_TYPE = #{likeType}) L
                     INNER JOIN TB_CHNL A
-                        ON L.LIKE_TYPE_ID = A.CHNL_ID AND A.DISP_STATUS_TYPE = 'Y' AND A.CHNL_TYPE IN ('MM', 'DJ', 'FLAC')
+                        ON L.LIKE_TYPE_ID = A.CHNL_ID AND A.DISP_STATUS_TYPE = 'Y' AND A.CHNL_TYPE IN ('MM', 'DJ', 'FLAC', 'AFLO')
                   AND EXISTS(SELECT * FROM TB_ALBUM_IMG I WHERE A.ALBUM_ID = I.ALBUM_ID)
     </select>
 

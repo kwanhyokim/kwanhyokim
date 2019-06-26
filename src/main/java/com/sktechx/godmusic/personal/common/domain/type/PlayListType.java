@@ -18,6 +18,7 @@ public enum PlayListType implements CodeEnum {
 	, CHART("CHART" , "차트")
 	, RANK_CHART("RANK_CHART" , "랭크 차트")
 	, FLAC ("FLAC", "FLAC 채널")
+	, AFLO ("AFLO", "AFLO 채널")
 	;
 
 	private final String value;

@@ -40,7 +40,8 @@ public interface ChannelMapper {
     List<MoodPopularChnlListDto> selectAllMoodPopularChannelIdList();
 
     List<LastListenHistoryDto> selectLastListenHistory(@Param("memberNo") Long memberNo, @Param("characterNo") Long characterNo, @Param("osType") OsType osType);
-    List<LastListenHistoryDto> selectLastListenHistoryByChannel(@Param("memberNo") Long memberNo, @Param("characterNo") Long characterNo, @Param("osType") OsType osType, @Param("exceptFlacChnl") Boolean exceptFlacChnl);
+    List<LastListenHistoryDto> selectLastListenHistoryByChannel(@Param("memberNo") Long memberNo, @Param("characterNo") Long characterNo, @Param("osType") OsType osType,
+            @Param("exceptFlacChnl") Boolean exceptFlacChnl, @Param("exceptAfloChnl") Boolean exceptAfloChnl);
 
     ChnlDto selectChannelById(@Param("channelId") Long channelId);
 
