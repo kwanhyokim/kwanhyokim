@@ -5,7 +5,6 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -33,7 +32,10 @@ import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenDeleteRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -55,10 +57,6 @@ public class ChannelController {
 
     @Autowired
     private RecommendPanelService recommendPanelService;
-
-    @Value("${spring.profiles.active}")
-    private String activeProfile;
-
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", dataType = "integer", paramType = "query",
@@ -130,13 +128,6 @@ public class ChannelController {
             @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo,
             @RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType
     ){
-
-
-        if( "local".equals(activeProfile) ||
-                "dev".equals(activeProfile)
-        ) {
-            characterNo = 190526002003230373L;
-        }
 
         List<Panel> recommendPanelList = recommendPanelService.getRecommendPanelList(characterNo, RecommendPanelContentType.AFLO, ctx.getOsType());
 
