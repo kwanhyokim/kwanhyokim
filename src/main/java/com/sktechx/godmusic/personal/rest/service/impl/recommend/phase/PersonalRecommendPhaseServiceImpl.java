@@ -78,6 +78,11 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
             return getPersonalRecommendPhaseMetaWithOption(characterNo, osType, false);
         }
     }
+    @Override
+    public void clearPersonalRecommendPhaseMetaCache(Long characterNo) {
+        String personalRecommendPhaseKey = String.format(PERSONAL_RECOMMEND_PHASE_KEY, characterNo);
+        redisService.delWithPrefix(personalRecommendPhaseKey);
+    }
 
     private PersonalPhaseMeta getPersonalRecommendPhaseMetaWithOption(Long characterNo , OsType osType, Boolean checkDispEndDate){
         PersonalPhaseMeta personalPhaseMeta = null;

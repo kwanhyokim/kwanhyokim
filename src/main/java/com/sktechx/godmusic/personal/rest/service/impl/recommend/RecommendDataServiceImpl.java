@@ -159,12 +159,12 @@ public class RecommendDataServiceImpl implements RecommendDataService {
                 break;
             // 오늘의 FLO
             case "RC_SML_TR":
-                svcGenreIdList = recommendDummyDataMapper.selectRandomSvcGenreId(recommendV2DummyDataRequest.getPanelCount());
+//                svcGenreIdList = recommendDummyDataMapper.selectRandomSvcGenreId(recommendV2DummyDataRequest.getPanelCount());
                 for( int i = 0 ; i < recommendV2DummyDataRequest.getPanelCount() ; i++){
                     RecommendTrackDto recommendTrackDto = new RecommendTrackDto();
                     recommendTrackDto.setCharacterNo(characterNo);
                     recommendTrackDto.setDispSn(i+1);
-                    recommendTrackDto.setSvcGenreId(svcGenreIdList.get(i));
+                    recommendTrackDto.setSvcGenreId(0L);
                     recommendDummyDataMapper.insertRcmmdSimilarTrackData(recommendTrackDto);
                     recommendDummyDataMapper.insertRcmmdSimilarTrackSubData( recommendTrackDto.getRcmmdId());
                 }

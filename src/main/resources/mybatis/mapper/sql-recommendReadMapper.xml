@@ -53,20 +53,27 @@
     <select id="selectPersonalRecommendPanelMeta" resultMap="personalPanelResultMap" >
 
             SELECT
-                'AFLO' as recommendPanelContentType,
-                0 as panelOrder,
-                a.chnl_id as recommendId,
-                a.create_dtime as avaliableDateTime,
-                1 as dispSn,
-                a.create_dtime,
-                a.update_dtime as disp_std_start_dt,
-                0 as moodId,
-                0 as contentCount
+                'AFLO' AS recommendPanelContentType,
+                0 AS panelOrder,
+                g.chnl_id AS recommendId,
+                g.create_dtime AS avaliableDateTime,
+                1 AS dispSn,
+                g.create_dtime,
+                g.update_dtime AS disp_std_start_dt,
+                0 AS moodId,
+                0 AS contentCount
                 FROM
-                tb_chnl a
-                WHERE
-                a.chnl_type = 'AFLO'
-                AND a.disp_status_type='Y'
+                    tb_character a
+                INNER JOIN tb_aflo_character b ON a.character_no = b.character_no
+                    AND b.expire_dtime >= NOW()
+                    AND a.character_no = #{characterNo}
+                INNER JOIN tb_aflo c ON b.sale_vas_id = c.sale_vas_id
+                    AND c.del_yn = 'N'
+                    AND NOW() BETWEEN c.svc_start_dtime AND c.svc_end_dtime
+                INNER JOIN tb_aflo d
+                INNER JOIN tb_aflo_artist e ON d.aflo_id = e.aflo_id AND d.del_yn = 'N'
+                INNER JOIN tb_aflo_chnl f ON e.aflo_artist_id = f.aflo_artist_id
+                INNER JOIN tb_chnl g ON f.chnl_id = g.chnl_id AND g.chnl_type = 'AFLO' AND g.disp_status_type='Y'
             UNION ALL
 
             SELECT

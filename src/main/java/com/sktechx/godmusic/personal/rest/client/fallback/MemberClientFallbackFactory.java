@@ -13,8 +13,10 @@ package com.sktechx.godmusic.personal.rest.client.fallback;
 import org.springframework.stereotype.Component;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
+import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.rest.client.MemberClient;
 import com.sktechx.godmusic.personal.rest.model.dto.member.CharacterDto;
+import com.sktechx.godmusic.personal.rest.model.vo.member.InnerMemberVo;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,6 +33,11 @@ public class MemberClientFallbackFactory implements FallbackFactory<MemberClient
     @Override
     public MemberClient create(Throwable e) {
         return new MemberClient(){
+            @Override
+            public CommonApiResponse<InnerMemberVo> getMember(YnType includeSktPremiumYn,
+                    YnType includeSktMember, YnType includeSktMemberShip) {
+                return null;
+            }
             @Override
             public CommonApiResponse<CharacterDto> getCharacter(Long characterNo) {
                 log.error("member-api call error. message={}, trace={}", e.getMessage(), e.getStackTrace());

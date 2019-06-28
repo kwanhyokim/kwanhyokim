@@ -133,7 +133,7 @@
                     )
           VALUES (
               #{recommendTrackDto.characterNo},
-              addtime(adddate(curdate(),0), '00:00:00'),
+              addtime(adddate(curdate(),0), '04:30:00'),
               addtime(adddate(curdate(),0), '23:59:59'),
               #{recommendTrackDto.svcGenreId},
               #{recommendTrackDto.dispSn},
@@ -165,7 +165,7 @@
                     )
           VALUES (
                #{recommendTrackDto.characterNo},
-              addtime(adddate(curdate(),0), '00:00:00'),
+              addtime(adddate(curdate(),0), '04:30:00'),
               addtime(adddate(curdate(),0), '23:59:59'),
               #{recommendTrackDto.svcGenreId},
 			  #{recommendTrackDto.dispSn},

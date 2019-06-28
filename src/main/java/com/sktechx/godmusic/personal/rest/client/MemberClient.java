@@ -13,10 +13,13 @@ package com.sktechx.godmusic.personal.rest.client;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
+import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.rest.client.fallback.MemberClientFallbackFactory;
 import com.sktechx.godmusic.personal.rest.model.dto.member.CharacterDto;
+import com.sktechx.godmusic.personal.rest.model.vo.member.InnerMemberVo;
 
 /**
  * 설명 : XXXXXXXXX
@@ -27,6 +30,11 @@ import com.sktechx.godmusic.personal.rest.model.dto.member.CharacterDto;
 
 @FeignClient(value = "member-api", fallbackFactory = MemberClientFallbackFactory.class)
 public interface MemberClient {
+
+    @GetMapping("/member/v1/inner/members")
+    CommonApiResponse<InnerMemberVo> getMember(@RequestParam("includeSktPremiumYn") YnType includeSktPremiumYn,
+            @RequestParam("includeSktMember") YnType includeSktMember, @RequestParam("includeSktMemberShip") YnType includeSktMemberShip);
+
     @GetMapping("/member/v1/members/characters/{characterNo}")
     CommonApiResponse<CharacterDto> getCharacter(@PathVariable("characterNo") Long characterNo);
 }
