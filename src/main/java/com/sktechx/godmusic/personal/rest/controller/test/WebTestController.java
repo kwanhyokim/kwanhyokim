@@ -52,16 +52,43 @@ public class WebTestController {
 		return String.valueOf(redisService.delWithPrefix("godmusic.personalapi.recommend.phase:" + characterNo));
 	}
 
-	@GetMapping(value = "/makeRecommendPanel")
+	@GetMapping(value = "/createRecommendPanel")
 	@ResponseBody
-	public String makeRecommendPanel(@RequestParam String type, @RequestParam Long characterNo){
-		log.info("makeRecommendPanel :" + characterNo);
+	public String createRecommendPanel(@RequestParam String type, @RequestParam Long characterNo){
+		log.info("createRecommendPanel :" + characterNo);
 		RecommendV2DummyDataRequest recommendV2DummyDataRequest = new RecommendV2DummyDataRequest();
 
 		recommendV2DummyDataRequest.setPanelCount(5);
 		recommendV2DummyDataRequest.setType(type);
 
 		recommendDataService.createRecommendV2DummyData(characterNo,recommendV2DummyDataRequest);
+
+		return String.valueOf(redisService.delWithPrefix("godmusic.personalapi.recommend.phase:" + characterNo));
+	}
+
+	@GetMapping(value = "/updateRecommendPanel")
+	@ResponseBody
+	public String updateRecommendPanel(@RequestParam String type, @RequestParam Long characterNo){
+		log.info("updateRecommendPanel :" + characterNo);
+		RecommendV2DummyDataRequest recommendV2DummyDataRequest = new RecommendV2DummyDataRequest();
+
+		recommendV2DummyDataRequest.setType(type);
+
+		recommendDataService.updateRecommendV2DummyData(characterNo,recommendV2DummyDataRequest);
+
+		return String.valueOf(redisService.delWithPrefix("godmusic.personalapi.recommend.phase:" + characterNo));
+	}
+
+
+	@GetMapping(value = "/deleteRecommendPanel")
+	@ResponseBody
+	public String deleteRecommendPanel(@RequestParam String type, @RequestParam Long characterNo){
+		log.info("deleteRecommendPanel :" + characterNo);
+		RecommendV2DummyDataRequest recommendV2DummyDataRequest = new RecommendV2DummyDataRequest();
+
+		recommendV2DummyDataRequest.setType(type);
+
+		recommendDataService.deleteRecommendV2DummyData(characterNo,recommendV2DummyDataRequest);
 
 		return String.valueOf(redisService.delWithPrefix("godmusic.personalapi.recommend.phase:" + characterNo));
 	}
@@ -74,6 +101,18 @@ public class WebTestController {
 
 		return String.valueOf(redisService.delWithPrefix("godmusic.personalapi.recommend.phase:" + characterNo));
 	}
+
+
+	@GetMapping(value = "/updateAfloChnl")
+	@ResponseBody
+	public String updateAfloChnl(@RequestParam Long characterNo){
+		log.info("updateAfloChnl :" );
+
+		recommendDataService.updateAfloChnl();
+
+		return String.valueOf(redisService.delWithPrefix("godmusic.personalapi.recommend.phase:" + characterNo));
+	}
+
 
 }
 

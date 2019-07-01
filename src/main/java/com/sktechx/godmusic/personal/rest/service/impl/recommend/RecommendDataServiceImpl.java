@@ -180,7 +180,29 @@ public class RecommendDataServiceImpl implements RecommendDataService {
         redisService.delWithPrefix(personalRecommendPhaseKey);
     }
 
-    @Override
+	@Override
+	public void updateRecommendV2DummyData(Long characterNo, RecommendV2DummyDataRequest recommendV2DummyDataRequest) {
+		switch(recommendV2DummyDataRequest.getType()){
+			// 나를 위한 FLO
+			case "RC_CF_TR":
+				recommendDummyDataMapper.updateRcmmdMforuData(characterNo);
+				break;
+			// 오늘의 FLO
+			case "RC_SML_TR":
+				recommendDummyDataMapper.updateRcmmdSimilarTrackData(characterNo);
+				break;
+
+			case "RC_ATST_TR":
+				recommendDummyDataMapper.updateRcmmdArtistData(characterNo);
+				break;
+		}
+
+		//캐시 삭제
+		String personalRecommendPhaseKey = String.format(RedisKeyConstant.PERSONAL_RECOMMEND_PHASE_KEY, characterNo);
+		redisService.delWithPrefix(personalRecommendPhaseKey);
+	}
+
+	@Override
     public void deleteRecommendV2DummyData(Long characterNo, RecommendV2DummyDataRequest recommendV2DummyDataRequest) {
 
         List<Long> svcGenreIdList;
@@ -206,6 +228,10 @@ public class RecommendDataServiceImpl implements RecommendDataService {
         //캐시 삭제
         String personalRecommendPhaseKey = String.format(RedisKeyConstant.PERSONAL_RECOMMEND_PHASE_KEY, characterNo);
         redisService.delWithPrefix(personalRecommendPhaseKey);
+    }
+    @Override
+    public void updateAfloChnl() {
+        recommendDummyDataMapper.updateAfloChannel();
     }
 
     private void validateRecommendDummyDataRequest(RecommendDummyDataRequest recommendDummyDataRequest){

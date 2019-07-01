@@ -30,10 +30,29 @@
 
             <br/>
             <button name="btn_clearCache">홈 패널 캐쉬 지우기</button>
-            <button name="btn_todayFloSelect">오늘의 FLO 생성하기</button>
-            <button name="btn_forMeFloSelect">나를 위한 FLO 생성하기</button>
-            <button name="btn_artistFloSelect">아티스트FLO 생성하기</button>
+
             <br/>
+            <button name="btn_forMeFloCreate">나를 위한 FLO 생성하기</button>
+            <button name="btn_forMeFloUpdate">나를 위한 FLO 현시각으로 갱신하기</button>
+            <button name="btn_forMeFloDelete">나를 위한 FLO 삭제하기</button>
+            <br/>
+
+            <br/>
+            <button name="btn_todayFloCreate">오늘의 FLO 생성하기</button>
+            <button name="btn_todayFloUpdate">오늘의 FLO 현시각으로 갱신하기</button>
+            <button name="btn_todayFloDelete">오늘의 FLO 삭제하기</button>
+            <br/>
+
+            <br/>
+            <button name="btn_artistFloCreate">아티스트FLO 생성하기</button>
+            <button name="btn_artistFloUpdate">아티스트FLO 현시각으로 갱신하기</button>
+            <button name="btn_artistFloDelete">아티스트FLO 삭제하기</button>
+            <br/>
+
+            <br/>
+            <button name="btn_aFloChnlUpdate">AFLO 채널들 현시각으로 갱신하기</button>
+            <br/>
+
             <button name="btn_defaultUserSelect">디폴트 캐릭터로 설정하기</button>
             <button name="btn_afloUserSelect">AFLO 캐릭터로 설정하기</button>
             <br/>
@@ -56,19 +75,53 @@
                 fn_ajax(null, "GET", "/personal/test/clearHomeCache", "characterNo="+$("#character_no").val(), fn_success);
             });
 
-            $("button[name='btn_todayFloSelect']").on("click", function (e) {
+            $("button[name='btn_forMeFloCreate']").on("click", function (e) {
                 e.preventDefault();
-                fn_ajax(null, "GET", "/personal/test/makeRecommendPanel", "type=RC_SML_TR&characterNo="+$("#character_no").val(), fn_success);
+                fn_ajax(null, "GET", "/personal/test/createRecommendPanel", "type=RC_CF_TR&characterNo="+$("#character_no").val(), fn_success);
             });
 
-            $("button[name='btn_forMeFloSelect']").on("click", function (e) {
+            $("button[name='btn_forMeFloUpdate']").on("click", function (e) {
                 e.preventDefault();
-                fn_ajax(null, "GET", "/personal/test/makeRecommendPanel", "type=RC_CF_TR&characterNo="+$("#character_no").val(), fn_success);
+                fn_ajax(null, "GET", "/personal/test/updateRecommendPanel", "type=RC_CF_TR&characterNo="+$("#character_no").val(), fn_success);
+            });
+            $("button[name='btn_forMeFloDelete']").on("click", function (e) {
+                e.preventDefault();
+                fn_ajax(null, "GET", "/personal/test/deleteRecommendPanel", "type=RC_CF_TR&characterNo="+$("#character_no").val(), fn_success);
             });
 
-            $("button[name='btn_artistFloSelect']").on("click", function (e) {
+            $("button[name='btn_todayFloCreate']").on("click", function (e) {
                 e.preventDefault();
-                fn_ajax(null, "GET", "/personal/test/makeRecommendPanel", "type=RC_ATST_TR&characterNo="+$("#character_no").val(), fn_success);
+                fn_ajax(null, "GET", "/personal/test/createRecommendPanel", "type=RC_SML_TR&characterNo="+$("#character_no").val(), fn_success);
+            });
+
+            $("button[name='btn_todayFloUpdate']").on("click", function (e) {
+                e.preventDefault();
+                fn_ajax(null, "GET", "/personal/test/updateRecommendPanel", "type=RC_SML_TR&characterNo="+$("#character_no").val(), fn_success);
+            });
+
+            $("button[name='btn_todayFloDelete']").on("click", function (e) {
+                e.preventDefault();
+                fn_ajax(null, "GET", "/personal/test/deleteRecommendPanel", "type=RC_SML_TR&characterNo="+$("#character_no").val(), fn_success);
+            });
+
+            $("button[name='btn_artistFloCreate']").on("click", function (e) {
+                e.preventDefault();
+                fn_ajax(null, "GET", "/personal/test/createRecommendPanel", "type=RC_ATST_TR&characterNo="+$("#character_no").val(), fn_success);
+            });
+
+            $("button[name='btn_artistFloUpdate']").on("click", function (e) {
+                e.preventDefault();
+                fn_ajax(null, "GET", "/personal/test/updateRecommendPanel", "type=RC_ATST_TR&characterNo="+$("#character_no").val(), fn_success);
+            });
+
+            $("button[name='btn_artistFloDelete']").on("click", function (e) {
+                e.preventDefault();
+                fn_ajax(null, "GET", "/personal/test/deleteRecommendPanel", "type=RC_ATST_TR&characterNo="+$("#character_no").val(), fn_success);
+            });
+
+            $("button[name='btn_aFloChnlUpdate']").on("click", function (e) {
+                e.preventDefault();
+                fn_ajax(null, "GET", "/personal/test/updateAfloChnl", "characterNo="+$("#character_no").val(), fn_success);
             });
 
             $("button[name='btn_defaultUserSelect']").on("click", function (e) {
@@ -80,6 +133,8 @@
                 e.preventDefault();
                 fn_ajax(null, "GET", "/personal/test/changeCharacterType", "type=AFLO&characterNo="+$("#character_no").val(), fn_success);
             });
+
+
 
             $("button[name='btn_showLayout']").on("click", function (e) {
                 e.preventDefault();

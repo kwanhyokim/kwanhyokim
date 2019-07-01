@@ -215,8 +215,23 @@
 
     <delete id="deleteArtistFlo">
         DELETE
-        FROM TB_RCMMD_ARTIST
-        WHERE CHARACTER_NO = #{characterNo};
-
+        FROM tb_rcmmd_artist
+        WHERE character_no = #{characterNo}
     </delete>
+
+
+    <update id="updateRcmmdMforuData">
+        UPDATE tb_rcmmd_mforu SET disp_std_start_dt = now() WHERE character_no = #{characterNo}
+    </update>
+    <update id="updateRcmmdSimilarTrackData">
+        UPDATE tb_rcmmd_similar_track SET disp_std_start_dt = now() WHERE character_no = #{characterNo}
+    </update>
+    <update id="updateRcmmdArtistData">
+        UPDATE tb_rcmmd_artist SET disp_std_start_dt = now() WHERE character_no = #{characterNo}
+    </update>
+
+    <update id="updateAfloChannel">
+        UPDATE tb_chnl SET update_dtime = now() WHERE chnl_type='AFLO' AND disp_status_type = 'Y'
+    </update>
+
 </mapper>
