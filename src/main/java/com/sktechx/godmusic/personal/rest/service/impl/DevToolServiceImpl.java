@@ -32,7 +32,7 @@ public class DevToolServiceImpl implements DevToolService {
 	
 	@Autowired
 	RedisService redisService;
-	
+
 	@Override
 	public void updateCharacterType(Long characterNo, CharacterType type) {
 
@@ -46,7 +46,8 @@ public class DevToolServiceImpl implements DevToolService {
 			devToolMapper.deleteAfloCharacter(characterNo);
 		}
 
-
 	}
+
+
 	
 }

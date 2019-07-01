@@ -25,6 +25,8 @@ import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendDummyDataRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendV2DummyDataRequest;
+import com.sktechx.godmusic.personal.rest.repository.CharacterPreferGenreMapper;
+import com.sktechx.godmusic.personal.rest.repository.DevToolMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendDummyDataMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDataService;
@@ -48,6 +50,12 @@ public class RecommendDataServiceImpl implements RecommendDataService {
 
     @Autowired
     private RecommendDummyDataMapper recommendDummyDataMapper;
+
+    @Autowired
+    private CharacterPreferGenreMapper characterPreferGenreMapper;
+
+    @Autowired
+    private DevToolMapper devToolMapper;
 
     @Autowired
     private RecommendPanelService recommendPanelService;
@@ -171,6 +179,12 @@ public class RecommendDataServiceImpl implements RecommendDataService {
                 break;
 
             case "RC_ATST_TR":
+                if(!existCharacterPreferArtist(characterNo)){
+                    devToolMapper.insertCharacterPreferArtist(characterNo, 1L, 1876L);
+                    devToolMapper.insertCharacterPreferArtist(characterNo, 2L, 80122235L);
+                    devToolMapper.insertCharacterPreferArtist(characterNo, 14L, 1139L);
+                }
+
                 recommendPanelService.addPreferArtistPanel(characterNo);
                 break;
         }
@@ -257,6 +271,11 @@ public class RecommendDataServiceImpl implements RecommendDataService {
 
     public int deleteTpoRecommendDummyData(Long characterNo){
         return recommendDummyDataMapper.deleteTpoRecommendData(characterNo);
+    }
+
+    public Boolean existCharacterPreferArtist(Long characterNo){
+        return devToolMapper.selectCharacterPreferArtist(characterNo) > 0;
+
     }
 
 }

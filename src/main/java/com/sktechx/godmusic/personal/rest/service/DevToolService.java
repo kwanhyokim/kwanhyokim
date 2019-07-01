@@ -10,10 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.service;
 
-import java.util.List;
-
 import com.sktechx.godmusic.personal.rest.model.dto.member.CharacterType;
-import com.sktechx.godmusic.personal.rest.model.dto.member.MemberDto;
 
 /**
  * 설명 :

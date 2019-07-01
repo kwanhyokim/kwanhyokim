@@ -49,4 +49,11 @@
 		DELETE FROM tb_aflo_character WHERE character_no = #{characterNo}
 	</delete>
 
+	<select id="selectCharacterPreferArtist" resultType="Integer">
+		SELECT COUNT(1) FROM tb_character_prefer_artist WHERE character_no = #{characterNo}
+	</select>
+	<insert id="insertCharacterPreferArtist">
+		INSERT INTO tb_character_prefer_artist VALUES (#{characterNo},'PREFER', #{preferGenreId}, #{preferArtistId}, now(), now())
+	</insert>
+
 </mapper>
