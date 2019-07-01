@@ -75,19 +75,19 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     public List<ChnlDto> getAfloChannelList(Long characterNo, int channelLimitSize, int trackLimitSize ,OsType osType){
 
-        List<ChnlDto> afloChnlList = null;
-        try{
-            afloChnlList = redisService.getListWithPrefix(ALL_POPULAR_CHNL_KEY,ChnlDto.class);
-        }catch( Exception e){
-            log.error("getAfloChannelList error : {}",e.getMessage());
-        }finally {
-            if(CollectionUtils.isEmpty(afloChnlList)){
-                afloChnlList = channelMapper.selectAfloChannelList(characterNo);
-                if(!CollectionUtils.isEmpty(afloChnlList)){
-                    redisService.setWithPrefix(ALL_POPULAR_CHNL_KEY,afloChnlList,POPULAR_CHNL_EXPIRED_SECONDS);
-                }
-            }
-        }
+        List<ChnlDto> afloChnlList = channelMapper.selectAfloChannelList(characterNo);
+//        try{
+//            afloChnlList = redisService.getListWithPrefix(PERSONAL_AFLO_CHNL_KEY,ChnlDto.class);
+//        }catch( Exception e){
+//            log.error("getAfloChannelList error : {}",e.getMessage());
+//        }finally {
+//            if(CollectionUtils.isEmpty(afloChnlList)){
+//                afloChnlList = channelMapper.selectAfloChannelList(characterNo);
+//                if(!CollectionUtils.isEmpty(afloChnlList)){
+//                    redisService.setWithPrefix(PERSONAL_AFLO_CHNL_KEY,afloChnlList,POPULAR_CHNL_EXPIRED_SECONDS);
+//                }
+//            }
+//        }
 
         if(!CollectionUtils.isEmpty(afloChnlList)){
 
