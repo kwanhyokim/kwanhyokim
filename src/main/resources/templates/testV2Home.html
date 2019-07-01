@@ -38,7 +38,7 @@
             <button name="btn_afloUserSelect">AFLO 캐릭터로 설정하기</button>
             <br/>
 
-            <button name="btn_showLayout">내 레이아웃 보기</button>
+<!--            <button name="btn_showLayout">내 레이아웃 보기</button>-->
         </form>
     </div>
     <div id="layout">
@@ -84,7 +84,7 @@
             $("button[name='btn_showLayout']").on("click", function (e) {
                 e.preventDefault();
                 fn_ajax({'x-gm-member-no':$("#member_no").val(), 'x-gm-character-no':$("#character_no").val()},
-                    "GET", "https://dev-api.music-flo.com/display/v2/home/layout", null, function(result){
+                    "GET", "https://qa-api.music-flo.com/display/v2/home/layout", null, function(result){
 
                     }
 
