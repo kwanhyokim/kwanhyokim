@@ -144,7 +144,6 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
                         .sorted(Comparator.comparing(ChnlDto::getCreateDtime).reversed())
                         .forEach(channel -> {
                             try{
-                                log.info("XXXXXXX {}", channel);
                                 panelList.add( createPopularChannelPanel( channel,personalPhaseMeta ) );
                             }catch(Exception e){
                                 log.error("TPO Panel defaultPanelSetting Exception : {}",e.getMessage());
