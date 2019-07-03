@@ -107,18 +107,22 @@ public class OcrServiceImpl implements OcrService {
 
 
     @Override
+    @Transactional(readOnly = true)
     public void requestAnalysisToOcrServer(Long characterNo, Long ocrNo, Integer ocrFileNo, AwsFileVo awsFileVo){
 
-        //TODO send FileInfo to OCR Server
         int fileCount = ocrMapper.countOcrFile(characterNo, ocrNo);
         ocrRecognize(ocrNo, ocrFileNo, fileCount, awsFileVo.getBucketKey(), awsFileVo.getBucket());
 
-        ocrHelperService.updateOcrFile(OcrFileDto.builder()
+    }
+
+    @Override
+    @Transactional
+    public void updateOcrFile(Long ocrNo, Integer ocrFileNo) {
+        ocrMapper.updateOcrFile(OcrFileDto.builder()
                 .ocrNo(ocrNo)
                 .ocrFileNo(ocrFileNo)
                 .analsStartDtime(new Date())
                 .build());
-
     }
 
     @Override

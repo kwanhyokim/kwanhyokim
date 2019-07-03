@@ -51,7 +51,7 @@ public class OcrController {
         // select 로 검색 하여 기 처리된 데이터 인지 확인 upload 여부, 분석 요청 여부.
         AwsFileVo awsFileVo = ocrService.uploadOcrFile(GMContext.getContext().getMemberNo(), GMContext.getContext().getCharacterNo(), file, ocrNo, ocrFileNo);
         ocrService.requestAnalysisToOcrServer(GMContext.getContext().getCharacterNo(), ocrNo, ocrFileNo, awsFileVo);
-
+        ocrService.updateOcrFile(ocrNo, ocrFileNo);
         return new CommonApiResponse<>().emptySuccess();
     }
 

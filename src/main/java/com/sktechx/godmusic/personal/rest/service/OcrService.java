@@ -21,5 +21,6 @@ public interface OcrService {
 
     void noMorePush(Long characterNo, Long ocrNo);
 
+    void updateOcrFile(Long ocrNo, Integer ocrFileNo);
 
 }
