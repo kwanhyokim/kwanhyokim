@@ -94,14 +94,6 @@ public class OcrServiceImpl implements OcrService {
             throw new CommonBusinessException(PersonalErrorDomain.FAIL_UPLOAD_OCR_FILE);
         }
 
-        ocrHelperService.updateOcrFile(OcrFileDto.builder()
-                .ocrNo(ocrNo)
-                .ocrFileNo(ocrFileNo)
-                .awsBucketNm(awsFileVo.getBucket())
-                .awsBucketKey(awsFileVo.getBucketKey())
-                .uploadYn(YnType.Y)
-                .build());
-
         return awsFileVo;
     }
 
@@ -117,12 +109,8 @@ public class OcrServiceImpl implements OcrService {
 
     @Override
     @Transactional
-    public void updateOcrFile(Long ocrNo, Integer ocrFileNo) {
-        ocrMapper.updateOcrFile(OcrFileDto.builder()
-                .ocrNo(ocrNo)
-                .ocrFileNo(ocrFileNo)
-                .analsStartDtime(new Date())
-                .build());
+    public void updateOcrFile(OcrFileDto ocrFileDto) {
+        ocrMapper.updateOcrFile(ocrFileDto);
     }
 
     @Override
