@@ -67,6 +67,13 @@ public class RecommendPanelController {
 		return new CommonApiResponse<>(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(ctx.getCharacterNo(),ctx.getOsType(), ctx.getAppVer()));
 	}
 
+	@ApiOperation(value = "추천 개인화 캐쉬 삭제 ( New )", httpMethod = "GET" , hidden = true)
+	@GetMapping(value = "/phase/meta/clearCache")
+	public CommonApiResponse clearPersonalPhaseMeta(@RequestGMContext GMContext ctx){
+		personalRecommendPhaseService.clearPersonalRecommendPhaseMetaCache(ctx.getCharacterNo());
+		return CommonApiResponse.emptySuccess();
+	}
+
     @ApiOperation(value = "추천 홈 패널 조회 ( New )", httpMethod = "GET",response = RecommendPanelResponse.class,
 			notes = "사용자 별 추천 단계에 따른 추천 데이터를 조회 하는 API \r\n" +
 					"\r\n" +

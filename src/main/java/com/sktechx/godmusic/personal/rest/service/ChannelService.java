@@ -27,7 +27,8 @@ import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
  */
 public interface ChannelService {
 
-    ChnlDto getFloAndDataChannel(int trackLimitSize ,OsType osType);
+    List<ChnlDto> getAfloChannelList(Long characterNo, int channelLimitSize, int trackLimitSize ,OsType osType);
+    ChnlDto getFloAndDataChannel();
 
     List<ChnlDto> getPopularChannelList(int channelLimitSize,int trackLimitSize, OsType osType,List<Long> filterChnlIdList);
     List<PreferGenrePopularChnlDto> getPreferGenrePopularChannelList(List<Long> preferGenreIdList, int trackLimitSize, OsType osType);

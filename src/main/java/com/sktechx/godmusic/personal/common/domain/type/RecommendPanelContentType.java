@@ -10,11 +10,12 @@
 
 package com.sktechx.godmusic.personal.common.domain.type;
 
+import org.apache.ibatis.type.MappedTypes;
+import org.springframework.util.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnum;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnumTypeHandler;
-import org.apache.ibatis.type.MappedTypes;
-import org.springframework.util.StringUtils;
 
 /**
  * 설명 : 추천 패널 컨텐츠 타입
@@ -26,12 +27,14 @@ public enum RecommendPanelContentType implements CodeEnum{
     CHNL("CHNL" , "채널"),
     CHART("CHART" , "차트"),
 
-    RC_MD_CN("RC_MD_CN" , "청취 무드 인기채널"),
-
-    RC_ATST_TR("RC_ATST_TR" , "아티스트 인기곡"),
+    AFLO("AFLO", "AFLO채널"),
+    RC_CF_TR("RC_CF_TR" , "추천 유사곡"),
     RC_SML_TR("RC_SML_TR" , "선호 유사곡"),
+    RC_ATST_TR("RC_ATST_TR" , "아티스트 인기곡"),
     RC_GR_TR("RC_GR_TR" , "선호 장르 유사곡"),
-    RC_CF_TR("RC_CF_TR" , "추천 유사곡");
+
+    RC_MD_CN("RC_MD_CN" , "청취 무드 인기채널"),
+    ;
 
     private final String code;
     private final String value;

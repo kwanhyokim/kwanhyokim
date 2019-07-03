@@ -25,6 +25,8 @@ import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendDummyDataRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendV2DummyDataRequest;
+import com.sktechx.godmusic.personal.rest.repository.CharacterPreferGenreMapper;
+import com.sktechx.godmusic.personal.rest.repository.DevToolMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendDummyDataMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDataService;
@@ -48,6 +50,12 @@ public class RecommendDataServiceImpl implements RecommendDataService {
 
     @Autowired
     private RecommendDummyDataMapper recommendDummyDataMapper;
+
+    @Autowired
+    private CharacterPreferGenreMapper characterPreferGenreMapper;
+
+    @Autowired
+    private DevToolMapper devToolMapper;
 
     @Autowired
     private RecommendPanelService recommendPanelService;
@@ -159,18 +167,24 @@ public class RecommendDataServiceImpl implements RecommendDataService {
                 break;
             // 오늘의 FLO
             case "RC_SML_TR":
-                svcGenreIdList = recommendDummyDataMapper.selectRandomSvcGenreId(recommendV2DummyDataRequest.getPanelCount());
+//                svcGenreIdList = recommendDummyDataMapper.selectRandomSvcGenreId(recommendV2DummyDataRequest.getPanelCount());
                 for( int i = 0 ; i < recommendV2DummyDataRequest.getPanelCount() ; i++){
                     RecommendTrackDto recommendTrackDto = new RecommendTrackDto();
                     recommendTrackDto.setCharacterNo(characterNo);
                     recommendTrackDto.setDispSn(i+1);
-                    recommendTrackDto.setSvcGenreId(svcGenreIdList.get(i));
+                    recommendTrackDto.setSvcGenreId(0L);
                     recommendDummyDataMapper.insertRcmmdSimilarTrackData(recommendTrackDto);
                     recommendDummyDataMapper.insertRcmmdSimilarTrackSubData( recommendTrackDto.getRcmmdId());
                 }
                 break;
 
             case "RC_ATST_TR":
+                if(!existCharacterPreferArtist(characterNo)){
+                    devToolMapper.insertCharacterPreferArtist(characterNo, 1L, 1876L);
+                    devToolMapper.insertCharacterPreferArtist(characterNo, 2L, 80122235L);
+                    devToolMapper.insertCharacterPreferArtist(characterNo, 14L, 1139L);
+                }
+
                 recommendPanelService.addPreferArtistPanel(characterNo);
                 break;
         }
@@ -180,7 +194,29 @@ public class RecommendDataServiceImpl implements RecommendDataService {
         redisService.delWithPrefix(personalRecommendPhaseKey);
     }
 
-    @Override
+	@Override
+	public void updateRecommendV2DummyData(Long characterNo, RecommendV2DummyDataRequest recommendV2DummyDataRequest) {
+		switch(recommendV2DummyDataRequest.getType()){
+			// 나를 위한 FLO
+			case "RC_CF_TR":
+				recommendDummyDataMapper.updateRcmmdMforuData(characterNo);
+				break;
+			// 오늘의 FLO
+			case "RC_SML_TR":
+				recommendDummyDataMapper.updateRcmmdSimilarTrackData(characterNo);
+				break;
+
+			case "RC_ATST_TR":
+				recommendDummyDataMapper.updateRcmmdArtistData(characterNo);
+				break;
+		}
+
+		//캐시 삭제
+		String personalRecommendPhaseKey = String.format(RedisKeyConstant.PERSONAL_RECOMMEND_PHASE_KEY, characterNo);
+		redisService.delWithPrefix(personalRecommendPhaseKey);
+	}
+
+	@Override
     public void deleteRecommendV2DummyData(Long characterNo, RecommendV2DummyDataRequest recommendV2DummyDataRequest) {
 
         List<Long> svcGenreIdList;
@@ -207,6 +243,10 @@ public class RecommendDataServiceImpl implements RecommendDataService {
         String personalRecommendPhaseKey = String.format(RedisKeyConstant.PERSONAL_RECOMMEND_PHASE_KEY, characterNo);
         redisService.delWithPrefix(personalRecommendPhaseKey);
     }
+    @Override
+    public void updateAfloChnl() {
+        recommendDummyDataMapper.updateAfloChannel();
+    }
 
     private void validateRecommendDummyDataRequest(RecommendDummyDataRequest recommendDummyDataRequest){
         Integer panelCount = recommendDummyDataRequest.getPanelCount();
@@ -231,6 +271,11 @@ public class RecommendDataServiceImpl implements RecommendDataService {
 
     public int deleteTpoRecommendDummyData(Long characterNo){
         return recommendDummyDataMapper.deleteTpoRecommendData(characterNo);
+    }
+
+    public Boolean existCharacterPreferArtist(Long characterNo){
+        return devToolMapper.selectCharacterPreferArtist(characterNo) > 0;
+
     }
 
 }

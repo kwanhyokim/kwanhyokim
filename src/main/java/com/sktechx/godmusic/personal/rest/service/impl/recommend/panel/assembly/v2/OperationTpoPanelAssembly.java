@@ -144,8 +144,7 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
                         .sorted(Comparator.comparing(ChnlDto::getCreateDtime).reversed())
                         .forEach(channel -> {
                             try{
-                                log.info("XXXXXXX {}", channel);
-                                panelList.add( createPopularChannelPanel( channel,personalPhaseMeta ) );
+                                panelList.add( createTPOChannelPanel( channel,personalPhaseMeta ) );
                             }catch(Exception e){
                                 log.error("TPO Panel defaultPanelSetting Exception : {}",e.getMessage());
                             }
@@ -154,35 +153,35 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
             }
         }
 
-        private Panel createPopularChannelPanel(final ChnlDto channel,final PersonalPhaseMeta personalPhaseMeta){
+    private Panel createTPOChannelPanel(final ChnlDto channel,final PersonalPhaseMeta personalPhaseMeta){
 
-            List<ImageInfo> imageInfoList = recommendReadMapper.selectTpoAndThemeImageList(personalPhaseMeta.getOsType());
+        List<ImageInfo> imageInfoList = recommendReadMapper.selectTpoAndThemeImageList(personalPhaseMeta.getOsType());
 
-            if(CollectionUtils.isEmpty(imageInfoList)){
-                imageInfoList = new ArrayList<>();
-            }
-
-            Collections.shuffle(imageInfoList);
-
-            if( imageInfoList.size() > 1){
-                imageInfoList = Arrays.asList(imageInfoList.get(0));
-            }
-
-            TPOChannelPanel tpoChannelPanel = new TPOChannelPanel(channel, imageInfoList);
-
-            if(!ObjectUtils.isEmpty(tpoChannelPanel)){
-                tpoChannelPanel.setType(RecommendPanelType.POPULAR_CHANNEL);
-
-                PanelContentVo panelContentVo = tpoChannelPanel.getContent();
-
-                if( !ObjectUtils.isEmpty(panelContentVo) && !CollectionUtils.isEmpty(panelContentVo.getTrackList())) {
-                    panelContentVo.setTrackCount(panelContentVo.getTrackList().size());
-                }
-
-            }
-
-            return tpoChannelPanel;
+        if(CollectionUtils.isEmpty(imageInfoList)){
+            imageInfoList = new ArrayList<>();
         }
+
+        Collections.shuffle(imageInfoList);
+
+        if( imageInfoList.size() > 1){
+            imageInfoList = Arrays.asList(imageInfoList.get(0));
+        }
+
+        TPOChannelPanel tpoChannelPanel = new TPOChannelPanel(channel, imageInfoList);
+
+        if(!ObjectUtils.isEmpty(tpoChannelPanel)){
+            tpoChannelPanel.setType(RecommendPanelType.POPULAR_CHANNEL);
+
+            PanelContentVo panelContentVo = tpoChannelPanel.getContent();
+
+            if( !ObjectUtils.isEmpty(panelContentVo) && !CollectionUtils.isEmpty(panelContentVo.getTrackList())) {
+                panelContentVo.setTrackCount(panelContentVo.getTrackList().size());
+            }
+
+        }
+
+        return tpoChannelPanel;
+    }
 
 
     private void appendPreferenceChartPanel(final PersonalPhaseMeta personalPhaseMeta, final List<Panel> panelList) {

@@ -21,4 +21,5 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase
  */
 public interface PersonalRecommendPhaseService {
     PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType, String appVer);
+    void clearPersonalRecommendPhaseMetaCache(Long characterNo);
 }

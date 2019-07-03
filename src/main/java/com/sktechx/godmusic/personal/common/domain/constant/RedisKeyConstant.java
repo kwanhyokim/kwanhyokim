@@ -46,4 +46,7 @@ public class RedisKeyConstant {
 
 	// 선호장르테마, 운영tpo 홈패널 배경 이미지
 	public static final String PERSONAL_TPOANDTHEME_IMAGELIST_KEY = "personalapi.recommend.home.panel.tpoandtheme.imglist";
+
+	// aflo 채널 리스트
+	public static final String PERSONAL_AFLO_CHNL_KEY="godmusic.personalapi.aflo.chnllist";
 }

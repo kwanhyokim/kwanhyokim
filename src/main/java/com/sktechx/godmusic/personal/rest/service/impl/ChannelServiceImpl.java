@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
@@ -29,8 +30,11 @@ import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.lib.utils.ComparableVersion;
 import com.sktechx.godmusic.personal.common.domain.type.ChannelType;
 import com.sktechx.godmusic.personal.common.domain.type.PopularChnlType;
+import com.sktechx.godmusic.personal.rest.client.MemberClient;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto;
+import com.sktechx.godmusic.personal.rest.model.dto.member.CharacterDto;
+import com.sktechx.godmusic.personal.rest.model.dto.member.CharacterType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
@@ -65,8 +69,40 @@ public class ChannelServiceImpl implements ChannelService {
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private MemberClient memberClient;
+
     @Override
-    public ChnlDto getFloAndDataChannel(int trackLimitSize ,OsType osType){
+    public List<ChnlDto> getAfloChannelList(Long characterNo, int channelLimitSize, int trackLimitSize ,OsType osType){
+
+        List<ChnlDto> afloChnlList = channelMapper.selectAfloChannelList(characterNo);
+//        try{
+//            afloChnlList = redisService.getListWithPrefix(PERSONAL_AFLO_CHNL_KEY,ChnlDto.class);
+//        }catch( Exception e){
+//            log.error("getAfloChannelList error : {}",e.getMessage());
+//        }finally {
+//            if(CollectionUtils.isEmpty(afloChnlList)){
+//                afloChnlList = channelMapper.selectAfloChannelList(characterNo);
+//                if(!CollectionUtils.isEmpty(afloChnlList)){
+//                    redisService.setWithPrefix(PERSONAL_AFLO_CHNL_KEY,afloChnlList,POPULAR_CHNL_EXPIRED_SECONDS);
+//                }
+//            }
+//        }
+
+        if(!CollectionUtils.isEmpty(afloChnlList)){
+
+            if(afloChnlList.size() > channelLimitSize){
+                afloChnlList = afloChnlList.subList(0, channelLimitSize);
+            }
+
+            afloChnlList.stream().forEach(chnlDto -> chnlDto.setChnlType(ChannelType.AFLO));
+        }
+
+        return afloChnlList;
+    }
+
+    @Override
+    public ChnlDto getFloAndDataChannel(){
 
         ChnlDto floAndDataChnlDto = channelMapper.selectFlacChannel();
 
@@ -242,13 +278,21 @@ public class ChannelServiceImpl implements ChannelService {
     public List<LastListenHistoryDto> getLastListenHistory(Long memberNo, Long characterNo, OsType osType, String appVersion){
 
         Boolean exceptFlacChnl = false;
+        Boolean exceptAfloChnl = false;
 
         if(!ObjectUtils.isEmpty(appVersion) && new ComparableVersion(appVersion).compareTo( new ComparableVersion("4.6.0")) < 0 ){
             exceptFlacChnl = true;
         }
 
+        CharacterDto characterDto = getCharacter(characterNo);
+
+        if(characterDto != null && !CharacterType.AFLO.equals(characterDto.getCharacterType())){
+            exceptAfloChnl = true;
+        }
+
+
         List<LastListenHistoryDto> lastListenHistory = channelMapper.selectLastListenHistory(memberNo, characterNo, osType);
-        List<LastListenHistoryDto> lastListenHistoryByChannel = channelMapper.selectLastListenHistoryByChannel(memberNo, characterNo, osType, exceptFlacChnl);
+        List<LastListenHistoryDto> lastListenHistoryByChannel = channelMapper.selectLastListenHistoryByChannel(memberNo, characterNo, osType, exceptFlacChnl, exceptAfloChnl);
         List<LastListenHistoryDto> lastListenHistoryByAlbum = albumMapper.selectLastListenHistory(memberNo, characterNo);
 
 
@@ -436,6 +480,14 @@ public class ChannelServiceImpl implements ChannelService {
             log.error("Channel :: remove last listen history :: Error Message", e.getMessage());
             throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private CharacterDto getCharacter(Long characterNo){
+        CommonApiResponse<CharacterDto> response = memberClient.getCharacter(characterNo);
+        if(response != null && "2000000".equals(response.getCode())){
+            return response.getData();
+        }
+        return null;
     }
 
 }

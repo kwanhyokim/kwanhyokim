@@ -53,11 +53,37 @@
     <select id="selectPersonalRecommendPanelMeta" resultMap="personalPanelResultMap" >
 
             SELECT
+                'AFLO' AS recommendPanelContentType,
+                0 AS panelOrder,
+                g.chnl_id AS recommendId,
+                g.create_dtime AS avaliableDateTime,
+                1 AS dispSn,
+                g.create_dtime,
+                g.update_dtime AS disp_std_start_dt,
+                0 AS moodId,
+                0 AS contentCount
+                FROM
+                    tb_character a
+                INNER JOIN tb_aflo_character b ON a.character_no = b.character_no
+                    AND b.expire_dtime >= NOW()
+                    AND a.character_no = #{characterNo}
+                INNER JOIN tb_aflo c ON b.sale_vas_id = c.sale_vas_id
+                    AND c.del_yn = 'N'
+                    AND NOW() BETWEEN c.svc_start_dtime AND c.svc_end_dtime
+                INNER JOIN tb_aflo d
+                INNER JOIN tb_aflo_artist e ON d.aflo_id = e.aflo_id AND d.del_yn = 'N'
+                INNER JOIN tb_aflo_chnl f ON e.aflo_artist_id = f.aflo_artist_id
+                INNER JOIN tb_chnl g ON f.chnl_id = g.chnl_id AND g.chnl_type = 'AFLO' AND g.disp_status_type='Y'
+            UNION ALL
+
+            SELECT
                 'RC_CF_TR' as recommendPanelContentType,
+                1 as panelOrder,
                 a.rcmmd_mforu_id as recommendId,
                 a.disp_std_end_dt as avaliableDateTime,
                 a.disp_sn as dispSn,
                 a.create_dtime,
+                a.disp_std_start_dt,
                 0 as moodId,
                 count(a.rcmmd_mforu_id) contentCount
             FROM
@@ -77,10 +103,12 @@
             UNION ALL
             SELECT
                 'RC_SML_TR' as recommendPanelContentType,
+                2 as panelOrder,
                 a.rcmmd_similar_track_id as recommendId,
                 a.disp_std_end_dt as avaliableDateTime,
                 a.disp_sn as dispSn,
                 a.create_dtime,
+                a.disp_std_start_dt,
                 0 as moodId,
                 count(b.rcmmd_similar_track_id) contentCount
             FROM
@@ -100,10 +128,12 @@
             UNION ALL
             SELECT
                 'RC_ATST_TR' as recommendPanelContentType,
+                3 as panelOrder,
                 rcmmd_artist_id as recommendId,
                 disp_std_end_dt as avaliableDateTime,
                 disp_sn as dispSn,
                 create_dtime,
+                disp_std_start_dt,
                 0 as moodId,
                 0 as contentCount
             FROM
@@ -116,32 +146,16 @@
             AND
                 disp_std_end_dt <![CDATA[>=]]> NOW()
             </if>
-            UNION ALL
-            SELECT
-                'RC_MD_CN' as recommendPanelContentType,
-                rcmmd_listen_mood_id as recommendId,
-                disp_std_end_dt as avaliableDateTime,
-                disp_sn as dispSn,
-                category_id as moodId,
-                create_dtime,
-                0 as contentCount
-            FROM
-                tb_rcmmd_listen_mood
-            WHERE
-                character_no = #{characterNo}
-            AND
-                disp_std_start_dt <![CDATA[<=]]> NOW()
-            <if test="checkDispEndDt">
-            AND
-                disp_std_end_dt <![CDATA[>=]]> NOW()
-            </if>
+
             UNION ALL
             SELECT
                 'RC_GR_TR' as recommendPanelContentType,
+                4 as panelOrder,
                 rcmmd_prefer_genre_similar_track_id as recommendId,
                 disp_std_end_dt as avaliableDateTime,
                 disp_sn as dispSn,
                 create_dtime,
+                disp_std_start_dt,
                 0 as moodId,
                 0 as contentCount
             FROM
@@ -150,13 +164,9 @@
                 character_no = #{characterNo}
             AND
                 disp_std_start_dt <![CDATA[<=]]> NOW()
-            <if test="checkDispEndDt">
-            AND
-                disp_std_end_dt <![CDATA[>=]]> NOW()
-            </if>
 
             <if test="!checkDispEndDt">
-            order by create_dtime desc, dispSn asc
+            order by disp_std_start_dt desc, panelOrder asc, dispSn asc
             </if>
 
     </select>

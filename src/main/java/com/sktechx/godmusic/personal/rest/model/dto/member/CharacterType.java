@@ -8,7 +8,7 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.common.domain.type;
+package com.sktechx.godmusic.personal.rest.model.dto.member;
 
 import org.apache.ibatis.type.MappedTypes;
 
@@ -17,31 +17,33 @@ import com.sktechx.godmusic.lib.mybatis.code.CodeEnum;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnumTypeHandler;
 
 /**
- *  * 설명 : 채널(플레이리스트) 타입
+ * 설명 : XXXXXXXXX
  *
- * @author 오경무/SKTECHX (km.oh@sk.com)
- * @date 2018. 07. 09.
+ * @author 남재우(Peter)/njw0619@sk.com
+ * @date 2018.11.02
  */
-public enum ChannelType implements CodeEnum {
-    GENERAL("GENERAL", "일반 채널"),
-    MY("MY", "사용자 개인 채널"),
-    CHNL("CHNL", "채널"),
-    FLAC("FLAC", "FLONDATA 전용 채널"),
-    AFLO("AFLO","ArtistFLO 전용 채널")
+
+public enum CharacterType implements CodeEnum {
+
+    DEFAULT("DEFAULT", "선호 아티스트"),
+    KIDS("KIDS", "Kids"),
+    NUGU("NUGU", "NUGU"),
+    TMAP("TMAP", "TMap"),
+    AFLO("AFLO","Aflo"),
     ;
 
     private final String code;
     private final String value;
 
-    ChannelType(String code, String value) {
+    CharacterType(String code, String value) {
         this.code = code;
         this.value = value;
     }
 
-    @MappedTypes(ChannelType.class)
-    public static class TypeHandler extends CodeEnumTypeHandler<ChannelType> {
+    @MappedTypes(CharacterType.class)
+    public static class TypeHandler extends CodeEnumTypeHandler<CharacterType> {
         public TypeHandler() {
-            super(ChannelType.class);
+            super(CharacterType.class);
         }
     }
 
@@ -55,8 +57,7 @@ public enum ChannelType implements CodeEnum {
         return value;
     }
 
-    @Override
-    public CodeEnum getDefault() {
+    public CharacterType getDefault() {
         return null;
     }
 }

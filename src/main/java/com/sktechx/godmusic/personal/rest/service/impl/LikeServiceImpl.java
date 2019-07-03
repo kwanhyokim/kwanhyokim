@@ -30,10 +30,13 @@ import com.sktechx.godmusic.personal.common.domain.constant.LikeConstant;
 import com.sktechx.godmusic.personal.common.domain.type.AppNameType;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
+import com.sktechx.godmusic.personal.rest.client.MemberClient;
 import com.sktechx.godmusic.personal.rest.model.dto.AlbumDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.PlayListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
+import com.sktechx.godmusic.personal.rest.model.dto.member.CharacterDto;
+import com.sktechx.godmusic.personal.rest.model.dto.member.CharacterType;
 import com.sktechx.godmusic.personal.rest.model.vo.like.*;
 import com.sktechx.godmusic.personal.rest.repository.LikeMapper;
 import com.sktechx.godmusic.personal.rest.service.LikeService;
@@ -53,6 +56,9 @@ public class LikeServiceImpl implements LikeService {
 
 	@Autowired
 	private MetaApiProxy metaApiProxy;
+
+	@Autowired
+	private MemberClient memberClient;
 
 	@Autowired
 	RestTemplate restTemplate;
@@ -88,15 +94,23 @@ public class LikeServiceImpl implements LikeService {
 		}
 
 		Boolean exceptFlacChnl = false;
+		Boolean exceptAfloChnl = false;
 
 		if(!ObjectUtils.isEmpty(appVersion) && new ComparableVersion(appVersion).compareTo( new ComparableVersion("4.6.0")) < 0 ){
 			exceptFlacChnl = true;
 		}
 
+		CharacterDto characterDto = getCharacter(characterNo);
+
+		if(characterDto != null && !CharacterType.AFLO.equals(characterDto.getCharacterType())){
+			exceptAfloChnl = true;
+		}
+
 		List<PlayListDto> playListDtos = likeMapper.getLikePlaylistByLikeType(characterNo,
 				(CollectionUtils.isEmpty(chnlIds) ? null : chnlIds),
 				(CollectionUtils.isEmpty(chartIds) ? null : chartIds),
-				exceptFlacChnl
+				exceptFlacChnl,
+				exceptAfloChnl
 		);
 
 		if (CollectionUtils.isEmpty(playListDtos)) return null;
@@ -186,11 +200,13 @@ public class LikeServiceImpl implements LikeService {
 	public void deleteLike(LikeTypeIdListRequest request, Long characterNo) {
 
 		if(!ObjectUtils.isEmpty(request) && !CollectionUtils.isEmpty(request.getLikeTypeList())){
-			for(LikeTypeVo likeTypeVo: request.getLikeTypeList()){
-				if(LikeConstant.LIKE_FLAC.equals(likeTypeVo.getLikeType())){
+			request.getLikeTypeList().stream().forEach(likeTypeVo -> {
+
+				if(needToChangeLikeTypeToChannel(likeTypeVo.getLikeType())){
 					likeTypeVo.setLikeType(LikeConstant.LIKE_CHANNEL);
 				}
-			}
+
+			});
 		}
 
 		Map<String, Object> batchParam = new HashMap<>();
@@ -256,11 +272,17 @@ public class LikeServiceImpl implements LikeService {
 		return new LikeYnResponse("N");
 	}
 
+	private Boolean needToChangeLikeTypeToChannel(String likeType){
+
+		return LikeConstant.LIKE_FLAC.equals(likeType) ||
+				LikeConstant.LIKE_AFLO.equals(likeType);
+	}
+
 	private void validCheckAddLike(LikeRequest request, Long characterNo){
 
 		String likeType = request.getLikeType();
 
-		if(LikeConstant.LIKE_FLAC.equals(likeType)){
+		if( needToChangeLikeTypeToChannel(likeType)){
 			likeType = LikeConstant.LIKE_CHANNEL;
 			request.setLikeType(likeType);
 		}
@@ -401,5 +423,13 @@ public class LikeServiceImpl implements LikeService {
 		amqpService.deliverUserEvent(userEvent);
 		log.info("[Add Like - User event] " + userEvent.toString());
 
+	}
+
+	private CharacterDto getCharacter(Long characterNo){
+		CommonApiResponse<CharacterDto> response = memberClient.getCharacter(characterNo);
+		if(response != null && "2000000".equals(response.getCode())){
+			return response.getData();
+		}
+		return null;
 	}
 }
