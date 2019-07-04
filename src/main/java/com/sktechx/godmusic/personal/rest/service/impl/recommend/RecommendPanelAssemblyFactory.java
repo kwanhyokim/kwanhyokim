@@ -59,6 +59,13 @@ public class RecommendPanelAssemblyFactory {
         PersonalPanel personalPanel = personalPhaseMeta.getRecommendPersonalPanelTopItem();
 
         if(!ObjectUtils.isEmpty(personalPanel)) {
+            // 추천 패널 없이 AFLO만 존재하고, 선호 장르가 선택되어 있으면 선호 장르 테마 조립기 이용
+            if ( RecommendPanelContentType.AFLO.equals(personalPanel.getRecommendPanelContentType())
+                    && personalPhaseMeta.getRcmmdPanelList().stream()
+                        .filter(personalPanel1 -> !RecommendPanelContentType.AFLO.equals(personalPanel1.getRecommendPanelContentType())).count() == 0
+                    && personalPhaseMeta.isPreferGenreListPresent()){
+                return applicationContextProvider.getContext().getBean(PreferGenreThemePanelAssembly.class);
+            }
 
             PanelAssembly panelAssembly = getV2RecommendPanelAssembly(personalPanel.getRecommendPanelContentType());
 

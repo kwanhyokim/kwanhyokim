@@ -14,12 +14,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
@@ -75,19 +75,18 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     public List<ChnlDto> getAfloChannelList(Long characterNo, int channelLimitSize, int trackLimitSize ,OsType osType){
 
-        List<ChnlDto> afloChnlList = channelMapper.selectAfloChannelList(characterNo);
-//        try{
-//            afloChnlList = redisService.getListWithPrefix(PERSONAL_AFLO_CHNL_KEY,ChnlDto.class);
-//        }catch( Exception e){
-//            log.error("getAfloChannelList error : {}",e.getMessage());
-//        }finally {
-//            if(CollectionUtils.isEmpty(afloChnlList)){
-//                afloChnlList = channelMapper.selectAfloChannelList(characterNo);
-//                if(!CollectionUtils.isEmpty(afloChnlList)){
-//                    redisService.setWithPrefix(PERSONAL_AFLO_CHNL_KEY,afloChnlList,POPULAR_CHNL_EXPIRED_SECONDS);
-//                }
-//            }
-//        }
+        List<ChnlDto> afloChnlList = null;
+        try{
+            afloChnlList = redisService.getListWithPrefix(ALL_POPULAR_CHNL_KEY,ChnlDto.class);
+            afloChnlList = CollectionUtils.emptyIfNull(afloChnlList).stream().filter(chnlDto -> ChannelType.AFLO.equals(chnlDto.getChnlType())).collect(
+                        Collectors.toList());
+        }catch( Exception e){
+            log.error("getAfloChannelList error : {}",e.getMessage());
+        }finally {
+            if(CollectionUtils.isEmpty(afloChnlList)){
+                afloChnlList = channelMapper.selectAfloChannelList(characterNo);
+            }
+        }
 
         if(!CollectionUtils.isEmpty(afloChnlList)){
 
