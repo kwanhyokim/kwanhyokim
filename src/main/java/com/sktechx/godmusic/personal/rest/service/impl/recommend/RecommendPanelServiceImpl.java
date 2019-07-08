@@ -151,6 +151,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
         RecommendPanelResponse recommendPanelResponse = new RecommendPanelResponse();
 
+
         List<Panel> recommendPanelList = null;
         PersonalPhaseMeta personalPhaseMeta = null;
         PanelAssembly panelAssembly = null;
