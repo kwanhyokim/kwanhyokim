@@ -196,12 +196,20 @@ public class OcrServiceImpl implements OcrService {
     }
 
     private void ocrRecognize( Long ocrNo, Integer ocrFileNo, Integer imageCount, String bucketKey, String bucketName){
-        log.debug("ocrRecognize start:");
-        CommonApiResponse<AwsFileVo> response = externalApiProxy.ocrRecognize(ocrNo, imageCount, ocrFileNo, bucketKey, bucketName);
-        log.debug("ocrRecognize end");
 
-        if(StringUtils.isEmpty(response) || StringUtils.isEmpty(response.getCode())
-                || !"2000000".equals(response.getCode())) throw new CommonBusinessException("ocrRecognize fail");
+        try {
+            log.debug("ocrRecognize start:");
+            CommonApiResponse<AwsFileVo> response = externalApiProxy.ocrRecognize(ocrNo, imageCount, ocrFileNo, bucketKey, bucketName);
+            log.debug("ocrRecognize end");
+
+            if (StringUtils.isEmpty(response) || StringUtils.isEmpty(response.getCode())
+                    || !"2000000".equals(response.getCode()))
+                throw new CommonBusinessException(PersonalErrorDomain.OUT_OF_OCR_SERVICE);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new CommonBusinessException(PersonalErrorDomain.OUT_OF_OCR_SERVICE);
+        }
+
     }
 
 }
