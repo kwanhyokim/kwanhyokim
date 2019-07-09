@@ -119,6 +119,19 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
             //개인화 추천 패널
             List<PersonalPanel> rcmmdPanelList = recommendReadMapper.selectPersonalRecommendPanelMeta(characterNo, SIMILAR_TRACK_DISP_STANDARD_COUNT , RCMMD_CF_TRACK_DISP_STANDARD_COUNT, checkDispEndDate);
 
+            // 개인 추천 패널이 AFLO만 있고, 다른 디스커버리 플로우 통해 선택된 항목이 있는 경우, 홈 패널에서 AFLO 제거
+            if(
+                !CollectionUtils.isEmpty(rcmmdPanelList) &&
+                rcmmdPanelList.stream()
+                        .filter(personalPanel1 -> !RecommendPanelContentType.AFLO.equals(personalPanel1.getRecommendPanelContentType())).count() == 0  &&
+
+                ( !CollectionUtils.isEmpty(characterPreferDispList) || !CollectionUtils.isEmpty(characterPreferGenreList))
+
+
+            ){
+                rcmmdPanelList = null;
+            }
+
             personalPhaseMeta.setRcmmdPanelList(rcmmdPanelList);
 
             filterRecommendPanelDuplicateTracks(personalPhaseMeta);
