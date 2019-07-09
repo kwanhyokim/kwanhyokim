@@ -47,6 +47,8 @@ public class AFloServiceImpl implements AFloService {
 
                 list.stream().forEach(item ->{
                     MemberChannelDto memberChannelDto = MemberChannelDto.builder()
+                            .pinType(item.getPinType())
+                            .pinTypeId(item.getPinTypeId())
                             .memberChannelName(item.getMemberChannelName())
                             .channelPriority(item.getChannelPriority())
                             .trackCount(item.getTrackCount())
