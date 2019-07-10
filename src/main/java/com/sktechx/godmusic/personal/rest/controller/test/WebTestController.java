@@ -18,12 +18,12 @@ import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDataService
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 결제 테스트를 위환 컨트롤러
+ * 홈 테스트를 위환 컨트롤러
  *
- * @author 박상현/SKTECH (sanghyun.park.tx@sk.com)
- * @date 2018. 9. 12.
+ * @author 김관효
+ * @date 2019. 7. 5.
  */
-@Profile({"local", "dev", "qa"})
+@Profile({"!prod"})
 @Controller
 @Slf4j
 @RequestMapping(Naming.serviceCode + "/test")

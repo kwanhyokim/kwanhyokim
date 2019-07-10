@@ -473,7 +473,6 @@
         UPDATE TB_CHARACTER_LIKE
         SET DISP_SN = DISP_SN + 1
         WHERE CHARACTER_NO = #{characterNo}
---         AND LIKE_TYPE = #{likeType}
     </update>
 
     <insert id="insertLike">
