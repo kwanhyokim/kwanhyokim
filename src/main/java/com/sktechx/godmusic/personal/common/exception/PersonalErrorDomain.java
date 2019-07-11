@@ -44,7 +44,7 @@ public enum PersonalErrorDomain implements ErrorDomain {
 
     , NOT_FOUND_OCR_FILE(4090722, HttpStatus.CONFLICT, "OCR 파일 정보가 없습니다.", "OCR 파일 정보가 없습니다.")
     , ALREADY_UPLOAD_OCR_FILE(4090723, HttpStatus.CONFLICT, "이미 업로드 처리된 OCR파일 입니다", "이미 업로드 처리된 OCR파일 입니다")
-    , FAIL_UPLOAD_OCR_FILE(4090724, HttpStatus.CONFLICT, "OCR파일 업로드 실패", "OCR파일 업로드 실패")
+    , FAIL_UPLOAD_OCR_FILE(4090724, HttpStatus.CONFLICT, "OCR파일 업로드 실패", "OCR파일 업로드 실패"), OUT_OF_OCR_SERVICE(4090725, HttpStatus.CONFLICT, "서버 점검으로 인해 일시적으로 해당 기능을 사용할 수 없습니다.", "Ocr not working")
     ;
 
     private int code;

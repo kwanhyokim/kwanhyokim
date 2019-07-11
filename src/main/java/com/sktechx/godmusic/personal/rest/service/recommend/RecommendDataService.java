@@ -28,5 +28,9 @@ public interface RecommendDataService {
     int deleteTpoRecommendDummyData(Long characterNo);
 
     void createRecommendV2DummyData(Long characterNo , RecommendV2DummyDataRequest recommendDummyDataRequest);
+    void updateRecommendV2DummyData(Long characterNo , RecommendV2DummyDataRequest recommendDummyDataRequest);
     void deleteRecommendV2DummyData(Long characterNo , RecommendV2DummyDataRequest recommendDummyDataRequest);
+
+    void updateAfloChnl();
+
 }

@@ -61,5 +61,9 @@ public interface MemberChannelMapper {
     Long selectMemberChannelAlbumId(@Param("channelId")Long memberChannelId);
 
     void updateMemberChannelImg(@Param("channelId")Long memberChannelId, @Param("viewPriority")Integer viewPriority);
+
+    List<Long> selectLimitedMemberChannelIdList(@Param("memberNo") Long memberNo, @Param("characterNo")Long characterNo);
+
+    int countMemberChannelIdList(@Param("memberNo") Long memberNo, @Param("characterNo")Long characterNo);
 }
 

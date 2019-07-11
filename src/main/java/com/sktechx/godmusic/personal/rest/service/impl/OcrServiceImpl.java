@@ -94,31 +94,23 @@ public class OcrServiceImpl implements OcrService {
             throw new CommonBusinessException(PersonalErrorDomain.FAIL_UPLOAD_OCR_FILE);
         }
 
-        ocrHelperService.updateOcrFile(OcrFileDto.builder()
-                .ocrNo(ocrNo)
-                .ocrFileNo(ocrFileNo)
-                .awsBucketNm(awsFileVo.getBucket())
-                .awsBucketKey(awsFileVo.getBucketKey())
-                .uploadYn(YnType.Y)
-                .build());
-
         return awsFileVo;
     }
 
 
     @Override
+    @Transactional(readOnly = true)
     public void requestAnalysisToOcrServer(Long characterNo, Long ocrNo, Integer ocrFileNo, AwsFileVo awsFileVo){
 
-        //TODO send FileInfo to OCR Server
         int fileCount = ocrMapper.countOcrFile(characterNo, ocrNo);
         ocrRecognize(ocrNo, ocrFileNo, fileCount, awsFileVo.getBucketKey(), awsFileVo.getBucket());
 
-        ocrHelperService.updateOcrFile(OcrFileDto.builder()
-                .ocrNo(ocrNo)
-                .ocrFileNo(ocrFileNo)
-                .analsStartDtime(new Date())
-                .build());
+    }
 
+    @Override
+    @Transactional
+    public void updateOcrFile(OcrFileDto ocrFileDto) {
+        ocrMapper.updateOcrFile(ocrFileDto);
     }
 
     @Override
@@ -204,12 +196,20 @@ public class OcrServiceImpl implements OcrService {
     }
 
     private void ocrRecognize( Long ocrNo, Integer ocrFileNo, Integer imageCount, String bucketKey, String bucketName){
-        log.debug("ocrRecognize start:");
-        CommonApiResponse<AwsFileVo> response = externalApiProxy.ocrRecognize(ocrNo, imageCount, ocrFileNo, bucketKey, bucketName);
-        log.debug("ocrRecognize end");
 
-        if(StringUtils.isEmpty(response) || StringUtils.isEmpty(response.getCode())
-                || !"2000000".equals(response.getCode())) throw new CommonBusinessException("ocrRecognize fail");
+        try {
+            log.debug("ocrRecognize start:");
+            CommonApiResponse<AwsFileVo> response = externalApiProxy.ocrRecognize(ocrNo, imageCount, ocrFileNo, bucketKey, bucketName);
+            log.debug("ocrRecognize end");
+
+            if (StringUtils.isEmpty(response) || StringUtils.isEmpty(response.getCode())
+                    || !"2000000".equals(response.getCode()))
+                throw new CommonBusinessException(PersonalErrorDomain.OUT_OF_OCR_SERVICE);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new CommonBusinessException(PersonalErrorDomain.OUT_OF_OCR_SERVICE);
+        }
+
     }
 
 }

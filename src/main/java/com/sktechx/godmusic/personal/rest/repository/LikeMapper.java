@@ -37,7 +37,14 @@ public interface LikeMapper {
 	List<AlbumDto> getLikeAlbumByLikeType(@Param("characterNo") Long characterNo, @Param("pageable") Pageable pageable);
 	List<ArtistDto> getLikeArtistByLikeType(@Param("characterNo") Long characterNo, @Param("pageable") Pageable pageable);
 
-	List<PlayListDto> getLikePlaylistByLikeType(@Param("characterNo") Long characterNo, @Param("chnlIds") List<Long> chnlIds, @Param("chartIds") List<Long> chartIds, @Param("exceptFlacChnl") Boolean exceptFlacChnl);
+	List<PlayListDto> getLikePlaylistByLikeType(@Param("characterNo") Long characterNo, @Param("chnlIds") List<Long> chnlIds, @Param("chartIds") List<Long> chartIds,
+			@Param("exceptFlacChnl") Boolean exceptFlacChnl,
+			@Param("exceptAfloChnl") Boolean exceptAfloChnl
+	);
 
 	List<LikeTypeVo> getLikePlaylistIdsByLikeType(@Param("characterNo") Long characterNo, @Param("pageable") Pageable pageable);
+
+	int countLikeByCharacterNo(@Param("characterNo") Long characterNo);
+	void insertSelectLike(@Param("fromCharacterNo") Long fromCharacterNo, @Param("toCharacterNo") Long toCharacterNo);
+
 }

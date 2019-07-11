@@ -2,6 +2,9 @@ package com.sktechx.godmusic.personal.rest.controller.v1;
 
 import javax.validation.Valid;
 
+import com.sktechx.godmusic.lib.domain.code.YnType;
+import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrFileDto;
+import com.sktechx.godmusic.personal.rest.model.vo.external.AwsFileVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.ObjectUtils;
@@ -22,6 +25,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Date;
 
 @Slf4j
 @RestController
@@ -48,9 +53,22 @@ public class OcrController {
     public CommonApiResponse uploadOcrFile( MultipartFile file, @RequestParam("ocrNo") Long ocrNo, @RequestParam("ocrFileNo") Integer ocrFileNo ){
 
         // select 로 검색 하여 기 처리된 데이터 인지 확인 upload 여부, 분석 요청 여부.
-//        AwsFileVo awsFileVo = ocrService.uploadOcrFile(GMContext.getContext().getMemberNo(), GMContext.getContext().getCharacterNo(), file, ocrNo, ocrFileNo);
-//        ocrService.requestAnalysisToOcrServer(GMContext.getContext().getCharacterNo(), ocrNo, ocrFileNo, awsFileVo);
+        AwsFileVo awsFileVo = ocrService.uploadOcrFile(GMContext.getContext().getMemberNo(), GMContext.getContext().getCharacterNo(), file, ocrNo, ocrFileNo);
+        ocrService.updateOcrFile(OcrFileDto.builder()
+                .ocrNo(ocrNo)
+                .ocrFileNo(ocrFileNo)
+                .awsBucketNm(awsFileVo.getBucket())
+                .awsBucketKey(awsFileVo.getBucketKey())
+                .uploadYn(YnType.Y)
+                .build());
 
+        ocrService.requestAnalysisToOcrServer(GMContext.getContext().getCharacterNo(), ocrNo, ocrFileNo, awsFileVo);
+
+        ocrService.updateOcrFile(OcrFileDto.builder()
+                .ocrNo(ocrNo)
+                .ocrFileNo(ocrFileNo)
+                .analsStartDtime(new Date())
+                .build());
         return new CommonApiResponse<>().emptySuccess();
     }
 

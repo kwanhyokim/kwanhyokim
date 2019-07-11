@@ -122,12 +122,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!--dependency>
-            <groupId>com.sktechx.godmusic</groupId>
-            <artifactId>biz-module</artifactId>
-            <version>${godmusic-module.version}</version>
-        </dependency>
-        -->
         <dependency>
             <groupId>com.sktechx.godmusic</groupId>
             <artifactId>lib-module</artifactId>
@@ -184,6 +178,25 @@
             <version>3.0.3</version>
         </dependency>
 
+        <!-- thymeleaf -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.nekohtml</groupId>
+            <artifactId>nekohtml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>nz.net.ultraq.thymeleaf</groupId>
+            <artifactId>thymeleaf-layout-dialect</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.2</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>

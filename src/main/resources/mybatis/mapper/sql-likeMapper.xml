@@ -253,52 +253,103 @@
                      ) CL
                      INNER JOIN TED_ALBUMIMAGE I
                          ON CL.ALBUM_ID = I.ALBUM_ID
-                 UNION ALL
+         UNION ALL
+         SELECT
+               A.CHNL_ID                                                               AS id
+             , A.CHNL_NM                                                               AS name
+             , ''                                                                      AS chartType
+             , ''                                                                      AS albumId
+             , I.ALBUM_IMG_URL                                                         AS url
+             , I.ALBUM_IMG_SIZE                                                        AS size
+             , A.TRACK_CNT                                                             AS trackCount
+             , A.CREATE_DTIME                                                          AS createDateTime
+             , A.UPDATE_DTIME                                                          AS updateDateTime
+             , A.ES_ALBUM_APPLY_DTIME                                                  AS registDateTime
+             , A.CHNL_PLAY_TM                                                          AS playTime
+             , IF(A.CHNL_TYPE !='FLAC', IF(A.CHNL_TYPE !='AFLO', 'CHNL', 'AFLO'), 'FLAC') AS playListType
+             , L.DISP_SN                                                               AS dispSn
+             , L.UPDATE_DTIME                                                          AS likeUpdateDtime
+             , A.RENEW_DTIME                                                           AS renewDateTime
+             , A.RENEW_TRACK_CNT                                                       AS renewTrackCnt
+         FROM
+             (
                  SELECT
-                       A.CHNL_ID                                                               AS id
-                     , A.CHNL_NM                                                               AS name
-                     , ''                                                                      AS chartType
-                     , ''                                                                      AS albumId
-                     , I.ALBUM_IMG_URL                                                         AS url
-                     , I.ALBUM_IMG_SIZE                                                        AS size
-                     , A.TRACK_CNT                                                             AS trackCount
-                     , A.CREATE_DTIME                                                          AS createDateTime
-                     , A.UPDATE_DTIME                                                          AS updateDateTime
-                     , A.ES_ALBUM_APPLY_DTIME                                                  AS registDateTime
-                     , A.CHNL_PLAY_TM                                                          AS playTime
-                     , IF(A.CHNL_TYPE !='FLAC', 'CHNL', 'FLAC')                                AS playListType
-                     , L.DISP_SN                                                               AS dispSn
-                     , L.UPDATE_DTIME                                                          AS likeUpdateDtime
-                     , A.RENEW_DTIME                                                           AS renewDateTime
-                     , A.RENEW_TRACK_CNT                                                       AS renewTrackCnt
-                 FROM
-                     (
-                         SELECT
-                             LIKE_TYPE_ID
-                             , LIKE_TYPE
-                             , DISP_SN
-                             , UPDATE_DTIME
-                         FROM TB_CHARACTER_LIKE
-                         WHERE CHARACTER_NO = #{characterNo}
-        <if test="chnlIds != null">
-            AND LIKE_TYPE_ID IN
-            <foreach item="chnlId" index="index" collection="chnlIds" open="(" separator="," close=")">
-                #{chnlId}
-            </foreach>
-        </if>
-        <if test="chnlIds == null">
-            AND 1 = 0
-        </if>
-                               AND LIKE_TYPE = 'CHNL') L
-                     INNER JOIN TB_CHNL A
-                         ON L.LIKE_TYPE_ID = A.CHNL_ID
-                       AND A.DISP_STATUS_TYPE = 'Y'
-        <if test="exceptFlacChnl">
-            AND A.CHNL_TYPE !='FLAC'
-        </if>
+                     LIKE_TYPE_ID
+                     , LIKE_TYPE
+                     , DISP_SN
+                     , UPDATE_DTIME
+                 FROM TB_CHARACTER_LIKE
+                 WHERE CHARACTER_NO = #{characterNo}
+                <if test="chnlIds != null">
+                    AND LIKE_TYPE_ID IN
+                    <foreach item="chnlId" index="index" collection="chnlIds" open="(" separator="," close=")">
+                        #{chnlId}
+                    </foreach>
+                </if>
+                <if test="chnlIds == null">
+                    AND 1 = 0
+                </if>
+                    AND LIKE_TYPE = 'CHNL') L
+                INNER JOIN TB_CHNL A
+                    ON L.LIKE_TYPE_ID = A.CHNL_ID
+                    AND A.DISP_STATUS_TYPE = 'Y'
+                    AND A.CHNL_TYPE !='AFLO'
 
-                     INNER JOIN TB_ALBUM_IMG I
-                         ON A.ALBUM_ID = I.ALBUM_ID) AA
+                <if test="exceptFlacChnl">
+                    AND A.CHNL_TYPE !='FLAC'
+                </if>
+
+             INNER JOIN TB_ALBUM_IMG I
+                 ON A.ALBUM_ID = I.ALBUM_ID
+
+        UNION ALL
+        SELECT
+            A.chnl_id                                                               AS id
+            , A.chnl_nm                                                               AS name
+            , ''                                                                      AS chartType
+            , ''                                                                      AS albumId
+            , I.img_url                                                               AS url
+            , 600                                                                     AS size
+            , A.track_cnt                                                             AS trackCount
+            , A.create_dtime                                                          AS createDateTime
+            , A.update_dtime                                                          AS updateDateTime
+            , A.es_album_apply_dtime                                                  AS registDateTime
+            , A.chnl_play_tm                                                          AS playTime
+            , A.chnl_type                                                             AS playListType
+            , L.disp_sn                                                               AS dispSn
+            , L.update_dtime                                                          AS likeUpdateDtime
+            , A.renew_dtime                                                           AS renewDateTime
+            , A.renew_track_cnt                                                       AS renewTrackCnt
+            FROM
+            (
+            SELECT
+                like_type_id
+                , like_type
+                , disp_sn
+                , update_dtime
+                FROM tb_character_like
+                WHERE character_no = #{characterNo}
+                <if test="chnlIds != null">
+                    AND like_type_id IN
+                    <foreach item="chnlId" index="index" collection="chnlIds" open="(" separator="," close=")">
+                        #{chnlId}
+                    </foreach>
+                </if>
+                <if test="chnlIds == null">
+                    AND 1 = 0
+                </if>
+                AND like_type = 'CHNL') L
+                INNER JOIN tb_chnl A
+                ON L.like_type_id = A.chnl_id
+                AND A.disp_status_type = 'Y'
+                AND A.chnl_type ='AFLO'
+
+                INNER JOIN tb_chnl_img I
+                ON A.chnl_id = I.chnl_id
+                AND I.chnl_img_type = 'TOP_DETAIL'
+
+
+         ) AA
         ORDER BY AA.DISPSN ASC, AA.LIKEUPDATEDTIME ASC
     </select>
 
@@ -344,7 +395,7 @@
                     WHERE CHARACTER_NO = #{characterNo}
                             AND LIKE_TYPE = 'CHNL') L
                     INNER JOIN TB_CHNL A
-                               ON L.LIKE_TYPE_ID = A.CHNL_ID AND A.DISP_STATUS_TYPE = 'Y' AND A.CHNL_TYPE IN ('MM', 'DJ', 'FLAC')
+                               ON L.LIKE_TYPE_ID = A.CHNL_ID AND A.DISP_STATUS_TYPE = 'Y' AND A.CHNL_TYPE IN ('MM', 'DJ', 'FLAC', 'AFLO')
                                    AND EXISTS(SELECT * FROM TB_ALBUM_IMG I WHERE A.ALBUM_ID = I.ALBUM_ID)) T1
         ORDER BY DISP_SN ASC, UPDATE_DTIME ASC
         LIMIT
@@ -393,7 +444,7 @@
                 WHERE CHARACTER_NO = #{characterNo}
                         AND LIKE_TYPE = #{likeType}) L
                     INNER JOIN TB_CHNL A
-                        ON L.LIKE_TYPE_ID = A.CHNL_ID AND A.DISP_STATUS_TYPE = 'Y' AND A.CHNL_TYPE IN ('MM', 'DJ', 'FLAC')
+                        ON L.LIKE_TYPE_ID = A.CHNL_ID AND A.DISP_STATUS_TYPE = 'Y' AND A.CHNL_TYPE IN ('MM', 'DJ', 'FLAC', 'AFLO')
                   AND EXISTS(SELECT * FROM TB_ALBUM_IMG I WHERE A.ALBUM_ID = I.ALBUM_ID)
     </select>
 
@@ -422,7 +473,6 @@
         UPDATE TB_CHARACTER_LIKE
         SET DISP_SN = DISP_SN + 1
         WHERE CHARACTER_NO = #{characterNo}
-        AND LIKE_TYPE = #{likeType}
     </update>
 
     <insert id="insertLike">
@@ -445,5 +495,20 @@
               AND LIKE_TYPE = #{likeType}
               AND LIKE_TYPE_ID = #{likeTypeId}
     </update>
+
+    <select id="countLikeByCharacterNo" resultType="int">
+        SELECT
+        	COUNT(*)
+        FROM
+			tb_character_like
+		WHERE
+			character_no = #{characterNo}
+    </select>
+
+   <insert id="insertSelectLike">
+    INSERT INTO
+      tb_character_like (character_no, like_type, like_type_id, disp_sn)
+    SELECT #{toCharacterNo}, like_type, like_type_id, disp_sn from tb_character_like where character_no = #{fromCharacterNo}
+   </insert>
 
 </mapper>

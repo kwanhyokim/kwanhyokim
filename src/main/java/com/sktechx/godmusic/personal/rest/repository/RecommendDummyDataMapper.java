@@ -54,4 +54,11 @@ public interface RecommendDummyDataMapper {
     int selectTpoRecommendDataCount(@Param("characterNo") Long characterNo);
 
     void deleteArtistFlo(@Param("characterNo") Long characterNo);
+
+    void updateRcmmdMforuData(@Param("characterNo") Long characterNo);
+    void updateRcmmdSimilarTrackData(@Param("characterNo") Long characterNo);
+    void updateRcmmdArtistData(@Param("characterNo") Long characterNo);
+
+    void updateAfloChannel();
+
 }

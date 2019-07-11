@@ -12,6 +12,7 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.myplaylist;
 
+import com.sktechx.godmusic.personal.common.domain.type.PinType;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -33,4 +34,6 @@ public class MyPlaylistCreateRequest {
     @NotNull
     @Length(max = 400, message = "리스트명은 최대 400자까지 입력하실 수 있습니다")
     private String memberChannelName;
+
+    private PinType pinType;
 }

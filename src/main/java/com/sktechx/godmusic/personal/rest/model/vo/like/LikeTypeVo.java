@@ -16,7 +16,7 @@ import lombok.Data;
 public class LikeTypeVo {
 	@NotNull
 	@ApiModelProperty(name = "likeType", value = "좋아하는 타입(CHNL: 채널, ALBUM: 앨범, CHART: 차트, ARTIST: 아티스트, TRACK: 곡)",
-			allowableValues = "CHNL, ALBUM, CHART, ARTIST, TRACK, FLAC")
+			allowableValues = "CHNL, ALBUM, CHART, ARTIST, TRACK, FLAC, AFLO")
 	private String likeType;
 
 	@NotNull

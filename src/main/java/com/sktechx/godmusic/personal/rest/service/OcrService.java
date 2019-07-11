@@ -1,6 +1,7 @@
 package com.sktechx.godmusic.personal.rest.service;
 
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrFileDto;
 import com.sktechx.godmusic.personal.rest.model.vo.external.AwsFileVo;
 import com.sktechx.godmusic.personal.rest.model.vo.ocr.OcrAnalsVo;
 import com.sktechx.godmusic.personal.rest.model.vo.ocr.GetOcrStatusResponse;
@@ -21,5 +22,6 @@ public interface OcrService {
 
     void noMorePush(Long characterNo, Long ocrNo);
 
+    void updateOcrFile(OcrFileDto ocrFileDto);
 
 }
