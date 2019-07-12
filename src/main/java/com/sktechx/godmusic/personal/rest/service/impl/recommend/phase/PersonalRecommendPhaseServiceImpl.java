@@ -108,7 +108,7 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
             if( !ObjectUtils.isEmpty(cachePersonalPhaseMeta.getAfloCharacterExpireDtime()) &&
                 !ObjectUtils.isEmpty(afloExpireDate) &&
 
-                cachePersonalPhaseMeta.getAfloCharacterExpireDtime().compareTo(afloExpireDate) == 0
+                cachePersonalPhaseMeta.getAfloCharacterExpireDtime().compareTo(afloExpireDate) != 0
 
             ){
                 clearPersonalRecommendPhaseMetaCache(characterNo);
