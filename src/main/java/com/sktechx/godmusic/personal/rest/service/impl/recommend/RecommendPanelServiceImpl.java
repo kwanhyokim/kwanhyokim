@@ -151,16 +151,13 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
         RecommendPanelResponse recommendPanelResponse = new RecommendPanelResponse();
 
-
         List<Panel> recommendPanelList = null;
         PersonalPhaseMeta personalPhaseMeta = null;
         PanelAssembly panelAssembly = null;
+
         try{
-
             personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType, appVer);
-
             panelAssembly = recommendPanelAssemblyFactory.getV2RecommendPanelAssembly(personalPhaseMeta);
-
             recommendPanelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
 
         }catch(CommonBusinessException cbex){

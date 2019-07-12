@@ -36,8 +36,8 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelCon
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
+import com.sktechx.godmusic.personal.rest.repository.AfloMapper;
 import com.sktechx.godmusic.personal.rest.repository.CharacterPreferGenreMapper;
-import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.RecommendPanelAssemblyFactory;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
@@ -62,15 +62,23 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
     private CharacterPreferGenreMapper characterPreferGenreMapper;
 
     @Autowired
-    private RecommendMapper recommendMapper;
-
-    @Autowired
     private RecommendReadMapper recommendReadMapper;
+
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private AfloMapper afloMapper;
+
     @Override
     public PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType, String appVer) {
+
+        // aflo 유효기간 지난 경우, 캐쉬 삭제 처리
+        Date afloExpireDate = afloMapper.selectAfloCharacterNo(characterNo);
+
+        if( !ObjectUtils.isEmpty(afloExpireDate) && afloExpireDate.before(new Date())){
+            clearPersonalRecommendPhaseMetaCache(characterNo);
+        }
 
         if( ObjectUtils.isEmpty(appVer) || new ComparableVersion(appVer).compareTo(new ComparableVersion("4.6.0")) < 0 ) {
             return getPersonalRecommendPhaseMetaWithOption(characterNo, osType, true);
