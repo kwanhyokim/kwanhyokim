@@ -73,13 +73,6 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
     @Override
     public PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType, String appVer) {
 
-        // aflo 유효기간 지난 경우, 캐쉬 삭제 처리
-        Date afloExpireDate = afloMapper.selectAfloCharacterNo(characterNo);
-
-        if( !ObjectUtils.isEmpty(afloExpireDate) && afloExpireDate.before(new Date())){
-            clearPersonalRecommendPhaseMetaCache(characterNo);
-        }
-
         if( ObjectUtils.isEmpty(appVer) || new ComparableVersion(appVer).compareTo(new ComparableVersion("4.6.0")) < 0 ) {
             return getPersonalRecommendPhaseMetaWithOption(characterNo, osType, true);
         }else{
@@ -101,8 +94,26 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
 
         try {
 
+            // aflo 유효기간 지난 경우, 캐쉬 삭제 처리
+            Date afloExpireDate = afloMapper.selectAfloCharacterNo(characterNo);
+
+            if( !ObjectUtils.isEmpty(afloExpireDate) && afloExpireDate.before(new Date())){
+                clearPersonalRecommendPhaseMetaCache(characterNo);
+            }
+
             String personalRecommendPhaseKey = String.format(PERSONAL_RECOMMEND_PHASE_KEY, characterNo);
             PersonalPhaseMeta cachePersonalPhaseMeta = redisService.getWithPrefix(personalRecommendPhaseKey, PersonalPhaseMeta.class);
+
+            // 캐쉬의 AFLO 만기시간과 DB의 만기 시간 비교하여 DB의 만기시간이 연장된 경우 캐쉬 클리어..
+            if( !ObjectUtils.isEmpty(cachePersonalPhaseMeta.getAfloCharacterExpireDtime()) &&
+                !ObjectUtils.isEmpty(afloExpireDate) &&
+
+                cachePersonalPhaseMeta.getAfloCharacterExpireDtime().after(afloExpireDate)
+
+            ){
+                clearPersonalRecommendPhaseMetaCache(characterNo);
+                cachePersonalPhaseMeta = null;
+            }
 
             if (!ObjectUtils.isEmpty(cachePersonalPhaseMeta)) {
 
@@ -114,6 +125,7 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
 
             personalPhaseMeta.setCharacterNo(characterNo);
             personalPhaseMeta.setOsType(osType);
+            personalPhaseMeta.setAfloCharacterExpireDtime(afloExpireDate);
 
             //선호 장르 리스트
             List<CharacterPreferGenreDto> characterPreferGenreList = characterPreferGenreMapper.selectCharacterPreferGenreList(characterNo);
