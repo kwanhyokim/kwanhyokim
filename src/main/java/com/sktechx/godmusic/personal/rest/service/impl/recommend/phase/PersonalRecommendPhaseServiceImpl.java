@@ -104,22 +104,19 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
             String personalRecommendPhaseKey = String.format(PERSONAL_RECOMMEND_PHASE_KEY, characterNo);
             PersonalPhaseMeta cachePersonalPhaseMeta = redisService.getWithPrefix(personalRecommendPhaseKey, PersonalPhaseMeta.class);
 
-            if(ObjectUtils.isEmpty(cachePersonalPhaseMeta.getAfloCharacterExpireDtime()) &&
-                    !ObjectUtils.isEmpty(afloExpireDate)){
+            if (!ObjectUtils.isEmpty(cachePersonalPhaseMeta)) {
 
-                clearPersonalRecommendPhaseMetaCache(characterNo);
-                cachePersonalPhaseMeta = null;
-            }
-
-            // 캐쉬의 AFLO 만기시간과 DB의 만기 시간 비교하여 DB의 만기시간이 연장된 경우 캐쉬 클리어..
-            if( !ObjectUtils.isEmpty(cachePersonalPhaseMeta.getAfloCharacterExpireDtime()) &&
-                !ObjectUtils.isEmpty(afloExpireDate) &&
-
-                cachePersonalPhaseMeta.getAfloCharacterExpireDtime().compareTo(afloExpireDate) != 0
-
-            ){
-                clearPersonalRecommendPhaseMetaCache(characterNo);
-                cachePersonalPhaseMeta = null;
+                if (ObjectUtils.isEmpty(cachePersonalPhaseMeta.getAfloCharacterExpireDtime())
+                        && !ObjectUtils.isEmpty(afloExpireDate)) {
+                    clearPersonalRecommendPhaseMetaCache(characterNo);
+                    cachePersonalPhaseMeta = null;
+                }
+                // 캐쉬의 AFLO 만기시간과 DB의 만기 시간 비교하여 DB의 만기시간이 연장된 경우 캐쉬 클리어..
+                if (!ObjectUtils.isEmpty(cachePersonalPhaseMeta.getAfloCharacterExpireDtime()) && !ObjectUtils.isEmpty(afloExpireDate) &&
+                        cachePersonalPhaseMeta.getAfloCharacterExpireDtime().compareTo(afloExpireDate) != 0) {
+                    clearPersonalRecommendPhaseMetaCache(characterNo);
+                    cachePersonalPhaseMeta = null;
+                }
             }
 
             if (!ObjectUtils.isEmpty(cachePersonalPhaseMeta)) {
