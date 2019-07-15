@@ -97,6 +97,7 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
             // aflo 유효기간 지난 경우, 캐쉬 삭제 처리
             Date afloExpireDate = afloMapper.selectAfloCharacterNo(characterNo);
 
+            // AFLO 사용자 위한 캐쉬 처리 (#1)
             if( !ObjectUtils.isEmpty(afloExpireDate) && afloExpireDate.before(new Date())){
                 clearPersonalRecommendPhaseMetaCache(characterNo);
             }
@@ -104,16 +105,31 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
             String personalRecommendPhaseKey = String.format(PERSONAL_RECOMMEND_PHASE_KEY, characterNo);
             PersonalPhaseMeta cachePersonalPhaseMeta = redisService.getWithPrefix(personalRecommendPhaseKey, PersonalPhaseMeta.class);
 
+            // AFLO 사용자 위한 캐쉬 처리 (#2)
             if (!ObjectUtils.isEmpty(cachePersonalPhaseMeta)) {
 
+                // 캐쉬 만기 시각이 없고, 테이블에 만 있는 경우
                 if (ObjectUtils.isEmpty(cachePersonalPhaseMeta.getAfloCharacterExpireDtime())
                         && !ObjectUtils.isEmpty(afloExpireDate)) {
                     clearPersonalRecommendPhaseMetaCache(characterNo);
                     cachePersonalPhaseMeta = null;
                 }
-                // 캐쉬의 AFLO 만기시간과 DB의 만기 시간 비교하여 DB의 만기시간이 연장된 경우 캐쉬 클리어..
+                // 캐쉬의 AFLO 만기시각과 DB의 만기 시각이 다른 경우
                 if (!ObjectUtils.isEmpty(cachePersonalPhaseMeta.getAfloCharacterExpireDtime()) && !ObjectUtils.isEmpty(afloExpireDate) &&
                         cachePersonalPhaseMeta.getAfloCharacterExpireDtime().compareTo(afloExpireDate) != 0) {
+                    clearPersonalRecommendPhaseMetaCache(characterNo);
+                    cachePersonalPhaseMeta = null;
+                }
+
+                // 캐쉬에 AFLO 만기 시각이 있지만, 추천 패널이 비었거나, 추천 패널에 AFLO가 없는 경우
+                if (!ObjectUtils.isEmpty(cachePersonalPhaseMeta.getAfloCharacterExpireDtime()) &&
+
+                        ( CollectionUtils.isEmpty(cachePersonalPhaseMeta.getRcmmdPanelList())
+                         || !CollectionUtils.isEmpty(cachePersonalPhaseMeta.getRcmmdPanelList()) &&
+                            cachePersonalPhaseMeta.getRcmmdPanelList().stream()
+                                        .filter(personalPanel1 -> RecommendPanelContentType.AFLO.equals(personalPanel1.getRecommendPanelContentType())).count() == 0
+                        )
+                ){
                     clearPersonalRecommendPhaseMetaCache(characterNo);
                     cachePersonalPhaseMeta = null;
                 }
