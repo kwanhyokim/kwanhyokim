@@ -30,6 +30,7 @@ import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentTyp
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferDispDto;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendDuplicateCountDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
@@ -37,6 +38,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.repository.AfloMapper;
+import com.sktechx.godmusic.personal.rest.repository.ChannelMapper;
 import com.sktechx.godmusic.personal.rest.repository.CharacterPreferGenreMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.RecommendPanelAssemblyFactory;
@@ -70,6 +72,9 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
     @Autowired
     private AfloMapper afloMapper;
 
+    @Autowired
+    private ChannelMapper channelMapper;
+
     @Override
     public PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType, String appVer) {
 
@@ -102,37 +107,60 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
                 clearPersonalRecommendPhaseMetaCache(characterNo);
             }
 
+            // AFLO 채널 최신 시각
+            List<ChnlDto> afloChannelList = channelMapper.selectAfloChannelList(characterNo);
+
+
+            Date afloChnlRecentCreateDtime = null;
+
+            if(!CollectionUtils.isEmpty(afloChannelList) && afloChannelList.size() > 0){
+                afloChnlRecentCreateDtime = afloChannelList.get(0).getCreateDtime();
+            }
+
+
             String personalRecommendPhaseKey = String.format(PERSONAL_RECOMMEND_PHASE_KEY, characterNo);
             PersonalPhaseMeta cachePersonalPhaseMeta = redisService.getWithPrefix(personalRecommendPhaseKey, PersonalPhaseMeta.class);
 
             // AFLO 사용자 위한 캐쉬 처리 (#2)
+            boolean clearCache = false;
+
             if (!ObjectUtils.isEmpty(cachePersonalPhaseMeta)) {
 
-                // 캐쉬 만기 시각이 없고, 테이블에 만 있는 경우
+                /* 캐쉬 만기 시각이 없고, 테이블에 만 있는 경우 */
                 if (ObjectUtils.isEmpty(cachePersonalPhaseMeta.getAfloCharacterExpireDtime())
                         && !ObjectUtils.isEmpty(afloExpireDate)) {
-                    clearPersonalRecommendPhaseMetaCache(characterNo);
-                    cachePersonalPhaseMeta = null;
+                    clearCache = true;
                 }
+
                 // 캐쉬의 AFLO 만기시각과 DB의 만기 시각이 다른 경우
                 if (!ObjectUtils.isEmpty(cachePersonalPhaseMeta.getAfloCharacterExpireDtime()) && !ObjectUtils.isEmpty(afloExpireDate) &&
                         cachePersonalPhaseMeta.getAfloCharacterExpireDtime().compareTo(afloExpireDate) != 0) {
-                    clearPersonalRecommendPhaseMetaCache(characterNo);
-                    cachePersonalPhaseMeta = null;
+                    clearCache = true;
                 }
 
                 // 캐쉬에 AFLO 만기 시각이 있지만, 추천 패널이 비었거나, 추천 패널에 AFLO가 없는 경우
                 if (!ObjectUtils.isEmpty(cachePersonalPhaseMeta.getAfloCharacterExpireDtime()) &&
-
-                        ( CollectionUtils.isEmpty(cachePersonalPhaseMeta.getRcmmdPanelList())
-                         || !CollectionUtils.isEmpty(cachePersonalPhaseMeta.getRcmmdPanelList()) &&
+                        ( CollectionUtils.isEmpty(cachePersonalPhaseMeta.getRcmmdPanelList()) ||
+                          !CollectionUtils.isEmpty(cachePersonalPhaseMeta.getRcmmdPanelList()) &&
                             cachePersonalPhaseMeta.getRcmmdPanelList().stream()
                                         .filter(personalPanel1 -> RecommendPanelContentType.AFLO.equals(personalPanel1.getRecommendPanelContentType())).count() == 0
                         )
                 ){
-                    clearPersonalRecommendPhaseMetaCache(characterNo);
-                    cachePersonalPhaseMeta = null;
+                    clearCache = true;
                 }
+
+                // 채널 최신 생성일이 있고, 변경된 경우
+                if(!ObjectUtils.isEmpty(cachePersonalPhaseMeta.getAfloChnlRecentCreateDtime()) &&
+                        cachePersonalPhaseMeta.getAfloChnlRecentCreateDtime().compareTo(afloChnlRecentCreateDtime) != 0
+                ){
+                    clearCache = true;
+                }
+
+            }
+
+            if(clearCache){
+                clearPersonalRecommendPhaseMetaCache(characterNo);
+                cachePersonalPhaseMeta = null;
             }
 
             if (!ObjectUtils.isEmpty(cachePersonalPhaseMeta)) {
@@ -146,6 +174,7 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
             personalPhaseMeta.setCharacterNo(characterNo);
             personalPhaseMeta.setOsType(osType);
             personalPhaseMeta.setAfloCharacterExpireDtime(afloExpireDate);
+            personalPhaseMeta.setAfloChnlRecentCreateDtime(afloChnlRecentCreateDtime);
 
             //선호 장르 리스트
             List<CharacterPreferGenreDto> characterPreferGenreList = characterPreferGenreMapper.selectCharacterPreferGenreList(characterNo);

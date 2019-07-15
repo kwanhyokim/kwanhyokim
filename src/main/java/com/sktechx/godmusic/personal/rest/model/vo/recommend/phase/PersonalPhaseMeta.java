@@ -51,7 +51,10 @@ public class PersonalPhaseMeta {
     // 추천 패널에 노출되는 채널 아이디 리스트
     private List<Long> rcmmdPanelDispChnlIdList;
 
+    // aflo 캐릭터 만기일시
     private Date afloCharacterExpireDtime;
+    // aflo 채널 최신생성일
+    private Date afloChnlRecentCreateDtime;
 
     public void setRcmmdPanelList(List<PersonalPanel> rcmmdPanelList){
         this.rcmmdPanelList = rcmmdPanelList;
