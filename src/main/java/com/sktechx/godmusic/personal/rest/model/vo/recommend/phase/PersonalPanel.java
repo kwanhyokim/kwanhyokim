@@ -35,6 +35,7 @@ public class PersonalPanel {
     //청취 무드 무드 아이디
     private Long moodId;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone="Asia/Seoul")
     private Date createDtime;
 
     private Date dispStdStartDt;
