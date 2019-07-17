@@ -88,7 +88,7 @@ public class ListenServiceImpl implements ListenService {
 		String deviceId = currentContext.getDeviceId();
 		String playChannel = AppNameType.fromCode(currentContext.getAppName()) != null ? AppNameType.fromCode(currentContext.getAppName()).getCode() : "";
 		String logType = request.getTrackLogType() != null ? request.getTrackLogType().getCode() : "";
-		String bitrate = request.getBitrate() != null ? request.getBitrate().getCode() : "";
+		String bitrate = request.getBitrate() != null ? request.getBitrate().getCode() : BitrateType.UNKNOWN.getCode();
 		String osType = request.getOsType() != null ? request.getOsType().getCode() : "";
 		String clientIp = httpServletRequest.getHeader("client_ip") != null ? httpServletRequest.getHeader("client_ip") : "";
 		String chnlType = StringUtils.isEmpty(request.getChannelType()) ? null : request.getChannelType();
@@ -204,12 +204,12 @@ public class ListenServiceImpl implements ListenService {
 	private String evaluateServiceId(ListenTrackRequest request, SettlementInfoDto settlement) {
 		if (ObjectUtils.isEmpty(request.getBitrate())) {
 			log.info("1분 청취 요청 Bitrate 없음");
-			return null;
+			return settlement.getSvcId();
 		}
 
 		if (ObjectUtils.isEmpty(request.getSourceType())) {
 			log.info("1분 청취 요청 SourceType 없음");
-			return null;
+			return settlement.getSvcId();
 		}
 		
 		// todo 무료곡 서비스 시점에 다시 수정 필요
