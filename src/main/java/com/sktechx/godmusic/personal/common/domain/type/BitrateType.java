@@ -19,7 +19,8 @@ public enum BitrateType implements CodeEnum {
 	BITRATE_192K("192k","192k"),
 	BITRATE_320K("320k","320k"),
 	BITRATE_FLAC16("flac16bit", "flac16bit"),
-	BITRATE_FLAC24("flac24bit", "flac24bit")
+	BITRATE_FLAC24("flac24bit", "flac24bit"),
+	UNKNOWN("unknown", "unknown")
 
 	;
 
