@@ -15,6 +15,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
@@ -69,8 +70,19 @@ public class RecommendPanelController {
 
 	@ApiOperation(value = "추천 개인화 캐쉬 삭제 ( New )", httpMethod = "GET" , hidden = true)
 	@GetMapping(value = "/phase/meta/clearCache")
-	public CommonApiResponse clearPersonalPhaseMeta(@RequestGMContext GMContext ctx){
-		personalRecommendPhaseService.clearPersonalRecommendPhaseMetaCache(ctx.getCharacterNo());
+	public CommonApiResponse clearPersonalPhaseMeta(@RequestGMContext GMContext ctx,
+			@RequestParam(value = "characterNo", required = false) Long characterNo){
+
+		Long targetCharacterNo;
+
+		if(ObjectUtils.isEmpty(ctx.getCharacterNo())){
+			targetCharacterNo = characterNo;
+		}else{
+			targetCharacterNo = ctx.getCharacterNo();
+		}
+
+		personalRecommendPhaseService.clearPersonalRecommendPhaseMetaCache(targetCharacterNo);
+
 		return CommonApiResponse.emptySuccess();
 	}
 
