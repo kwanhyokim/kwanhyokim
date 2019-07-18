@@ -67,6 +67,7 @@
                 INNER JOIN tb_aflo_character b ON a.character_no = b.character_no
                     AND b.expire_dtime >= NOW()
                     AND a.character_no = #{characterNo}
+                    AND a.character_type = 'AFLO'
                 INNER JOIN tb_aflo c ON b.sale_vas_id = c.sale_vas_id
                     AND c.del_yn = 'N'
                     AND NOW() BETWEEN c.svc_start_dtime AND c.svc_end_dtime
