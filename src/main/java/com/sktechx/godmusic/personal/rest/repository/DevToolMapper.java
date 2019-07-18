@@ -30,4 +30,8 @@ public interface DevToolMapper {
 	void deleteAfloCharacter(@Param("characterNo") Long characterNo);
 	void insertCharacterPreferArtist(@Param("characterNo") Long characterNo, @Param("preferGenreId") Long preferGenreId, @Param("preferArtistId") Long preferArtistId);
 	Integer selectCharacterPreferArtist(@Param("characterNo") Long characterNo);
+
+	void insertOrUpdateCharacterPreferDisp(@Param("characterNo") Long characterNo, @Param("preferDispId") Long preferDispId);
+	void deleteCharacterPreferDisp(@Param("characterNo") Long characterNo);
+
 }
