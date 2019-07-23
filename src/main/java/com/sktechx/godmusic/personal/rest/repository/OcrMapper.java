@@ -2,6 +2,7 @@ package com.sktechx.godmusic.personal.rest.repository;
 
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrEventMemberDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrFileDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ocr.OcrAnalsVo;
 import org.apache.ibatis.annotations.Param;
@@ -24,6 +25,8 @@ public interface OcrMapper {
     OcrFileDto selectOcrFile(@Param("characterNo")Long characterNo, @Param("ocrNo")Long ocrNo, @Param("ocrFileNo")Integer ocrFileNo);
 
     OcrDto selectOcr(@Param("ocrNo") Long ocrNo);
+
+    void insertOcrEventMember(OcrEventMemberDto ocrEventMemberDto);
 
 }
 
