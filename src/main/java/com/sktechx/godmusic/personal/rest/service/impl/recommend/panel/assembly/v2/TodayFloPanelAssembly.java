@@ -114,14 +114,17 @@ public class TodayFloPanelAssembly extends PanelSignAssembly {
                                 PreferSimilarTrackPanel panel = (PreferSimilarTrackPanel) createSimilarTrackPanel (personalPhaseMeta, similarTrack);
 
                                 panel.makeSeedInfo();
+
                                 List<TrackDto> trackDtoList = Optional.ofNullable(panel.getContent().getTrackList()).map(Collection::stream).orElseGet(
                                         Stream::empty).collect(Collectors.toList());
                                 List<List<ImageInfo>> imageInfosList = trackDtoList.stream().map(TrackDto::getAlbum).map(AlbumDto::getImgList).distinct().limit(3).collect(
                                         Collectors.toList());
 
-                                for(int i =0; i< imageInfosList.size(); i++){
-                                    TrackDto trackDto = trackDtoList.get(i);
-                                    trackDto.getAlbum().setImgList(imageInfosList.get(i));
+                                if(imageInfosList.size() == 3) {
+                                    for (int i = 0; i < imageInfosList.size(); i++) {
+                                        TrackDto trackDto = trackDtoList.get(i);
+                                        trackDto.getAlbum().setImgList(imageInfosList.get(i));
+                                    }
                                 }
 
                                 panelList.add(panel);
