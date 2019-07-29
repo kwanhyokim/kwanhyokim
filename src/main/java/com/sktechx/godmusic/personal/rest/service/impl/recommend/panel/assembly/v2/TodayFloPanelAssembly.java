@@ -144,7 +144,10 @@ public class TodayFloPanelAssembly extends PanelSignAssembly {
 
         List<Panel> panelList = new ArrayList<>();
 
-        appendSimilarTrackPanelList(personalPhaseMeta, panelList, 4);
+        appendSimilarTrackPanelList(personalPhaseMeta, panelList, 7);
+
+        panelList = Optional.ofNullable(panelList).map(Collection::stream).orElseGet(Stream::empty).limit(4).collect(
+                Collectors.toList());
 
         return panelList;
 
