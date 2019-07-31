@@ -212,4 +212,14 @@
 		)
 	</insert>
 
+	<select id="selectOcrEvent" resultType="com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrEventDto">
+		SELECT
+			ocr_event_id,
+			event_url
+		FROM
+			tb_ocr_event
+		WHERE
+			now() BETWEEN disp_start_dtime AND disp_end_dtime
+	</select>
+
 </mapper>

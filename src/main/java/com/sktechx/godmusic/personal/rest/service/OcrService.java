@@ -1,6 +1,7 @@
 package com.sktechx.godmusic.personal.rest.service;
 
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrEventDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrEventMemberDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrFileDto;
 import com.sktechx.godmusic.personal.rest.model.vo.external.AwsFileVo;
@@ -18,6 +19,8 @@ public interface OcrService {
     AwsFileVo uploadOcrFile(Long memberNo, Long characterNo, MultipartFile multipartFile, Long ocrNo, Integer ocrFileNo);
 
     OcrAnalsVo getOcrAnals(Long characterNo, Long ocrNo);
+
+    OcrEventDto getOcrEvent();
 
     GetOcrStatusResponse getOcrStatus(Long characterNo, Long ocrNo);
 

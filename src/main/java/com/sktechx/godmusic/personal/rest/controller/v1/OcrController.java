@@ -3,6 +3,7 @@ package com.sktechx.godmusic.personal.rest.controller.v1;
 import javax.validation.Valid;
 
 import com.sktechx.godmusic.lib.domain.code.YnType;
+import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrEventDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrEventMemberDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrFileDto;
 import com.sktechx.godmusic.personal.rest.model.vo.external.AwsFileVo;
@@ -75,6 +76,11 @@ public class OcrController {
     public CommonApiResponse<OcrAnalsVo> getOcrResult(@PathVariable Long ocrNo){
 
         OcrAnalsVo ocrAnalsVo = ocrService.getOcrAnals(GMContext.getContext().getCharacterNo(), ocrNo);
+
+        OcrEventDto ocrEvent = ocrService.getOcrEvent();
+        if (!ObjectUtils.isEmpty(ocrAnalsVo) && !ObjectUtils.isEmpty(ocrEvent)) {
+            ocrAnalsVo.setEventUrl(ocrEvent.getEventUrl());
+        }
 
         return new CommonApiResponse<>(ocrAnalsVo);
     }

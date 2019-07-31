@@ -10,6 +10,7 @@ import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
 import com.sktechx.godmusic.personal.rest.model.dto.member.MemberDvcDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrEventDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrEventMemberDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrFileDto;
 import com.sktechx.godmusic.personal.rest.model.vo.external.AwsFileVo;
@@ -143,6 +144,12 @@ public class OcrServiceImpl implements OcrService {
         }
 
         return ocrResultVo;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public OcrEventDto getOcrEvent() {
+        return ocrMapper.selectOcrEvent();
     }
 
     @Override
