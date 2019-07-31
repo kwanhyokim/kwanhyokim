@@ -921,25 +921,65 @@
 
     <select id="selectRecommendArtistByCharacterNo" resultMap="rcmmdArtistResultMap">
       SELECT
-            aa.*, d.size, d.url
+            aa.rcmmd_artist_id,
+            aa.artist_id,
+            aa.artist_nm,
+            aa.artist_type,
+            aa.create_dtime,
+            aa.size,
+            aa.url
         FROM
-            (SELECT
-                a.rcmmd_artist_id,
+        (
+
+            SELECT
+                rcmmd_table.rcmmd_artist_id,
+                rcmmd_table.artist_id,
+                rcmmd_table.artist_type,
+                rcmmd_table.artist_nm,
+                rcmmd_table.create_dtime,
+                rcmmd_table.size,
+                rcmmd_table.url
+            FROM
+                (SELECT
+                    @artistRowNum:=IF(@prevRcmmdId = rcmmd_artist_table.rcmmd_artist_id, @artistRowNum + 1, 1) AS rank,
+                    @prevRcmmdId:=rcmmd_artist_table.rcmmd_artist_id AS rcmmd_artist_id,
+                    rcmmd_artist_table.artist_id,
+                    rcmmd_artist_table.artist_type,
+                    rcmmd_artist_table.artist_nm,
+                    rcmmd_artist_table.create_dtime,
+                    rcmmd_artist_table.size,
+                    rcmmd_artist_table.url
+
+                FROM
+                    (SELECT
+                        rcmmd_artist.rcmmd_artist_id,
                     b.artist_id,
                     b.artist_type,
                     c.artist_nm,
-                    a.create_dtime
-            FROM
-                tb_rcmmd_artist a
-            INNER JOIN tb_rcmmd_artist_list b ON a.rcmmd_artist_id = b.rcmmd_artist_id
-            INNER JOIN ted_artist c ON b.artist_id = c.artist_id
-            WHERE
-                a.character_no = #{characterNo}
-            ORDER BY a.create_dtime DESC, b.disp_sn ASC
-            LIMIT 5
-            ) aa
-                LEFT OUTER JOIN
-            ted_artistimage d ON aa.artist_id = d.artist_id
+                    rcmmd_artist.create_dtime,
+                    d.size,
+                    d.url
+                    FROM
+                        (SELECT
+                            rcmmd_artist_id, create_dtime
+                        FROM
+                            tb_rcmmd_artist
+                        WHERE
+                            character_no = #{characterNo}
+                            LIMIT 4
+                        ) rcmmd_artist
+                    INNER JOIN tb_rcmmd_artist_list b ON rcmmd_artist.rcmmd_artist_id = b.rcmmd_artist_id
+                    INNER JOIN ted_artist c ON b.artist_id = c.artist_id
+                    INNER JOIN ted_artistimage d ON b.artist_id = d.artist_id
+                    JOIN (SELECT @artistRowNum:=0, @prevRcmmdId:=0) r
+                    ORDER BY rcmmd_artist.create_dtime DESC , b.disp_sn ASC
+                ) rcmmd_artist_table
+            ) rcmmd_table
+        WHERE
+            rcmmd_table.rank <![CDATA[<=]]> 5
+
+        ) aa
+
 
 
     </select>
