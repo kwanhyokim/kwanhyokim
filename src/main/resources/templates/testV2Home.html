@@ -49,6 +49,9 @@
             <button name="btn_artistFloDelete">아티스트FLO 삭제하기</button>
             <br/>
 
+            <button name="btn_chartCreate">차트 생성하기</button>
+            <button name="btn_chartDelete">차트 삭제하기</button>
+
             <br/>
             <button name="btn_aFloChnlUpdate">AFLO 채널들 현시각으로 갱신하기</button>
             <br/>
@@ -119,6 +122,16 @@
                 fn_ajax(null, "GET", "/personal/test/deleteRecommendPanel", "type=RC_ATST_TR&characterNo="+$("#character_no").val(), fn_success);
             });
 
+            $("button[name='btn_chartCreate']").on("click", function (e) {
+                e.preventDefault();
+                fn_ajax(null, "GET", "/personal/test/addChart", "characterNo="+$("#character_no").val(), fn_success);
+            });
+
+            $("button[name='btn_chartDelete']").on("click", function (e) {
+                e.preventDefault();
+                fn_ajax(null, "GET", "/personal/test/deleteChart", "characterNo="+$("#character_no").val(), fn_success);
+            });
+
             $("button[name='btn_aFloChnlUpdate']").on("click", function (e) {
                 e.preventDefault();
                 fn_ajax(null, "GET", "/personal/test/updateAfloChnl", "characterNo="+$("#character_no").val(), fn_success);
@@ -133,7 +146,6 @@
                 e.preventDefault();
                 fn_ajax(null, "GET", "/personal/test/changeCharacterType", "type=AFLO&characterNo="+$("#character_no").val(), fn_success);
             });
-
 
 
             $("button[name='btn_showLayout']").on("click", function (e) {
