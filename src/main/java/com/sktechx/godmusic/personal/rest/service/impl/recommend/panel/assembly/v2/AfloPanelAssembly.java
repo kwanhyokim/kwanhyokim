@@ -112,12 +112,6 @@ public class AfloPanelAssembly extends PanelSignAssembly {
                         List<TrackDto> trackDtoList = panelContentVo.getTrackList().stream().filter(trackDto -> "Y".equals(trackDto.getTitleYn())).collect(
                                 Collectors.toList());
 
-                        if(!CollectionUtils.isEmpty(trackDtoList) &&
-                                panelContentVo.getTrackCount() != null && panelContentVo.getTrackCount() == 0
-                        ) {
-                            panelContentVo.setTrackCount(trackDtoList.size());
-                        }
-
                         panelContentVo.setTrackList(trackDtoList);
                         panelContentVo.setType(RecommendPanelContentType.AFLO);
                     }
@@ -159,7 +153,10 @@ public class AfloPanelAssembly extends PanelSignAssembly {
             PanelContentVo panelContentVo = afloChannelPanel.getContent();
 
             if( !ObjectUtils.isEmpty(panelContentVo) && !CollectionUtils.isEmpty(panelContentVo.getTrackList())) {
-                panelContentVo.setTrackCount(panelContentVo.getTrackList().size());
+                if(panelContentVo.getTrackCount() != null && panelContentVo.getTrackCount() == 0) {
+                    panelContentVo.setTrackCount(panelContentVo.getTrackList().size());
+                }
+
                 panelContentVo.setType(RecommendPanelContentType.AFLO);
             }
 
