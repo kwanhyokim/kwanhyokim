@@ -112,7 +112,9 @@ public class AfloPanelAssembly extends PanelSignAssembly {
                         List<TrackDto> trackDtoList = panelContentVo.getTrackList().stream().filter(trackDto -> "Y".equals(trackDto.getTitleYn())).collect(
                                 Collectors.toList());
 
-                        if(!CollectionUtils.isEmpty(trackDtoList)) {
+                        if(!CollectionUtils.isEmpty(trackDtoList) &&
+                                panelContentVo.getTrackCount() != null && panelContentVo.getTrackCount() == 0
+                        ) {
                             panelContentVo.setTrackCount(trackDtoList.size());
                         }
 
