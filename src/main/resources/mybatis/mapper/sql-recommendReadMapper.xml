@@ -72,9 +72,12 @@
                     AND c.del_yn = 'N'
                     AND NOW() BETWEEN c.svc_start_dtime AND c.svc_end_dtime
                 INNER JOIN tb_aflo d
-                INNER JOIN tb_aflo_artist e ON d.aflo_id = e.aflo_id AND d.del_yn = 'N'
+                INNER JOIN tb_aflo_artist e ON d.aflo_id = e.aflo_id
+                    AND d.del_yn = 'N'
                 INNER JOIN tb_aflo_chnl f ON e.aflo_artist_id = f.aflo_artist_id
-                INNER JOIN tb_chnl g ON f.chnl_id = g.chnl_id AND g.chnl_type = 'AFLO' AND g.disp_status_type='Y'
+                INNER JOIN tb_chnl g ON f.chnl_id = g.chnl_id
+                    AND g.chnl_type = 'AFLO'
+                    AND g.disp_status_type='Y'
             UNION ALL
 
             SELECT
@@ -89,8 +92,12 @@
                 count(a.rcmmd_mforu_id) contentCount
             FROM
                 tb_rcmmd_mforu a
-                INNER JOIN tb_rcmmd_mforu_list b ON a.rcmmd_mforu_id = b.rcmmd_mforu_id
-                INNER JOIN tb_track c ON b.track_id = c.track_id AND c.disp_status_yn = 'Y' AND now() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
+            INNER JOIN tb_rcmmd_mforu_list b ON a.rcmmd_mforu_id = b.rcmmd_mforu_id
+            INNER JOIN tb_track c ON b.track_id = c.track_id
+                AND c.disp_status_yn = 'Y'
+                AND now() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
+            INNER JOIN tb_svc_genre d ON a.svc_genre_id = d.svc_genre_id
+                AND d.disp_status_type = 'Y'
             WHERE
                 a.character_no = #{characterNo}
             AND
@@ -115,7 +122,9 @@
             FROM
                 tb_rcmmd_similar_track a
                 INNER JOIN tb_rcmmd_similar_track_list b ON a.rcmmd_similar_track_id = b.rcmmd_similar_track_id
-                INNER JOIN tb_track c ON b.track_id = c.track_id AND c.disp_status_yn = 'Y' AND now() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
+                INNER JOIN tb_track c ON b.track_id = c.track_id
+                    AND c.disp_status_yn = 'Y'
+                    AND now() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
             WHERE
                 a.character_no =#{characterNo}
             AND
