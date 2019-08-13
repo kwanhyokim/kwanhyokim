@@ -10,6 +10,11 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto;
 
+import java.util.List;
+
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -18,14 +23,7 @@ import com.sktechx.godmusic.personal.common.domain.type.AlbumType;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
-
-import java.util.List;
+import lombok.*;
 
 /**
  * 설명 : 앨범 DTO
@@ -40,6 +38,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"id", "title", "categoryType", "representationArtist", "artistList", "imgList", "releaseYmd", "genreStyle", "albumTypeStr", "likeYn"})
 @ApiModel(value = "앨범")
+@EqualsAndHashCode
 public class AlbumDto {
 
     @JsonProperty("id")

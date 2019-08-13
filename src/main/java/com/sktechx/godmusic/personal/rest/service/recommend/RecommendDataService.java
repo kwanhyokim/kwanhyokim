@@ -33,4 +33,7 @@ public interface RecommendDataService {
 
     void updateAfloChnl();
 
+    void addChart(Long characterNo);
+
+    void deleteChart(Long characterNo);
 }

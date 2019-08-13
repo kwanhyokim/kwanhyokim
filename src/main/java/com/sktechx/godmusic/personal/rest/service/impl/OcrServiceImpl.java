@@ -10,6 +10,8 @@ import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
 import com.sktechx.godmusic.personal.rest.model.dto.member.MemberDvcDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrEventDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrEventMemberDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrFileDto;
 import com.sktechx.godmusic.personal.rest.model.vo.external.AwsFileVo;
 import com.sktechx.godmusic.personal.rest.model.vo.ocr.GetOcrStatusResponse;
@@ -146,6 +148,12 @@ public class OcrServiceImpl implements OcrService {
 
     @Override
     @Transactional(readOnly = true)
+    public OcrEventDto getOcrEvent() {
+        return ocrMapper.selectOcrEvent();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public GetOcrStatusResponse getOcrStatus(Long characterNo, Long ocrNo){
 
         int totalCount = ocrMapper.countOcrFile(characterNo, ocrNo);
@@ -209,7 +217,12 @@ public class OcrServiceImpl implements OcrService {
             log.error(e.getMessage());
             throw new CommonBusinessException(PersonalErrorDomain.OUT_OF_OCR_SERVICE);
         }
+    }
 
+    @Override
+    @Transactional
+    public void createOcrEventMember(OcrEventMemberDto ocrEventMemberDto) {
+        ocrMapper.insertOcrEventMember(ocrEventMemberDto);
     }
 
 }
