@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * 설명 : XXXXXXXXX
@@ -22,6 +23,7 @@ import lombok.Data;
 
 @Data
 @Builder
+@EqualsAndHashCode(of = "listenId")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"type", "id", "name", "trackCount", "updatedTrackCount", "lastListenDateTime", "imgList", "artistName"})
 @ApiModel(value = "최근들은 컨텐츠")
@@ -85,18 +87,5 @@ public class LastListenHistoryDto {
         }else{
             return 0;
         }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        LastListenHistoryDto that = (LastListenHistoryDto) o;
-        return listenId.equals(that.listenId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(listenId);
     }
 }
