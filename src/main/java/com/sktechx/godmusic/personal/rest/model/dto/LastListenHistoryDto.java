@@ -3,6 +3,7 @@ package com.sktechx.godmusic.personal.rest.model.dto;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.*;
 import com.sktechx.godmusic.lib.domain.code.YnType;
@@ -86,4 +87,16 @@ public class LastListenHistoryDto {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LastListenHistoryDto that = (LastListenHistoryDto) o;
+        return listenId.equals(that.listenId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(listenId);
+    }
 }
