@@ -11,6 +11,8 @@
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -18,7 +20,10 @@ import org.springframework.util.ObjectUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+import com.sktechx.godmusic.personal.rest.model.dto.AlbumDto;
+import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.PreferSimilarTrackPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
@@ -110,6 +115,18 @@ public class TodayFloPanelAssembly extends PanelSignAssembly {
 
                                 panel.makeSeedInfo();
 
+                                List<TrackDto> trackDtoList = Optional.ofNullable(panel.getContent().getTrackList()).map(Collection::stream).orElseGet(
+                                        Stream::empty).collect(Collectors.toList());
+                                List<List<ImageInfo>> imageInfosList = trackDtoList.stream().map(TrackDto::getAlbum).map(AlbumDto::getImgList).distinct().limit(3).collect(
+                                        Collectors.toList());
+
+                                if(imageInfosList.size() == 3) {
+                                    for (int i = 0; i < imageInfosList.size(); i++) {
+                                        TrackDto trackDto = trackDtoList.get(i);
+                                        trackDto.getAlbum().setImgList(imageInfosList.get(i));
+                                    }
+                                }
+
                                 panelList.add(panel);
                             }
                         } catch (Exception e) {
@@ -127,7 +144,10 @@ public class TodayFloPanelAssembly extends PanelSignAssembly {
 
         List<Panel> panelList = new ArrayList<>();
 
-        appendSimilarTrackPanelList(personalPhaseMeta, panelList, 4);
+        appendSimilarTrackPanelList(personalPhaseMeta, panelList, 7);
+
+        panelList = Optional.ofNullable(panelList).map(Collection::stream).orElseGet(Stream::empty).limit(4).collect(
+                Collectors.toList());
 
         return panelList;
 

@@ -248,6 +248,19 @@ public class RecommendDataServiceImpl implements RecommendDataService {
         recommendDummyDataMapper.updateAfloChannel();
     }
 
+    @Override
+    public void addChart(Long characterNo) {
+
+        devToolMapper.insertOrUpdateCharacterPreferDisp(characterNo, 1L);
+        devToolMapper.insertOrUpdateCharacterPreferDisp(characterNo, 2L);
+    }
+
+    @Override
+    public void deleteChart(Long characterNo) {
+
+        devToolMapper.deleteCharacterPreferDisp(characterNo);
+    }
+
     private void validateRecommendDummyDataRequest(RecommendDummyDataRequest recommendDummyDataRequest){
         Integer panelCount = recommendDummyDataRequest.getPanelCount();
         Integer rcmmdPhase = recommendDummyDataRequest.getRcmmdPhase();

@@ -1212,7 +1212,7 @@
         tb_rcmmd_similar_track a
         WHERE
           a.character_no = #{characterNo}
-        ORDER BY a.create_dtime DESC
+        ORDER BY a.create_dtime DESC, a.disp_sn ASC
         LIMIT #{recommendLimitSize}
         -- 1. rcmmd_table end;
         ) rcmmd_table

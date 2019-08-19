@@ -286,9 +286,11 @@ public class ChannelServiceImpl implements ChannelService {
 
         lastListenHistory.addAll(lastListenHistoryByChannel);
         lastListenHistory.addAll(lastListenHistoryByAlbum);
-        lastListenHistory.sort((m1, m2) -> m1.getLastListenDtime().after(m2.getLastListenDtime()) ? -1 : 1);
 
-        return lastListenHistory;
+        return lastListenHistory.stream()
+                .distinct()
+                .sorted(Comparator.comparing(LastListenHistoryDto::getLastListenDtime).reversed())
+                .collect(Collectors.toList());
     }
 
     private List<PreferGenrePopularChnlDto> getPreferGenreUniqueChannelList(final List<Long> preferGenreIdList ,
