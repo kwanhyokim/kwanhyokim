@@ -306,7 +306,7 @@
 		WHERE
 			character_no = #{characterNo}
 			AND member_no = #{memberNo}
-			AND (pin_type IS NULL OR pin_type IN ('CHNL'))
+			AND (pin_type IS NULL OR pin_type IN ('CHNL', 'OCR'))
 		ORDER BY member_chnl_sn ASC
 		LIMIT 10
 	</select>

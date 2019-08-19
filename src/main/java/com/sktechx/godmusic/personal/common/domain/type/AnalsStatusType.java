@@ -9,7 +9,9 @@ public enum AnalsStatusType implements CodeEnum {
     SUCCESS("SUCCESS", "분석 성공"),
     FAILURE("FAILURE", "분석 실패"),
     NO_PLAYLIST("NO_PLAYLIST", "플레이리스트 아님"),
-    FAIL_UPLOAD("FAIL_UPLOAD", "파일 업로드 실패")
+    FAIL_UPLOAD("FAIL_UPLOAD", "파일 업로드 실패"),
+    TR_TIMEOUT("TR_TIMEOUT", "Tr서버 TimeOut"),
+    OCR_TIMEOUT("OCR_TIMEOUT", "Tr서버 TimeOut"),
     ;
 
     private final String value;
