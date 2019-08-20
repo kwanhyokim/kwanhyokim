@@ -56,4 +56,30 @@
 		INSERT INTO tb_character_prefer_artist VALUES (#{characterNo},'PREFER', #{preferGenreId}, #{preferArtistId}, now(), now())
 	</insert>
 
+	<update id="insertOrUpdateCharacterPreferDisp">
+        INSERT INTO tb_character_prefer_disp (
+                  character_no
+                , prefer_disp_id
+                , create_dtime
+                , update_dtime
+            ) VALUES (
+                  #{characterNo}
+                , #{preferDispId}
+                , now()
+                , now()
+            )
+            ON DUPLICATE KEY UPDATE update_dtime = now()
+    </update>
+
+	<delete id="deleteCharacterPreferDisp">
+		DELETE
+		FROM
+		tb_character_prefer_disp
+		WHERE
+		character_no = #{characterNo}
+	</delete>
+
+
+
 </mapper>
+

@@ -3,8 +3,11 @@ package com.sktechx.godmusic.personal.rest.controller.v1;
 import javax.validation.Valid;
 
 import com.sktechx.godmusic.lib.domain.code.YnType;
+import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrEventDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrEventMemberDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrFileDto;
 import com.sktechx.godmusic.personal.rest.model.vo.external.AwsFileVo;
+import com.sktechx.godmusic.personal.rest.model.vo.ocr.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.ObjectUtils;
@@ -16,10 +19,6 @@ import com.sktechx.godmusic.lib.domain.CommonConstant;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrDto;
-import com.sktechx.godmusic.personal.rest.model.vo.ocr.CreateOcrSessionRequest;
-import com.sktechx.godmusic.personal.rest.model.vo.ocr.CreateOcrSessionResponse;
-import com.sktechx.godmusic.personal.rest.model.vo.ocr.GetOcrStatusResponse;
-import com.sktechx.godmusic.personal.rest.model.vo.ocr.OcrAnalsVo;
 import com.sktechx.godmusic.personal.rest.service.OcrService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -78,6 +77,11 @@ public class OcrController {
 
         OcrAnalsVo ocrAnalsVo = ocrService.getOcrAnals(GMContext.getContext().getCharacterNo(), ocrNo);
 
+        OcrEventDto ocrEvent = ocrService.getOcrEvent();
+        if (!ObjectUtils.isEmpty(ocrAnalsVo) && !ObjectUtils.isEmpty(ocrEvent)) {
+            ocrAnalsVo.setEventUrl(ocrEvent.getEventUrl());
+        }
+
         return new CommonApiResponse<>(ocrAnalsVo);
     }
 
@@ -96,5 +100,21 @@ public class OcrController {
 
         return new CommonApiResponse<>().emptySuccess();
     }
+
+
+    @ApiOperation(value = "OCR 이벤트 응모 정보 저장", httpMethod = "POST", notes = "OCR 이벤트 응모 정보를 저장한다.")
+    @PostMapping("/event")
+    public CommonApiResponse createOcrEventMember(
+            @Valid @RequestBody CreateOcrEventMemberRequest request) {
+
+        ocrService.createOcrEventMember(OcrEventMemberDto.builder()
+                .memberNo(GMContext.getContext().getMemberNo())
+                .ocrNo(request.getOcrNo())
+                .memberChnlId(request.getMemberChnlId())
+                .build());
+
+        return CommonApiResponse.emptySuccess();
+    }
+
 
 }
