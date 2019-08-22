@@ -130,7 +130,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             if(!ObjectUtils.isEmpty(personalPhaseMeta.getAfloCharacterExpireDtime())){
                 List<Panel> afloPanelList = new ArrayList<>();
                 afloPanelAssembly.appendAfloChannelPanelList(
-                        personalPhaseMeta.getCharacterNo(), personalPhaseMeta.getOsType(), panelList, 2
+                        personalPhaseMeta.getCharacterNo(), personalPhaseMeta.getOsType(), afloPanelList, 2
                 );
 
                 if(!CollectionUtils.isEmpty(afloPanelList)){
