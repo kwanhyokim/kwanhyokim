@@ -282,12 +282,12 @@ public class LikeServiceImpl implements LikeService {
 
 		String likeType = request.getLikeType();
 
+		validMeta(likeType, request.getLikeTypeId(), getLikeTypeNotFoundMessage(likeType));
+
 		if( needToChangeLikeTypeToChannel(likeType)){
 			likeType = LikeConstant.LIKE_CHANNEL;
 			request.setLikeType(likeType);
 		}
-
-		validMeta(likeType, request.getLikeTypeId(), getLikeTypeNotFoundMessage(likeType));
 
 		int likeCnt = likeMapper.getLikeCountByLikeTypeAndLikeTypeId(likeType, request.getLikeTypeId(), characterNo);
 
@@ -339,6 +339,8 @@ public class LikeServiceImpl implements LikeService {
 				return PersonalErrorDomain.ARTIST_NOT_FOUND;
 			case LikeConstant.LIKE_TRACK :
 				return PersonalErrorDomain.TRACK_NOT_FOUND;
+			case LikeConstant.LIKE_AFLO:
+				return PersonalErrorDomain.CHANNEL_NOT_FOUND;
 			default :
 				throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
 		}
@@ -378,14 +380,17 @@ public class LikeServiceImpl implements LikeService {
 		}
 	}
 
+	/**
+	 * 2019.08.26 updated by Daniel
+	 * GODMUSIC-10649 - (WEB) Artist&FLO 상세페이지 좋아요 버튼 선택시 일시적 접속 오류 팝업 메세지 노출되며 좋아요버튼 동작하지않는문제
+	 * META API 에서 AFLO type 에 대한 분기 처리 로직 추가로 인해 valid api 를 호출하는 것으로 수정함.
+	 */
 	private void validMeta(String likeType, Long likeTypeId, PersonalErrorDomain message) {
 		CommonApiResponse response;
 		log.info("validMeta :: " + likeType);
 		switch (likeType) {
 			case LikeConstant.LIKE_CHANNEL :
 				response = metaApiProxy.channel(likeTypeId);
-				log.info("XXXXXXXXXX {}", response);
-
 				break;
 			case LikeConstant.LIKE_ALBUM :
 				response = metaApiProxy.album(likeTypeId);
@@ -398,6 +403,9 @@ public class LikeServiceImpl implements LikeService {
 				break;
 			case LikeConstant.LIKE_TRACK :
 				response = metaApiProxy.track(likeTypeId);
+				break;
+			case LikeConstant.LIKE_AFLO :
+				response = metaApiProxy.validChannel(likeTypeId, likeType);
 				break;
 			default :
 				throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
