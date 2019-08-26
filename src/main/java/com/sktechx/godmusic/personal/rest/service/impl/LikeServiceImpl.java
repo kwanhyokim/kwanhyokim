@@ -405,7 +405,7 @@ public class LikeServiceImpl implements LikeService {
 				response = metaApiProxy.track(likeTypeId);
 				break;
 			case LikeConstant.LIKE_AFLO :
-				response = metaApiProxy.validChannel(likeTypeId, likeType);
+				response = metaApiProxy.validChannelOrEmpty(likeTypeId, likeType);
 				break;
 			default :
 				throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
@@ -414,7 +414,9 @@ public class LikeServiceImpl implements LikeService {
 		log.info("validMeta :: " + response.toString());
 
 		if(StringUtils.isEmpty(response) || StringUtils.isEmpty(response.getCode())
-				|| !"2000000".equals(response.getCode()) || CommonUtils.empty(response.getData())) throw new CommonBusinessException(message);
+				|| !"2000000".equals(response.getCode()) || CommonUtils.empty(response.getData())) {
+			throw new CommonBusinessException(message);
+		}
 	}
 
 	private void sendUserEvent(UserEventType userEventType, String appName, Long memberNo, Long characterNo, Long targetId, UserEventTarget targetType){

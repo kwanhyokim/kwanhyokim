@@ -13,6 +13,7 @@
 package com.sktechx.godmusic.personal.rest.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.sktechx.godmusic.personal.rest.model.dto.*;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -53,5 +54,10 @@ public interface MetaApiProxy {
 
     @GetMapping("/meta/v1/track/list")
     public CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>> recommendPanelTracks(@RequestParam(value="trackIdList") Long[] trackIdList);
+
+    default CommonApiResponse<?> validChannelOrEmpty(Long channelId, String channelType) {
+        CommonApiResponse<ChannelValidityDto> response = this.validChannel(channelId, channelType);
+        return response.getData().getValid() ? response : new CommonApiResponse<>(null);
+    }
 
 }
