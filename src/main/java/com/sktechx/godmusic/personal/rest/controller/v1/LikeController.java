@@ -13,6 +13,8 @@ import com.sktechx.godmusic.personal.rest.service.LikeService;
 import com.sktechx.godmusic.personal.rest.validate.Validator;
 import io.swagger.annotations.*;
 
+import javax.validation.Valid;
+
 /**
  * Created by Kobe.
  *
@@ -116,7 +118,7 @@ public class LikeController {
 			, httpMethod = "POST", notes = "타입별 좋아요 추가")
 	@PostMapping("")
 	public CommonApiResponse addLike(
-			@RequestBody LikeRequest request
+			@Valid @RequestBody LikeRequest request
 	) {
 		GMContext currentContext = GMContext.getContext();
 

@@ -1,5 +1,7 @@
 package com.sktechx.godmusic.personal.rest.model.vo.like;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
@@ -18,12 +20,12 @@ import lombok.Data;
 public class LikeRequest {
 
 	@Length(max = 10)
-	@NotNull
+	@NotBlank
 	@ApiModelProperty(name = "likeType", value = "좋아하는 타입(CHNL: 채널, ALBUM: 앨범, CHART: 차트, ARTIST: 아티스트, TRACK: 곡)",
 			allowableValues = "CHNL, ALBUM, CHART, ARTIST, TRACK, FLAC")
 	private String likeType;
 
-	@Length(max = 20)
+	@Max(Long.MAX_VALUE)
 	@NotNull
 	@ApiModelProperty(name = "likeTypeId", value = "좋아하는 타입에 맞는 ID")
 	private Long likeTypeId;
