@@ -111,7 +111,7 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
 
                 ArtistPanel artistPanel = new ArtistPanel(recommendArtistDto);
                 artistPanel.makeSeedInfo();
-
+                artistPanel.getContent().setCreateDtime(recommendArtistDto.getDispStdStartDt());
                 panelList.add(artistPanel);
 
             } catch (Exception e) {

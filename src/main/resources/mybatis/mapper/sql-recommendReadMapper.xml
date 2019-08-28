@@ -937,14 +937,16 @@
                     b.artist_id,
                     b.artist_type,
                     c.artist_nm,
-                    a.create_dtime
+                    a.create_dtime,
+                    a.disp_std_start_dt
             FROM
                 tb_rcmmd_artist a
             INNER JOIN tb_rcmmd_artist_list b ON a.rcmmd_artist_id = b.rcmmd_artist_id
             INNER JOIN ted_artist c ON b.artist_id = c.artist_id
             WHERE
                 a.character_no = #{characterNo}
-            ORDER BY a.create_dtime DESC, b.disp_sn ASC
+                AND now() >= a.disp_std_start_dt
+            ORDER BY a.disp_std_start_dt DESC, b.disp_sn ASC
             LIMIT 5
             ) aa
                 LEFT OUTER JOIN
