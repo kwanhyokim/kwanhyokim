@@ -24,8 +24,8 @@
 
     <update id="insertRcmmdArtist" parameterType="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto"
             useGeneratedKeys="true" keyProperty="recommendArtistDto.rcmmdArtistId">
-        INSERT INTO TB_RCMMD_ARTIST (CHARACTER_NO, DISP_STD_START_DT, DISP_STD_END_DT, DISP_SN, CREATE_DTIME, CREATE_STD_DTIME, DEL_TARGET_YN)
-        VALUES (#{recommendArtistDto.characterNo}, now(), addtime(adddate(curdate(), - weekday(curdate()) + 6), '23:59:59'), #{recommendArtistDto.dispSn}, now(), now(), 'Y')
+        INSERT INTO TB_RCMMD_ARTIST (CHARACTER_NO, DISP_STD_START_DT, DISP_STD_END_DT, DISP_SN, CREATE_DTIME, CREATE_STD_TYPE, CREATE_STD_DTIME, DEL_TARGET_YN)
+        VALUES (#{recommendArtistDto.characterNo}, now(), addtime(adddate(curdate(), - weekday(curdate()) + 6), '23:59:59'), #{recommendArtistDto.dispSn}, now(), 'DF', now(), 'Y')
     </update>
 
     <update id="insertRcmmdArtistList">
