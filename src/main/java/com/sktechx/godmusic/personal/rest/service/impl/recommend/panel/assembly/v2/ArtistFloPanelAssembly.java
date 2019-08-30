@@ -21,6 +21,7 @@ import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.CreateStdType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.common.util.BooleanComparator;
+import com.sktechx.godmusic.personal.common.util.DateUtil;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
@@ -98,15 +99,17 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
 
         List<RecommendArtistDto> recommendArtistDtoList = recommendReadMapper.selectRecommendArtistByCharacterNo(personalPhaseMeta.getCharacterNo());
 
+        String recentDispStartDt = DateUtil.dateToString(Optional.ofNullable(recommendArtistDtoList).orElseGet(Collections::emptyList).stream().findFirst().orElseGet(RecommendArtistDto::new).getDispStdStartDt(), "yyyyMMdd");
+
         Stream.concat(
 
-            Optional.ofNullable(recommendArtistDtoList).orElseGet(Collections::emptyList).stream().filter(
-                    recommendArtistDto -> CreateStdType.DF.equals(recommendArtistDto.getCreateStdType())
-
-            ).limit(1),
-            Optional.ofNullable(recommendArtistDtoList).orElseGet(Collections::emptyList).stream().filter(
-                    recommendArtistDto -> CreateStdType.RCMMD.equals(recommendArtistDto.getCreateStdType())
-            )
+            Optional.ofNullable(recommendArtistDtoList).orElseGet(Collections::emptyList).stream()
+                .filter(recommendArtistDto1 -> CreateStdType.DF.equals(recommendArtistDto1.getCreateStdType()))
+                .filter(recommendArtistDto -> recentDispStartDt.equals(DateUtil.dateToString(recommendArtistDto.getDispStdStartDt(), "yyyyMMdd")))
+                .limit(1),
+            Optional.ofNullable(recommendArtistDtoList).orElseGet(Collections::emptyList).stream()
+                .filter(recommendArtistDto1 -> CreateStdType.RCMMD.equals(recommendArtistDto1.getCreateStdType()))
+                .filter(recommendArtistDto -> recentDispStartDt.equals(DateUtil.dateToString(recommendArtistDto.getDispStdStartDt(), "yyyyMMdd")))
         )
         .sorted(Comparator.comparing(RecommendArtistDto::getDispStdStartDt).reversed())
         .limit(4)
