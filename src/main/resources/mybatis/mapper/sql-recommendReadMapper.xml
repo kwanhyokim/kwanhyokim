@@ -152,13 +152,17 @@
                 tb_rcmmd_artist a
             WHERE
                 character_no = #{characterNo}
-
             <if test="checkDispEndDt">
                 AND NOW() BETWEEN a.disp_std_start_dt AND a.disp_std_end_dt
             </if>
             <if test="!checkDispEndDt">
                 AND NOW() BETWEEN a.disp_std_start_dt AND DATE_ADD(a.disp_std_start_dt, INTERVAL 30 DAY)
             </if>
+
+        <if test="!checkDispEndDt">
+            ORDER BY disp_std_start_dt DESC, panelOrder ASC, dispSn ASC
+        </if>
+
     </select>
 
     <select id="selectRecommendPreferGenreSimilarTrackListByIdList" resultMap="rcmmdTrackResultMap">
@@ -665,7 +669,7 @@
         AND dfk_type = 'EVERY'
         AND img_disp_type = 'DEFAULT'
     </select>
-    
+
     <select id="selectCharacterPreferArtistGenre" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.CharacterPreferArtistGenreDto">
         SELECT GENRE_ID, count(*) AS GENRE_CNT
         FROM TB_CHARACTER_PREFER_ARTIST
@@ -739,7 +743,7 @@
                 ON TT.REPRSNT_ARTIST_ID = I.REPRSNT_ARTIST_ID
                    AND find_in_set(TT.TRACK_ID, I.GROUP_TRACK_ID) BETWEEN 1 AND 2
     </select>
-    
+
     <select id="selectPreferGenreTrack" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenreTrackDto">
         SELECT MSGT.SVC_GENRE_ID
              , MSGT.TRACK_ID
