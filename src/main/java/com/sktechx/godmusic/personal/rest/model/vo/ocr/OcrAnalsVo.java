@@ -18,6 +18,7 @@ import java.util.List;
 public class OcrAnalsVo {
 
     private Long ocrNo;
+    private String eventUrl;
     private List<OcrAnalsResultVo> ocrAnalsResultList;
 
     @Data

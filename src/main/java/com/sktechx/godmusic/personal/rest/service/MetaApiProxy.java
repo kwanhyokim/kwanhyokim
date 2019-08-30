@@ -13,17 +13,15 @@
 package com.sktechx.godmusic.personal.rest.service;
 
 import java.util.List;
+import java.util.Optional;
 
-import com.sktechx.godmusic.personal.rest.model.dto.AlbumDto;
-import com.sktechx.godmusic.personal.rest.model.dto.PlayListDto;
-import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
+import com.sktechx.godmusic.personal.rest.model.dto.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
-import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
 
@@ -45,15 +43,21 @@ public interface MetaApiProxy {
     @GetMapping("/meta/v1/channel/{channelId}")
     public CommonApiResponse<PlayListDto> channel(@PathVariable("channelId") Long channelId);
 
+    @GetMapping("/meta/v1/channel/{channelId}/valid")
+    public CommonApiResponse<ChannelValidityDto> validChannel(@PathVariable("channelId") Long channelId, @RequestParam(value = "type") String channelType);
+
     @GetMapping("/meta/v1/track/{trackId}")
     public CommonApiResponse<TrackDto> track(@PathVariable("trackId") Long trackId);
 
     @GetMapping("/meta/v1/chart/track/{chartId}")
     public CommonApiResponse<PlayListDto> chart(@PathVariable("chartId") Long chartId);
 
-
     @GetMapping("/meta/v1/track/list")
     public CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>> recommendPanelTracks(@RequestParam(value="trackIdList") Long[] trackIdList);
 
+    default CommonApiResponse<?> validChannelOrEmpty(Long channelId, String channelType) {
+        CommonApiResponse<ChannelValidityDto> response = this.validChannel(channelId, channelType);
+        return response.getData().getValid() ? response : new CommonApiResponse<>(null);
+    }
 
 }

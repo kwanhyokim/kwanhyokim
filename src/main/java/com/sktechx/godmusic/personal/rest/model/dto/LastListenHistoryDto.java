@@ -3,6 +3,7 @@ package com.sktechx.godmusic.personal.rest.model.dto;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.*;
 import com.sktechx.godmusic.lib.domain.code.YnType;
@@ -11,6 +12,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * 설명 : XXXXXXXXX
@@ -21,6 +23,7 @@ import lombok.Data;
 
 @Data
 @Builder
+@EqualsAndHashCode(of = "listenId")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"type", "id", "name", "trackCount", "updatedTrackCount", "lastListenDateTime", "imgList", "artistName"})
 @ApiModel(value = "최근들은 컨텐츠")
@@ -85,5 +88,4 @@ public class LastListenHistoryDto {
             return 0;
         }
     }
-
 }

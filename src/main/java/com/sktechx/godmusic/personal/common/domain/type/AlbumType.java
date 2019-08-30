@@ -25,7 +25,14 @@ public enum AlbumType implements CodeEnum {
 	SP("SP", "스페셜"),
 	MF("MF", "가상앨범"),
 	CV("CV", "커버버젼"),
-	DS("DS", "디지털싱글");
+	DS("DS", "디지털싱글"),
+
+	OM("OM", "컴필/참여"),
+	PR("PR", "컴필/참여"),
+	TR("TR", "컴필/참여"),
+	DE("DE", "데모"),
+	ST("ST", "Split")
+	;
 
 	private final String code;
 	private final String value;

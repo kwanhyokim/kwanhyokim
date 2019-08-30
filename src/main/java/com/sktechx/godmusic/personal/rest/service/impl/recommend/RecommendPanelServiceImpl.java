@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -57,6 +58,7 @@ import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
 import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
 import com.sktechx.godmusic.personal.rest.service.MetaApiProxy;
+import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2.AfloPanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2.OperationTpoPanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2.PreferGenreThemePanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
@@ -106,6 +108,9 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     @Autowired
     private MetaApiProxy metaApiProxy;
 
+    @Autowired
+    private AfloPanelAssembly afloPanelAssembly;
+
     @Value("${personal.prefer.artist.panel.addPreferArtistPanel.instrumentalTrackRegexPattern}")
     private String instrumentalTrackRegexPattern;
 
@@ -121,6 +126,17 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType, appVer);
             panelAssembly = recommendPanelAssemblyFactory.getRecommendPanelAssembly(personalPhaseMeta.getFirstPhaseType());
             panelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
+
+            if(!ObjectUtils.isEmpty(personalPhaseMeta.getAfloCharacterExpireDtime())){
+                List<Panel> afloPanelList = new ArrayList<>();
+                afloPanelAssembly.appendAfloChannelPanelList(
+                        personalPhaseMeta.getCharacterNo(), personalPhaseMeta.getOsType(), afloPanelList, 2
+                );
+
+                if(!CollectionUtils.isEmpty(afloPanelList)){
+                    panelList = ListUtils.union(afloPanelList.stream().limit(2).collect(Collectors.toList()), panelList);
+                }
+            }
 
         }catch(CommonBusinessException cbex){
             log.error("createRecommendPanel business exception : {}", cbex.getDisplayMessage());
@@ -632,6 +648,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 .imgList((artistDtoList == null || artistDtoList.get(0) == null? null : artistDtoList.get(0).getImgList()))
                 .artistList(artistDtoList)
                 .artistCount(artistDtoList.size())
+                .createDtime(recommendArtistDto.getCreateDtime())
                 .newYn(this.getNewYn(recommendArtistDto.getDispStdStartDt()))
                 .seedArtistVo(SeedArtistVo.builder()
                     .name(subTitle)

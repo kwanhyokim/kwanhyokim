@@ -75,18 +75,7 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     public List<ChnlDto> getAfloChannelList(Long characterNo, int channelLimitSize, int trackLimitSize ,OsType osType){
 
-        List<ChnlDto> afloChnlList = null;
-        try{
-            afloChnlList = redisService.getListWithPrefix(ALL_POPULAR_CHNL_KEY,ChnlDto.class);
-            afloChnlList = CollectionUtils.emptyIfNull(afloChnlList).stream().filter(chnlDto -> ChannelType.AFLO.equals(chnlDto.getChnlType())).collect(
-                        Collectors.toList());
-        }catch( Exception e){
-            log.error("getAfloChannelList error : {}",e.getMessage());
-        }finally {
-            if(CollectionUtils.isEmpty(afloChnlList)){
-                afloChnlList = channelMapper.selectAfloChannelList(characterNo);
-            }
-        }
+        List<ChnlDto> afloChnlList = channelMapper.selectAfloChannelList(characterNo);
 
         if(!CollectionUtils.isEmpty(afloChnlList)){
 
@@ -297,9 +286,11 @@ public class ChannelServiceImpl implements ChannelService {
 
         lastListenHistory.addAll(lastListenHistoryByChannel);
         lastListenHistory.addAll(lastListenHistoryByAlbum);
-        lastListenHistory.sort((m1, m2) -> m1.getLastListenDtime().after(m2.getLastListenDtime()) ? -1 : 1);
 
-        return lastListenHistory;
+        return lastListenHistory.stream()
+                .distinct()
+                .sorted(Comparator.comparing(LastListenHistoryDto::getLastListenDtime).reversed())
+                .collect(Collectors.toList());
     }
 
     private List<PreferGenrePopularChnlDto> getPreferGenreUniqueChannelList(final List<Long> preferGenreIdList ,
