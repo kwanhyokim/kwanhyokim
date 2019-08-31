@@ -10,6 +10,7 @@
 package com.sktechx.godmusic.personal.common.domain;
 
 import com.sktechx.godmusic.lib.domain.code.YnType;
+import com.sktechx.godmusic.personal.rest.service.LikeService;
 import lombok.Data;
 import org.springframework.data.domain.Page;
 
@@ -46,6 +47,10 @@ public class ListResponse {
 		this.currentPage = currentPage;
 		this.lastPageYn = lastPageYn;
 		this.list = list;
+	}
+
+	public static ListResponse of(Page<?> page) {
+		return new ListResponse(page);
 	}
 	
 }
