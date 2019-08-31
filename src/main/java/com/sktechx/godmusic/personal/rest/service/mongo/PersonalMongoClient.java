@@ -7,12 +7,10 @@
  * you entered into with DREAMUS COMPANY.
  */
 
-package com.sktechx.godmusic.personal.rest.client;
+package com.sktechx.godmusic.personal.rest.service.mongo;
 
-import com.rabbitmq.client.AMQP;
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.personal.common.domain.ListResponse;
-import com.sktechx.godmusic.personal.rest.client.fallback.PersonalMongoClientFallbackFactory;
 import com.sktechx.godmusic.personal.rest.model.vo.like.*;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenDeleteTrackRequest;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -24,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
  * @author Daniel/DREAMUS COMPANY (daekwon.song@sk.com)
  * @date 2019. 08. 30.
  */
-@FeignClient(value = "personal-mgo-api", fallbackFactory = PersonalMongoClientFallbackFactory.class)
+@FeignClient(value = "personal-mgo-api", fallback = PersonalMongoClientFallback.class)
 public interface PersonalMongoClient {
 
     /**
@@ -32,7 +30,7 @@ public interface PersonalMongoClient {
      */
     @GetMapping("/personal-mgo/v1/tracks/mostlistened")
     CommonApiResponse<ListResponse> getMostListenedTracks(
-            @RequestHeader(name = "x-gm-personal-cno") Long characterNo,
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
             @RequestParam(name = "page") int page, @RequestParam(name = "size") int size);
 
     /**
@@ -40,8 +38,8 @@ public interface PersonalMongoClient {
      */
     @GetMapping("/personal-mgo/v1/tracks/recentlistened")
     CommonApiResponse<ListResponse> getRecentListenedTracks(
-            @RequestHeader(name = "x-gm-personal-mno") Long memberNo,
-            @RequestHeader(name = "x-gm-personal-cno") Long characterNo,
+            @RequestHeader(name = "x-gm-fallback-mno") Long memberNo,
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
             @RequestParam(name = "page") int page, @RequestParam(name = "size") int size);
 
     /**
@@ -49,8 +47,8 @@ public interface PersonalMongoClient {
      */
     @DeleteMapping("/personal-mgo/v1/tracks/recentlistened")
     CommonApiResponse<Void> deleteRecentListenTrack(
-            @RequestHeader(name = "x-gm-personal-mno") Long memberNo,
-            @RequestHeader(name = "x-gm-personal-cno") Long characterNo,
+            @RequestHeader(name = "x-gm-fallback-mno") Long memberNo,
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
             ListenDeleteTrackRequest request);
 
     /**
@@ -58,7 +56,7 @@ public interface PersonalMongoClient {
      */
     @GetMapping("/personal-mgo/v1/like/type/album/list")
     CommonApiResponse<LikeAlbumListResponse> getLikeAlbums(
-            @RequestHeader(name = "x-gm-personal-cno") Long characterNo,
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
             @RequestParam(name = "page") int page, @RequestParam(name = "size") int size);
 
     /**
@@ -66,7 +64,7 @@ public interface PersonalMongoClient {
      */
     @GetMapping("/personal-mgo/v1/like/type/artist/list")
     CommonApiResponse<LikeArtistListResponse> getLikeArtists(
-            @RequestHeader(name = "x-gm-personal-cno") Long characterNo,
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
             @RequestParam(name = "page") int page, @RequestParam(name = "size") int size);
 
     /**
@@ -74,7 +72,7 @@ public interface PersonalMongoClient {
      */
     @GetMapping("/personal-mgo/v1/like/type/track/list")
     CommonApiResponse<LikeTrackListResponse> getLikeTracks(
-            @RequestHeader(name = "x-gm-personal-cno") Long characterNo,
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
             @RequestParam(name = "page") int page, @RequestParam(name = "size") int size);
 
     /**
@@ -82,7 +80,7 @@ public interface PersonalMongoClient {
      */
     @GetMapping("/personal-mgo/v1/like/type/{likeType}/ids/{likeTypeId}")
     CommonApiResponse<LikeYnResponse> existLike(
-            @RequestHeader(name = "x-gm-personal-cno") Long characterNo,
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
             @PathVariable("likeType") String likeType, @PathVariable("likeTypeId") Long likeTypeId);
 
     /**
@@ -90,7 +88,7 @@ public interface PersonalMongoClient {
      */
     @PutMapping("personal-mgo/v1/like")
     CommonApiResponse<Void> sortLikes(
-            @RequestHeader(name = "x-gm-personal-cno") Long characterNo,
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
             LikeTypeIdListRequest request);
 
     /**
@@ -98,7 +96,7 @@ public interface PersonalMongoClient {
      */
     @PostMapping("/personal-mgo/v1/like")
     CommonApiResponse<Void> appendLike(
-            @RequestHeader(name = "x-gm-personal-cno") Long characterNo,
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
             LikeRequest request);
 
     /**
@@ -106,6 +104,6 @@ public interface PersonalMongoClient {
      */
     @DeleteMapping("/personal-mgo/v1/like")
     CommonApiResponse<Void> deleteLikes(
-            @RequestHeader(name = "x-gm-personal-cno") Long characterNo,
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
             LikeTypeIdListRequest request);
 }
