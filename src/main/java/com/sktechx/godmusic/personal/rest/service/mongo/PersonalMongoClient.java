@@ -88,7 +88,7 @@ public interface PersonalMongoClient {
     /**
      * 트랙/앨범/아티스트 좋아요 순서 변경
      */
-    @PutMapping("personal-mgo/v1/like")
+    @PutMapping("/personal-mgo/v1/like")
     CommonApiResponse<Void> sortLikes(
             @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
             LikeTypeIdListRequest request);

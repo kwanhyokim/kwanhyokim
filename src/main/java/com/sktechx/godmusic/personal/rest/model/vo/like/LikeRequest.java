@@ -49,13 +49,13 @@ public class LikeRequest {
 
 		public static LikeType fromValue(String code) {
 			return Arrays.stream(LikeType.values())
-					.filter(e -> e.getCode().equalsIgnoreCase(code))
+					.filter(e -> e.getCode().equals(code))
 					.findFirst().orElse(null);
 		}
 
 		public static boolean contains(String code) {
 			return Arrays.stream(LikeType.values())
-					.anyMatch(e -> e.getCode().equalsIgnoreCase(code));
+					.anyMatch(e -> e.getCode().equals(code));
 		}
 
 		@Override

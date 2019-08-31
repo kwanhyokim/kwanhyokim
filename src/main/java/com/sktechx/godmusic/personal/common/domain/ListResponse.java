@@ -14,6 +14,7 @@ import com.sktechx.godmusic.personal.rest.service.LikeService;
 import lombok.Data;
 import org.springframework.data.domain.Page;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -33,7 +34,7 @@ public class ListResponse {
 	private long totalCount;
 	private int currentPage;
 	private YnType lastPageYn;
-	private List<?> list;
+	private List<?> list = Collections.emptyList();
 	
 	public ListResponse(Page<?> page){
 		this.totalCount = page.getTotalElements();

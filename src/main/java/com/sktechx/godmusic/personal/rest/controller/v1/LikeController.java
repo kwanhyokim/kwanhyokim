@@ -126,7 +126,6 @@ public class LikeController {
 	) {
 		GMContext context = GMContext.getContext();
 		Validator.loginValidate(context);
-
 		Long characterNo = context.getCharacterNo();
 
 		likeMongoService.addLike(request, characterNo);
