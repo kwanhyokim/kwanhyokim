@@ -14,6 +14,7 @@ import com.sktechx.godmusic.personal.common.domain.ListResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.like.*;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenDeleteTrackRequest;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
  * @author Daniel/DREAMUS COMPANY (daekwon.song@sk.com)
  * @date 2019. 08. 30.
  */
+@Service
 @FeignClient(value = "personal-mgo-api", fallback = PersonalMongoClientFallback.class)
 public interface PersonalMongoClient {
 

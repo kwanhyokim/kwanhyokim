@@ -15,6 +15,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.like.*;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenDeleteTrackRequest;
 import com.sktechx.godmusic.personal.rest.service.LikeService;
 import com.sktechx.godmusic.personal.rest.service.TrackService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
  * @author Daniel/DREAMUS COMPANY (daekwon.song@sk.com)
  * @date 2019. 08. 30.
  */
+@Slf4j
 @Service
 public class PersonalMongoClientFallback implements PersonalMongoClient {
 
@@ -40,12 +42,14 @@ public class PersonalMongoClientFallback implements PersonalMongoClient {
 
     @Override
     public CommonApiResponse<ListResponse> getMostListenedTracks(Long characterNo, int page, int size) {
+        log.info("{}@getMostListenedTracks-fallback", characterNo);
         Page<?> result = trackService.mostTrackList(characterNo, PageRequest.of(page, size));
         return new CommonApiResponse<>(ListResponse.of(result));
     }
 
     @Override
     public CommonApiResponse<ListResponse> getRecentListenedTracks(Long memberNo, Long characterNo, int page, int size) {
+        log.info("{}@getRecentListenedTracks-fallback", characterNo);
         Page<?> result = trackService.getMyRecentTrackList(memberNo, characterNo, PageRequest.of(page, size));
         return new CommonApiResponse<>(ListResponse.of(result));
     }
@@ -55,29 +59,34 @@ public class PersonalMongoClientFallback implements PersonalMongoClient {
      */
     @Override
     public CommonApiResponse<Void> deleteRecentListenTrack(Long memberNo, Long characterNo, ListenDeleteTrackRequest request) {
+        log.info("{}@deleteRecentListenTrack-fallback", characterNo);
         return new CommonApiResponse<>(null);
     }
 
     @Override
     public CommonApiResponse<LikeAlbumListResponse> getLikeAlbums(Long characterNo, int page, int size) {
+        log.info("{}@getLikeAlbums-fallback", characterNo);
         LikeAlbumListResponse result = likeService.getAlbumLikeListByLikeType(characterNo, PageRequest.of(page, size));
         return new CommonApiResponse<>(result);
     }
 
     @Override
     public CommonApiResponse<LikeArtistListResponse> getLikeArtists(Long characterNo, int page, int size) {
+        log.info("{}@getLikeArtists-fallback", characterNo);
         LikeArtistListResponse result = likeService.getArtistLikeListByLikeType(characterNo, PageRequest.of(page, size));
         return new CommonApiResponse<>(result);
     }
 
     @Override
     public CommonApiResponse<LikeTrackListResponse> getLikeTracks(Long characterNo, int page, int size) {
+        log.info("{}@getLikeTracks-fallback", characterNo);
         LikeTrackListResponse result = likeService.getTrackLikeListByLikeType(characterNo, PageRequest.of(page, size));
         return new CommonApiResponse<>(result);
     }
 
     @Override
     public CommonApiResponse<LikeYnResponse> existLike(Long characterNo, String likeType, Long likeTypeId) {
+        log.info("{}@existLike-fallback", characterNo);
         LikeYnResponse result = likeService.getLikeYn(likeType, likeTypeId, characterNo);
         return new CommonApiResponse<>(result);
     }
@@ -87,6 +96,7 @@ public class PersonalMongoClientFallback implements PersonalMongoClient {
      */
     @Override
     public CommonApiResponse<Void> sortLikes(Long characterNo, LikeTypeIdListRequest request) {
+        log.info("{}@sortLikes-fallback", characterNo);
         return new CommonApiResponse<>(null);
     }
 
@@ -95,6 +105,7 @@ public class PersonalMongoClientFallback implements PersonalMongoClient {
      */
     @Override
     public CommonApiResponse<Void> appendLike(Long characterNo, LikeRequest request) {
+        log.info("{}@appendLike-fallback", characterNo);
         return new CommonApiResponse<>(null);
     }
 
@@ -103,6 +114,7 @@ public class PersonalMongoClientFallback implements PersonalMongoClient {
      */
     @Override
     public CommonApiResponse<Void> deleteLikes(Long characterNo, LikeTypeIdListRequest request) {
+        log.info("{}@deleteLikes-fallback", characterNo);
         return new CommonApiResponse<>(null);
     }
 
