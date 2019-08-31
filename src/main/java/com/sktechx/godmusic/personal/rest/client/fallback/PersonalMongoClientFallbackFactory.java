@@ -49,13 +49,13 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
             @Override
             public CommonApiResponse<ListResponse> getMostListenedTracks(Long characterNo, int page, int size) {
                 Page<?> result = trackService.mostTrackList(characterNo, PageRequest.of(page, size));
-                return CommonApiResponse.of(ListResponse.of(result));
+                return new CommonApiResponse<>(ListResponse.of(result));
             }
 
             @Override
             public CommonApiResponse<ListResponse> getRecentListenedTracks(Long memberNo, Long characterNo, int page, int size) {
                 Page<?> result = trackService.getMyRecentTrackList(memberNo, characterNo, PageRequest.of(page, size));
-                return CommonApiResponse.of(ListResponse.of(result));
+                return new CommonApiResponse<>(ListResponse.of(result));
             }
 
             /**
@@ -63,31 +63,31 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
              */
             @Override
             public CommonApiResponse<Void> deleteRecentListenTrack(Long memberNo, Long characterNo, ListenDeleteTrackRequest request) {
-                return CommonApiResponse.of(null);
+                return new CommonApiResponse<>(null);
             }
 
             @Override
             public CommonApiResponse<LikeAlbumListResponse> getLikeAlbums(Long characterNo, int page, int size) {
                 LikeAlbumListResponse result = likeService.getAlbumLikeListByLikeType(characterNo, PageRequest.of(page, size));
-                return CommonApiResponse.of(result);
+                return new CommonApiResponse<>(result);
             }
 
             @Override
             public CommonApiResponse<LikeArtistListResponse> getLikeArtists(Long characterNo, int page, int size) {
                 LikeArtistListResponse result = likeService.getArtistLikeListByLikeType(characterNo, PageRequest.of(page, size));
-                return CommonApiResponse.of(result);
+                return new CommonApiResponse<>(result);
             }
 
             @Override
             public CommonApiResponse<LikeTrackListResponse> getLikeTracks(Long characterNo, int page, int size) {
                 LikeTrackListResponse result = likeService.getTrackLikeListByLikeType(characterNo, PageRequest.of(page, size));
-                return CommonApiResponse.of(result);
+                return new CommonApiResponse<>(result);
             }
 
             @Override
             public CommonApiResponse<LikeYnResponse> existLike(Long characterNo, String likeType, Long likeTypeId) {
                 LikeYnResponse result = likeService.getLikeYn(likeType, likeTypeId, characterNo);
-                return CommonApiResponse.of(result);
+                return new CommonApiResponse<>(result);
             }
 
             /**
@@ -95,7 +95,7 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
              */
             @Override
             public CommonApiResponse<Void> sortLikes(Long characterNo, LikeTypeIdListRequest request) {
-                return CommonApiResponse.of(null);
+                return new CommonApiResponse<>(null);
             }
 
             /**
@@ -103,7 +103,7 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
              */
             @Override
             public CommonApiResponse<Void> appendLike(Long characterNo, LikeRequest request) {
-                return CommonApiResponse.of(null);
+                return new CommonApiResponse<>(null);
             }
 
             /**
@@ -111,7 +111,7 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
              */
             @Override
             public CommonApiResponse<Void> deleteLikes(Long characterNo, LikeTypeIdListRequest request) {
-                return CommonApiResponse.of(null);
+                return new CommonApiResponse<>(null);
             }
         };
     }
