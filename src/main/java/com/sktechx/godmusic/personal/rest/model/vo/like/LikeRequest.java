@@ -5,6 +5,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Enums;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnum;
 import org.hibernate.validator.constraints.Length;
@@ -75,6 +76,7 @@ public class LikeRequest {
 	@ApiModelProperty(name = "likeTypeId", value = "좋아하는 타입에 맞는 ID")
 	private Long likeTypeId;
 
+	@JsonIgnore
 	public boolean typeIsTrackArtistAlbum() {
 		return LikeType.contains(this.likeType);
 	}

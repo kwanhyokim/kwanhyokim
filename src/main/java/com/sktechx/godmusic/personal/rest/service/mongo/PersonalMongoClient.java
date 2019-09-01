@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
  * @date 2019. 08. 30.
  */
 @Service
-@FeignClient(value = "personal-mgo-api", fallback = PersonalMongoClientFallback.class)
+@FeignClient(value = "personal-mgo-api", fallbackFactory = PersonalMongoClientFallbackFactory.class)
 public interface PersonalMongoClient {
 
     /**
@@ -99,7 +99,7 @@ public interface PersonalMongoClient {
     @PostMapping("/personal-mgo/v1/like")
     CommonApiResponse<Void> appendLike(
             @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
-            LikeRequest request);
+            @RequestBody LikeRequest request);
 
     /**
      * 트랙/앨범/아티스트 좋아요 삭제
@@ -107,5 +107,5 @@ public interface PersonalMongoClient {
     @DeleteMapping("/personal-mgo/v1/like")
     CommonApiResponse<Void> deleteLikes(
             @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
-            LikeTypeIdListRequest request);
+            @RequestBody LikeTypeIdListRequest request);
 }
