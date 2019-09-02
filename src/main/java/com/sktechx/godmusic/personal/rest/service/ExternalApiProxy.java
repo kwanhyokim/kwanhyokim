@@ -33,13 +33,4 @@ public interface ExternalApiProxy {
                                                @RequestParam("awsBucketType") AwsBucketType awsBucketType,
                                                @RequestParam("memberNo") Long memberNo);
 
-//    Updated by Daniel because of PersonalMongoFeignClient test
-//    @Configuration
-//    class MultipartSupportConfig {
-//
-//        @Bean
-//        public Encoder feignFormEncoder() {
-//            return new SpringFormEncoder();
-//        }
-//    }
 }
