@@ -15,6 +15,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenDeleteTrackReque
 import com.sktechx.godmusic.personal.rest.service.TrackService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -34,20 +35,40 @@ public class TrackMongoServiceImpl implements TrackService {
     @Autowired
     PersonalMongoClient personalMongoClient;
 
+    @Autowired
+    @Qualifier("trackService")
+    TrackService trackService;
+
+    @Autowired
+    MongoRedisService mongoRedisService;
+
     @Override
     public PageImpl<?> mostTrackList(Long characterNo, Pageable pageable) {
-        CommonApiResponse<ListResponse> result = personalMongoClient.getMostListenedTracks(characterNo, pageable.getPageNumber(), pageable.getPageSize());
-        return new PageImpl<>(result.getData().getList(), pageable, result.getData().getTotalCount());
+        return mongoRedisService.executeService(
+                () -> {
+                    CommonApiResponse<ListResponse> result = personalMongoClient.getMostListenedTracks(characterNo, pageable.getPageNumber(), pageable.getPageSize());
+                    return new PageImpl<>(result.getData().getList(), pageable, result.getData().getTotalCount());
+                },
+                () -> trackService.mostTrackList(characterNo, pageable)
+        );
     }
 
     @Override
     public PageImpl<?> getMyRecentTrackList(Long memberNo, Long characterNo, Pageable pageable) {
-        CommonApiResponse<ListResponse> result = personalMongoClient.getRecentListenedTracks(memberNo, characterNo, pageable.getPageNumber(), pageable.getPageSize());
-        return new PageImpl<>(result.getData().getList(), pageable, result.getData().getTotalCount());
+        return mongoRedisService.executeService(
+                () -> {
+                    CommonApiResponse<ListResponse> result = personalMongoClient.getRecentListenedTracks(memberNo, characterNo, pageable.getPageNumber(), pageable.getPageSize());
+                    return new PageImpl<>(result.getData().getList(), pageable, result.getData().getTotalCount());
+                },
+                () -> trackService.getMyRecentTrackList(memberNo, characterNo, pageable)
+        );
+
     }
 
     @Override
     public void deleteMyRecentTrackList(Long memberNo, Long characterNo, List<Long> trackIds) {
-        personalMongoClient.deleteRecentListenTrack(memberNo, characterNo, ListenDeleteTrackRequest.builder().trackIds(trackIds).build());
+        mongoRedisService.executeService(
+                () -> personalMongoClient.deleteRecentListenTrack(memberNo, characterNo, ListenDeleteTrackRequest.builder().trackIds(trackIds).build())
+        );
     }
 }
