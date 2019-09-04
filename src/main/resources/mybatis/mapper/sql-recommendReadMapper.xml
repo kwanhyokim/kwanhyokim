@@ -969,7 +969,7 @@
                 ) rcmmd_artist_table
             ) rcmmd_table
 
-		ORDER BY rcmmd_table.disp_std_start_dt DESC, rcmmd_table.disp_sn ASC, rcmmd_table.artist_id ASC, rcmmd_table.size ASC
+		ORDER BY rcmmd_table.disp_std_start_dt DESC, rcmmd_table.disp_sn ASC, rcmmd_table.rcmmd_artist_id ASC, rcmmd_table.artist_id ASC, rcmmd_table.size ASC
 
     </select>
 
