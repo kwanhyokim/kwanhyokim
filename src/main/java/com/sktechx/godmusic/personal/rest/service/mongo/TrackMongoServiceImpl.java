@@ -10,6 +10,8 @@
 package com.sktechx.godmusic.personal.rest.service.mongo;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
+import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.personal.common.domain.ListResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenDeleteTrackRequest;
 import com.sktechx.godmusic.personal.rest.service.TrackService;
@@ -21,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 설명 :
@@ -47,6 +50,10 @@ public class TrackMongoServiceImpl implements TrackService {
         return mongoRedisService.executeService(
                 () -> {
                     CommonApiResponse<ListResponse> result = personalMongoClient.getMostListenedTracks(characterNo, pageable.getPageNumber(), pageable.getPageSize());
+                    ListResponse data = Optional.ofNullable(result.getData()).orElse(null);
+                    if (data == null) {
+                        throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
+                    }
                     return new PageImpl<>(result.getData().getList(), pageable, result.getData().getTotalCount());
                 },
                 () -> trackService.mostTrackList(characterNo, pageable)
@@ -58,6 +65,10 @@ public class TrackMongoServiceImpl implements TrackService {
         return mongoRedisService.executeService(
                 () -> {
                     CommonApiResponse<ListResponse> result = personalMongoClient.getRecentListenedTracks(memberNo, characterNo, pageable.getPageNumber(), pageable.getPageSize());
+                    ListResponse data = Optional.ofNullable(result.getData()).orElse(null);
+                    if (data == null) {
+                        throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
+                    }
                     return new PageImpl<>(result.getData().getList(), pageable, result.getData().getTotalCount());
                 },
                 () -> trackService.getMyRecentTrackList(memberNo, characterNo, pageable)

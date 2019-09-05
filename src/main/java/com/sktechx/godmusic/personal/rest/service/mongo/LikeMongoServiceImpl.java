@@ -10,6 +10,8 @@
 package com.sktechx.godmusic.personal.rest.service.mongo;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
+import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.personal.rest.model.vo.like.*;
 import com.sktechx.godmusic.personal.rest.service.LikeService;
 import com.sktechx.godmusic.personal.rest.service.TrackService;
@@ -53,7 +55,9 @@ public class LikeMongoServiceImpl implements LikeService {
                 () -> {
                     CommonApiResponse<LikeAlbumListResponse> result = personalMongoClient.getLikeAlbums(characterNo, pageable.getPageNumber(), pageable.getPageSize());
                     LikeAlbumListResponse likeAlbumListResponse = Optional.ofNullable(result.getData()).orElse(null);
-                    if (likeAlbumListResponse == null) return null;
+                    if (likeAlbumListResponse == null) {
+                        throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
+                    };
                     return new LikeAlbumListResponse(new PageImpl<>(likeAlbumListResponse.getList(), pageable, likeAlbumListResponse.getTotalCount()));
                 },
                 () -> likeService.getAlbumLikeListByLikeType(characterNo, pageable)
@@ -66,7 +70,9 @@ public class LikeMongoServiceImpl implements LikeService {
                 () -> {
                     CommonApiResponse<LikeArtistListResponse> result = personalMongoClient.getLikeArtists(characterNo, pageable.getPageNumber(), pageable.getPageSize());
                     LikeArtistListResponse likeArtistListResponse = Optional.ofNullable(result.getData()).orElse(null);
-                    if (likeArtistListResponse == null) return null;
+                    if (likeArtistListResponse == null) {
+                        throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
+                    };
                     return new LikeArtistListResponse(new PageImpl<>(likeArtistListResponse.getList(), pageable, likeArtistListResponse.getTotalCount()));
                 },
                 () -> likeService.getArtistLikeListByLikeType(characterNo, pageable)
@@ -79,7 +85,9 @@ public class LikeMongoServiceImpl implements LikeService {
                 () -> {
                     CommonApiResponse<LikeTrackListResponse> result = personalMongoClient.getLikeTracks(characterNo, pageable.getPageNumber(), pageable.getPageSize());
                     LikeTrackListResponse likeTrackListResponse = Optional.ofNullable(result.getData()).orElse(null);
-                    if (likeTrackListResponse == null) return null;
+                    if (likeTrackListResponse == null) {
+                        throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
+                    };
                     return new LikeTrackListResponse(new PageImpl<>(likeTrackListResponse.getList(), pageable, likeTrackListResponse.getTotalCount()));
                 },
                 () -> likeService.getTrackLikeListByLikeType(characterNo, pageable)
