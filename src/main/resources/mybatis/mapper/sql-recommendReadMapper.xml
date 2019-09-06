@@ -913,15 +913,17 @@
 
 
     <select id="selectRecommendArtistByCharacterNo" resultMap="rcmmdArtistResultMap">
-      SELECT
-            aa.*, d.size, d.url
-        FROM
-            (SELECT
-                a.rcmmd_artist_id,
-                    b.artist_id,
-                    b.artist_type,
-                    c.artist_nm,
-                    a.create_dtime
+        SELECT
+                rcmmd_table.rcmmd_artist_id,
+                rcmmd_table.artist_id,
+                rcmmd_table.artist_type,
+                rcmmd_table.artist_nm,
+                rcmmd_table.create_dtime,
+                rcmmd_table.create_std_type,
+                rcmmd_table.disp_std_start_dt,
+                rcmmd_table.size,
+                rcmmd_table.url
+
             FROM
                 (SELECT
                     @artistRowNum:=IF(@prevRcmmdId = rcmmd_artist_table.rcmmd_artist_id, @artistRowNum + 1, 1) AS rank,
