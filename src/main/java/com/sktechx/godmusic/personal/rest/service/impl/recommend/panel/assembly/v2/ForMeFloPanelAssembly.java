@@ -37,11 +37,11 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
 @Service("forMeFloPanelAssembly")
 public class ForMeFloPanelAssembly extends PanelSignAssembly {
 
-    private ForMeFloPanelAssembly(){}
+    public ForMeFloPanelAssembly(){}
 
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override

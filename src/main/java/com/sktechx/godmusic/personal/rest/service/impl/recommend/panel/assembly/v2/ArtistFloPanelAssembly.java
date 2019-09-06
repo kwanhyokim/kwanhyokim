@@ -40,11 +40,11 @@ import lombok.extern.slf4j.Slf4j;
 @Service("artistFloPanelAssembly")
 public class ArtistFloPanelAssembly extends PanelSignAssembly {
 
-    private ArtistFloPanelAssembly(){}
+    public ArtistFloPanelAssembly(){}
 
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override

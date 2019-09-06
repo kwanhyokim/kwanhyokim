@@ -37,14 +37,14 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
 @Service("preferGenreThemePanelAssembly")
 public class PreferGenreThemePanelAssembly extends PanelSignAssembly {
 
-    private PreferGenreThemePanelAssembly(){}
+    public PreferGenreThemePanelAssembly(){}
 
     @Autowired
     private RecommendReadMapper recommendReadMapper;
 
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override

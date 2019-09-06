@@ -46,7 +46,7 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
 @Service("operationTpoPanelAssembly")
 public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
 
-    private OperationTpoPanelAssembly(){}
+    public OperationTpoPanelAssembly(){}
 
     @Autowired
     DisplayClient displayClient;
