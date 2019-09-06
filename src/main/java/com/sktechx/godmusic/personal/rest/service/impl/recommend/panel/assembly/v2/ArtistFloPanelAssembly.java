@@ -19,7 +19,6 @@ import org.springframework.util.ObjectUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.CreateStdType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.common.util.BooleanComparator;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
@@ -45,10 +44,9 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
 
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
-        final List<Panel> panelList = new ArrayList<>();
-
-        return panelList;
+        return null;
     }
+
     @Override
     protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){
 
@@ -58,38 +56,7 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
         appendPreferArtistPopularTrackPanel(personalPhaseMeta, myPanelList);
         appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
 
-        int panelSize = 7;
-
-        Optional<Panel> liveChartPanel = null;
-        Optional<Panel> kidsChartPanel = null;
-
-        if(!CollectionUtils.isEmpty(chartPanelList)){
-            liveChartPanel = chartPanelList.stream().filter(panel -> RecommendPanelType.LIVE_CHART.equals(panel.getType())).findFirst();
-            kidsChartPanel = chartPanelList.stream().filter(panel -> RecommendPanelType.KIDS_CHART.equals(panel.getType())).findFirst();
-        }
-
-        if(!ObjectUtils.isEmpty(liveChartPanel) && liveChartPanel.isPresent()){
-            panelSize--;
-        }
-
-        if(!ObjectUtils.isEmpty(kidsChartPanel) && kidsChartPanel.isPresent()){
-            panelSize--;
-        }
-
-        if(myPanelList.size() > panelSize){
-            myPanelList = myPanelList.subList(0, panelSize - 1);
-        }
-
-        panelList.addAll(myPanelList);
-
-        if(!ObjectUtils.isEmpty(liveChartPanel) && liveChartPanel.isPresent()) {
-            panelList.add(0, liveChartPanel.get());
-        }
-
-        if(!ObjectUtils.isEmpty(kidsChartPanel) && kidsChartPanel.isPresent()){
-            panelList.add(kidsChartPanel.get());
-        }
-
+        mergePanelList(panelList, myPanelList, chartPanelList, 7);
         sort(personalPhaseMeta , panelList);
 
     }
