@@ -40,11 +40,11 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
 @Service("todayFloPanelAssembly")
 public class TodayFloPanelAssembly extends PanelSignAssembly {
 
-    private TodayFloPanelAssembly(){}
+    public TodayFloPanelAssembly(){}
 
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
-        return null;
+        return new ArrayList<>();
     }
     @Override
     protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){

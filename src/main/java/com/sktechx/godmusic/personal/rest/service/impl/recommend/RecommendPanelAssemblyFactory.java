@@ -47,6 +47,18 @@ public class RecommendPanelAssemblyFactory {
     GuestPhasePanelAssembly guestPhasePanelAssembly;
 
     @Autowired
+    ForMeFloPanelAssembly forMeFloPanelAssembly;
+
+    @Autowired
+    ArtistFloPanelAssembly artistFloPanelAssembly;
+
+    @Autowired
+    TodayFloPanelAssembly todayFloPanelAssembly;
+
+    @Autowired
+    AfloPanelAssembly afloPanelAssembly;
+
+    @Autowired
     PreferGenreThemePanelAssembly preferGenreThemePanelAssembly;
 
     @Autowired
@@ -92,22 +104,24 @@ public class RecommendPanelAssemblyFactory {
 
     }
 
-    public PanelAssembly getV2RecommendPanelAssembly(
-            RecommendPanelContentType recommendPanelContentType){
+    public PanelAssembly getV2RecommendPanelAssembly(RecommendPanelContentType recommendPanelContentType){
 
-        PanelAssembly panelAssembly = null;
-        try {
-
-            panelAssembly = (PanelAssembly) Class.forName("com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2." + recommendPanelContentType.getClassName()).newInstance();
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
+        switch (recommendPanelContentType){
+            case AFLO:
+                return afloPanelAssembly;
+            // 나를 위한 FLO
+            case RC_CF_TR:
+                return forMeFloPanelAssembly;
+            // 오늘의 FLO
+            case RC_SML_TR:
+                return todayFloPanelAssembly;
+            // 아티스트 FLO
+            case RC_ATST_TR:
+                return artistFloPanelAssembly;
+            default:
+                return null;
         }
 
-        return panelAssembly;
     }
+
 }

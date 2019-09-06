@@ -37,11 +37,11 @@ import lombok.extern.slf4j.Slf4j;
 @Service("afloPanelAssembly")
 public class AfloPanelAssembly extends PanelSignAssembly {
 
-    private AfloPanelAssembly(){}
+    public AfloPanelAssembly(){}
 
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
