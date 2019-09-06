@@ -12,14 +12,11 @@ package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.AlbumDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
@@ -47,8 +44,7 @@ public class TodayFloPanelAssembly extends PanelSignAssembly {
 
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
-        final List<Panel> panelList = new ArrayList<>();
-        return panelList;
+        return null;
     }
     @Override
     protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){
@@ -59,38 +55,7 @@ public class TodayFloPanelAssembly extends PanelSignAssembly {
         appendSimilarTrackPanelList(personalPhaseMeta, myPanelList, 7);
         appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
 
-        int panelSize = 7;
-
-        Optional<Panel> liveChartPanel = null;
-        Optional<Panel> kidsChartPanel = null;
-
-        if(!CollectionUtils.isEmpty(chartPanelList)){
-            liveChartPanel = chartPanelList.stream().filter(panel -> RecommendPanelType.LIVE_CHART.equals(panel.getType())).findFirst();
-            kidsChartPanel = chartPanelList.stream().filter(panel -> RecommendPanelType.KIDS_CHART.equals(panel.getType())).findFirst();
-        }
-
-        if(!ObjectUtils.isEmpty(liveChartPanel) && liveChartPanel.isPresent()){
-            panelSize--;
-        }
-
-        if(!ObjectUtils.isEmpty(kidsChartPanel) && kidsChartPanel.isPresent()){
-            panelSize--;
-        }
-
-        if(myPanelList.size() > panelSize){
-            myPanelList = myPanelList.subList(0, panelSize - 1);
-        }
-
-        panelList.addAll(myPanelList);
-
-        if(!ObjectUtils.isEmpty(liveChartPanel) &&liveChartPanel.isPresent()) {
-            panelList.add(0, liveChartPanel.get());
-        }
-
-        if(!ObjectUtils.isEmpty(kidsChartPanel) &&kidsChartPanel.isPresent()){
-            panelList.add(kidsChartPanel.get());
-        }
-
+        mergePanelList(panelList, myPanelList, chartPanelList, 7);
         sort(personalPhaseMeta , panelList);
 
     }
@@ -115,8 +80,8 @@ public class TodayFloPanelAssembly extends PanelSignAssembly {
 
                                 panel.makeSeedInfo();
 
-                                List<TrackDto> trackDtoList = Optional.ofNullable(panel.getContent().getTrackList()).map(Collection::stream).orElseGet(
-                                        Stream::empty).collect(Collectors.toList());
+                                List<TrackDto> trackDtoList = Optional.ofNullable(panel.getContent().getTrackList()).orElseGet(
+                                        Collections::emptyList);
                                 List<List<ImageInfo>> imageInfosList = trackDtoList.stream().map(TrackDto::getAlbum).map(AlbumDto::getImgList).distinct().limit(3).collect(
                                         Collectors.toList());
 
@@ -144,10 +109,7 @@ public class TodayFloPanelAssembly extends PanelSignAssembly {
 
         List<Panel> panelList = new ArrayList<>();
 
-        appendSimilarTrackPanelList(personalPhaseMeta, panelList, 7);
-
-        panelList = Optional.ofNullable(panelList).map(Collection::stream).orElseGet(Stream::empty).limit(4).collect(
-                Collectors.toList());
+        appendSimilarTrackPanelList(personalPhaseMeta, panelList, 4);
 
         return panelList;
 

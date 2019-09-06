@@ -16,7 +16,6 @@ import org.springframework.util.ObjectUtils;
 
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
-import com.sktechx.godmusic.personal.common.service.ApplicationContextProvider;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.GuestPhasePanelAssembly;
@@ -34,24 +33,40 @@ import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 @Service
 public class RecommendPanelAssemblyFactory {
 
+
     @Autowired
-    private ApplicationContextProvider applicationContextProvider;
+    VisitPhasePanelAssembly visitPhasePanelAssembly;
+
+    @Autowired
+    ListenPhasePanelAssembly listenPhasePanelAssembly;
+
+    @Autowired
+    RecommendPhasePanelAssembly recommendPhasePanelAssembly;
+
+    @Autowired
+    GuestPhasePanelAssembly guestPhasePanelAssembly;
+
+    @Autowired
+    PreferGenreThemePanelAssembly preferGenreThemePanelAssembly;
+
+    @Autowired
+    OperationTpoPanelAssembly operationTpoPanelAssembly;
 
     public PanelAssembly getRecommendPanelAssembly(PersonalPhaseType personalPhaseType ){
         if(PersonalPhaseType.VISIT.equals(personalPhaseType)){
-            return applicationContextProvider.getContext().getBean(VisitPhasePanelAssembly.class);
+            return visitPhasePanelAssembly;
         }else if(PersonalPhaseType.LISTEN.equals(personalPhaseType)){
-            return applicationContextProvider.getContext().getBean(ListenPhasePanelAssembly.class);
+            return listenPhasePanelAssembly;
 
         }else if(PersonalPhaseType.RECOMMEND.equals(personalPhaseType)) {
-            return applicationContextProvider.getContext().getBean(RecommendPhasePanelAssembly.class);
+            return recommendPhasePanelAssembly;
         }
 
         return getRecommendPanelAssembly();
     }
 
     public PanelAssembly getRecommendPanelAssembly(){
-        return applicationContextProvider.getContext().getBean(GuestPhasePanelAssembly.class);
+        return guestPhasePanelAssembly;
     }
 
     public PanelAssembly getV2RecommendPanelAssembly(PersonalPhaseMeta personalPhaseMeta){
@@ -65,35 +80,34 @@ public class RecommendPanelAssemblyFactory {
             if(panelAssembly != null){
                 return panelAssembly;
             }
+
         }
 
         // 선호 장르 테마
         if( personalPhaseMeta.isPreferGenreListPresent()){
-            return applicationContextProvider.getContext().getBean(PreferGenreThemePanelAssembly.class);
+            return preferGenreThemePanelAssembly;
         }
 
-        return applicationContextProvider.getContext().getBean(OperationTpoPanelAssembly.class);
+        return operationTpoPanelAssembly;
 
     }
 
-    public PanelAssembly getV2RecommendPanelAssembly(RecommendPanelContentType recommendPanelContentType){
+    public PanelAssembly getV2RecommendPanelAssembly(
+            RecommendPanelContentType recommendPanelContentType){
 
-        switch (recommendPanelContentType){
-            case AFLO:
-                return applicationContextProvider.getContext().getBean(AfloPanelAssembly.class);
-            // 나를 위한 FLO
-            case RC_CF_TR:
-                return applicationContextProvider.getContext().getBean(ForMeFloPanelAssembly.class);
-            // 오늘의 FLO
-            case RC_SML_TR:
-                return applicationContextProvider.getContext().getBean(TodayFloPanelAssembly.class);
-            // 아티스트 FLO
-            case RC_ATST_TR:
-                return applicationContextProvider.getContext().getBean(ArtistFloPanelAssembly.class);
-            default:
-                return null;
+        PanelAssembly panelAssembly = null;
+        try {
+
+            panelAssembly = (PanelAssembly) Class.forName("com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2." + recommendPanelContentType.getClassName()).newInstance();
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
         }
 
+        return panelAssembly;
     }
-
 }

@@ -10,15 +10,15 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto.recommend;
 
+import java.util.Date;
+import java.util.List;
+
+import com.sktechx.godmusic.personal.common.domain.type.CreateStdType;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
-import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  * 설명 : 아티스트 추천 DTO
@@ -38,6 +38,7 @@ public class RecommendArtistDto {
     private Integer dispSn;
     private Date createDtime;
     private Date updateDtime;
+    private CreateStdType createStdType;
 
     private int trackCount;
 
