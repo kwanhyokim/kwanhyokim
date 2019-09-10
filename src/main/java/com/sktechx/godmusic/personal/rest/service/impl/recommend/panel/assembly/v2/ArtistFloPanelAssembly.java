@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
@@ -19,9 +20,7 @@ import org.springframework.util.ObjectUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.CreateStdType;
-import com.sktechx.godmusic.personal.common.util.BooleanComparator;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
-import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.artist.ArtistPanel;
@@ -68,7 +67,9 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
 
         String recentDispStartDt = DateUtil.dateToString(Optional.ofNullable(recommendArtistDtoList).orElseGet(Collections::emptyList).stream().findFirst().orElseGet(RecommendArtistDto::new).getDispStdStartDt(), "yyyyMMdd");
 
-        Stream.concat(
+
+        List<RecommendArtistDto> finalRecommendArtistDtoList =
+                Stream.concat(
 
             Optional.ofNullable(recommendArtistDtoList).orElseGet(Collections::emptyList).stream()
                 .filter(recommendArtistDto1 -> CreateStdType.DF.equals(recommendArtistDto1.getCreateStdType()))
@@ -80,24 +81,24 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
         )
         .sorted(Comparator.comparing(RecommendArtistDto::getDispStdStartDt).reversed())
         .limit(4)
-        .forEach(
-            recommendArtistDto -> {
-                if ( !ObjectUtils.isEmpty(recommendArtistDto) && !CollectionUtils.isEmpty(recommendArtistDto.getArtistList())) {
-                    try {
+        .collect(Collectors.toList());
 
-                ArtistPanel artistPanel = new ArtistPanel(recommendArtistDto);
-                artistPanel.makeSeedInfo();
-                artistPanel.getContent().setCreateDtime(recommendArtistDto.getDispStdStartDt());
-                panelList.add(artistPanel);
+        for(RecommendArtistDto recommendArtistDto : finalRecommendArtistDtoList){
 
-                        panelList.add(artistPanel);
+            if ( !ObjectUtils.isEmpty(recommendArtistDto) && !CollectionUtils.isEmpty(recommendArtistDto.getArtistList())) {
+                try {
 
-                    } catch (Exception e) {
-                        log.error("PanelSignAssembly appendPreferArtistPanel artistPanel create error : {}", e.getMessage());
-                    }
+                    ArtistPanel artistPanel = new ArtistPanel(recommendArtistDto);
+                    artistPanel.makeSeedInfo();
+                    artistPanel.getContent().setCreateDtime(recommendArtistDto.getDispStdStartDt());
+
+                    panelList.add(artistPanel);
+
+                } catch (Exception e) {
+                    log.error("PanelSignAssembly appendPreferArtistPanel artistPanel create error : {}", e.getMessage());
                 }
             }
-        );
+        }
     }
 
 

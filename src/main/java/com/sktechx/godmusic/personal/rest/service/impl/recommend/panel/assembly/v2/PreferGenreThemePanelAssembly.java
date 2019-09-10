@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
-import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
@@ -55,20 +54,7 @@ public class PreferGenreThemePanelAssembly extends PanelSignAssembly {
 
         this.appendPreferGenreChannelPanelList(personalPhaseMeta, myPanelList, 5 );
 
-        List<ImageInfo> imageInfoList = Optional.ofNullable(recommendReadMapper.selectTpoAndThemeImageList(personalPhaseMeta.getOsType()))
-                .orElseGet(Collections::emptyList);
-
-        if(imageInfoList.size() > 0 && imageInfoList.size() < 5){
-            List<ImageInfo> tempImageInfoList = new ArrayList<>(5);
-            Collections.fill(tempImageInfoList, imageInfoList.get(0));
-            imageInfoList = tempImageInfoList;
-        }
-
-        for(int i=0; i<myPanelList.size(); i++) {
-            ImageInfo imageInfo = imageInfoList.get(i);
-            myPanelList.get(i).setImgList(Arrays.asList(imageInfo));
-        }
-
+        putTpoAndThemeImageList(personalPhaseMeta, myPanelList);
         appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
 
         mergePanelList(panelList, myPanelList, chartPanelList, 7);

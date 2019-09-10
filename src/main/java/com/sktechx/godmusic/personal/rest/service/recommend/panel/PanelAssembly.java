@@ -159,7 +159,6 @@ public abstract class PanelAssembly {
         }
     }
 
-
     protected void mergePanelList(List<Panel> panelList, List<Panel> myPanelList,
             List<Panel> chartPanelList, int panelSize) {
         Optional<Panel> liveChartPanel = Optional.ofNullable(chartPanelList)
@@ -187,6 +186,23 @@ public abstract class PanelAssembly {
         }
         if(kidsChartPanel.isPresent()){
             panelList.add(kidsChartPanel.get());
+        }
+    }
+
+    protected void putTpoAndThemeImageList(PersonalPhaseMeta personalPhaseMeta,
+            List<Panel> myPanelList) {
+        List<ImageInfo> imageInfoList = recommendReadMapper.selectTpoAndThemeImageList(personalPhaseMeta.getOsType());
+        if(CollectionUtils.isEmpty(imageInfoList)){
+            imageInfoList = new ArrayList<>();
+        }
+        if(imageInfoList.size() < 5){
+            List<ImageInfo> tempImageInfoList = Arrays.asList(new ImageInfo[5]);
+            Collections.fill(tempImageInfoList, imageInfoList.get(0));
+            imageInfoList = tempImageInfoList;
+        }
+        for(int i=0; i<myPanelList.size(); i++) {
+            ImageInfo imageInfo = imageInfoList.get(i);
+            myPanelList.get(i).setImgList(Arrays.asList(imageInfo));
         }
     }
 

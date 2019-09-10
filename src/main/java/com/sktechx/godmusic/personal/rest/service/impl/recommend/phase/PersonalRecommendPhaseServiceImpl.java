@@ -10,10 +10,8 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.phase;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
+import java.sql.Timestamp;
+import java.time.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -96,11 +94,12 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
     }
 
     private PersonalPhaseMeta getPersonalRecommendPhaseMetaWithOption(Long characterNo , OsType osType, Boolean checkDispEndDate){
-        PersonalPhaseMeta personalPhaseMeta = null;
 
         if(characterNo == null){
             return getGuestPhaseMeta(osType);
         }
+
+        PersonalPhaseMeta personalPhaseMeta;
 
         try {
 
@@ -112,31 +111,33 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
                 clearPersonalRecommendPhaseMetaCache(characterNo);
             }
 
-            // AFLO 채널 최신 시각
-            List<ChnlDto> afloChannelList = channelMapper.selectAfloChannelList(characterNo);
+            // AFLO 채널 최신 생성 시각
+            Date afloChnlRecentCreateDtime = Optional.ofNullable(channelMapper.selectAfloChannelList(characterNo)).orElseGet(Collections::emptyList)
+                    .stream()
+                    .filter(Objects::nonNull)
+                    .filter(chnlDto -> Objects.nonNull(chnlDto.getCreateDtime()))
+                    .findFirst()
+                    .orElseGet(ChnlDto::new)
+                    .getCreateDtime()
 
-
-            Date afloChnlRecentCreateDtime = null;
-
-            if(!CollectionUtils.isEmpty(afloChannelList) && afloChannelList.size() > 0){
-                afloChnlRecentCreateDtime = afloChannelList.get(0).getCreateDtime();
-            }
+                    ;
 
             String personalRecommendPhaseKey = String.format(PERSONAL_RECOMMEND_PHASE_KEY, characterNo);
-            PersonalPhaseMeta cachePersonalPhaseMeta = redisService.getWithPrefix(personalRecommendPhaseKey, PersonalPhaseMeta.class);
+            personalPhaseMeta = redisService.getWithPrefix(personalRecommendPhaseKey, PersonalPhaseMeta.class);
 
             // AFLO 사용자 위한 캐쉬 처리 (#2)
             boolean clearCache = isClearCache(afloExpireDate, afloChnlRecentCreateDtime,
-                    cachePersonalPhaseMeta);
+                    personalPhaseMeta);
+
             if(clearCache){
                 clearPersonalRecommendPhaseMetaCache(characterNo);
-                cachePersonalPhaseMeta = null;
+                personalPhaseMeta = null;
             }
 
-            if (!ObjectUtils.isEmpty(cachePersonalPhaseMeta)) {
+            if (!ObjectUtils.isEmpty(personalPhaseMeta)) {
 
-                cachePersonalPhaseMeta.setOsType(osType);
-                return cachePersonalPhaseMeta;
+                personalPhaseMeta.setOsType(osType);
+                return personalPhaseMeta;
             }
 
             personalPhaseMeta = new PersonalPhaseMeta();
@@ -188,12 +189,13 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
         }
         return personalPhaseMeta;
     }
+
     private boolean isClearCache(Date afloExpireDate, Date afloChnlRecentCreateDtime,
             PersonalPhaseMeta cachePersonalPhaseMeta) {
         boolean clearCache = false;
         if (!ObjectUtils.isEmpty(cachePersonalPhaseMeta)) {
 
-            /* 캐쉬 만기 시각이 없고, 테이블에 만 있는 경우 */
+            // 캐쉬 만기 시각이 없고, 테이블에 만 있는 경우
             if (ObjectUtils.isEmpty(cachePersonalPhaseMeta.getAfloCharacterExpireDtime())
                     && !ObjectUtils.isEmpty(afloExpireDate)) {
                 clearCache = true;
@@ -221,6 +223,16 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
                     cachePersonalPhaseMeta.getAfloChnlRecentCreateDtime().compareTo(afloChnlRecentCreateDtime) != 0
             ){
                 clearCache = true;
+            }
+
+
+            if( Duration.between(
+                    LocalDateTime.now(),
+                    new Timestamp(cachePersonalPhaseMeta.getRecommendPersonalPanelTopItem().getDispStdStartDt().getTime()).toLocalDateTime()
+            ).toDays() <= -30 ){
+
+                clearCache = true;
+
             }
 
         }
