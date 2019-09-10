@@ -50,8 +50,7 @@ public class TrackMongoServiceImpl implements TrackService {
         return mongoRedisService.executeService(
                 () -> {
                     CommonApiResponse<ListResponse> result = personalMongoClient.getMostListenedTracks(characterNo, pageable.getPageNumber(), pageable.getPageSize());
-                    ListResponse data = Optional.ofNullable(result.getData()).orElse(null);
-                    if (data == null) {
+                    if (result.getData() == null || result.getData().getList() == null || result.getData().getList().isEmpty()) {
                         return trackService.mostTrackList(characterNo, pageable);
                     }
                     return new PageImpl<>(result.getData().getList(), pageable, result.getData().getTotalCount());
@@ -65,8 +64,7 @@ public class TrackMongoServiceImpl implements TrackService {
         return mongoRedisService.executeService(
                 () -> {
                     CommonApiResponse<ListResponse> result = personalMongoClient.getRecentListenedTracks(memberNo, characterNo, pageable.getPageNumber(), pageable.getPageSize());
-                    ListResponse data = Optional.ofNullable(result.getData()).orElse(null);
-                    if (data == null) {
+                    if (result.getData() == null || result.getData().getList() == null || result.getData().getList().isEmpty()) {
                         return trackService.getMyRecentTrackList(memberNo, characterNo, pageable);
                     }
                     return new PageImpl<>(result.getData().getList(), pageable, result.getData().getTotalCount());
