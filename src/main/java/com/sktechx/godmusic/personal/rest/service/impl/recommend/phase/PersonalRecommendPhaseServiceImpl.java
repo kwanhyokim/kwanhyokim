@@ -226,10 +226,14 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
             }
 
 
-            if( Duration.between(
+            if(
+                !ObjectUtils.isEmpty(cachePersonalPhaseMeta.getRecommendPersonalPanelTopItem()) &&
+                !ObjectUtils.isEmpty(cachePersonalPhaseMeta.getRecommendPersonalPanelTopItem().getDispStdStartDt()) &&
+
+                Duration.between(
                     LocalDateTime.now(),
                     new Timestamp(cachePersonalPhaseMeta.getRecommendPersonalPanelTopItem().getDispStdStartDt().getTime()).toLocalDateTime()
-            ).toDays() <= -30 ){
+                ).toDays() <= -30 ){
 
                 clearCache = true;
 
