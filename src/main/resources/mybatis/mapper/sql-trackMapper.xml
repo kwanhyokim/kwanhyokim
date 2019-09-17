@@ -100,7 +100,6 @@
                     )
 
         ORDER BY a.disp_sn ASC
-        LIMIT 30
     </select>
     <select id="selectRecommendPanelSimilarTrackList" resultType="Long">
         SELECT
