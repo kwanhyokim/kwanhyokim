@@ -223,6 +223,20 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
                 clearCache = true;
             }
 
+
+            if(
+                !ObjectUtils.isEmpty(cachePersonalPhaseMeta.getRecommendPersonalPanelTopItem()) &&
+                !ObjectUtils.isEmpty(cachePersonalPhaseMeta.getRecommendPersonalPanelTopItem().getDispStdStartDt()) &&
+
+                Duration.between(
+                    LocalDateTime.now(),
+                    new Timestamp(cachePersonalPhaseMeta.getRecommendPersonalPanelTopItem().getDispStdStartDt().getTime()).toLocalDateTime()
+                ).toDays() <= -30 ){
+
+                clearCache = true;
+
+            }
+
         }
         return clearCache;
     }
