@@ -24,6 +24,8 @@ public enum MemberType implements CodeEnum {
 	ID("IDM", "ID 회원"),
 	MDN("MDN", "MDN 회원"),
 	TID("TID", "TID 회원"),
+	NAVER("NAVER", "NAVER 회원"),
+	KAKAO("KAKAO", "KAKAO 회원"),
 	;
 
 	private final String code;
