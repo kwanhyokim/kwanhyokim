@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -93,8 +94,13 @@ public interface RecommendReadMapper {
     RecommendDuplicateCountDto selectPreferGenreSimilarTrackPanelBetweenDuplicateCount(@Param("characterNo") Long characterNo);
 
 
+    // 아티스트 FLO에서 최신 전시일 가져오기
+    Date selectRecommendArtistMostRecentDispDateByCharacterNo(@Param("characterNo") Long characterNo);
+
     // 2-C 선호 아티스트 인기곡 리스트 by characterNo
-    List<RecommendArtistDto> selectRecommendArtistByCharacterNo(@Param("characterNo") Long characterNo);
+    List<RecommendArtistDto> selectRecommendArtistByCharacterNo(
+            @Param("characterNo") Long characterNo,
+            @Param("recentDispStartDt") String recentDispStartDt);
 
     // 3-A 청취 CF 패널 조회 by characterNo
     List<RecommendTrackDto> selectRecommendCfTrackListByCharacterNo(
