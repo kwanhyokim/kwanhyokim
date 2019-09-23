@@ -10,17 +10,17 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+import com.sktechx.godmusic.personal.common.domain.type.CreateStdType;
 import com.sktechx.godmusic.personal.common.util.BooleanComparator;
+import com.sktechx.godmusic.personal.common.util.DateUtil;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
@@ -40,14 +40,13 @@ import lombok.extern.slf4j.Slf4j;
 @Service("artistFloPanelAssembly")
 public class ArtistFloPanelAssembly extends PanelSignAssembly {
 
-    private ArtistFloPanelAssembly(){}
+    public ArtistFloPanelAssembly(){}
 
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
-        final List<Panel> panelList = new ArrayList<>();
-
-        return panelList;
+        return new ArrayList<>();
     }
+
     @Override
     protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){
 
@@ -57,38 +56,7 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
         appendPreferArtistPopularTrackPanel(personalPhaseMeta, myPanelList);
         appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
 
-        int panelSize = 7;
-
-        Optional<Panel> liveChartPanel = null;
-        Optional<Panel> kidsChartPanel = null;
-
-        if(!CollectionUtils.isEmpty(chartPanelList)){
-            liveChartPanel = chartPanelList.stream().filter(panel -> RecommendPanelType.LIVE_CHART.equals(panel.getType())).findFirst();
-            kidsChartPanel = chartPanelList.stream().filter(panel -> RecommendPanelType.KIDS_CHART.equals(panel.getType())).findFirst();
-        }
-
-        if(!ObjectUtils.isEmpty(liveChartPanel) && liveChartPanel.isPresent()){
-            panelSize--;
-        }
-
-        if(!ObjectUtils.isEmpty(kidsChartPanel) && kidsChartPanel.isPresent()){
-            panelSize--;
-        }
-
-        if(myPanelList.size() > panelSize){
-            myPanelList = myPanelList.subList(0, panelSize - 1);
-        }
-
-        panelList.addAll(myPanelList);
-
-        if(!ObjectUtils.isEmpty(liveChartPanel) && liveChartPanel.isPresent()) {
-            panelList.add(0, liveChartPanel.get());
-        }
-
-        if(!ObjectUtils.isEmpty(kidsChartPanel) && kidsChartPanel.isPresent()){
-            panelList.add(kidsChartPanel.get());
-        }
-
+        mergePanelList(panelList, myPanelList, chartPanelList, 7);
         sort(personalPhaseMeta , panelList);
 
     }
@@ -98,26 +66,40 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
 
         List<RecommendArtistDto> recommendArtistDtoList = recommendReadMapper.selectRecommendArtistByCharacterNo(personalPhaseMeta.getCharacterNo());
 
-        recommendArtistDtoList.stream().forEach(
+        String recentDispStartDt = DateUtil.dateToString(Optional.ofNullable(recommendArtistDtoList).orElseGet(Collections::emptyList).stream().findFirst().orElseGet(RecommendArtistDto::new).getDispStdStartDt(), "yyyyMMdd");
 
-                recommendArtistDto ->
-                {
-        if (recommendArtistDto != null && !CollectionUtils.isEmpty(recommendArtistDto.getArtistList())) {
-            try {
+        Stream.concat(
 
-                recommendArtistDto.getArtistList().sort(
-                        (ArtistDto a, ArtistDto b) -> (BooleanComparator.TRUE_HIGH.compare(a.hasDefaultImage(), b.hasDefaultImage()))
-                );
+            Optional.ofNullable(recommendArtistDtoList).orElseGet(Collections::emptyList).stream()
+                .filter(recommendArtistDto1 -> CreateStdType.DF.equals(recommendArtistDto1.getCreateStdType()))
+                .filter(recommendArtistDto -> recentDispStartDt.equals(DateUtil.dateToString(recommendArtistDto.getDispStdStartDt(), "yyyyMMdd")))
+                .limit(1),
+            Optional.ofNullable(recommendArtistDtoList).orElseGet(Collections::emptyList).stream()
+                .filter(recommendArtistDto1 -> CreateStdType.RCMMD.equals(recommendArtistDto1.getCreateStdType()))
+                .filter(recommendArtistDto -> recentDispStartDt.equals(DateUtil.dateToString(recommendArtistDto.getDispStdStartDt(), "yyyyMMdd")))
+        )
+        .sorted(Comparator.comparing(RecommendArtistDto::getDispStdStartDt).reversed())
+        .limit(4)
+        .forEach(
+            recommendArtistDto -> {
+                if ( !ObjectUtils.isEmpty(recommendArtistDto) && !CollectionUtils.isEmpty(recommendArtistDto.getArtistList())) {
+                    try {
 
-                ArtistPanel artistPanel = new ArtistPanel(recommendArtistDto);
-                artistPanel.makeSeedInfo();
+                        recommendArtistDto.getArtistList().sort(
+                                (ArtistDto a, ArtistDto b) -> (BooleanComparator.TRUE_HIGH.compare(a.hasDefaultImage(), b.hasDefaultImage()))
+                        );
 
-                panelList.add(artistPanel);
+                        ArtistPanel artistPanel = new ArtistPanel(recommendArtistDto);
+                        artistPanel.makeSeedInfo();
 
-            } catch (Exception e) {
-                log.error("PanelSignAssembly appendPreferArtistPanel artistPanel create error : {}", e.getMessage());
+                        panelList.add(artistPanel);
+
+                    } catch (Exception e) {
+                        log.error("PanelSignAssembly appendPreferArtistPanel artistPanel create error : {}", e.getMessage());
+                    }
+                }
             }
-        }});
+        );
     }
 
 

@@ -10,14 +10,11 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track;
 
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
@@ -65,13 +62,6 @@ public abstract class TrackPanel extends Panel {
         content.setGenre(new GenreVo(recommendTrackDto.getSvcGenreDto()));
         content.setCreateDtime(recommendTrackDto.getRcmmdCreateDtime());
         content.setUpdateDtime(recommendTrackDto.getRcmmdCreateDtime());
-
-        Date stdDate = new Date((System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1)));
-        if(stdDate.before(recommendTrackDto.getRcmmdCreateDtime())){
-            content.setRenewYn(YnType.Y);
-        }else{
-            content.setRenewYn(YnType.N);
-        }
 
         return content;
     }

@@ -11,13 +11,12 @@
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
@@ -38,13 +37,11 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
 @Service("forMeFloPanelAssembly")
 public class ForMeFloPanelAssembly extends PanelSignAssembly {
 
-    private ForMeFloPanelAssembly(){}
+    public ForMeFloPanelAssembly(){}
 
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
-        final List<Panel> panelList = new ArrayList<>();
-
-        return panelList;
+        return new ArrayList<>();
     }
 
     @Override
@@ -78,23 +75,7 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
             }
         }
 
-        Optional<Panel> liveChartPanel = null;
-        Optional<Panel> kidsChartPanel = null;
-
-        if(!CollectionUtils.isEmpty(chartPanelList)){
-            liveChartPanel = chartPanelList.stream().filter(panel -> RecommendPanelType.LIVE_CHART.equals(panel.getType())).findFirst();
-            kidsChartPanel = chartPanelList.stream().filter(panel -> RecommendPanelType.KIDS_CHART.equals(panel.getType())).findFirst();
-        }
-
-        panelList.addAll(myPanelList);
-
-        if(!ObjectUtils.isEmpty(liveChartPanel) && liveChartPanel.isPresent()) {
-            panelList.add(0, liveChartPanel.get());
-        }
-
-        if(!ObjectUtils.isEmpty(kidsChartPanel) &&kidsChartPanel.isPresent()){
-            panelList.add(kidsChartPanel.get());
-        }
+        mergePanelList(panelList, myPanelList, chartPanelList, 6);
 
         sort(personalPhaseMeta , panelList);
 
@@ -103,25 +84,24 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
     public void appendRecommendCfTrackPanelList(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int panelLimitSize) {
 
         List<RecommendTrackDto> recommendCfTrackList =
-                recommendReadMapper.selectRecommendCfTrackListByCharacterNo(personalPhaseMeta.getCharacterNo(), panelLimitSize, RCMMD_CF_TRACK_LIMIT_SIZE, personalPhaseMeta.getOsType());
+                Optional.ofNullable(recommendReadMapper.selectRecommendCfTrackListByCharacterNo(personalPhaseMeta.getCharacterNo(), panelLimitSize, RCMMD_CF_TRACK_LIMIT_SIZE, personalPhaseMeta.getOsType()))
+                .orElseGet(Collections::emptyList);
 
-        if (!CollectionUtils.isEmpty(recommendCfTrackList)) {
-            recommendCfTrackList
+        for(RecommendTrackDto recommendTrackDto :
+                recommendCfTrackList
                     .stream()
                     .filter(Objects::nonNull)
-                    .sorted(Comparator.comparing(RecommendTrackDto::getRcmmdCreateDtime).reversed())
-                    .forEach(cfTrack -> {
-                        try {
+                    .sorted(Comparator.comparing(RecommendTrackDto::getRcmmdCreateDtime).reversed()).collect(Collectors.toList())) {
+            try {
+                RcmmdTrackPanel rcmmdTrackPanel = createRecommendCfTrackPanel(personalPhaseMeta,
+                        recommendTrackDto);
+                rcmmdTrackPanel.makeSeedInfo();
+                panelList.add(rcmmdTrackPanel);
 
-                            RcmmdTrackPanel rcmmdTrackPanel = createRecommendCfTrackPanel(personalPhaseMeta,cfTrack);
-                            rcmmdTrackPanel.makeSeedInfo();
-
-                            panelList.add(rcmmdTrackPanel);
-
-                        } catch (Exception e) {
-                            log.error("RecommendPhasePanelAssembly appendRecommendCfTrackPanelList error : {}", e.getMessage());
-                        }
-                    });
+            } catch (Exception e) {
+                log.error("RecommendPhasePanelAssembly appendRecommendCfTrackPanelList error : {}",
+                        e.getMessage());
+            }
         }
 
     }
