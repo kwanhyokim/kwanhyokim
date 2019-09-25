@@ -911,6 +911,25 @@
         ]]>
     </select>
 
+    <select id="selectRecommendArtistMostRecentDispDateByCharacterNo" resultType="Date">
+        SELECT
+            max(rcmmd_artist.disp_std_start_dt)
+        FROM
+            (SELECT
+                rcmmd_artist_id,
+                create_dtime,
+                create_std_type,
+                disp_std_start_dt
+            FROM
+                tb_rcmmd_artist
+            WHERE
+                character_no = #{characterNo}
+                AND NOW() BETWEEN disp_std_start_dt AND DATE_ADD(disp_std_start_dt, INTERVAL 30 day)
+            ) rcmmd_artist
+        INNER JOIN tb_rcmmd_artist_list b ON rcmmd_artist.rcmmd_artist_id = b.rcmmd_artist_id
+        INNER JOIN ted_artist c ON b.artist_id = c.artist_id
+        INNER JOIN ted_artistimage d ON b.artist_id = d.artist_id
+    </select>
 
     <select id="selectRecommendArtistByCharacterNo" resultMap="rcmmdArtistResultMap">
         SELECT
@@ -960,7 +979,7 @@
                             tb_rcmmd_artist
                         WHERE
                             character_no = #{characterNo}
-                            AND NOW() BETWEEN disp_std_start_dt AND DATE_ADD(disp_std_start_dt, INTERVAL 30 day)
+                            AND DATE_FORMAT(disp_std_start_dt, '%Y%m%d') = #{recentDispStartDt}
                         ) rcmmd_artist
                     INNER JOIN tb_rcmmd_artist_list b ON rcmmd_artist.rcmmd_artist_id = b.rcmmd_artist_id
                     INNER JOIN ted_artist c ON b.artist_id = c.artist_id
