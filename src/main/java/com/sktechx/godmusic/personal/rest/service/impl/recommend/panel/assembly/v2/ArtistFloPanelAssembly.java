@@ -63,21 +63,27 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
     @Override
     protected void appendPreferArtistPopularTrackPanel(final PersonalPhaseMeta personalPhaseMeta, final List<Panel> panelList) {
 
-        List<RecommendArtistDto> recommendArtistDtoList = recommendReadMapper.selectRecommendArtistByCharacterNo(personalPhaseMeta.getCharacterNo());
+        List<RecommendArtistDto> recommendArtistDtoList = recommendReadMapper.selectRecommendArtistByCharacterNo(
 
-        String recentDispStartDt = DateUtil.dateToString(Optional.ofNullable(recommendArtistDtoList).orElseGet(Collections::emptyList).stream().findFirst().orElseGet(RecommendArtistDto::new).getDispStdStartDt(), "yyyyMMdd");
+                personalPhaseMeta.getCharacterNo(),
+
+                DateUtil.dateToString(
+                        Optional.of(
+                                recommendReadMapper.selectRecommendArtistMostRecentDispDateByCharacterNo(personalPhaseMeta.getCharacterNo())
+                        ).get()
+                        , "yyyyMMdd")
+
+        );
 
 
         List<RecommendArtistDto> finalRecommendArtistDtoList =
                 Stream.concat(
 
             Optional.ofNullable(recommendArtistDtoList).orElseGet(Collections::emptyList).stream()
-                .filter(recommendArtistDto1 -> CreateStdType.DF.equals(recommendArtistDto1.getCreateStdType()))
-                .filter(recommendArtistDto -> recentDispStartDt.equals(DateUtil.dateToString(recommendArtistDto.getDispStdStartDt(), "yyyyMMdd")))
+                .filter(recommendArtistDtoDf -> CreateStdType.DF.equals(recommendArtistDtoDf.getCreateStdType()))
                 .limit(1),
             Optional.ofNullable(recommendArtistDtoList).orElseGet(Collections::emptyList).stream()
-                .filter(recommendArtistDto1 -> CreateStdType.RCMMD.equals(recommendArtistDto1.getCreateStdType()))
-                .filter(recommendArtistDto -> recentDispStartDt.equals(DateUtil.dateToString(recommendArtistDto.getDispStdStartDt(), "yyyyMMdd")))
+                .filter(recommendArtistDtoRcmmd -> CreateStdType.RCMMD.equals(recommendArtistDtoRcmmd.getCreateStdType()))
         )
         .sorted(Comparator.comparing(RecommendArtistDto::getDispStdStartDt).reversed())
         .limit(4)
