@@ -20,7 +20,9 @@ import org.springframework.util.ObjectUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.CreateStdType;
+import com.sktechx.godmusic.personal.common.util.BooleanComparator;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
+import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.artist.ArtistPanel;
@@ -75,7 +77,6 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
 
         );
 
-
         List<RecommendArtistDto> finalRecommendArtistDtoList =
                 Stream.concat(
 
@@ -93,6 +94,13 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
 
             if ( !ObjectUtils.isEmpty(recommendArtistDto) && !CollectionUtils.isEmpty(recommendArtistDto.getArtistList())) {
                 try {
+
+                    List<ArtistDto> artistDtoList = recommendArtistDto.getArtistList();
+                    recommendArtistDto.getArtistList()
+                            .sort(
+                            (ArtistDto a, ArtistDto b) -> (BooleanComparator.TRUE_HIGH.compare(a.hasDefaultImage(), b.hasDefaultImage()))
+                    );
+
 
                     ArtistPanel artistPanel = new ArtistPanel(recommendArtistDto);
                     artistPanel.makeSeedInfo();
