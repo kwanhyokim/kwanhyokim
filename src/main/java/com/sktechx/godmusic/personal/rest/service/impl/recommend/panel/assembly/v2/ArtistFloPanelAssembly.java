@@ -95,7 +95,6 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
             if ( !ObjectUtils.isEmpty(recommendArtistDto) && !CollectionUtils.isEmpty(recommendArtistDto.getArtistList())) {
                 try {
 
-                    List<ArtistDto> artistDtoList = recommendArtistDto.getArtistList();
                     recommendArtistDto.getArtistList()
                             .sort(
                             (ArtistDto a, ArtistDto b) -> (BooleanComparator.TRUE_HIGH.compare(a.hasDefaultImage(), b.hasDefaultImage()))
