@@ -82,6 +82,10 @@ public abstract class Panel {
         this.type = type;
     }
 
+    public Panel(){
+
+    }
+
     abstract protected void initialPanel() throws CommonBusinessException;
     abstract protected PanelContentVo createPanelContent();
 

@@ -60,6 +60,7 @@ import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
 import com.sktechx.godmusic.personal.rest.service.MetaApiProxy;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2.AfloPanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2.OperationTpoPanelAssembly;
+import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2.PreferArtistVideoPanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2.PreferGenreThemePanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
@@ -110,6 +111,9 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
     @Autowired
     private AfloPanelAssembly afloPanelAssembly;
+
+    @Autowired
+    private PreferArtistVideoPanelAssembly preferArtistVideoPanelAssembly;
 
     @Value("${personal.prefer.artist.panel.addPreferArtistPanel.instrumentalTrackRegexPattern}")
     private String instrumentalTrackRegexPattern;
@@ -868,7 +872,6 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         }
     }
 
-
     private List<RecommendPreferGenreSimilarTrackDto> getRecommendPreferGenreSimilarTrackDtos(Long characterNo, List<PreferGenreTrackDto> preferGenreTrackDtoList) {
         int dispSn = 0;
         List<RecommendPreferGenreSimilarTrackDto> recommendPreferGenreSimilarTrackDtoList = new ArrayList<>();
@@ -990,16 +993,6 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         public int compare(CharacterPreferArtistGenreDto arg0, CharacterPreferArtistGenreDto arg1) {
             return Integer.compare(arg1.getGenreCnt(), arg0.getGenreCnt());
         }
-    }
-
-    private String makeRecommendPanelTitleWithDtime(Date date, String title){
-
-        if(ObjectUtils.isEmpty(date)){
-            return title;
-        }
-
-        return sdf.format(date) + " " + title;
-
     }
 
     private YnType getNewYn(Date dispDate){

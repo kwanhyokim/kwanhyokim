@@ -49,4 +49,12 @@ public class RedisKeyConstant {
 
 	// aflo 채널 리스트
 	public static final String PERSONAL_AFLO_CHNL_KEY="godmusic.personalapi.aflo.chnllist";
+
+	// 홈 선호 아티스트 최신 영상
+	public static final String PERSONAL_PREFERNCE_VIDEO_ARTIST_NEW_LIST="godmusic.personalapi.preference.video.artist.new.list:%s";
+
+	// 홈 선호 장르 최신 영상
+	public static final String PERSONAL_PREFERNCE_VIDEO_GENRE_NEW_LIST="godmusic.personalapi.preference.video.genre.new.list:%s";
+
+
 }

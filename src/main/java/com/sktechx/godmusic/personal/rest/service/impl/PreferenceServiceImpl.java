@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
@@ -36,11 +37,10 @@ import com.sktechx.godmusic.personal.rest.model.vo.preference.Artist;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.Chart;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.ChartResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.PreferenceSimilarArtistListRedisWrapper;
-import com.sktechx.godmusic.personal.rest.repository.ArtistMapper;
-import com.sktechx.godmusic.personal.rest.repository.CharacterPreferGenreMapper;
-import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
-import com.sktechx.godmusic.personal.rest.repository.ImageManagementMapper;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
+import com.sktechx.godmusic.personal.rest.repository.*;
 import com.sktechx.godmusic.personal.rest.service.PreferenceService;
+import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2.PreferArtistVideoPanelAssembly;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.*;
@@ -68,6 +68,12 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     @Autowired
     RedisService redisService;
+
+    @Autowired
+    private PreferArtistVideoPanelAssembly preferArtistVideoPanelAssembly;
+
+    @Autowired
+    private PreferenceMapper preferenceMapper;
 
     @Override
     public ChartResponse getPreferenceGenreList(Long characterNo) {
@@ -412,56 +418,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 		redisService.setWithPrefix(key, preferenceSimilarArtistListRedisWrapper, (int) expireSeconds);
 	}
 
-//	private List<ArtistDto>[] fillArtistDtoList(List<ArtistDto>[] resultArtistDtoList) {
-//
-//    	if(resultArtistDtoList == null) {
-//		    resultArtistDtoList = new ArrayList[2];
-//		    resultArtistDtoList[0] = new ArrayList<>();
-//		    resultArtistDtoList[1] = new ArrayList<>();
-//		    resultArtistDtoList[0].add(ArtistDto.builder().build());
-//		    resultArtistDtoList[1].add(ArtistDto.builder().build());
-//	    }
-//
-//		if(resultArtistDtoList[1] == null){
-//			resultArtistDtoList[1] = new ArrayList<>();
-//			resultArtistDtoList[1].add(ArtistDto.builder().build());
-//		}
-//
-//		return resultArtistDtoList;
-//	}
-
-
-	//    private List<Chart> preferenceGenreListConvert(List<ChartDto> chartDtoList) {
-//        List<Chart> chartList = new ArrayList<>();
-//
-//        for (ChartDto chartDto : chartDtoList) {
-//            List<Chart.AlbumImg> albumImgList = new ArrayList<>();
-//
-//            Optional.ofNullable(chartDto.getTrackList())
-//                    .flatMap(trackList -> Optional.ofNullable(trackList.get(0)))
-//                    .flatMap(track -> Optional.ofNullable(track.getAlbum()))
-//                    .flatMap(album -> Optional.ofNullable(album.getImgList()))
-//                    .ifPresent(imageInfos -> {
-//                        albumImgList.addAll(imageInfos.stream()
-//                                .map(imageInfo -> Chart.AlbumImg.builder()
-//                                        .size(imageInfo.getSize())
-//                                        .url(imageInfo.getUrl())
-//                                        .build())
-//                                .collect(Collectors.toList()));
-//                    });
-//
-//            Chart chart = Chart.builder()
-//                    .chartId(chartDto.getChartId())
-//                    .chartNm(chartDto.getChartNm())
-//                    .albumImgList(albumImgList)
-//                    .build();
-//
-//            chartList.add(chart);
-//        }
-//
-//        return chartList;
-//    }
-
     private List<Artist> preferenceArtistListConvert(List<ArtistDto> artistDtoList) {
         List<Artist> artistList = new ArrayList<>();
 
@@ -491,4 +447,19 @@ public class PreferenceServiceImpl implements PreferenceService {
         return artistList;
     }
 
+
+	@Override
+	public List<Panel> getPreferenceVideoArtistNewList(Long characterNo, OsType osType){
+		return preferArtistVideoPanelAssembly.getRecommendPanelList(characterNo, osType);
+
+	}
+
+	@Override
+    public List<Panel> getPreferenceVideoGenreNewList(Long characterNo, OsType osType){
+
+        return Optional.ofNullable(preferenceMapper.selectPreferGenreVideoListByCharacterNo(characterNo))
+                .orElseGet(Collections::emptyList).stream().filter(Objects::nonNull).map(VideoDto::convertToVideoPanel).collect(
+                Collectors.toList());
+
+    }
 }

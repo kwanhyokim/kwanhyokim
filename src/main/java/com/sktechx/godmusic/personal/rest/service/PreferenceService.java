@@ -12,7 +12,11 @@
 
 package com.sktechx.godmusic.personal.rest.service;
 
+import java.util.List;
+
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.ChartResponse;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 
 /**
  * 설명 : 선호 장르 서비스
@@ -52,4 +56,22 @@ public interface PreferenceService {
 
 
 	ChartResponse deletePreferSimilarArtistName(Long characterNo);
+
+	/**
+	 * 선호 아티스트 최신 비디오 목록 가져오기
+	 * @param characterNo
+	 * @param osType
+	 * @return
+	 */
+	List<Panel> getPreferenceVideoArtistNewList(Long characterNo, OsType osType);
+
+	/**
+	 * 선호 장르 최신 비디오 목록 가져오기
+	 * @param characterNo
+	 * @param osType
+	 * @return
+	 */
+	List<Panel> getPreferenceVideoGenreNewList(Long characterNo, OsType osType);
+
+
 }

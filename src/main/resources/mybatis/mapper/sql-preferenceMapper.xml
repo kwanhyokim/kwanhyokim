@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2018 SK TECHX.
+  ~ All right reserved.
+  ~
+  ~ This software is the confidential and proprietary information of SK TECHX.
+  ~ You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with SK TECHX.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.PreferenceMapper" >
+
+    <resultMap id="videoResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.VideoDto" autoMapping="true">
+        <id property="videoId" column="video_id"/>
+        <collection property="artistList" resultMap="com.sktechx.godmusic.personal.rest.repository.ArtistMapper.artistResultMap" autoMapping="true">
+        </collection>
+    </resultMap>
+
+    <select id="selectPreferArtistVideoListByCharacterNo" resultMap="videoResultMap">
+        SELECT
+            a.video_id,
+            a.video_nm,
+            a.media_rating_type,
+            a.play_tm,
+            c.video_img_url,
+            f.artist_id,
+            f.artist_nm
+
+        FROM tb_video a
+        INNER JOIN tb_new_video b ON a.video_id = b.video_id
+        LEFT OUTER JOIN tb_video_img c ON a.video_id = c.video_id AND c.video_img_type = 'VIDEO_IMG_TYPE.1 '
+
+        INNER JOIN tb_video_artist e ON a.video_id = e.video_id AND rp_yn ='Y'
+        INNER JOIN ted_artist f ON e.artist_id = f.artist_id
+        INNER JOIN tb_character_prefer_artist g ON e.artist_id = g.artist_id AND g.character_no = #{characterNo}
+
+        WHERE a.disp_status_yn = 'Y'
+            AND a.video_type in ('TEASER', 'MV', 'LIVE')
+            <if test="isTop">
+                AND DATE_FORMAT(a.disp_start_dtime , '%y%m%d')= DATE_FORMAT(NOW(), '%y%m%d')
+            </if>
+            <if test="!isTop">
+                AND NOW() BETWEEN a.disp_start_dtime AND DATE_ADD(a.disp_start_dtime,  INTERVAL 3 DAY)
+            </if>
+
+        GROUP BY a.video_id
+    </select>
+
+    <select id="selectPreferGenreVideoListByCharacterNo" resultMap="videoResultMap">
+        SELECT
+            f.video_id,
+            f.video_nm,
+            f.media_rating_type,
+            f.play_tm,
+            h.video_img_url,
+            j.artist_id,
+            j.artist_nm
+
+         FROM
+            tb_character a
+
+            INNER JOIN tb_character_prefer_genre b on a.character_no = b.character_no
+            INNER JOIN tb_prefer_genre c on b.prefer_genre_id = c.prefer_genre_id
+            INNER JOIN tb_map_prefer_genre_svc_genre d on d.prefer_genre_id = c.prefer_genre_id
+            INNER JOIN tb_map_svc_genre_video e on d.svc_genre_id = e.svc_genre_id
+            INNER JOIN tb_video f  on f.video_id = e.video_id
+            INNER JOIN tb_new_video g ON f.video_id = g.video_id
+
+            LEFT OUTER JOIN tb_video_img h ON f.video_id = h.video_id
+                AND h.video_img_type = 'VIDEO_IMG_TYPE.1 '
+
+            LEFT OUTER JOIN tb_video_artist i ON f.video_id = i.video_id
+                AND i.rp_yn ='Y'
+
+            INNER JOIN ted_artist j ON i.artist_id = j.artist_id
+
+        WHERE
+            b.character_no = #{characterNo}
+            AND f.disp_status_yn = 'Y'
+            AND f.video_type in ('TEASER', 'MV', 'LIVE')
+            AND NOW() BETWEEN f.disp_start_dtime AND DATE_ADD(f.disp_start_dtime, INTERVAL 7 DAY)
+
+        GROUP BY f.video_id
+
+    </select>
+
+</mapper>
