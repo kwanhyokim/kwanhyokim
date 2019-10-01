@@ -1,12 +1,4 @@
-package com.sktechx.godmusic.personal.common.domain.type;/*
- * Copyright (c) 2019 DreamusCompany
- * All right reserved.
- *
- * This software is the confidential and proprietary information of Dreamus Company.
- * You shall not disclose such Confidential Information and
- * shall use it only in accordance with the terms of the license agreement
- * you entered into with Dreamus Company.
- */
+package com.sktechx.godmusic.personal.common.domain.type;
 
 import org.apache.ibatis.type.MappedTypes;
 
@@ -15,19 +7,48 @@ import com.sktechx.godmusic.lib.mybatis.code.CodeEnum;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnumTypeHandler;
 
 public enum VideoType implements CodeEnum {
-    TEASER("TEASER", "티저"),
-    MUSIC_VIDEO("MUSIC_VIDEO", "뮤직비디오"),
-    LIVE("LIVE", "라이브"),
-    INTERVIEW("INTERVIEW", "인터뷰"),
-    MIX("MIX", "혼합")
+
+    MV {
+        @Override
+        public String getValue() {
+            return "뮤직비디오";
+        }
+    },
+    TEASER {
+        @Override
+        public String getValue() {
+            return "티저 영상";
+        }
+    },
+    LIVE {
+        @Override
+        public String getValue() {
+            return "라이브 영상";
+        }
+    },
+    INTERVIEW {
+        @Override
+        public String getValue() {
+            return "인터뷰, 토크 영상";
+        }
+    },
+    ETC {
+        @Override
+        public String getValue() {
+            return "기타 영상";
+        }
+    }
     ;
 
-    private final String code;
-    private final String value;
+    @Override
+    @JsonValue
+    public String getCode() {
+        return this.name();
+    }
 
-    VideoType(String code, String value) {
-        this.code = code;
-        this.value = value;
+    @Override
+    public CodeEnum getDefault() {
+        return null;
     }
 
     @MappedTypes(VideoType.class)
@@ -37,18 +58,6 @@ public enum VideoType implements CodeEnum {
         }
     }
 
-    @Override
-    @JsonValue
-    public String getCode() {
-        return code;
-    }
+    public abstract String getValue();
 
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public CodeEnum getDefault() {
-        return null;
-    }
 }
