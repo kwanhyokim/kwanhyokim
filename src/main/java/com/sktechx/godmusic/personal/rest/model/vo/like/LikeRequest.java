@@ -67,13 +67,13 @@ public class LikeRequest {
 
 	@Length(max = 10)
 	@NotBlank
-	@ApiModelProperty(name = "likeType", value = "좋아하는 타입(CHNL: 채널, ALBUM: 앨범, CHART: 차트, ARTIST: 아티스트, TRACK: 곡)",
-			allowableValues = "CHNL, ALBUM, CHART, ARTIST, TRACK, FLAC")
+	@ApiModelProperty(name = "likeType", value = "좋아요 대상 타입 - CHNL: 채널, ALBUM: 앨범, CHART: 차트, ARTIST: 아티스트, TRACK: 곡, VIDEO: 영상",
+			allowableValues = "CHNL, ALBUM, CHART, ARTIST, TRACK, FLAC, VIDEO")
 	private String likeType;
 
 	@Max(Long.MAX_VALUE)
 	@NotNull
-	@ApiModelProperty(name = "likeTypeId", value = "좋아하는 타입에 맞는 ID")
+	@ApiModelProperty(name = "likeTypeId", value = "좋아요 대상 ID")
 	private Long likeTypeId;
 
 	@JsonIgnore
