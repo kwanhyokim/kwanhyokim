@@ -12,8 +12,10 @@ package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
@@ -22,6 +24,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelCon
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedArtistVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedGenreVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedTrackVo;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.video.VideoPanel;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.PanelOrderSnService;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -34,6 +37,7 @@ import lombok.Setter;
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 09.
  */
+@JsonDeserialize(as = VideoPanel.class)
 @ApiModel(value="Panel")
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public abstract class Panel {
@@ -78,10 +82,13 @@ public abstract class Panel {
     public Integer getPanelOrderSn(PersonalPhaseType personalPhaseType){
         return PanelOrderSnService.getPanelOrderSn(personalPhaseType, this.type);
     }
-    public Panel(RecommendPanelType type){
+
+    @JsonCreator
+    public Panel(@JsonProperty("type") RecommendPanelType type){
         this.type = type;
     }
 
+    @JsonCreator
     public Panel(){
 
     }

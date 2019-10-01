@@ -49,8 +49,6 @@ public class VideoDto {
         return VideoPanel.builder()
                 .videoId(this.videoId)
                 .videoNm(this.videoNm)
-                .videoImgUrl(this.videoImgUrl)
-                .artistList(this.artistList)
                 .mediaRatingType(this.mediaRatingType)
                 .playTm(this.playTm)
                 .build();

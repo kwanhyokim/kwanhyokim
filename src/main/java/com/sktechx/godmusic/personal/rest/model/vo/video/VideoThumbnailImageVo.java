@@ -10,6 +10,8 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.video;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,6 +27,13 @@ import lombok.ToString;
 @Builder
 @ToString
 public class VideoThumbnailImageVo {
+
+    @JsonCreator
+    public VideoThumbnailImageVo(@JsonProperty("width") int width, @JsonProperty("height") int height, @JsonProperty("url") String url){
+        this.width = width;
+        this.height = height;
+        this.url = url;
+    }
 
     @ApiModelProperty(value = "동영상 썸네일 폭")
     private int width;

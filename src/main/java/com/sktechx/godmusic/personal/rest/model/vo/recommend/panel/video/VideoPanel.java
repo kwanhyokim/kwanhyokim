@@ -12,11 +12,14 @@ package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.video;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.MediaRatingType;
-import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
+import com.sktechx.godmusic.personal.common.domain.type.VideoType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
+import com.sktechx.godmusic.personal.rest.model.vo.video.VideoArtistVo;
+import com.sktechx.godmusic.personal.rest.model.vo.video.VideoThumbnailImageVo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
@@ -30,6 +33,7 @@ import lombok.Data;
 
 @Data
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class VideoPanel extends Panel {
 
     @ApiModelProperty(value = "비디오 아이디")
@@ -44,11 +48,20 @@ public class VideoPanel extends Panel {
     @ApiModelProperty(value = "재생시간")
     private String playTm;
 
-    @ApiModelProperty(value = "썸네일 이미지 url")
-    private String videoImgUrl;
+    @ApiModelProperty(value = "동영상 타입 코드")
+    private VideoType videoType;
 
-    @ApiModelProperty(value = "동영상 연관 아티스트 정보")
-    private List<ArtistDto> artistList;
+    @ApiModelProperty(value = "동영상 타입 Description")
+    private String videoTypeValue;
+
+    @ApiModelProperty(value = "동영상 대표 아티스트")
+    private VideoArtistVo representationArtist;
+
+    @ApiModelProperty(value = "동영상 대표 아티스트 목록")
+    private List<VideoArtistVo> artistList;
+
+    @ApiModelProperty(value = "동영상 썸네일 목록")
+    private List<VideoThumbnailImageVo> thumbnailImageList;
 
     @Override
     protected void initialPanel() throws CommonBusinessException {

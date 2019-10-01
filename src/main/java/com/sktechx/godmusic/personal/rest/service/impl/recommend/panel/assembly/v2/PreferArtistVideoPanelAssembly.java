@@ -17,9 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
-import com.sktechx.godmusic.personal.rest.model.dto.VideoDto;
+import com.sktechx.godmusic.personal.common.util.DateUtil;
+import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
+import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 import com.sktechx.godmusic.personal.rest.repository.PreferenceMapper;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelSignAssembly;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +40,9 @@ public class PreferArtistVideoPanelAssembly extends PanelSignAssembly {
 
     @Autowired
     private PreferenceMapper preferMapper;
+
+    @Autowired
+    private MetaClient metaClient;
 
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
@@ -62,13 +67,33 @@ public class PreferArtistVideoPanelAssembly extends PanelSignAssembly {
             final List<Panel> panelList,
             Boolean isTop) {
 
+        Date from;
+        Date to;
+
+        if(isTop){
+            // 1 day
+            from = DateUtil.toDate(DateUtil.toString(new Date()));
+            to = DateUtil.getDate(from, 86400);
+
+        }else{
+            // 3 days
+            from = new Date();
+            to = DateUtil.getDate(from, 259200);
+        }
+
         panelList.addAll(
                 Optional.ofNullable(
-                        preferMapper.selectPreferArtistVideoListByCharacterNo(personalPhaseMeta.getCharacterNo(), isTop)
+                        metaClient.getVideos(
+                                preferMapper.selectPreferArtistVideoIdListByCharacterNo(personalPhaseMeta.getCharacterNo()),
+                                from,
+                                to
+
+                        ).getData()
+
                 ).orElseGet(Collections::emptyList)
                         .stream()
                         .filter(Objects::nonNull)
-                        .map(VideoDto::convertToVideoPanel)
+                        .map(VideoVo::convertToVideoPanel)
                         .collect(Collectors.toList())
         );
 
@@ -83,6 +108,11 @@ public class PreferArtistVideoPanelAssembly extends PanelSignAssembly {
         List<Panel> panelList = new ArrayList<>();
 
         appendPreferArtistVideoList(personalPhaseMeta, panelList, false);
+
+        if(panelList.size() > 5){
+            Collections.shuffle(panelList);
+            panelList = panelList.stream().limit(5).collect(Collectors.toList());
+        }
 
         return panelList;
 

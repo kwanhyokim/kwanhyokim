@@ -51,6 +51,16 @@
         GROUP BY a.video_id
     </select>
 
+    <select id="selectPreferArtistVideoIdListByCharacterNo" resultType="Long">
+        SELECT
+            a.video_id
+        FROM tb_new_video a
+        INNER JOIN tb_video_artist e ON a.video_id = e.video_id AND rp_yn ='Y'
+        INNER JOIN ted_artist f ON e.artist_id = f.artist_id
+        INNER JOIN tb_character_prefer_artist g ON e.artist_id = g.artist_id AND g.character_no = #{characterNo}
+
+    </select>
+
     <select id="selectPreferGenreVideoListByCharacterNo" resultMap="videoResultMap">
         SELECT
             f.video_id,
@@ -85,8 +95,41 @@
             AND f.video_type in ('TEASER', 'MV', 'LIVE')
             AND NOW() BETWEEN f.disp_start_dtime AND DATE_ADD(f.disp_start_dtime, INTERVAL 7 DAY)
 
-        GROUP BY f.video_id
-
     </select>
 
+    <select id="selectPreferGenreVideoIdListByCharacterNo" resultType="Long">
+        SELECT
+            h.video_id
+         FROM
+            tb_character a
+
+            INNER JOIN tb_character_prefer_genre b on a.character_no = b.character_no
+            INNER JOIN tb_prefer_genre c on b.prefer_genre_id = c.prefer_genre_id
+            INNER JOIN tb_map_prefer_genre_svc_genre d on d.prefer_genre_id = c.prefer_genre_id
+            INNER JOIN tb_svc_genre e on d.svc_genre_id = e.svc_genre_id
+            INNER JOIN tb_map_svc_genre_video f on f.svc_genre_id = e.svc_genre_id
+            INNER JOIN tb_video g  on g.video_id = f.video_id
+            INNER JOIN tb_new_video h ON h.video_id = g.video_id
+
+        WHERE
+            b.character_no = #{characterNo}
+
+        GROUP BY g.video_id
+    </select>
+
+
+    <select id="selectDefaultSvcGenreVideoIdList" resultType="Long">
+        SELECT
+             d.video_id
+        FROM
+            tb_svc_genre a
+            INNER JOIN tb_map_svc_genre_video b on b.svc_genre_id = a.svc_genre_id
+            INNER JOIN tb_video c  on c.video_id = b.video_id
+            INNER JOIN tb_new_video d ON d.video_id = c.video_id
+
+        WHERE a.main_disp_std_yn = 'Y'
+
+        GROUP BY d.video_id
+
+    </select>
 </mapper>

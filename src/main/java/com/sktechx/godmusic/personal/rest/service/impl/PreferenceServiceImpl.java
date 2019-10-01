@@ -26,11 +26,14 @@ import org.springframework.util.ObjectUtils;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
+import com.sktechx.godmusic.lib.redis.annotation.RedisCacheable;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.PreferPropsType;
+import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.common.domain.domain.HomeContentType;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
+import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.model.dto.*;
 import com.sktechx.godmusic.personal.rest.model.dto.preference.PreferSimilarArtistDto;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.Artist;
@@ -38,6 +41,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.preference.Chart;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.ChartResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.PreferenceSimilarArtistListRedisWrapper;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
+import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 import com.sktechx.godmusic.personal.rest.repository.*;
 import com.sktechx.godmusic.personal.rest.service.PreferenceService;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2.PreferArtistVideoPanelAssembly;
@@ -74,6 +78,9 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     @Autowired
     private PreferenceMapper preferenceMapper;
+
+    @Autowired
+    private MetaClient metaClient;
 
     @Override
     public ChartResponse getPreferenceGenreList(Long characterNo) {
@@ -433,7 +440,7 @@ public class PreferenceServiceImpl implements PreferenceService {
                                                 .url(imageInfo.getUrl())
                                                 .build())
                                         .collect(Collectors.toList()));
-                    });
+        });
 
             Artist artist = Artist.builder()
                     .artistId(artistDto.getArtistId())
@@ -447,19 +454,56 @@ public class PreferenceServiceImpl implements PreferenceService {
         return artistList;
     }
 
-
+	/**
+	 * 선호 아티스트 최신 영상
+	 * @param characterNo
+	 * @param osType
+	 * @return
+	 */
+	@RedisCacheable(prefix = RedisKeyConstant.PREFIX, format = RedisKeyConstant.PERSONAL_PREFERENCE_VIDEO_ARTIST_NEW_LIST , params = "#p0" , expireSeconds = 10800)
 	@Override
 	public List<Panel> getPreferenceVideoArtistNewList(Long characterNo, OsType osType){
 		return preferArtistVideoPanelAssembly.getRecommendPanelList(characterNo, osType);
 
 	}
 
+	/**
+	 * 선호 장르 최신 영상
+	 * @param characterNo
+	 * @param osType
+	 * @return
+	 */
+	@RedisCacheable(prefix = RedisKeyConstant.PREFIX, format = RedisKeyConstant.PERSONAL_PREFERENCE_VIDEO_GENRE_NEW_LIST , params = "#p0" , expireSeconds = 10800)
 	@Override
     public List<Panel> getPreferenceVideoGenreNewList(Long characterNo, OsType osType){
 
-        return Optional.ofNullable(preferenceMapper.selectPreferGenreVideoListByCharacterNo(characterNo))
-                .orElseGet(Collections::emptyList).stream().filter(Objects::nonNull).map(VideoDto::convertToVideoPanel).collect(
-                Collectors.toList());
+		Date from = new Date();
 
+
+		List<Panel> panelList =	Optional.ofNullable(
+										metaClient.getVideos(
+												Optional.ofNullable(
+													preferenceMapper.selectPreferArtistVideoIdListByCharacterNo(characterNo)
+												)
+												.orElse(
+													preferenceMapper.selectDefaultSvcGenreVideoIdList()
+												)
+
+												,
+												from,
+												// 7 days
+												DateUtil.getDate(from, 604800)
+
+										).getData()
+
+								).orElseGet(Collections::emptyList)
+										.stream()
+										.filter(Objects::nonNull)
+										.map(VideoVo::convertToVideoPanel)
+										.collect(Collectors.toList());
+
+		panelList.removeAll(getPreferenceVideoArtistNewList(characterNo, osType));
+
+		return panelList;
     }
 }

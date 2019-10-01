@@ -96,13 +96,8 @@ public class ChannelServiceImpl implements ChannelService {
 
         ChnlDto floAndDataChnlDto = channelMapper.selectFlacChannel();
 
-        if(!ObjectUtils.isEmpty(floAndDataChnlDto)){
-            floAndDataChnlDto.setChnlType(ChannelType.FLAC);
-            floAndDataChnlDto.setTrackCount(null);
-            floAndDataChnlDto.setTrackList(null);
-            floAndDataChnlDto.setCreateDtime(null);
-            floAndDataChnlDto.setRenewTrackCnt(null);
-        }
+        Optional.ofNullable(floAndDataChnlDto)
+            .ifPresent(chnlDto -> chnlDto.setChnlType(ChannelType.FLAC));
 
         return floAndDataChnlDto;
     }
@@ -145,9 +140,7 @@ public class ChannelServiceImpl implements ChannelService {
 
     private void filterDuplicatePopularChnlList(List<Long> filterChnlIdList , List<ChnlDto> popularChnlList){
         if( !CollectionUtils.isEmpty(filterChnlIdList) && !CollectionUtils.isEmpty(popularChnlList) ){
-            popularChnlList.removeIf(chnlDto -> {
-                return filterChnlIdList.contains(chnlDto.getChnlId());
-            });
+            popularChnlList.removeIf(chnlDto -> filterChnlIdList.contains(chnlDto.getChnlId()));
         }
     }
     @Override

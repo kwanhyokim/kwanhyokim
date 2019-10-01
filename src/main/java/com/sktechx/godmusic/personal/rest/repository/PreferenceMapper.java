@@ -25,4 +25,10 @@ public interface PreferenceMapper {
             @Param("isTop") Boolean isTop);
 
     List<VideoDto> selectPreferGenreVideoListByCharacterNo(@Param("characterNo") Long characterNo);
+
+    List<Long> selectPreferArtistVideoIdListByCharacterNo(@Param("characterNo") Long characterNo);
+
+    List<Long> selectPreferGenreVideoIdListByCharacterNo(@Param("characterNo") Long characterNo);
+
+    List<Long> selectDefaultSvcGenreVideoIdList();
 }

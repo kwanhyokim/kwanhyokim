@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.video;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
@@ -26,6 +27,13 @@ import lombok.ToString;
 @Builder
 @ToString
 public class VideoArtistVo {
+
+    @JsonCreator
+    public VideoArtistVo(@JsonProperty("id") Long artistId, @JsonProperty("name") String artistName){
+        this.artistId = artistId;
+        this.artistName = artistName;
+
+    }
 
     @ApiModelProperty(value = "아티스트 아이디")
     @JsonProperty("id")
