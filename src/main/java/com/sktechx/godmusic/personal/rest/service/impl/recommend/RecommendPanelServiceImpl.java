@@ -526,13 +526,16 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         RecommendPanelInfoDto panel;
         RecommendGenreVo recommendGenreVo = recommendReadMapper.selectRecommendGenreByRcmmdId(panelContentId);
         String genreNm;
-        Date createDTime = new Date();
+
+        Date dispStdStartDt = new Date();
+
         title = RecommendConstant.RCMMD_TRACK_PANEL_TITLE;
         SeedGenreVo seedGenreVo = null;
         String subTitle = RecommendConstant.RCMMD_CF_TRACK_PANEL_SUB_TITLE;
+
         if(!ObjectUtils.isEmpty(recommendGenreVo)){
             genreNm = recommendGenreVo.getSvcGenreNm();
-            createDTime = recommendGenreVo.getDispStdStartDt();
+            dispStdStartDt = recommendGenreVo.getDispStdStartDt();
 
             seedGenreVo = SeedGenreVo.builder()
                     .name(genreNm)
@@ -565,8 +568,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 .subTitle(subTitle)
                 .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType , dispSn))
                 .trackCount(trackCount)
-                .newYn(this.getNewYn(createDTime))
-                .renewDtime(createDTime)
+                .newYn(this.getNewYn(dispStdStartDt))
+                .renewDtime(dispStdStartDt)
                 .seedGenreVo(seedGenreVo)
                 .build();
         return panel;
@@ -652,7 +655,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 .imgList((artistDtoList == null || artistDtoList.get(0) == null? null : artistDtoList.get(0).getImgList()))
                 .artistList(artistDtoList)
                 .artistCount(artistDtoList.size())
-                .createDtime(recommendArtistDto.getCreateDtime())
+                .renewDtime(recommendArtistDto.getDispStdStartDt())
+
                 .newYn(this.getNewYn(recommendArtistDto.getDispStdStartDt()))
                 .seedArtistVo(SeedArtistVo.builder()
                     .name(subTitle)

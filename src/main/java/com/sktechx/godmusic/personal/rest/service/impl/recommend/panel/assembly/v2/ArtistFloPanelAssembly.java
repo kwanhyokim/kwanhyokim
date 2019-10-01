@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
@@ -76,7 +77,8 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
 
         );
 
-        Stream.concat(
+        List<RecommendArtistDto> finalRecommendArtistDtoList =
+                Stream.concat(
 
             Optional.ofNullable(recommendArtistDtoList).orElseGet(Collections::emptyList).stream()
                 .filter(recommendArtistDtoDf -> CreateStdType.DF.equals(recommendArtistDtoDf.getCreateStdType()))
@@ -86,26 +88,30 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
         )
         .sorted(Comparator.comparing(RecommendArtistDto::getDispStdStartDt).reversed())
         .limit(4)
-        .forEach(
-            recommendArtistDto -> {
-                if ( !ObjectUtils.isEmpty(recommendArtistDto) && !CollectionUtils.isEmpty(recommendArtistDto.getArtistList())) {
-                    try {
+        .collect(Collectors.toList());
 
-                        recommendArtistDto.getArtistList().sort(
-                                (ArtistDto a, ArtistDto b) -> (BooleanComparator.TRUE_HIGH.compare(a.hasDefaultImage(), b.hasDefaultImage()))
-                        );
+        for(RecommendArtistDto recommendArtistDto : finalRecommendArtistDtoList){
 
-                        ArtistPanel artistPanel = new ArtistPanel(recommendArtistDto);
-                        artistPanel.makeSeedInfo();
+            if ( !ObjectUtils.isEmpty(recommendArtistDto) && !CollectionUtils.isEmpty(recommendArtistDto.getArtistList())) {
+                try {
 
-                        panelList.add(artistPanel);
+                    recommendArtistDto.getArtistList()
+                            .sort(
+                            (ArtistDto a, ArtistDto b) -> (BooleanComparator.TRUE_HIGH.compare(a.hasDefaultImage(), b.hasDefaultImage()))
+                    );
 
-                    } catch (Exception e) {
-                        log.error("PanelSignAssembly appendPreferArtistPanel artistPanel create error : {}", e.getMessage());
-                    }
+
+                    ArtistPanel artistPanel = new ArtistPanel(recommendArtistDto);
+                    artistPanel.makeSeedInfo();
+                    artistPanel.getContent().setCreateDtime(recommendArtistDto.getDispStdStartDt());
+
+                    panelList.add(artistPanel);
+
+                } catch (Exception e) {
+                    log.error("PanelSignAssembly appendPreferArtistPanel artistPanel create error : {}", e.getMessage());
                 }
             }
-        );
+        }
     }
 
 
