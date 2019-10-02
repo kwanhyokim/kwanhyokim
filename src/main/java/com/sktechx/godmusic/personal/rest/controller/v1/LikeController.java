@@ -5,6 +5,7 @@ import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.rest.model.vo.like.*;
+import com.sktechx.godmusic.personal.rest.model.vo.video.RangeResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 import com.sktechx.godmusic.personal.rest.service.LikeService;
 import com.sktechx.godmusic.personal.rest.validate.Validator;
@@ -113,13 +114,13 @@ public class LikeController {
 			@ApiImplicitParam(name = "size", required = true, dataType = "int", paramType = "query", value = "사이즈", defaultValue = "50")
 	})
 	@GetMapping("/type/video/list")
-	public CommonApiResponse<LikeVideoRangeResponse> getVideoes(
+	public CommonApiResponse<RangeResponse<VideoVo>> getVideoes(
 			@PageableDefault(page = 1, size = 50) Pageable pageable) {
 
 		GMContext currentContext = GMContext.getContext();
 		Validator.loginValidate(currentContext);
 
-		LikeVideoRangeResponse mockResponse = LikeVideoRangeResponse.of(new PageImpl(Lists.newArrayList(VideoVo.mock()), pageable, 1L) );
+		RangeResponse<VideoVo> mockResponse = RangeResponse.of(new PageImpl(Lists.newArrayList(VideoVo.mock()), pageable, 1L) );
 
 		return new CommonApiResponse(mockResponse);
 	}

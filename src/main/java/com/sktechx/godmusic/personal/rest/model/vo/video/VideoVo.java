@@ -56,9 +56,9 @@ public class VideoVo {
 
     /**
      * 영상 타입
-     * 영상 유형 - TEASER(티저), MV(뮤직비디오), LIVE(라이브), INTERVIEW(인터뷰), ETC(혼합)
+     * 영상 유형 - TEASER(티저), SPECIAL(영상심의등급을 못받은 티져), MV(뮤직비디오), LIVE(라이브), INTERVIEW(인터뷰), ETC(혼합)
      */
-    @ApiModelProperty(value = "영상 유형 - TEASER(티저), MV(뮤직비디오), LIVE(라이브), INTERVIEW(인터뷰), ETC(기타)")
+    @ApiModelProperty(value = "영상 유형 - TEASER(티저), SPECIAL(영상심의등급을 못받은 티져), MV(뮤직비디오), LIVE(라이브), INTERVIEW(인터뷰), ETC(기타)")
     String videoType;
 
     /**
@@ -172,7 +172,7 @@ public class VideoVo {
                 .videoId(1000L)
                 .title("다니엘 뮤직 비디오")
                 .subtitle("다니엘 뮤직 비디오(서브타이틀)")
-                .videoType("MUSIC_VIDEO")
+                .videoType("MV")
                 .rating("15_OVER")
                 .playTm("03:40")
                 .agencyId(1234L)

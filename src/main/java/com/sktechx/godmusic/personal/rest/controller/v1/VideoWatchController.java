@@ -16,6 +16,7 @@ import com.sktechx.godmusic.lib.domain.RequestGMContext;
 import com.sktechx.godmusic.personal.common.domain.ListResponse;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.rest.model.vo.video.MostWatchedVideoVo;
+import com.sktechx.godmusic.personal.rest.model.vo.video.RangeResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.video.WatchedVideoDeleteRequest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -39,7 +40,7 @@ import java.util.List;
  * @date 2019. 10. 01.
  */
 @Slf4j
-@Api(value = "보관함의 최근 본 영상 기능 제공 API")
+@Api(value = "보관함의 최근 본 영상 기능 제공 API", description = "보관함의 최근 본 영상 기능 제공 API")
 @RestController
 @RequestMapping(Naming.serviceCode+"/v1/videos")
 public class VideoWatchController {
@@ -53,11 +54,11 @@ public class VideoWatchController {
             @ApiImplicitParam(name = "size", required = true, dataType = "int", paramType = "query", value = "사이즈", defaultValue = "50")
     })
     @GetMapping(value = "/recentwatched")
-    public CommonApiResponse<ListResponse> getRecentWatchedVideos(
+    public CommonApiResponse<RangeResponse<MostWatchedVideoVo>> getRecentWatchedVideos(
             @ApiIgnore @RequestGMContext GMContext context,
             @PageableDefault(page = 1, size = 50) Pageable pageable) {
 
-        return new CommonApiResponse<>(ListResponse.of(new PageImpl(Lists.newArrayList(MostWatchedVideoVo.mock()), pageable, 1L)));
+        return new CommonApiResponse<>(RangeResponse.of(new PageImpl(Lists.newArrayList(MostWatchedVideoVo.mock()), pageable, 1L)));
     }
 
     /**
