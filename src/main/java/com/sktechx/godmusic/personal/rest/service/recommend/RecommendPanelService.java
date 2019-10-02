@@ -15,7 +15,7 @@ import java.util.List;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelInfoDto;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.header.RecommendPanelHeaderVo;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
@@ -43,7 +43,7 @@ public interface RecommendPanelService {
 	ListDto<List<RecommendPanelTrackDto>> getRecommendPanelTrackList(Long characterNo, RecommendPanelContentType recommendPanelType, Long panelContentId);
 
 	// added by bob 2018.08.16
-	RecommendPanelInfoDto getRecommendPanelInfo(Long characterNo,RecommendPanelContentType recommendPanelContentType, Long panelContentId, OsType osType, String appVer);
+	RecommendPanelHeaderVo getRecommendPanelInfo(Long characterNo,RecommendPanelContentType recommendPanelContentType, Long panelContentId, OsType osType, String appVer);
 
 
 	// 홈패널 기본 이미지

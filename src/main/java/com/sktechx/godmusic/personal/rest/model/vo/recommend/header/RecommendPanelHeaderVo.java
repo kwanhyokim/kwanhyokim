@@ -8,7 +8,7 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.model.dto.recommend;
+package com.sktechx.godmusic.personal.rest.model.vo.recommend.header;
 
 import java.util.Date;
 import java.util.List;
@@ -28,7 +28,7 @@ import lombok.Builder;
 import lombok.Data;
 
 /**
- * 설명 : XXXXXXXXX
+ * 설명 : 추천 상세 페이지 헤더 구성용 Vo
  *
  * @author 김관효(Kwanhyo Kim)/Music사업팀/SKTECH(kwanhyo.kim@sk.com)
  * @date 2018. 8. 16.
@@ -36,9 +36,9 @@ import lombok.Data;
 
 @Data
 @Builder
-@ApiModel(value="RecommendPanelInfoDto")
+@ApiModel(value="RecommendPanelHeaderVo")
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
-public class RecommendPanelInfoDto {
+public class RecommendPanelHeaderVo {
 
 
 	@ApiModelProperty(required = true, value = "패널 제목")
