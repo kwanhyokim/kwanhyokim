@@ -57,101 +57,61 @@ public class MostWatchedVideoVo {
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
     private Date lastWatchDateTime;
 
-    /**
-     * 영상 ID
-     */
-    @ApiModelProperty(value = "VIDEO ID")
+    @ApiModelProperty(value = "동영상 아이디")
     @JsonProperty("id")
-    protected Long videoId;
+    private Long videoId;
 
-    /**
-     * 영상 타이틀
-     */
-    @ApiModelProperty(value = "VIDEO 제목")
-    @JsonProperty(value = "videoNm")
-    String title;
+    @ApiModelProperty(value = "권리사 아이디")
+    private Long agencyId;
 
-    /**
-     * 영상 서브 타이틀
-     */
-    @ApiModelProperty(value = "VIDEO 부제목")
-    @JsonProperty(value = "videoSubtitle")
-    String subtitle;
+    @ApiModelProperty(value = "동영상 인기도(조회수)")
+    private Long videoPopularity;
 
-    /**
-     * 영상 타입
-     * 영상 유형 - TEASER(티저), MV(뮤직비디오), LIVE(라이브), INTERVIEW(인터뷰), ETC(혼합)
-     */
-    @ApiModelProperty(value = "영상 유형 - TEASER(티저), MV(뮤직비디오), LIVE(라이브), INTERVIEW(인터뷰), ETC(기타)")
-    String videoType;
+    @ApiModelProperty(value = "동영상 파일 수정 일시")
+    private Long videoFileUpdateDtime;
 
-    /**
-     * 영상 등급
-     * ALL(전체), 12_OVER(12세이상), 15_OVER(15세이상), 19_OVER(19세이상), ADULT(청소년관람불가), NOT_RATING(등급없음), RESTRICT(영상노출제한)
-     */
-    @ApiModelProperty(value = "영상 등급 - ALL(전체), 12_OVER(12세이상), 15_OVER(15세이상), 19_OVER(19세이상), ADULT(청소년관람불가), NOT_RATING(등급없음), RESTRICT(영상노출제한)")
-    @JsonProperty(value = "mediaRatingType")
-    String rating;
+    @ApiModelProperty(value = "동영상 명")
+    private String videoNm;
 
-    /**
-     * 인기도
-     */
-    @JsonProperty(value = "videoPopularity")
-    Long popularity;
+    @ApiModelProperty(value = "동영상 부제목")
+    private String videoSubtitle;
 
-    /**
-     * 영상 런닝 타임
-     */
-    @ApiModelProperty(value = "영상 런닝 타임")
-    String playTm;
+    @ApiModelProperty(value = "재생 시간")
+    private String playTm;
 
-    /**
-     * 권리사 ID
-     */
-    @ApiModelProperty(value = "권리사 ID")
-    Long agencyId;
+    @ApiModelProperty(value = "동영상 발매일(yyyy-mm-dd hh:mm:ss)")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private Date videoReleaseDt;
 
-    /**
-     * 전시 여부
-     */
-    @ApiModelProperty(value = "전시 여부")
-    YnType displayYn;
+    @ApiModelProperty(value = "영상 시청 연령 타입")
+    private String mediaRatingType;
 
-    /**
-     * 발매 일자
-     */
-    @ApiModelProperty(value = "발매 일자")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
-    @JsonProperty(value = "videoReleaseDt")
-    Date releaseDateTime;
+    @ApiModelProperty(value = "영상 시청 연령 타입 Description")
+    private String mediaRatingTypeStr;
 
-    /**
-     * 서비스 무료 여부
-     */
-    @ApiModelProperty(value = "서비스 무료 여부")
-    @JsonProperty("svcFreeYn")
-    YnType freeYn;
+    @ApiModelProperty(value = "동영상 타입")
+    private String videoType;
 
-    /**
-     * 스트리밍 서비스 가능 여부
-     */
-    @ApiModelProperty(value = "스트리밍 서비스 가능 여부")
-    @JsonProperty("svcStreamingYn")
-    YnType streamingYn;
+    @ApiModelProperty(value = "동영상 타입 Description")
+    private String videoTypeStr;
 
-    /**
-     * 동영상 대표 아티스트 목록
-     */
     @ApiModelProperty(value = "동영상 대표 아티스트 목록")
-    @JsonProperty("artistList")
-    List<VideoArtistVo> representativeArtists;
+    private List<VideoArtistVo> artistList;
 
-    /**
-     * 동영상 썸네일 이미지 목록
-     */
-    @ApiModelProperty(value = "동영상 썸네일 이미지 목록")
-    @JsonProperty("thumbnailImageList")
-    List<VideoThumbnailImageVo> thumbnails;
+    @ApiModelProperty(value = "동영상 썸네일 목록")
+    private List<VideoThumbnailImageVo> thumbnailImageList;
+
+    @ApiModelProperty(value = "동영상 구간 스냅샷 목록")
+    private List<VideoGridThumbnailImageVo> gridThumbnailImageList;
+
+    @ApiModelProperty(value = "서비스 스트리밍 여부")
+    private YnType svcStreamingYn;
+
+    @ApiModelProperty(value = "서비스 무료 여부")
+    private YnType svcFreeYn;
+
+    @ApiModelProperty(value = "동영상 대표 아티스트")
+    VideoArtistVo representationArtist;
 
     /**
      * 생성일
@@ -174,18 +134,19 @@ public class MostWatchedVideoVo {
                 .memberNo(1000000L)
                 .characterNo(2000000L)
                 .videoId(1000L)
-                .title("다니엘 뮤직 비디오")
-                .subtitle("다니엘 뮤직 비디오(서브타이틀)")
-                .videoType("MUSIC_VIDEO")
-                .rating("15_OVER")
+                .videoNm("다니엘 뮤직 비디오")
+                .videoSubtitle("다니엘 뮤직 비디오(서브타이틀)")
+                .videoType("MV")
+                .mediaRatingType("15_OVER")
                 .playTm("03:40")
                 .agencyId(1234L)
-                .displayYn(YnType.Y)
-                .releaseDateTime(new Date())
-                .freeYn(YnType.Y)
-                .streamingYn(YnType.Y)
-                .representativeArtists(Lists.newArrayList(VideoArtistVo.builder().artistId(100L).artistNm("Daniel").build()))
-                .thumbnails(Lists.newArrayList(VideoThumbnailImageVo.builder().height(100).width(100).url("https://i.ytimg.com/vi/m8MfJg68oCs/hqdefault.jpg").build()))
+                .videoReleaseDt(new Date())
+                .svcFreeYn(YnType.Y)
+                .svcStreamingYn(YnType.Y)
+                .representationArtist(VideoArtistVo.builder().artistId(100L).artistNm("Daniel").build())
+                .artistList(Lists.newArrayList(VideoArtistVo.builder().artistId(100L).artistNm("Daniel").build()))
+                .thumbnailImageList(Lists.newArrayList(VideoThumbnailImageVo.builder().width(100).height(100).url("https://i.ytimg.com/vi/m8MfJg68oCs/hqdefault.jpg").build()))
+                .videoFileUpdateDtime(System.currentTimeMillis())
                 .build();
     }
 }

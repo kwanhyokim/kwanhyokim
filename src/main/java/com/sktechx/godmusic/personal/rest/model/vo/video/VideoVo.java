@@ -55,7 +55,7 @@ public class VideoVo {
 
     @ApiModelProperty(value = "동영상 발매일(yyyy-mm-dd hh:mm:ss)")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime videoReleaseDt;
+    private Date videoReleaseDt;
 
     @ApiModelProperty(value = "영상 시청 연령 타입")
     private String mediaRatingType;
@@ -97,7 +97,7 @@ public class VideoVo {
                 .mediaRatingType("15_OVER")
                 .playTm("03:40")
                 .agencyId(1234L)
-                .videoReleaseDt(LocalDateTime.now())
+                .videoReleaseDt(new Date())
                 .svcFreeYn(YnType.Y)
                 .svcStreamingYn(YnType.Y)
                 .representationArtist(VideoArtistVo.builder().artistId(100L).artistNm("Daniel").build())
