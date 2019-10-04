@@ -10,33 +10,25 @@
 package com.sktechx.godmusic.personal.rest.model.vo.video;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 /**
  * 설명 :
  *
- * @author Daniel/DREAMUS COMPANY (daekwon.song@sk.com)
- * @date 2019. 09. 27.
+ * @author N/A
+ * @date 2019. 09. 30.
  */
 @Getter
 @Builder
-public class ThumbnailImageVo {
-    /**
-     * 이미지 Height
-     */
-    @ApiModelProperty(value = "이미지 Height")
-    private Integer height;
+public class VideoGridThumbnailImageVo {
 
-    /**
-     * 이미지 Width
-     */
-    @ApiModelProperty(value = "이미지 Width")
+    @ApiModelProperty(value = "동영상 구간 스냅샷 폭")
     private Integer width;
 
-    /**
-     * 이미지 URL
-     */
-    @ApiModelProperty(value = "이미지 URL")
+    @ApiModelProperty(value = "동영상 구간 스냅샷 높이")
+    private Integer height;
+
+    @ApiModelProperty(value = "동영상 구간 스냅샷 URL")
     private String url;
+
 }

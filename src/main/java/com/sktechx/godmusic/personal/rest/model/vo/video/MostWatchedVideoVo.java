@@ -17,7 +17,6 @@ import com.sktechx.godmusic.lib.domain.code.YnType;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 
 import java.util.Date;
 import java.util.List;
@@ -145,14 +144,14 @@ public class MostWatchedVideoVo {
      */
     @ApiModelProperty(value = "동영상 대표 아티스트 목록")
     @JsonProperty("artistList")
-    List<VideoVo.VideoArtistVo> representativeArtists;
+    List<VideoArtistVo> representativeArtists;
 
     /**
      * 동영상 썸네일 이미지 목록
      */
     @ApiModelProperty(value = "동영상 썸네일 이미지 목록")
     @JsonProperty("thumbnailImageList")
-    List<ThumbnailImageVo> thumbnails;
+    List<VideoThumbnailImageVo> thumbnails;
 
     /**
      * 생성일
@@ -185,10 +184,8 @@ public class MostWatchedVideoVo {
                 .releaseDateTime(new Date())
                 .freeYn(YnType.Y)
                 .streamingYn(YnType.Y)
-                .representativeArtists(Lists.newArrayList(VideoVo.VideoArtistVo.builder().id(100L).name("Daniel").build()))
-                .thumbnails(Lists.newArrayList(ThumbnailImageVo.builder().height(100).width(100).url("https://i.ytimg.com/vi/m8MfJg68oCs/hqdefault.jpg").build()))
-                .createDtime(new Date())
-                .updateDtime(new Date())
+                .representativeArtists(Lists.newArrayList(VideoArtistVo.builder().artistId(100L).artistNm("Daniel").build()))
+                .thumbnails(Lists.newArrayList(VideoThumbnailImageVo.builder().height(100).width(100).url("https://i.ytimg.com/vi/m8MfJg68oCs/hqdefault.jpg").build()))
                 .build();
     }
 }
