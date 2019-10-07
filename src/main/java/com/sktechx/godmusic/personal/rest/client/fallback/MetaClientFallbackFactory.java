@@ -22,10 +22,10 @@ import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 설명 : XXXXXXXXX
+ * 설명 : 메타 클라이언트 폴백
  *
- * @author 남재우(Peter)/njw0619@sk.com
- * @date 2018.09.04
+ * @author 김관효(Bob) / kwanhyo.kim@sk.com
+ * @date 2019.10.07
  */
 
 @Component
@@ -37,7 +37,7 @@ public class MetaClientFallbackFactory implements FallbackFactory<MetaClient>{
 
             List<VideoVo> list = new ArrayList<>();
 
-            list.add(VideoVo.VideoVoBuilder.newBuilderFromDto().build());
+            list.add(VideoVo.mock());
 
             return new CommonApiResponse<>(list);
         };
