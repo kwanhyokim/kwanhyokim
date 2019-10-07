@@ -56,7 +56,8 @@ public class LikeMongoServiceImpl implements LikeService {
                     CommonApiResponse<LikeAlbumListResponse> result = personalMongoClient.getLikeAlbums(characterNo, pageable.getPageNumber(), pageable.getPageSize());
                     LikeAlbumListResponse likeAlbumListResponse = Optional.ofNullable(result.getData()).orElse(null);
                     if (likeAlbumListResponse == null) {
-                        throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
+                        return likeService.getAlbumLikeListByLikeType(characterNo, pageable);
+                        //throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
                     };
                     return new LikeAlbumListResponse(new PageImpl<>(likeAlbumListResponse.getList(), pageable, likeAlbumListResponse.getTotalCount()));
                 },
@@ -71,7 +72,8 @@ public class LikeMongoServiceImpl implements LikeService {
                     CommonApiResponse<LikeArtistListResponse> result = personalMongoClient.getLikeArtists(characterNo, pageable.getPageNumber(), pageable.getPageSize());
                     LikeArtistListResponse likeArtistListResponse = Optional.ofNullable(result.getData()).orElse(null);
                     if (likeArtistListResponse == null) {
-                        throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
+                        return likeService.getArtistLikeListByLikeType(characterNo, pageable);
+                        //throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
                     };
                     return new LikeArtistListResponse(new PageImpl<>(likeArtistListResponse.getList(), pageable, likeArtistListResponse.getTotalCount()));
                 },
@@ -86,7 +88,8 @@ public class LikeMongoServiceImpl implements LikeService {
                     CommonApiResponse<LikeTrackListResponse> result = personalMongoClient.getLikeTracks(characterNo, pageable.getPageNumber(), pageable.getPageSize());
                     LikeTrackListResponse likeTrackListResponse = Optional.ofNullable(result.getData()).orElse(null);
                     if (likeTrackListResponse == null) {
-                        throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
+                        return likeService.getTrackLikeListByLikeType(characterNo, pageable);
+                        //throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
                     };
                     return new LikeTrackListResponse(new PageImpl<>(likeTrackListResponse.getList(), pageable, likeTrackListResponse.getTotalCount()));
                 },
