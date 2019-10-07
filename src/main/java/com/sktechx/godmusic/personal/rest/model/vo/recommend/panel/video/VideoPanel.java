@@ -25,7 +25,7 @@ import lombok.Builder;
 import lombok.Data;
 
 /**
- * 설명 : 비디오 패널
+ * 설명 : 비디오 패널 vo
  *
  * @author 김관효(Kwanhyo Kim)/서버개발팀/DreamusCompany(kwanhyo.kim@sk.com)
  * @date 2019-09-27
