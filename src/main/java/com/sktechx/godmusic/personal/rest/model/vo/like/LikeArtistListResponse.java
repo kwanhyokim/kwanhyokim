@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.domain.Page;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ public class LikeArtistListResponse {
 	private long totalCount;
 	private int currentPage;
 	private YnType lastPageYn;
-	private List<ArtistDto> list;
+	private List<ArtistDto> list = Collections.emptyList();
 
 	public LikeArtistListResponse(Page<ArtistDto> page){
 		this.totalCount = page.getTotalElements();

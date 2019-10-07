@@ -12,8 +12,15 @@ import lombok.Data;
  * @time AM 11:14
  */
 @Data
-@AllArgsConstructor
 public class LikeYnResponse {
+
 	@ApiModelProperty(name = "likeYn", value = "좋아요 여부(Y, N)", allowableValues = "Y, N")
 	private String likeYn;
+
+	public LikeYnResponse() {
+	}
+
+	public LikeYnResponse(String likeYn) {
+		this.likeYn = likeYn;
+	}
 }

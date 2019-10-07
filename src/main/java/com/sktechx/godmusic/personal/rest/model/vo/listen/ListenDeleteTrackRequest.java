@@ -1,6 +1,8 @@
 package com.sktechx.godmusic.personal.rest.model.vo.listen;
 
+import java.util.Collections;
 import java.util.List;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -21,8 +23,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ListenDeleteTrackRequest {
-	@NotNull
+
+	@NotEmpty
 	@ApiModelProperty(name = "trackId", value = "곡 ID")
-	private List<Long> trackIds;
+	private List<Long> trackIds = Collections.emptyList();
 
 }
