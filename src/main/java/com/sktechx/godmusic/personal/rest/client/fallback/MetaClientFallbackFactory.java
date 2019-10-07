@@ -11,7 +11,6 @@
 package com.sktechx.godmusic.personal.rest.client.fallback;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -34,19 +33,13 @@ import lombok.extern.slf4j.Slf4j;
 public class MetaClientFallbackFactory implements FallbackFactory<MetaClient>{
     @Override
     public MetaClient create(Throwable e) {
-        return new MetaClient(){
+        return (videoIdList, from, to) -> {
 
-            @Override
-            public CommonApiResponse<List<VideoVo>> getVideos(List<Long> videoIdList, Date from,
-                    Date to) {
+            List<VideoVo> list = new ArrayList<>();
 
+            list.add(VideoVo.VideoVoBuilder.newBuilderFromDto().build());
 
-                List<VideoVo> list = new ArrayList<>();
-
-                list.add(VideoVo.VideoVoBuilder.newBuilderFromDto().build());
-
-                return new CommonApiResponse<>(list);
-            }
+            return new CommonApiResponse<>(list);
         };
     }
 }
