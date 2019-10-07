@@ -1,7 +1,6 @@
 /*
  * Copyright (c) 2019 DREAMUS COMPANY.
  * All right reserved.
- *
  * This software is the confidential and proprietary information of DREAMUS COMPANY.
  * You shall not disclose such Confidential Information and
  * shall use it only in accordance with the terms of the license agreement
@@ -10,12 +9,8 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.video;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * 설명 :
@@ -25,22 +20,14 @@ import lombok.ToString;
  */
 @Getter
 @Builder
-@ToString
 public class VideoThumbnailImageVo {
 
-    @JsonCreator
-    public VideoThumbnailImageVo(@JsonProperty("width") int width, @JsonProperty("height") int height, @JsonProperty("url") String url){
-        this.width = width;
-        this.height = height;
-        this.url = url;
-    }
-
     @ApiModelProperty(value = "동영상 썸네일 폭")
-    private int width;
+    private Integer width;
+
     @ApiModelProperty(value = "동영상 썸네일 높이")
-    private int height;
+    private Integer height;
 
     @ApiModelProperty(value = "동영상 썸네일 URL")
     private String url;
-
 }

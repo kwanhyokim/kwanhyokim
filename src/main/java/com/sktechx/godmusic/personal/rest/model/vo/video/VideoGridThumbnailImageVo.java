@@ -9,7 +9,6 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.video;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
@@ -21,14 +20,15 @@ import lombok.*;
  */
 @Getter
 @Builder
-public class VideoArtistVo {
+public class VideoGridThumbnailImageVo {
 
-    @ApiModelProperty(value = "아티스트 아이디")
-    @JsonProperty("id")
-    private Long artistId;
+    @ApiModelProperty(value = "동영상 구간 스냅샷 폭")
+    private Integer width;
 
-    @ApiModelProperty(value = "아티스트 명")
-    @JsonProperty("name")
-    private String artistNm;
+    @ApiModelProperty(value = "동영상 구간 스냅샷 높이")
+    private Integer height;
+
+    @ApiModelProperty(value = "동영상 구간 스냅샷 URL")
+    private String url;
 
 }

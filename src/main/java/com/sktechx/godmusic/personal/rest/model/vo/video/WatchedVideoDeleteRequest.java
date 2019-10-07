@@ -9,26 +9,26 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.video;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.*;
+import lombok.Data;
+import lombok.ToString;
+
+import javax.validation.constraints.NotEmpty;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 설명 :
  *
- * @author N/A
- * @date 2019. 09. 30.
+ * @author Daniel/DREAMUS COMPANY (daekwon.song@sk.com)
+ * @date 2019. 10. 01.
  */
-@Getter
-@Builder
-public class VideoArtistVo {
+@Data
+@ToString
+public class WatchedVideoDeleteRequest {
 
-    @ApiModelProperty(value = "아티스트 아이디")
-    @JsonProperty("id")
-    private Long artistId;
-
-    @ApiModelProperty(value = "아티스트 명")
-    @JsonProperty("name")
-    private String artistNm;
+    @ApiModelProperty(value = "삭제할 영상 IDs")
+    @NotEmpty
+    private List<Long> videoIds = Collections.emptyList();
 
 }
