@@ -13,7 +13,6 @@ package com.sktechx.godmusic.personal.rest.model.dto;
 import java.util.List;
 
 import com.sktechx.godmusic.personal.common.domain.type.MediaRatingType;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.video.VideoPanel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -44,13 +43,4 @@ public class VideoDto {
     @ApiModelProperty(value = "동영상 연관 아티스트 정보")
     private List<ArtistDto> artistList;
 
-
-    public VideoPanel convertToVideoPanel(){
-        return VideoPanel.builder()
-                .videoId(this.videoId)
-                .videoNm(this.videoNm)
-                .mediaRatingType(this.mediaRatingType)
-                .playTm(this.playTm)
-                .build();
-    }
 }
