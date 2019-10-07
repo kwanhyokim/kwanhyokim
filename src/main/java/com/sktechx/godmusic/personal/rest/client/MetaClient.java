@@ -25,8 +25,8 @@ import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 /**
  * 설명 : 메타 연동
  *
- * @author 남재우(Peter)/njw0619@sk.com
- * @date 2018.07.25
+ * @author 김관효(Bob) kwanhyo.kim@sk.com
+ * @date 2019.10.07
  */
 
 @FeignClient(value = "meta-api", fallbackFactory = MetaClientFallbackFactory.class)
