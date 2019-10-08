@@ -26,10 +26,8 @@ import org.springframework.util.ObjectUtils;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
-import com.sktechx.godmusic.lib.redis.annotation.RedisCacheable;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.PreferPropsType;
-import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.common.domain.domain.HomeContentType;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
@@ -460,7 +458,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 	 * @param osType
 	 * @return
 	 */
-	@RedisCacheable(prefix = RedisKeyConstant.PREFIX, format = RedisKeyConstant.PERSONAL_PREFERENCE_VIDEO_ARTIST_NEW_LIST , params = "#p0" , expireSeconds = 10800)
 	@Override
 	public List<Panel> getPreferenceVideoArtistNewList(Long characterNo, OsType osType){
 		return preferArtistVideoPanelAssembly.getRecommendPanelList(characterNo, osType);
@@ -473,7 +470,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 	 * @param osType
 	 * @return
 	 */
-	@RedisCacheable(prefix = RedisKeyConstant.PREFIX, format = RedisKeyConstant.PERSONAL_PREFERENCE_VIDEO_GENRE_NEW_LIST , params = "#p0" , expireSeconds = 10800)
 	@Override
     public List<Panel> getPreferenceVideoGenreNewList(Long characterNo, OsType osType){
 
