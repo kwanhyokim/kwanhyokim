@@ -92,9 +92,9 @@ public class PreferenceController {
 			@RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType
 	){
 
-		if(ObjectUtils.isEmpty(characterNo)){
-			return null;
-		}
+//		if(ObjectUtils.isEmpty(characterNo)){
+//			return null;
+//		}
 
 		return new CommonApiResponse<>(new ListDto<>(preferenceService.getPreferenceVideoArtistNewList(characterNo, osType)));
 
