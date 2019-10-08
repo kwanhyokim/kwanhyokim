@@ -12,7 +12,11 @@
 
 package com.sktechx.godmusic.personal.rest.controller.v1;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
@@ -22,7 +26,9 @@ import com.sktechx.godmusic.lib.domain.RequestGMContext;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.ChartResponse;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.service.PreferenceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -83,11 +89,14 @@ public class PreferenceController {
 	public CommonApiResponse getPreferenceVideoArtistNewList(
 			@ApiIgnore @RequestGMContext GMContext ctx,
 			@RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo,
-			@RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType,
-			@RequestHeader(value = CommonConstant.X_GM_APP_VERSION) String appVer
+			@RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType
 	){
 
-		return new CommonApiResponse<>(preferenceService.getPreferenceVideoArtistNewList(characterNo, osType));
+		if(ObjectUtils.isEmpty(characterNo)){
+			return null;
+		}
+
+		return new CommonApiResponse<>(new ListDto<>(preferenceService.getPreferenceVideoArtistNewList(characterNo, osType)));
 
 	}
 
@@ -96,11 +105,17 @@ public class PreferenceController {
 	public CommonApiResponse getPreferenceVideoGenreNewList(
 			@ApiIgnore @RequestGMContext GMContext ctx,
 			@RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo,
-			@RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType,
-			@RequestHeader(value = CommonConstant.X_GM_APP_VERSION) String appVer
+			@RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType
 	){
 
-		return new CommonApiResponse<>(preferenceService.getPreferenceVideoGenreNewList(characterNo, osType));
+
+    	List<Panel> panelList = preferenceService.getPreferenceVideoGenreNewList(characterNo, osType);
+
+    	if(CollectionUtils.isEmpty(panelList)){
+    		return null;
+	    }
+
+		return new CommonApiResponse<>(new ListDto<>(panelList));
 
 	}
 }

@@ -28,6 +28,7 @@ import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.PreferPropsType;
+import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.common.domain.domain.HomeContentType;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
@@ -460,7 +461,19 @@ public class PreferenceServiceImpl implements PreferenceService {
 	 */
 	@Override
 	public List<Panel> getPreferenceVideoArtistNewList(Long characterNo, OsType osType){
-		return preferArtistVideoPanelAssembly.getRecommendPanelList(characterNo, osType);
+
+		String redisKey = String.format(RedisKeyConstant.PERSONAL_PREFERENCE_VIDEO_ARTIST_NEW_LIST, characterNo);
+
+		if(redisService.exists(redisKey)){
+			return redisService.getListWithPrefix(redisKey, Panel.class);
+		}
+
+		List<Panel> panelList = preferArtistVideoPanelAssembly
+				.getRecommendPanelList(characterNo, osType);
+
+		redisService.setWithPrefix(redisKey, panelList, 3600);
+
+		return panelList;
 
 	}
 
@@ -473,8 +486,13 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
     public List<Panel> getPreferenceVideoGenreNewList(Long characterNo, OsType osType){
 
-		Date from = new Date();
+		String redisKey = String.format(RedisKeyConstant.PERSONAL_PREFERENCE_VIDEO_GENRE_NEW_LIST, characterNo);
 
+        if(redisService.exists(redisKey)){
+        	return redisService.getListWithPrefix(redisKey, Panel.class);
+        }
+
+		Date from = new Date();
 
 		List<Panel> panelList =	Optional.ofNullable(
 										metaClient.getVideos(
@@ -499,6 +517,10 @@ public class PreferenceServiceImpl implements PreferenceService {
 										.collect(Collectors.toList());
 
 		panelList.removeAll(getPreferenceVideoArtistNewList(characterNo, osType));
+
+		// 최신 비디오는 한시간 마다 갱신되므로 캐쉬도 한시간 정책..
+
+		redisService.setWithPrefix(redisKey, panelList, 3600);
 
 		return panelList;
     }
