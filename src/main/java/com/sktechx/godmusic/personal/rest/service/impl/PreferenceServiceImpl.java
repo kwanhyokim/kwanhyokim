@@ -45,6 +45,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.preference.PreferenceSimilarA
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 import com.sktechx.godmusic.personal.rest.repository.*;
+import com.sktechx.godmusic.personal.rest.service.MetaApiProxy;
 import com.sktechx.godmusic.personal.rest.service.PreferenceService;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2.PreferArtistVideoPanelAssembly;
 import lombok.extern.slf4j.Slf4j;
@@ -83,6 +84,9 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     @Autowired
     private MetaClient metaClient;
+
+    @Autowired
+    private MetaApiProxy metaApiProxy;
 
     @Override
     public ChartResponse getPreferenceGenreList(Long characterNo) {
@@ -498,6 +502,8 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 		CommonApiResponse<ListDto<List<VideoVo>>> list = metaClient.getVideos(MetaVideoRequestVo.builder().videoIds(videos).build());
 		log.debug("list {} "+ list);
+
+		CommonApiResponse<ArtistDto> artistDtoCommonApiResponse = metaApiProxy.artists(2569L);
 
 		List<Panel> panelList =	Optional.ofNullable(
 				metaClient.getVideos(

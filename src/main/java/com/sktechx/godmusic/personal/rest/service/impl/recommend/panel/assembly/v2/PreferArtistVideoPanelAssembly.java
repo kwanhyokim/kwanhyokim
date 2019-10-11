@@ -86,7 +86,7 @@ public class PreferArtistVideoPanelAssembly extends PanelSignAssembly {
                 Optional.ofNullable(
                         metaClient.getVideos(
                                 MetaVideoRequestVo.builder()
-                                        .videoIds(preferMapper.selectPreferArtistVideoIdListByCharacterNo(personalPhaseMeta.getCharacterNo()))
+                                        .videoIds(preferMapper.selectPreferArtistVideoIdListByCharacterNo(personalPhaseMeta.getCharacterNo()).toArray(new Long[0]))
                                         .build()
                         ).getData().getList()
 
