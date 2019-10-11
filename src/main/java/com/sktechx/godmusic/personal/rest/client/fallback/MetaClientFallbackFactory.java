@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
-import com.sktechx.godmusic.personal.rest.client.model.MetaVideoRequestVo;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 import feign.hystrix.FallbackFactory;
@@ -36,17 +35,13 @@ public class MetaClientFallbackFactory implements FallbackFactory<MetaClient>{
 
     @Override
     public MetaClient create(Throwable throwable) {
-        return new MetaClient() {
-            @Override
-            public CommonApiResponse<ListDto<List<VideoVo>>> getVideos(
-                    MetaVideoRequestVo metaVideoRequestVo) {
+        return metaVideoRequestVo -> {
 
-                List<VideoVo> list = new ArrayList<>();
-                list.add(VideoVo.mock());
+            List<VideoVo> list = new ArrayList<>();
+            list.add(VideoVo.mock());
 
-                return CommonApiResponse.<ListDto<List<VideoVo>>>builder()
-                        .data(new ListDto<>(list)).build();
-            }
+            return CommonApiResponse.<ListDto<List<VideoVo>>>builder()
+                    .data(new ListDto<>(list)).build();
         };
     }
 }

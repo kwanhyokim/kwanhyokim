@@ -32,7 +32,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 @FeignClient(value = "meta-api", fallbackFactory = MetaClientFallbackFactory.class)
 public interface MetaClient {
 
-    @PostMapping(name="/meta/internal/videos")
+    @PostMapping("/meta/internal/videos")
     CommonApiResponse<ListDto<List<VideoVo>>> getVideos(@RequestBody MetaVideoRequestVo metaVideoRequestVo);
 
 }

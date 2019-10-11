@@ -14,6 +14,7 @@ package com.sktechx.godmusic.personal.rest.service;
 
 import java.util.List;
 
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +30,7 @@ import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrac
  * @author 안영현/SKTECHX (younghyun.ahn@sk.com)
  * @date 2018. 8. 1.
  */
+@FeignClient("meta-api")
 public interface MetaApiProxy {
 
     @GetMapping("/meta/v1/artist/{artistId}")
