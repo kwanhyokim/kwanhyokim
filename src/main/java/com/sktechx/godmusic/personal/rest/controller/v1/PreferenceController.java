@@ -95,7 +95,14 @@ public class PreferenceController {
 //			return null;
 //		}
 
-		return new CommonApiResponse<>(new ListDto<>(preferenceService.getPreferenceVideoArtistNewList(characterNo, osType)));
+
+		List<Panel> panelList = preferenceService.getPreferenceVideoArtistNewList(characterNo, osType);
+
+		if(CollectionUtils.isEmpty(panelList)){
+			return null;
+		}
+
+		return new CommonApiResponse<>(new ListDto<>(panelList));
 
 	}
 

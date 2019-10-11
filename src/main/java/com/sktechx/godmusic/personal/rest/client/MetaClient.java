@@ -10,16 +10,16 @@
 
 package com.sktechx.godmusic.personal.rest.client;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.personal.rest.client.fallback.MetaClientFallbackFactory;
+import com.sktechx.godmusic.personal.rest.client.model.MetaVideoRequestVo;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 
 /**
@@ -32,11 +32,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 @FeignClient(value = "meta-api", fallbackFactory = MetaClientFallbackFactory.class)
 public interface MetaClient {
 
-    @GetMapping("/meta/v1/videos/{videoIds}")
-    CommonApiResponse<List<VideoVo>> getVideos(
-            @PathVariable("videoIds") List<Long> videoIdList,
-            @RequestParam("from")Date from,
-            @RequestParam("to")Date to
-    );
+    @PostMapping("/meta/internal/videos")
+    CommonApiResponse<ListDto<List<VideoVo>>> getVideos(@RequestBody MetaVideoRequestVo metaVideoRequestVo);
 
 }

@@ -33,6 +33,7 @@ import com.sktechx.godmusic.personal.common.domain.domain.HomeContentType;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
+import com.sktechx.godmusic.personal.rest.client.model.MetaVideoRequestVo;
 import com.sktechx.godmusic.personal.rest.model.dto.*;
 import com.sktechx.godmusic.personal.rest.model.dto.preference.PreferSimilarArtistDto;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.Artist;
@@ -464,9 +465,9 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 		String redisKey = String.format(RedisKeyConstant.PERSONAL_PREFERENCE_VIDEO_ARTIST_NEW_LIST, characterNo);
 
-		if(redisService.exists(redisKey)){
-			return redisService.getListWithPrefix(redisKey, Panel.class);
-		}
+//		if(redisService.exists(redisKey)){
+//			return redisService.getListWithPrefix(redisKey, Panel.class);
+//		}
 
 		List<Panel> panelList = preferArtistVideoPanelAssembly
 				.getRecommendPanelList(characterNo, osType);
@@ -488,28 +489,23 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 		String redisKey = String.format(RedisKeyConstant.PERSONAL_PREFERENCE_VIDEO_GENRE_NEW_LIST, characterNo);
 
-        if(redisService.exists(redisKey)){
-        	return redisService.getListWithPrefix(redisKey, Panel.class);
-        }
-
-		Date from = new Date();
+//        if(redisService.exists(redisKey)){
+//        	return redisService.getListWithPrefix(redisKey, Panel.class);
+//        }
 
 		List<Panel> panelList =	Optional.ofNullable(
 										metaClient.getVideos(
-												Optional.ofNullable(
-													preferenceMapper.selectPreferArtistVideoIdListByCharacterNo(characterNo)
+												MetaVideoRequestVo.builder()
+												.videoIds(
+													Optional.ofNullable(
+														preferenceMapper.selectPreferArtistVideoIdListByCharacterNo(characterNo)
+													)
+													.orElse(
+														preferenceMapper.selectDefaultSvcGenreVideoIdList()
+													)
 												)
-												.orElse(
-													preferenceMapper.selectDefaultSvcGenreVideoIdList()
-												)
-
-												,
-												from,
-												// 7 days
-												DateUtil.getDate(from, 604800)
-
-										).getData()
-
+												.build()
+										).getData().getList()
 								).orElseGet(Collections::emptyList)
 										.stream()
 										.filter(Objects::nonNull)

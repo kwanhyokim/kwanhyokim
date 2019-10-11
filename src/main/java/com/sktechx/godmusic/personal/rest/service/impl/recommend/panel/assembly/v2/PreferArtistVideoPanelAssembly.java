@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
+import com.sktechx.godmusic.personal.rest.client.model.MetaVideoRequestVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
@@ -84,11 +85,10 @@ public class PreferArtistVideoPanelAssembly extends PanelSignAssembly {
         panelList.addAll(
                 Optional.ofNullable(
                         metaClient.getVideos(
-                                preferMapper.selectPreferArtistVideoIdListByCharacterNo(personalPhaseMeta.getCharacterNo()),
-                                from,
-                                to
-
-                        ).getData()
+                                MetaVideoRequestVo.builder()
+                                        .videoIds(preferMapper.selectPreferArtistVideoIdListByCharacterNo(personalPhaseMeta.getCharacterNo()))
+                                        .build()
+                        ).getData().getList()
 
                 ).orElseGet(Collections::emptyList)
                         .stream()
