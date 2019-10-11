@@ -9,10 +9,11 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.video;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Lists;
 import com.sktechx.godmusic.lib.domain.code.YnType;
@@ -20,16 +21,17 @@ import com.sktechx.godmusic.personal.common.domain.type.MediaRatingType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.video.VideoPanel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.ToString;
 
 import java.util.Date;
 import java.util.List;
 
 @SuppressWarnings("WeakerAccess")
-@Getter
+@Data
 @Builder
 @ToString(callSuper = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class VideoVo {
 
     @ApiModelProperty(value = "동영상 아이디")
@@ -56,7 +58,7 @@ public class VideoVo {
 
     @ApiModelProperty(value = "동영상 발매일(yyyy-mm-dd hh:mm:ss)")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime videoReleaseDt;
+    private Date videoReleaseDt;
 
     @ApiModelProperty(value = "영상 시청 연령 타입")
     private MediaRatingType mediaRatingType;
@@ -88,6 +90,12 @@ public class VideoVo {
     @ApiModelProperty(value = "동영상 대표 아티스트")
     VideoArtistVo representationArtist;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private Date dispStartDtime;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private Date dispEndDtime;
+
     public static VideoVo mock() {
 
         VideoVo mock = VideoVo.builder()
@@ -98,7 +106,7 @@ public class VideoVo {
                 .mediaRatingType(MediaRatingType.AGE_15_OVER)
                 .playTm("03:40")
                 .agencyId(1234L)
-                .videoReleaseDt(LocalDateTime.now())
+                .videoReleaseDt(new Date())
                 .svcFreeYn(YnType.Y)
                 .svcStreamingYn(YnType.Y)
                 .representationArtist(VideoArtistVo.builder().artistId(100L).artistNm("Daniel").build())

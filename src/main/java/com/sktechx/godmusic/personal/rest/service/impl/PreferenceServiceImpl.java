@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
-import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
@@ -37,7 +36,6 @@ import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.client.model.MetaVideoRequestVo;
 import com.sktechx.godmusic.personal.rest.model.dto.*;
 import com.sktechx.godmusic.personal.rest.model.dto.preference.PreferSimilarArtistDto;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.Artist;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.Chart;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.ChartResponse;
@@ -45,7 +43,6 @@ import com.sktechx.godmusic.personal.rest.model.vo.preference.PreferenceSimilarA
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 import com.sktechx.godmusic.personal.rest.repository.*;
-import com.sktechx.godmusic.personal.rest.service.MetaApiProxy;
 import com.sktechx.godmusic.personal.rest.service.PreferenceService;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2.PreferArtistVideoPanelAssembly;
 import lombok.extern.slf4j.Slf4j;
@@ -84,9 +81,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     @Autowired
     private MetaClient metaClient;
-
-    @Autowired
-    private MetaApiProxy metaApiProxy;
 
     @Override
     public ChartResponse getPreferenceGenreList(Long characterNo) {
@@ -498,34 +492,29 @@ public class PreferenceServiceImpl implements PreferenceService {
 //        if(redisService.exists(redisKey)){
 //        	return redisService.getListWithPrefix(redisKey, Panel.class);
 //        }
-		Long[] videos = {400000006L};
 
-		CommonApiResponse<ListDto<List<VideoVo>>> list = metaClient.getVideos(MetaVideoRequestVo.builder().videoIds(videos).build());
-		log.debug("list {} "+ list);
+		List<Long> videoIdList = preferenceMapper.selectPreferGenreVideoIdListByCharacterNo(characterNo);
 
-		CommonApiResponse<ArtistDto> artistDtoCommonApiResponse = metaApiProxy.artists(2569L);
+
+		if(CollectionUtils.isEmpty(videoIdList)) {
+			videoIdList = preferenceMapper.selectDefaultSvcGenreVideoIdList();
+		}
+
+		Date from = DateUtil.toDate(DateUtil.toString(new Date()));
+		Date to = DateUtil.getDate(from, 604800);
 
 		List<Panel> panelList =	Optional.ofNullable(
 				metaClient.getVideos(
-						MetaVideoRequestVo.builder()
-								.videoIds(
-										Optional.ofNullable(
-												preferenceMapper.selectPreferArtistVideoIdListByCharacterNo(characterNo)
-
-										)
-												.orElse(
-														preferenceMapper.selectDefaultSvcGenreVideoIdList()
-										)
-										.toArray(new Long[0])
-
-								)
-								.build()
-				).getData().getList()
-		).orElseGet(Collections::emptyList)
-										.stream()
-										.filter(Objects::nonNull)
-										.map(VideoVo::convertToVideoPanel)
-										.collect(Collectors.toList());
+						MetaVideoRequestVo.builder().videoIds(videoIdList).build()
+				)
+				.getData().getList()
+		)
+			.orElseGet(Collections::emptyList)
+			.stream()
+			.filter(Objects::nonNull)
+			.filter(videoVo -> videoVo.getDispStartDtime().after(from) && videoVo.getDispStartDtime().before(to))
+			.map(VideoVo::convertToVideoPanel)
+			.collect(Collectors.toList());
 
 		panelList.removeAll(getPreferenceVideoArtistNewList(characterNo, osType));
 

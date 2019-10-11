@@ -15,16 +15,10 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.sktechx.godmusic.lib.mybatis.annotation.ReadOnlyMapper;
-import com.sktechx.godmusic.personal.rest.model.dto.VideoDto;
 
 
 @ReadOnlyMapper
 public interface PreferenceMapper {
-
-    List<VideoDto> selectPreferArtistVideoListByCharacterNo(@Param("characterNo") Long characterNo,
-            @Param("isTop") Boolean isTop);
-
-    List<VideoDto> selectPreferGenreVideoListByCharacterNo(@Param("characterNo") Long characterNo);
 
     List<Long> selectPreferArtistVideoIdListByCharacterNo(@Param("characterNo") Long characterNo);
 

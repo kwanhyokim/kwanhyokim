@@ -31,6 +31,7 @@ import com.sktechx.godmusic.personal.common.domain.type.AppNameType;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
 import com.sktechx.godmusic.personal.rest.client.MemberClient;
+import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.model.dto.AlbumDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.PlayListDto;
@@ -40,7 +41,6 @@ import com.sktechx.godmusic.personal.rest.model.dto.member.CharacterType;
 import com.sktechx.godmusic.personal.rest.model.vo.like.*;
 import com.sktechx.godmusic.personal.rest.repository.LikeMapper;
 import com.sktechx.godmusic.personal.rest.service.LikeService;
-import com.sktechx.godmusic.personal.rest.service.MetaApiProxy;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -55,7 +55,7 @@ import lombok.extern.slf4j.Slf4j;
 public class LikeServiceImpl implements LikeService {
 
 	@Autowired
-	private MetaApiProxy metaApiProxy;
+	private MetaClient metaClient;
 
 	@Autowired
 	private MemberClient memberClient;
@@ -390,22 +390,22 @@ public class LikeServiceImpl implements LikeService {
 		log.info("validMeta :: " + likeType);
 		switch (likeType) {
 			case LikeConstant.LIKE_CHANNEL :
-				response = metaApiProxy.channel(likeTypeId);
+				response = metaClient.channel(likeTypeId);
 				break;
 			case LikeConstant.LIKE_ALBUM :
-				response = metaApiProxy.album(likeTypeId);
+				response = metaClient.album(likeTypeId);
 				break;
 			case LikeConstant.LIKE_CHART :
-				response = metaApiProxy.chart(likeTypeId);
+				response = metaClient.chart(likeTypeId);
 				break;
 			case LikeConstant.LIKE_ARTIST :
-				response = metaApiProxy.artists(likeTypeId);
+				response = metaClient.artists(likeTypeId);
 				break;
 			case LikeConstant.LIKE_TRACK :
-				response = metaApiProxy.track(likeTypeId);
+				response = metaClient.track(likeTypeId);
 				break;
 			case LikeConstant.LIKE_AFLO :
-				response = metaApiProxy.validChannelOrEmpty(likeTypeId, likeType);
+				response = metaClient.validChannelOrEmpty(likeTypeId, likeType);
 				break;
 			default :
 				throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
