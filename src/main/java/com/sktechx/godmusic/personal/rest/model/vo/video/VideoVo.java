@@ -9,9 +9,6 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.video;
 
-import java.util.Date;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Lists;
@@ -22,6 +19,9 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
+
+import java.util.Date;
+import java.util.List;
 
 @SuppressWarnings("WeakerAccess")
 @Getter

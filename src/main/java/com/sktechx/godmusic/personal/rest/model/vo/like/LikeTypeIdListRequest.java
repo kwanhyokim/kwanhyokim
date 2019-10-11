@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class LikeTypeIdListRequest {
 
 	@NotEmpty
-	@ApiModelProperty(name = "likeTypeList", value = "좋아하는 타입별 아이디(CHNL: 채널, ALBUM: 앨범, CHART: 차트, ARTIST: 아티스트, TRACK: 곡)")
+	@ApiModelProperty(name = "likeTypeList", value = "삭제할 좋아요 대상 Object - 대상 타입 - CHNL: 채널, ALBUM: 앨범, CHART: 차트, ARTIST: 아티스트, TRACK: 곡, VIDEO: 영상")
 	private List<LikeTypeVo> likeTypeList = Collections.emptyList();
 
 	public List<Long> getLikeTargetIds() {

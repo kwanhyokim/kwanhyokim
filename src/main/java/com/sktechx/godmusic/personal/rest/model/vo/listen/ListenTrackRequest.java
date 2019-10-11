@@ -81,4 +81,7 @@ public class ListenTrackRequest {
 
 	@ApiModelProperty(name = "listenSessionId", value = "청취 세션 아이디")
 	private String listenSessionId;
+
+	@ApiModelProperty(name = "sttToken", value = "정산 토큰")
+	private String sttToken;
 }
