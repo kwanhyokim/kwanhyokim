@@ -86,13 +86,14 @@ public class PreferArtistVideoPanelAssembly extends PanelSignAssembly {
                 Optional.ofNullable(
                         metaClient.getVideos(
                                 MetaVideoRequestVo.builder()
-                                        .videoIds(preferMapper.selectPreferArtistVideoIdListByCharacterNo(personalPhaseMeta.getCharacterNo()).toArray(new Long[0]))
+                                        .videoIds(preferMapper.selectPreferArtistVideoIdListByCharacterNo(personalPhaseMeta.getCharacterNo()))
                                         .build()
                         ).getData().getList()
 
                 ).orElseGet(Collections::emptyList)
                         .stream()
                         .filter(Objects::nonNull)
+                        .filter(videoVo -> videoVo.getDispStartDtime().after(from) && videoVo.getDispStartDtime().before(to))
                         .map(VideoVo::convertToVideoPanel)
                         .collect(Collectors.toList())
         );

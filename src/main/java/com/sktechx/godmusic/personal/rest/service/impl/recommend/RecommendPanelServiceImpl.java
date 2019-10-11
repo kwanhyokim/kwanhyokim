@@ -43,6 +43,7 @@ import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentTyp
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.common.util.BooleanComparator;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
+import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
@@ -57,7 +58,6 @@ import com.sktechx.godmusic.personal.rest.repository.ArtistMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
 import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
-import com.sktechx.godmusic.personal.rest.service.MetaApiProxy;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2.AfloPanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2.OperationTpoPanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2.PreferGenreThemePanelAssembly;
@@ -106,7 +106,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     private RedisService redisService;
 
     @Autowired
-    private MetaApiProxy metaApiProxy;
+    private MetaClient metaClient;
 
     @Autowired
     private AfloPanelAssembly afloPanelAssembly;
@@ -697,7 +697,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
         // feign 으로 변경
         // edited by Bob 2018.09.05
-        CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>> response = metaApiProxy.recommendPanelTracks(trackIdList.toArray(new Long[0]));
+        CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>> response = metaClient.recommendPanelTracks(trackIdList.toArray(new Long[0]));
 
         return response.getData();
 

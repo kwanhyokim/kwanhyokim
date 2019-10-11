@@ -18,7 +18,7 @@ import lombok.*;
  * @author N/A
  * @date 2019. 09. 30.
  */
-@Getter
+@Data
 @Builder
 public class VideoGridThumbnailImageVo {
 
