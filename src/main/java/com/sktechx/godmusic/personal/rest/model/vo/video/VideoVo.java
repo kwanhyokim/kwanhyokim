@@ -9,6 +9,9 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.video;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Lists;
@@ -53,7 +56,7 @@ public class VideoVo {
 
     @ApiModelProperty(value = "동영상 발매일(yyyy-mm-dd hh:mm:ss)")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private Date videoReleaseDt;
+    private LocalDateTime videoReleaseDt;
 
     @ApiModelProperty(value = "영상 시청 연령 타입")
     private MediaRatingType mediaRatingType;
@@ -95,7 +98,7 @@ public class VideoVo {
                 .mediaRatingType(MediaRatingType.AGE_15_OVER)
                 .playTm("03:40")
                 .agencyId(1234L)
-                .videoReleaseDt(new Date())
+                .videoReleaseDt(LocalDateTime.now())
                 .svcFreeYn(YnType.Y)
                 .svcStreamingYn(YnType.Y)
                 .representationArtist(VideoArtistVo.builder().artistId(100L).artistNm("Daniel").build())
