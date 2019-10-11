@@ -128,7 +128,10 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             panelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
 
             if(!ObjectUtils.isEmpty(personalPhaseMeta.getAfloCharacterExpireDtime())){
-                List<Panel> afloPanelList = afloPanelAssembly.getRecommendPanelList(personalPhaseMeta.getCharacterNo(), personalPhaseMeta.getOsType());
+                List<Panel> afloPanelList = new ArrayList<>();
+                afloPanelAssembly.appendAfloChannelPanelList(
+                        personalPhaseMeta.getCharacterNo(), personalPhaseMeta.getOsType(), afloPanelList, 2
+                );
 
                 if(!CollectionUtils.isEmpty(afloPanelList)){
                     panelList = ListUtils.union(afloPanelList.stream().limit(2).collect(Collectors.toList()), panelList);
@@ -519,13 +522,16 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         RecommendPanelInfoDto panel;
         RecommendGenreVo recommendGenreVo = recommendReadMapper.selectRecommendGenreByRcmmdId(panelContentId);
         String genreNm;
-        Date createDTime = new Date();
+
+        Date dispStdStartDt = new Date();
+
         title = RecommendConstant.RCMMD_TRACK_PANEL_TITLE;
         SeedGenreVo seedGenreVo = null;
         String subTitle = RecommendConstant.RCMMD_CF_TRACK_PANEL_SUB_TITLE;
+
         if(!ObjectUtils.isEmpty(recommendGenreVo)){
             genreNm = recommendGenreVo.getSvcGenreNm();
-            createDTime = recommendGenreVo.getDispStdStartDt();
+            dispStdStartDt = recommendGenreVo.getDispStdStartDt();
 
             seedGenreVo = SeedGenreVo.builder()
                     .name(genreNm)
@@ -558,8 +564,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 .subTitle(subTitle)
                 .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType , dispSn))
                 .trackCount(trackCount)
-                .newYn(this.getNewYn(createDTime))
-                .renewDtime(createDTime)
+                .newYn(this.getNewYn(dispStdStartDt))
+                .renewDtime(dispStdStartDt)
                 .seedGenreVo(seedGenreVo)
                 .build();
         return panel;
@@ -645,6 +651,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 .imgList((artistDtoList == null || artistDtoList.get(0) == null? null : artistDtoList.get(0).getImgList()))
                 .artistList(artistDtoList)
                 .artistCount(artistDtoList.size())
+                .renewDtime(recommendArtistDto.getDispStdStartDt())
+
                 .newYn(this.getNewYn(recommendArtistDto.getDispStdStartDt()))
                 .seedArtistVo(SeedArtistVo.builder()
                     .name(subTitle)
@@ -864,7 +872,6 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         }
     }
 
-
     private List<RecommendPreferGenreSimilarTrackDto> getRecommendPreferGenreSimilarTrackDtos(Long characterNo, List<PreferGenreTrackDto> preferGenreTrackDtoList) {
         int dispSn = 0;
         List<RecommendPreferGenreSimilarTrackDto> recommendPreferGenreSimilarTrackDtoList = new ArrayList<>();
@@ -986,16 +993,6 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         public int compare(CharacterPreferArtistGenreDto arg0, CharacterPreferArtistGenreDto arg1) {
             return Integer.compare(arg1.getGenreCnt(), arg0.getGenreCnt());
         }
-    }
-
-    private String makeRecommendPanelTitleWithDtime(Date date, String title){
-
-        if(ObjectUtils.isEmpty(date)){
-            return title;
-        }
-
-        return sdf.format(date) + " " + title;
-
     }
 
     private YnType getNewYn(Date dispDate){

@@ -145,10 +145,7 @@ public abstract class PanelAssembly {
         if(!CollectionUtils.isEmpty(panelList) && panelList.size() > 1){
 
             List<Panel> chartPanelList = panelList.stream().filter(panel -> {
-                if(panel instanceof ChartPanel) {
-                    return true;
-                }
-                return false;
+                return panel instanceof ChartPanel;
             }).collect(Collectors.toList());
 
             if(!CollectionUtils.isEmpty(chartPanelList) && chartPanelList.size() == 1 ){
@@ -162,5 +159,51 @@ public abstract class PanelAssembly {
         }
     }
 
+    protected void mergePanelList(List<Panel> panelList, List<Panel> myPanelList,
+            List<Panel> chartPanelList, int panelSize) {
+        Optional<Panel> liveChartPanel = Optional.ofNullable(chartPanelList)
+                .orElseGet(Collections::emptyList)
+                .stream()
+                .filter(panel -> RecommendPanelType.LIVE_CHART.equals(panel.getType()))
+                .findFirst();
+        Optional<Panel> kidsChartPanel = Optional.ofNullable(chartPanelList)
+                .orElseGet(Collections::emptyList)
+                .stream()
+                .filter(panel -> RecommendPanelType.KIDS_CHART.equals(panel.getType()))
+                .findFirst();
+        if(liveChartPanel.isPresent()){
+            panelSize--;
+        }
+        if(kidsChartPanel.isPresent()){
+            panelSize--;
+        }
+        if(myPanelList.size() > panelSize){
+            myPanelList = myPanelList.subList(0, panelSize - 1);
+        }
+        panelList.addAll(myPanelList);
+        if(liveChartPanel.isPresent()) {
+            panelList.add(0, liveChartPanel.get());
+        }
+        if(kidsChartPanel.isPresent()){
+            panelList.add(kidsChartPanel.get());
+        }
+    }
+
+    protected void putTpoAndThemeImageList(PersonalPhaseMeta personalPhaseMeta,
+            List<Panel> myPanelList) {
+        List<ImageInfo> imageInfoList = recommendReadMapper.selectTpoAndThemeImageList(personalPhaseMeta.getOsType());
+        if(CollectionUtils.isEmpty(imageInfoList)){
+            imageInfoList = new ArrayList<>();
+        }
+        if(imageInfoList.size() < 5){
+            List<ImageInfo> tempImageInfoList = Arrays.asList(new ImageInfo[5]);
+            Collections.fill(tempImageInfoList, imageInfoList.get(0));
+            imageInfoList = tempImageInfoList;
+        }
+        for(int i=0; i<myPanelList.size(); i++) {
+            ImageInfo imageInfo = imageInfoList.get(i);
+            myPanelList.get(i).setImgList(Arrays.asList(imageInfo));
+        }
+    }
 
 }

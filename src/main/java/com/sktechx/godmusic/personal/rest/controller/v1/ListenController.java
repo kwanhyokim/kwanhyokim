@@ -2,20 +2,21 @@ package com.sktechx.godmusic.personal.rest.controller.v1;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
+import com.sktechx.godmusic.lib.domain.RequestGMContext;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenTrackRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.video.ResourcePlayLogRequest;
 import com.sktechx.godmusic.personal.rest.service.ListenService;
 import com.sktechx.godmusic.personal.rest.validate.Validator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 /**
  * Created by Kobe.
@@ -57,6 +58,23 @@ public class ListenController {
 		Validator.loginValidate(currentContext);
 
 		listenService.addListenHistByTrack(request, currentContext, httpServletRequest);
+		return CommonApiResponse.emptySuccess();
+	}
+
+	/**
+	 * Resource Play 로그 기록
+	 */
+	@ApiOperation(value = "RESOUCE 청취 로그", httpMethod = "POST", notes = "RESOURCE 재생(ex.영상) 로그를 MQ 로 남김")
+	@PostMapping("/resource")
+	public CommonApiResponse recordWatchedVideoHistory(
+			@ApiIgnore @RequestGMContext GMContext context,
+			@ApiIgnore @RequestHeader(name = "client_ip", required = false, defaultValue = "") String clientIp,
+			@Valid @RequestBody ResourcePlayLogRequest logRequest) {
+
+		Validator.loginValidate(context);
+
+		// TODO. MQ로 시청 로그 전달
+
 		return CommonApiResponse.emptySuccess();
 	}
 

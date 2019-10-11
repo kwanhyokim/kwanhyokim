@@ -57,6 +57,8 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConst
 @Slf4j
 public class ChannelServiceImpl implements ChannelService {
 
+    private static int RECENT_LISTENED_LIST_LIMIT = 300;
+
     @Autowired
     private SqlSessionTemplate sqlSessionTemplate;
 
@@ -94,13 +96,8 @@ public class ChannelServiceImpl implements ChannelService {
 
         ChnlDto floAndDataChnlDto = channelMapper.selectFlacChannel();
 
-        if(!ObjectUtils.isEmpty(floAndDataChnlDto)){
-            floAndDataChnlDto.setChnlType(ChannelType.FLAC);
-            floAndDataChnlDto.setTrackCount(null);
-            floAndDataChnlDto.setTrackList(null);
-            floAndDataChnlDto.setCreateDtime(null);
-            floAndDataChnlDto.setRenewTrackCnt(null);
-        }
+        Optional.ofNullable(floAndDataChnlDto)
+            .ifPresent(chnlDto -> chnlDto.setChnlType(ChannelType.FLAC));
 
         return floAndDataChnlDto;
     }
@@ -143,9 +140,7 @@ public class ChannelServiceImpl implements ChannelService {
 
     private void filterDuplicatePopularChnlList(List<Long> filterChnlIdList , List<ChnlDto> popularChnlList){
         if( !CollectionUtils.isEmpty(filterChnlIdList) && !CollectionUtils.isEmpty(popularChnlList) ){
-            popularChnlList.removeIf(chnlDto -> {
-                return filterChnlIdList.contains(chnlDto.getChnlId());
-            });
+            popularChnlList.removeIf(chnlDto -> filterChnlIdList.contains(chnlDto.getChnlId()));
         }
     }
     @Override
@@ -286,9 +281,12 @@ public class ChannelServiceImpl implements ChannelService {
 
         lastListenHistory.addAll(lastListenHistoryByChannel);
         lastListenHistory.addAll(lastListenHistoryByAlbum);
-        lastListenHistory.sort((m1, m2) -> m1.getLastListenDtime().after(m2.getLastListenDtime()) ? -1 : 1);
 
-        return lastListenHistory;
+        return lastListenHistory.stream()
+                .distinct()
+                .sorted(Comparator.comparing(LastListenHistoryDto::getLastListenDtime).reversed())
+                .limit(RECENT_LISTENED_LIST_LIMIT)
+                .collect(Collectors.toList());
     }
 
     private List<PreferGenrePopularChnlDto> getPreferGenreUniqueChannelList(final List<Long> preferGenreIdList ,

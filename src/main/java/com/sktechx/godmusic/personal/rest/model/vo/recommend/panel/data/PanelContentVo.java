@@ -12,6 +12,7 @@ package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.util.ObjectUtils;
 
@@ -52,9 +53,9 @@ public class PanelContentVo {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
     private Date updateDtime;
 
-    private YnType renewYn;
-
     private GenreVo genre;
+
+    private YnType renewYn;
 
     @JsonIgnore
     private OsType osType;
@@ -66,5 +67,20 @@ public class PanelContentVo {
         }else{
             return String.valueOf(id);
         }
+    }
+
+    public YnType getRenewYn(){
+
+        if(!ObjectUtils.isEmpty(this.renewYn)){
+            return renewYn;
+        }
+
+        Date stdDate = new Date((System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1)));
+        if(stdDate.before(this.createDtime)){
+            return YnType.Y;
+        }else{
+            return YnType.N;
+        }
+
     }
 }

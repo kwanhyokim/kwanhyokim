@@ -105,8 +105,7 @@ public class ChannelController {
 
     @ApiOperation(value = "FLO AND DATA 테마 리스트 ")
     @GetMapping("/floAndDataChnl/list")
-    public CommonApiResponse<ChannelListResponse> getFloAndDataChannelList(
-            @ApiIgnore @RequestGMContext GMContext ctx){
+    public CommonApiResponse<ChannelListResponse> getFloAndDataChannelList(){
 
         ChnlDto floAndDataChannel = channelService.getFloAndDataChannel();
 
@@ -116,6 +115,7 @@ public class ChannelController {
 
         List<ChnlDto> floAndDataChannelList = new ArrayList<>();
         floAndDataChannelList.add(floAndDataChannel);
+
 
         return new CommonApiResponse<>(ChannelListResponse.builder().list(floAndDataChannelList).build());
 

@@ -1,17 +1,23 @@
 package com.sktechx.godmusic.personal.rest.controller.v1;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.web.bind.annotation.*;
-
+import com.google.common.collect.Lists;
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.rest.model.vo.like.*;
+import com.sktechx.godmusic.personal.rest.model.vo.video.RangeResponse;
+import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 import com.sktechx.godmusic.personal.rest.service.LikeService;
 import com.sktechx.godmusic.personal.rest.validate.Validator;
 import io.swagger.annotations.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 /**
  * Created by Kobe.
@@ -26,7 +32,13 @@ import io.swagger.annotations.*;
 public class LikeController {
 
 	@Autowired
+	@Qualifier("likeService")
 	private LikeService likeService;
+
+	@Autowired
+	@Qualifier("likeMongoService")
+	private LikeService likeMongoService;
+
 
 	@ApiOperation(value = "좋아요 플레이리스트 목록 by Kobe ( 기존 /v2/my/channel/like/list GET )", response = LikePlaylistListResponse.class
 			, httpMethod = "GET", notes = "My > 좋아요 > 플레이 리스트 목록")
@@ -42,7 +54,7 @@ public class LikeController {
 
 		Validator.loginValidate(currentContext);
 
-		return new CommonApiResponse(likeService.getPlayListLikeListByLikeType(currentContext.getCharacterNo(), currentContext.getAppVer(), pageable));
+		return new CommonApiResponse<>(likeService.getPlayListLikeListByLikeType(currentContext.getCharacterNo(), currentContext.getAppVer(), pageable));
 	}
 
 	@ApiOperation(value = "좋아요 앨범 목록 by Kobe ( 기존 /v2/my/album/like/list GET )", response = LikeAlbumListResponse.class
@@ -56,10 +68,9 @@ public class LikeController {
 			@PageableDefault(size=50, page=0) Pageable pageable
 	) {
 		GMContext currentContext = GMContext.getContext();
-
 		Validator.loginValidate(currentContext);
 
-		return new CommonApiResponse(likeService.getAlbumLikeListByLikeType(currentContext.getCharacterNo(), pageable));
+		return new CommonApiResponse<>(likeMongoService.getAlbumLikeListByLikeType(currentContext.getCharacterNo(), pageable));
 	}
 
 	@ApiOperation(value = "좋아요 아티스트 목록 by Kobe ( 기존 /v2/my/artist/like/list GET )", response = LikeArtistListResponse.class
@@ -73,10 +84,9 @@ public class LikeController {
 			@PageableDefault(size=50, page=0) Pageable pageable
 	) {
 		GMContext currentContext = GMContext.getContext();
-
 		Validator.loginValidate(currentContext);
 
-		return new CommonApiResponse(likeService.getArtistLikeListByLikeType(currentContext.getCharacterNo(), pageable));
+		return new CommonApiResponse<>(likeMongoService.getArtistLikeListByLikeType(currentContext.getCharacterNo(), pageable));
 	}
 
 	@ApiOperation(value = "좋아요 트랙별 목록 by Kobe ( 기존 /v2/my/track/like/list GET )", response = LikeTrackListResponse.class
@@ -90,67 +100,102 @@ public class LikeController {
 			@PageableDefault(size=50, page=0) Pageable pageable
 	) {
 		GMContext currentContext = GMContext.getContext();
-
 		Validator.loginValidate(currentContext);
 
-		return new CommonApiResponse(likeService.getTrackLikeListByLikeType(currentContext.getCharacterNo(), pageable));
+		return new CommonApiResponse<>(likeMongoService.getTrackLikeListByLikeType(currentContext.getCharacterNo(), pageable));
 	}
 
-	@ApiOperation(value = "좋아요 여부 확인 by Kobe"
-			, httpMethod = "GET", notes = "사용자가 좋아요 한것(타입별)이 맞는지 확인")
+	/**
+	 * 좋아요 영상 목록 조회
+	 */
+	@ApiOperation(value = "좋아요 영상 목록 조회", response = LikeVideoRangeResponse.class, httpMethod = "GET", notes = "보관함 > 좋아요 영상")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "page", required = true, dataType = "int", paramType = "query", value = "페이지", defaultValue = "1"),
+			@ApiImplicitParam(name = "size", required = true, dataType = "int", paramType = "query", value = "사이즈", defaultValue = "50")
+	})
+	@GetMapping("/type/video/list")
+	public CommonApiResponse<RangeResponse<VideoVo>> getVideoes(
+			@PageableDefault(page = 1, size = 50) Pageable pageable) {
+
+		GMContext currentContext = GMContext.getContext();
+		Validator.loginValidate(currentContext);
+
+		RangeResponse<VideoVo> mockResponse = RangeResponse.of(new PageImpl(Lists.newArrayList(VideoVo.mock()), pageable, 1L) );
+
+		return new CommonApiResponse(mockResponse);
+	}
+
+	/**
+	 * 좋아요 대상의 좋아요 여부 확인
+	 */
+	@ApiOperation(value = "좋아요 여부 확인", httpMethod = "GET",
+			notes = "좋아요 대상별 좋아요 여부 확인; 좋아요 대상 타입 - CHNL(채널) | ALBUM(앨범) | CHART(차트) | ARTIST(아티스트) | TRACK(곡) | VIDEO(영상)")
 	@GetMapping("/type/{likeType}/ids/{likeTypeId}")
 	public CommonApiResponse<LikeYnResponse> getLikeYn(
-			@ApiParam(defaultValue = "ALBUM",
-					value = "좋아하는 타입(CHNL: 채널, CHART: 차트, ALBUM: 앨범, ARTIST: 아티스트, TRACK: 곡)",
-					allowableValues = "CHNL, CHART, ALBUM, ARTIST, TRACK") @PathVariable String likeType,
-			@ApiParam(value = "좋아하는 타입의 ID") @PathVariable Long likeTypeId
-	) {
-		GMContext currentContext = GMContext.getContext();
+			@ApiParam(value = "좋아요 대상 타입 - CHNL(채널) | ALBUM(앨범) | CHART(차트) | ARTIST(아티스트) | TRACK(곡) | VIDEO(영상)", defaultValue = "ALBUM",
+					allowableValues = "CHNL, CHART, ALBUM, ARTIST, TRACK, VIDEO")
+			@PathVariable String likeType,
+			@ApiParam(value = "좋아요 대상 ID") @PathVariable Long likeTypeId) {
 
+		GMContext currentContext = GMContext.getContext();
 		Validator.loginValidate(currentContext);
 
-		return new CommonApiResponse(likeService.getLikeYn(likeType, likeTypeId, currentContext.getCharacterNo()));
+		return new CommonApiResponse<>(likeMongoService.getLikeYn(likeType, likeTypeId, currentContext.getCharacterNo()));
 	}
 
-	@ApiOperation(value = "좋아요 추가 by Kobe ( 기존 /v2/my/album/like , /v2/my/track/like , /v2/my/channel/like, /v2/my/artist/like POST )"
-			, httpMethod = "POST", notes = "타입별 좋아요 추가")
+	/**
+	 * 좋아요 대상 추가 하기
+	 */
+	@ApiOperation(value = "좋아요 추가 하기", httpMethod = "POST",
+			notes = "좋아요 대상 타입 - CHNL(채널) | ALBUM(앨범) | CHART(차트) | ARTIST(아티스트) | TRACK(곡) | VIDEO(영상)")
 	@PostMapping("")
 	public CommonApiResponse addLike(
-			@RequestBody LikeRequest request
+			@Valid @RequestBody LikeRequest request
 	) {
-		GMContext currentContext = GMContext.getContext();
+		GMContext context = GMContext.getContext();
+		Validator.loginValidate(context);
+		Long characterNo = context.getCharacterNo();
 
-		Validator.loginValidate(currentContext);
+		likeMongoService.addLike(request, characterNo);
+		likeService.addLike(request, characterNo);
 
-		likeService.addLike(request, currentContext.getCharacterNo());
 		return CommonApiResponse.emptySuccess();
 	}
 
-	@ApiOperation(value = "좋아요 삭제 by Kobe ( 기존 /v2/my/album/like , /v2/my/track/like , /v2/my/channel/like, /v2/my/artist/like DELETE )"
-			, httpMethod = "DELETE", notes = "타입별 좋아요 삭제")
+	/**
+	 * 좋아요 대상 삭제 하기
+	 */
+	@ApiOperation(value = "좋아요 대상 삭제", httpMethod = "DELETE",
+			notes = "좋아요 삭제 대상 타입 - CHNL(채널) | ALBUM(앨범) | CHART(차트) | ARTIST(아티스트) | TRACK(곡) | VIDEO(영상)")
 	@DeleteMapping("")
 	public CommonApiResponse deleteLike(
-			@RequestBody LikeTypeIdListRequest request
+			@Valid @RequestBody LikeTypeIdListRequest request
 	) {
-		GMContext currentContext = GMContext.getContext();
+		GMContext context = GMContext.getContext();
+		Validator.loginValidate(context);
+		Long characterNo = context.getCharacterNo();
 
-		Validator.loginValidate(currentContext);
+		likeMongoService.deleteLike(request, characterNo);
+		likeService.deleteLike(request, characterNo);
 
-		likeService.deleteLike(request, currentContext.getCharacterNo());
 		return CommonApiResponse.emptySuccess();
 	}
 
-	@ApiOperation(value = "좋아요 정렬 수정 by Kobe ( 기존 /v2/my/album/like , /v2/my/track/like , /v2/my/channel/like, /v2/my/artist/like PUT )"
-			, httpMethod = "PUT", notes = "타입별 좋아요 정렬 순서 수정")
+	/**
+	 * 좋아요 대상 노출 순서 수정하기
+	 */
+	@ApiOperation(value = "좋아요 노출 순서 수정", httpMethod = "PUT", notes = "타입별 좋아요 노출 순서 수정")
 	@PutMapping("")
 	public CommonApiResponse updateLike(
 			@RequestBody LikeTypeIdListRequest request
 	) {
-		GMContext currentContext = GMContext.getContext();
+		GMContext context = GMContext.getContext();
+		Validator.loginValidate(context);
+		Long characterNo = context.getCharacterNo();
 
-		Validator.loginValidate(currentContext);
+		likeMongoService.updateLike(request, characterNo);
+		likeService.updateLike(request, characterNo);
 
-		likeService.updateLike(request, currentContext.getCharacterNo());
 		return CommonApiResponse.emptySuccess();
 	}
 

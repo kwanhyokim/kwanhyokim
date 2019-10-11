@@ -197,4 +197,29 @@
 			ocr_no = #{ocrNo}
 	</select>
 
+	<insert id="insertOcrEventMember"
+			parameterType="com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrEventMemberDto">
+		INSERT INTO tb_ocr_event_member (
+		  	  member_no
+		  	, ocr_no
+		  	, member_chnl_id
+		  	, create_dtime
+		) VALUES (
+			  #{memberNo}
+			, #{ocrNo}
+			, #{memberChnlId}
+            , now()
+		)
+	</insert>
+
+	<select id="selectOcrEvent" resultType="com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrEventDto">
+		SELECT
+			ocr_event_id,
+			event_url
+		FROM
+			tb_ocr_event
+		WHERE
+			now() BETWEEN disp_start_dtime AND disp_end_dtime
+	</select>
+
 </mapper>

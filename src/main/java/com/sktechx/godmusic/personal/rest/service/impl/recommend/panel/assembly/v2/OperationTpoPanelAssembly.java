@@ -46,7 +46,7 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
 @Service("operationTpoPanelAssembly")
 public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
 
-    private OperationTpoPanelAssembly(){}
+    public OperationTpoPanelAssembly(){}
 
     @Autowired
     DisplayClient displayClient;
@@ -63,61 +63,15 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
         List<Panel> chartPanelList = new ArrayList<>();
 
         appendTPOPanel(personalPhaseMeta, myPanelList, 5);
-
-        List<ImageInfo> imageInfoList = recommendReadMapper.selectTpoAndThemeImageList(personalPhaseMeta.getOsType());
-
-        if(CollectionUtils.isEmpty(imageInfoList)){
-            imageInfoList = new ArrayList<>();
-        }
-
-        if(imageInfoList.size() < 5){
-            List<ImageInfo> tempImageInfoList = Arrays.asList(new ImageInfo[5]);
-            Collections.fill(tempImageInfoList, imageInfoList.get(0));
-            imageInfoList = tempImageInfoList;
-        }
-
-        for(int i=0; i<myPanelList.size(); i++) {
-            ImageInfo imageInfo = imageInfoList.get(i);
-            myPanelList.get(i).setImgList(Arrays.asList(imageInfo));
-        }
-
+        putTpoAndThemeImageList(personalPhaseMeta, myPanelList);
         appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
 
-        int panelSize = 7;
-
-        Optional<Panel> liveChartPanel = null;
-        Optional<Panel> kidsChartPanel = null;
-
-        if(!CollectionUtils.isEmpty(chartPanelList)){
-            liveChartPanel = chartPanelList.stream().filter(panel -> RecommendPanelType.LIVE_CHART.equals(panel.getType())).findFirst();
-            kidsChartPanel = chartPanelList.stream().filter(panel -> RecommendPanelType.KIDS_CHART.equals(panel.getType())).findFirst();
-        }
-
-        if(!ObjectUtils.isEmpty(liveChartPanel) && liveChartPanel.isPresent()){
-            panelSize--;
-        }
-
-        if(!ObjectUtils.isEmpty(kidsChartPanel) && kidsChartPanel.isPresent()){
-            panelSize--;
-        }
-
-        if(myPanelList.size() > panelSize){
-            myPanelList = myPanelList.subList(0, panelSize - 1);
-        }
-
-        panelList.addAll(myPanelList);
-
-        if(!ObjectUtils.isEmpty(liveChartPanel) && liveChartPanel.isPresent()) {
-            panelList.add(0, liveChartPanel.get());
-        }
-
-        if(!ObjectUtils.isEmpty(kidsChartPanel) && kidsChartPanel.isPresent()){
-            panelList.add(kidsChartPanel.get());
-        }
-
+        mergePanelList(panelList, myPanelList, chartPanelList, 7);
 
         return panelList;
     }
+
+
     @Override
     public List<Panel> getRecommendPanelList(Long characterNo, OsType osType) {
         return null;
@@ -168,17 +122,13 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
         }
 
         TPOChannelPanel tpoChannelPanel = new TPOChannelPanel(channel, imageInfoList);
+        tpoChannelPanel.setType(RecommendPanelType.POPULAR_CHANNEL);
+        PanelContentVo panelContentVo = tpoChannelPanel.getContent();
 
-        if(!ObjectUtils.isEmpty(tpoChannelPanel)){
-            tpoChannelPanel.setType(RecommendPanelType.POPULAR_CHANNEL);
-
-            PanelContentVo panelContentVo = tpoChannelPanel.getContent();
-
-            if( !ObjectUtils.isEmpty(panelContentVo) && !CollectionUtils.isEmpty(panelContentVo.getTrackList())) {
-                panelContentVo.setTrackCount(panelContentVo.getTrackList().size());
-            }
-
+        if( !ObjectUtils.isEmpty(panelContentVo) && !CollectionUtils.isEmpty(panelContentVo.getTrackList())) {
+            panelContentVo.setTrackCount(panelContentVo.getTrackList().size());
         }
+
 
         return tpoChannelPanel;
     }

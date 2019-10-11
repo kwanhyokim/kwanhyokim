@@ -14,7 +14,8 @@ import org.apache.ibatis.type.MappedTypes;
  */
 public enum  GenderType implements CodeEnum {
 	M("M", "남성"),
-	F("F", "여성");
+	F("F", "여성"),
+	X("X", "혼성");
 
 	private final String code;
 	private final String value;

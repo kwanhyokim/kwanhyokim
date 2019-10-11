@@ -728,7 +728,7 @@
                  a.listen_type,
                  a.listen_type_id,
                  CONCAT(DATE_FORMAT(b.disp_std_start_dt, '%c월 %e일'), ' 아티스트 FLO') AS content_title,
-                 ( SELECT COUNT(*) FROM tb_rcmmd_artist_list WHERE rcmmd_artist_id = b.rcmmd_artist_id) AS track_count,
+                 ( SELECT COUNT(*) FROM tb_rcmmd_artist_track_list WHERE rcmmd_artist_id = b.rcmmd_artist_id) AS track_count,
                  a.last_listen_dtime,
                  c.img_size,
                  c.img_url AS url

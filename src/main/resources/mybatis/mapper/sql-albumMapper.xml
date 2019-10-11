@@ -77,7 +77,7 @@
                         AND character_no = #{characterNo}
                         AND listen_type = 'ALBUM'
                       ORDER BY last_listen_dtime DESC
-                      LIMIT 1000 ) a
+                      LIMIT 300 ) a
               JOIN ted_album b ON a.listen_type_id = b.album_id AND b.disp_status_yn = 'Y' AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
               LEFT OUTER JOIN ted_albumartist c
                 ON b.album_id = c.album_id
