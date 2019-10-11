@@ -10,8 +10,6 @@
 
 package com.sktechx.godmusic.personal.rest.client.model;
 
-import java.util.List;
-
 import lombok.Builder;
 import lombok.Data;
 
@@ -25,5 +23,5 @@ import lombok.Data;
 @Data
 @Builder
 public class MetaVideoRequestVo {
-    private List<Long> videoIds;
+    private Long[] videoIds;
 }
