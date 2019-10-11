@@ -30,7 +30,7 @@ import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrac
  * @author 안영현/SKTECHX (younghyun.ahn@sk.com)
  * @date 2018. 8. 1.
  */
-@FeignClient("meta--api")
+@FeignClient("meta-api")
 public interface MetaApiProxy {
 
     @GetMapping("/meta/v1/artist/{artistId}")
