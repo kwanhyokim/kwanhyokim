@@ -492,17 +492,13 @@ public class PreferenceServiceImpl implements PreferenceService {
 //        if(redisService.exists(redisKey)){
 //        	return redisService.getListWithPrefix(redisKey, Panel.class);
 //        }
-
+		List<Long> videos = new ArrayList<>();
+		videos.add(400000006L);
 		List<Panel> panelList =	Optional.ofNullable(
 										metaClient.getVideos(
 												MetaVideoRequestVo.builder()
 												.videoIds(
-													Optional.ofNullable(
-														preferenceMapper.selectPreferArtistVideoIdListByCharacterNo(characterNo)
-													)
-													.orElse(
-														preferenceMapper.selectDefaultSvcGenreVideoIdList()
-													)
+													videos
 												)
 												.build()
 										).getData().getList()

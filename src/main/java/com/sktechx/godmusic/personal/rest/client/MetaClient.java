@@ -14,7 +14,6 @@ import java.util.List;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.personal.rest.client.fallback.MetaClientFallbackFactory;
@@ -33,6 +32,6 @@ import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 public interface MetaClient {
 
     @PostMapping("/meta/internal/videos")
-    CommonApiResponse<ListDto<List<VideoVo>>> getVideos(@RequestBody MetaVideoRequestVo metaVideoRequestVo);
+    CommonApiResponse<ListDto<List<VideoVo>>> getVideos(MetaVideoRequestVo metaVideoRequestVo);
 
 }
