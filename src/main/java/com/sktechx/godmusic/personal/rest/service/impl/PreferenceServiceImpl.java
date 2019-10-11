@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
@@ -36,6 +37,7 @@ import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.client.model.MetaVideoRequestVo;
 import com.sktechx.godmusic.personal.rest.model.dto.*;
 import com.sktechx.godmusic.personal.rest.model.dto.preference.PreferSimilarArtistDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.Artist;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.Chart;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.ChartResponse;
@@ -494,15 +496,25 @@ public class PreferenceServiceImpl implements PreferenceService {
 //        }
 		List<Long> videos = new ArrayList<>();
 		videos.add(400000006L);
+
+		CommonApiResponse<ListDto<List<VideoVo>>> list = metaClient.getVideos(MetaVideoRequestVo.builder().videoIds(videos).build());
+		log.debug("list {} "+ list);
+
 		List<Panel> panelList =	Optional.ofNullable(
-										metaClient.getVideos(
-												MetaVideoRequestVo.builder()
-												.videoIds(
-													videos
-												)
-												.build()
-										).getData().getList()
-								).orElseGet(Collections::emptyList)
+				metaClient.getVideos(
+						MetaVideoRequestVo.builder()
+								.videoIds(
+										Optional.ofNullable(
+												preferenceMapper.selectPreferArtistVideoIdListByCharacterNo(characterNo)
+										)
+												.orElse(
+														preferenceMapper.selectDefaultSvcGenreVideoIdList()
+										)
+
+								)
+								.build()
+				).getData().getList()
+		).orElseGet(Collections::emptyList)
 										.stream()
 										.filter(Objects::nonNull)
 										.map(VideoVo::convertToVideoPanel)

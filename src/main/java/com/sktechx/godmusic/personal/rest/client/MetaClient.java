@@ -13,7 +13,6 @@ package com.sktechx.godmusic.personal.rest.client;
 import java.util.List;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -33,7 +32,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 @FeignClient(value = "meta-api", fallbackFactory = MetaClientFallbackFactory.class)
 public interface MetaClient {
 
-    @PostMapping(name="/meta/internal/videos", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(name="/meta/internal/videos")
     CommonApiResponse<ListDto<List<VideoVo>>> getVideos(@RequestBody MetaVideoRequestVo metaVideoRequestVo);
 
 }
