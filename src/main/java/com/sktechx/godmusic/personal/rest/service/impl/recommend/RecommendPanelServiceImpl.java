@@ -872,7 +872,6 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         }
     }
 
-
     private List<RecommendPreferGenreSimilarTrackDto> getRecommendPreferGenreSimilarTrackDtos(Long characterNo, List<PreferGenreTrackDto> preferGenreTrackDtoList) {
         int dispSn = 0;
         List<RecommendPreferGenreSimilarTrackDto> recommendPreferGenreSimilarTrackDtoList = new ArrayList<>();
@@ -994,16 +993,6 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         public int compare(CharacterPreferArtistGenreDto arg0, CharacterPreferArtistGenreDto arg1) {
             return Integer.compare(arg1.getGenreCnt(), arg0.getGenreCnt());
         }
-    }
-
-    private String makeRecommendPanelTitleWithDtime(Date date, String title){
-
-        if(ObjectUtils.isEmpty(date)){
-            return title;
-        }
-
-        return sdf.format(date) + " " + title;
-
     }
 
     private YnType getNewYn(Date dispDate){

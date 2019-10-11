@@ -122,4 +122,12 @@ public interface RecommendReadMapper {
 
     @RedisCacheable(prefix = RedisKeyConstant.PREFIX, format = RedisKeyConstant.PERSONAL_TPOANDTHEME_IMAGELIST_KEY, expireSeconds = 3600)
     List<ImageInfo> selectTpoAndThemeImageList(@Param("osType") OsType osType);
+
+    List<RecommendTrackDto> selectRecommendCfTrackIdListByCharacterNo(
+            @Param("characterNo") Long characterNo,
+            @Param("recommendLimitSize") int recommendLimitSize,
+            @Param("trackLimitSize") int trackLimitSize,
+            @Param("osType") OsType osType
+    );
+
 }
