@@ -7,7 +7,7 @@ import com.sktechx.godmusic.lib.mybatis.code.CodeEnum;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnumTypeHandler;
 
 public enum MediaRatingType implements CodeEnum {
-    ALL("전체", "전체"),
+    ALL("ALL", "전체"),
     AGE_7_OVER("7_OVER", "7세 이상 시청가능"),
     AGE_12_OVER("12_OVER", "12세 이상 시청가능"),
     AGE_15_OVER("15_OVER", "15세 이상 시청가능"),

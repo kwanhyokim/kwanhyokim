@@ -13,6 +13,8 @@ import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.personal.rest.model.vo.like.*;
+import com.sktechx.godmusic.personal.rest.model.vo.video.RangeResponse;
+import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 import com.sktechx.godmusic.personal.rest.service.LikeService;
 import com.sktechx.godmusic.personal.rest.service.TrackService;
 import lombok.extern.slf4j.Slf4j;
@@ -141,10 +143,21 @@ public class LikeMongoServiceImpl implements LikeService {
     public LikeYnResponse getLikeYn(String likeType, Long likeTypeId, Long characterNo) {
         return mongoRedisService.executeService(
                 () -> {
-                    CommonApiResponse<LikeYnResponse> result = personalMongoClient.existLike(characterNo, likeType, likeTypeId);
-                    return result.getData();
+                    if (LikeRequest.LikeType.contains(likeType)) {
+                        CommonApiResponse<LikeYnResponse> result = personalMongoClient.existLike(characterNo, likeType, likeTypeId);
+                        return result.getData();
+                    }
+                    else {
+                        return likeService.getLikeYn(likeType, likeTypeId, characterNo);
+                    }
                 },
                 () -> likeService.getLikeYn(likeType, likeTypeId, characterNo)
         );
+    }
+
+    @Override
+    public RangeResponse<VideoVo> getLikeVideos(Long characterNo, Pageable pageable) {
+        // TODO 몽고DB 서빙 구현
+        return null;
     }
 }

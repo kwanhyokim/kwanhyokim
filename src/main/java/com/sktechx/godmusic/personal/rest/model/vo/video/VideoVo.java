@@ -9,6 +9,8 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.video;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -95,6 +97,20 @@ public class VideoVo {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private Date dispEndDtime;
+
+    @ApiModelProperty(value = "전시 여부")
+    private YnType displayYn;
+
+    public boolean exhibitable() {
+        if (this.displayYn == YnType.N || this.dispStartDtime == null || this.dispEndDtime == null) {
+            return false;
+        }
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startTime = this.dispStartDtime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime endTime = this.dispEndDtime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        return this.displayYn == YnType.Y
+                && now.isAfter(startTime) && now.isBefore(endTime);
+    }
 
     public static VideoVo mock() {
 

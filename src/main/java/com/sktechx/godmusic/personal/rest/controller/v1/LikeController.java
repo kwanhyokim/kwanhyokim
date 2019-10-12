@@ -117,12 +117,13 @@ public class LikeController {
 	public CommonApiResponse<RangeResponse<VideoVo>> getVideoes(
 			@PageableDefault(page = 1, size = 50) Pageable pageable) {
 
-		GMContext currentContext = GMContext.getContext();
-		Validator.loginValidate(currentContext);
+		GMContext context = GMContext.getContext();
+		Validator.loginValidate(context);
 
-		RangeResponse<VideoVo> mockResponse = RangeResponse.of(new PageImpl(Lists.newArrayList(VideoVo.mock()), pageable, 1L) );
+		Long characterNo = context.getCharacterNo();
+		RangeResponse<VideoVo> response = likeService.getLikeVideos(characterNo, pageable);
 
-		return new CommonApiResponse(mockResponse);
+		return new CommonApiResponse(response);
 	}
 
 	/**

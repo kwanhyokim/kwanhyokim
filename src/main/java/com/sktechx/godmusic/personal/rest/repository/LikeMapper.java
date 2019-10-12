@@ -1,6 +1,7 @@
 package com.sktechx.godmusic.personal.rest.repository;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.like.LikeTypeVo;
 public interface LikeMapper {
 	int getLikeCountByLikeTypeAndLikeTypeId(@Param("likeType") String likeType, @Param("likeTypeId") Long likeTypeId, @Param("characterNo") Long characterNo);
 	int getLikeTrackCountByLikeType(@Param("characterNo") Long characterNo);
+	int getLikeVideoCountByLikeType(@Param("characterNo") Long characterNo);
 	int getLikeAlbumCountByLikeType(@Param("characterNo") Long characterNo);
 	int getLikeArtistCountByLikeType(@Param("characterNo") Long characterNo);
 	int getLikeChannelCountByLikeType(@Param("likeType") String likeType, @Param("characterNo") Long characterNo);
@@ -46,5 +48,10 @@ public interface LikeMapper {
 
 	int countLikeByCharacterNo(@Param("characterNo") Long characterNo);
 	void insertSelectLike(@Param("fromCharacterNo") Long fromCharacterNo, @Param("toCharacterNo") Long toCharacterNo);
+
+	/**
+	 * 좋아요 영상 IDs 목록
+	 */
+	List<Long> getLikeVideoByLikeType(@Param("characterNo") Long characterNo, @Param("pageable") Pageable pageable);
 
 }
