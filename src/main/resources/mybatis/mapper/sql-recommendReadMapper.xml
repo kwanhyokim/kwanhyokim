@@ -1087,7 +1087,7 @@
                             WHERE
                             aa.rcmmd_mforu_id = a.rcmmd_mforu_id
                             ) trackCount,
-                            a.disp_std_start_dt rcmmdCreateDtime
+                            a.disp_std_start_dt AS rcmmdCreateDtime
                         FROM
                             tb_rcmmd_mforu a
                         INNER JOIN tb_svc_genre b ON a.svc_genre_id = b.svc_genre_id
@@ -1301,4 +1301,49 @@
     LIMIT 5
     </select>
 
+    <select id="selectRecommendCfTrackIdListByCharacterNo" resultMap="rcmmdTrackResultMap">
+        SELECT
+            rcmmd_img_table.rcmmd_id,
+            rcmmd_img_table.svc_genre_id,
+            rcmmd_img_table.svc_genre_nm,
+            rcmmd_img_table.disp_sn rcmmd_disp_sn,
+            rcmmd_img_table.img_size,
+            rcmmd_img_table.img_url,
+            rcmmd_img_table.rcmmdCreateDtime,
+            b.track_id,
+            b.disp_sn
+        FROM
+            (SELECT
+                rcmmd_table.rcmmd_id,
+                    rcmmd_table.svc_genre_id,
+                    rcmmd_table.svc_genre_nm,
+                    rcmmd_table.disp_sn,
+                    rcmmd_table.rcmmdCreateDtime,
+                    b.img_size,
+                    b.img_url
+            FROM
+                (SELECT
+                rcmmd_mforu_id rcmmd_id,
+                    a.svc_genre_id,
+                    b.svc_genre_nm,
+                    disp_sn,
+                    a.disp_std_start_dt AS rcmmdCreateDtime
+            FROM
+                tb_rcmmd_mforu a
+            INNER JOIN tb_svc_genre b ON a.svc_genre_id = b.svc_genre_id
+            WHERE
+                a.character_no = #{characterNo}
+                    AND NOW() BETWEEN a.disp_std_start_dt AND DATE_ADD(a.disp_std_start_dt, INTERVAL 30 DAY)
+            ORDER BY a.create_dtime DESC
+            LIMIT #{recommendLimitSize}) rcmmd_table
+            LEFT OUTER JOIN tb_map_img_rcmmd_img b ON rcmmd_table.svc_genre_id = b.img_content_id
+                AND b.rcmmd_type_id = 'RC_CF_TR'
+                AND b.os_type = #{osType}
+                AND b.img_disp_type = 'MAIN_TOP'
+                AND b.img_content_type = 'GENRE'
+            ORDER BY rcmmd_table.disp_sn) rcmmd_img_table
+                INNER JOIN
+            tb_rcmmd_mforu_list b ON rcmmd_img_table.rcmmd_id = b.rcmmd_mforu_id
+        ORDER BY rcmmd_img_table.rcmmd_id DESC , b.disp_sn ASC , rcmmd_img_table.disp_sn ASC
+    </select>
 </mapper>

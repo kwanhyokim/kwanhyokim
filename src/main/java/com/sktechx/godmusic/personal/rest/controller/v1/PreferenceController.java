@@ -12,21 +12,27 @@
 
 package com.sktechx.godmusic.personal.rest.controller.v1;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.*;
+
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
+import com.sktechx.godmusic.lib.domain.CommonConstant;
 import com.sktechx.godmusic.lib.domain.GMContext;
+import com.sktechx.godmusic.lib.domain.RequestGMContext;
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.ChartResponse;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.service.PreferenceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * 설명 : 선호 장르/아티스트 아티스 컨트롤러 아티스트 컨트롤
@@ -75,5 +81,47 @@ public class PreferenceController {
 	public CommonApiResponse<ChartResponse> deletePreferSimilarArtistCache() {
 		Long characterNo = GMContext.getContext().getCharacterNo();
 		return new CommonApiResponse<>(preferenceService.deletePreferSimilarArtistName(characterNo));
+	}
+
+	@ApiOperation(value = "좋아하는 아티스트 최신영상 조회")
+	@GetMapping("/video/artist/new/list")
+	public CommonApiResponse getPreferenceVideoArtistNewList(
+			@ApiIgnore @RequestGMContext GMContext ctx,
+			@RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo,
+			@RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType
+	){
+
+//		if(ObjectUtils.isEmpty(characterNo)){
+//			return null;
+//		}
+
+
+		List<Panel> panelList = preferenceService.getPreferenceVideoArtistNewList(characterNo, osType);
+
+		if(CollectionUtils.isEmpty(panelList)){
+			return null;
+		}
+
+		return new CommonApiResponse<>(new ListDto<>(panelList));
+
+	}
+
+	@ApiOperation(value = "좋아하는 장르 최신영상 조회")
+	@GetMapping("/video/genre/new/list")
+	public CommonApiResponse getPreferenceVideoGenreNewList(
+			@ApiIgnore @RequestGMContext GMContext ctx,
+			@RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo,
+			@RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType
+	){
+
+
+    	List<Panel> panelList = preferenceService.getPreferenceVideoGenreNewList(characterNo, osType);
+
+    	if(CollectionUtils.isEmpty(panelList)){
+    		return null;
+	    }
+
+		return new CommonApiResponse<>(new ListDto<>(panelList));
+
 	}
 }
