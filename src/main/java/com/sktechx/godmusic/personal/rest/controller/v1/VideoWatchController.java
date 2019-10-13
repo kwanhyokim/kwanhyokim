@@ -11,6 +11,7 @@ package com.sktechx.godmusic.personal.rest.controller.v1;
 
 import com.google.common.collect.Lists;
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
+import com.sktechx.godmusic.lib.domain.CommonConstant;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.RequestGMContext;
 import com.sktechx.godmusic.personal.common.domain.ListResponse;
@@ -18,11 +19,13 @@ import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.rest.model.vo.video.MostWatchedVideoVo;
 import com.sktechx.godmusic.personal.rest.model.vo.video.RangeResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.video.WatchedVideoDeleteRequest;
+import com.sktechx.godmusic.personal.rest.service.video.VideoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -45,6 +48,9 @@ import java.util.List;
 @RequestMapping(Naming.serviceCode+"/v1/videos")
 public class VideoWatchController {
 
+    @Autowired
+    VideoService videoService;
+
     /**
      * 최근 본 영상 목록 조회
      */
@@ -55,10 +61,11 @@ public class VideoWatchController {
     })
     @GetMapping(value = "/recentwatched")
     public CommonApiResponse<RangeResponse<MostWatchedVideoVo>> getRecentWatchedVideos(
-            @ApiIgnore @RequestGMContext GMContext context,
-            @PageableDefault(page = 1, size = 50) Pageable pageable) {
+            @PageableDefault(size = 50) Pageable pageable,
+            @ApiIgnore @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO) Long characterNo) {
 
-        return new CommonApiResponse<>(RangeResponse.of(new PageImpl(Lists.newArrayList(MostWatchedVideoVo.mock()), pageable, 1L)));
+        RangeResponse<MostWatchedVideoVo> response = videoService.getRecentWatchedVideos(characterNo, pageable);
+        return new CommonApiResponse<>(response);
     }
 
     /**
@@ -67,10 +74,10 @@ public class VideoWatchController {
     @ApiOperation(value = "최근 본 영상 목록 삭제", httpMethod = "DELETE", notes = "보관함 > 최근 본 영상")
     @DeleteMapping(value = "/recentwatched")
     public CommonApiResponse<Void> removeRecentWatchedVideos(
-            @ApiIgnore @RequestGMContext GMContext context,
+            @ApiIgnore @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO) Long characterNo,
             @RequestBody @Valid WatchedVideoDeleteRequest request) {
 
-        log.info("videoIds={}", request);
+        videoService.deleteRecentWatchedVideos(characterNo, request.getVideoIds());
         return CommonApiResponse.emptySuccess();
     }
 }

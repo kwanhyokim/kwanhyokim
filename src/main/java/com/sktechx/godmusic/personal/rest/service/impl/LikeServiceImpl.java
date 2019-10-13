@@ -403,6 +403,8 @@ public class LikeServiceImpl implements LikeService {
 				return PersonalErrorDomain.ARTIST_DUPLICATED_LIKE;
 			case LikeConstant.LIKE_TRACK :
 				return PersonalErrorDomain.TRACK_DUPLICATED_LIKE;
+			case LikeConstant.LIKE_VIDEO :
+				return PersonalErrorDomain.VIDEO_DUPLICATED_LIKE;
 			default :
 				throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
 		}

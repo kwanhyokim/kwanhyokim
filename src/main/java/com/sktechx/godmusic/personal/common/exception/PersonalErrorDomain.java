@@ -37,6 +37,7 @@ public enum PersonalErrorDomain implements ErrorDomain {
 	, TRACK_NOT_FOUND(4090719,HttpStatus.BAD_REQUEST ,"권리가 중단되어 서비스가 불가능한 곡입니다.","곡 정보 없음"  )
     , VIDEO_OVER_ADD_LIKE(4090720, HttpStatus.CONFLICT,"좋아요 한 영상을 더 이상 추가할 수 없습니다. 최대 1000개까지 담을 수 있습니다.","좋아하는 영상 추가 최대값 초과")
     , VIDEO_NOT_FOUND(4090721,HttpStatus.BAD_REQUEST ,"권리가 중단되어 서비스가 불가능한 영상입니다.","영상 정보 없음"  )
+    , VIDEO_DUPLICATED_LIKE(4090722, HttpStatus.CONFLICT, "이미 추가된 영상 입니다.", "이미 추가된 영상")
 
 	, PREFER_ARTIST_PANEL_FAIL(4090720,HttpStatus.CONFLICT ,"선호/유사 아티스트 인기곡 입력시 문제가 발생했습니다.","데이터 문제"  )
 	, PREFER_GENRE_PANEL_FAIL(4090721,HttpStatus.CONFLICT ,"선호 장르 유사곡 입력시 문제가 발생했습니다.","데이터 문제"  )

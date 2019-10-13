@@ -29,6 +29,6 @@ public class WatchedVideoDeleteRequest {
 
     @ApiModelProperty(value = "삭제할 영상 IDs")
     @NotEmpty
-    private List<Long> videoIds = Collections.emptyList();
+    private List<Long> videoIds;
 
 }

@@ -65,7 +65,6 @@ public class LikeRequest {
 		}
 	}
 
-	@Length(max = 10)
 	@NotBlank
 	@ApiModelProperty(name = "likeType", value = "좋아요 대상 타입 - CHNL: 채널, ALBUM: 앨범, CHART: 차트, ARTIST: 아티스트, TRACK: 곡, VIDEO: 영상",
 			allowableValues = "CHNL, ALBUM, CHART, ARTIST, TRACK, FLAC, VIDEO")
