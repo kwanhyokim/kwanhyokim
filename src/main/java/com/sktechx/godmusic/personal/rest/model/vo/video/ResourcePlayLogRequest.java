@@ -15,55 +15,72 @@ import com.sktechx.godmusic.personal.common.domain.type.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.common.domain.type.TrackLogType;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Arrays;
 
 @Data
 @Builder
+@ToString
 public class ResourcePlayLogRequest {
 
 	public enum LogType {
 		/**
 		 * 영상 시청 시작
 		 */
-		STRT,
+		STRT("STRT"),
 
 		/**
 		 * 영상 1분 시청
 		 */
-		AMIN,
+		ONEMIN("1MIN"),
 
 		/**
 		 * 영상 시청 종료
 		 */
-		MEND
+		MEND("MEND"),
+
+		/**
+		 * 사용자 스킵
+		 */
+		USKP("USKP")
 		;
+
+		@Getter
+		private final String code;
+
+		LogType(String code) {
+			this.code = code;
+		}
+
+		public static LogType fromCode(String code) {
+			return Arrays.stream(LogType.values())
+					.filter(e -> e.getCode().equalsIgnoreCase(code))
+					.findFirst().orElse(null);
+		}
 	}
 
-	@Min(1)
-	@Max(value = Long.MAX_VALUE)
-	@ApiModelProperty(name = "resourceId", value = "리소스 ID ex) videoId")
-	private Long resourceId;
+	@NotBlank
+	@ApiModelProperty(name = "resourceId", value = "리소스 ID ex) Video Meta의 resourceId")
+	private String resourceId;
 
-	@NotNull
+	@NotBlank
 	@ApiModelProperty(name = "logType", value = "로그 타입 - STRT | 1MIN | MEND", allowableValues = "STRT | 1MIN | MEND")
 	private String logType;
 
-	@NotNull
-	@ApiModelProperty(name = "quality", value = "영상 해상도 - 480P | 720P | 1080P", allowableValues = "480P | 720P | 1080P")
+	@NotBlank
+	@ApiModelProperty(name = "quality", value = "영상 해상도 - 480p | 720p | 1080p", allowableValues = "480P | 720P | 1080P")
 	private String quality;
 
 	@NotNull
 	@ApiModelProperty(name = "osType", value = "OS Type(ALL, AOS, IOS, WEB)", allowableValues = "ALL, AOS, IOS, WEB")
 	private OsType osType;
 
-	@Min(1)
+	@Min(0)
 	@Max(value = Long.MAX_VALUE)
 	@ApiModelProperty(name = "duration", value = "리소스 Play Time - Duration(초단위)")
 	private Long duration;
@@ -91,4 +108,8 @@ public class ResourcePlayLogRequest {
 
 	@ApiModelProperty(name = "sttToken", value = "정산 토큰")
 	private String sttToken;
+
+	public boolean isFree() {
+		return YnType.Y == freeYn;
+	}
 }
