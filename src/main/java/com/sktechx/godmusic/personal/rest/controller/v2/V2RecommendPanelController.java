@@ -30,6 +30,7 @@ import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentTyp
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ChannelListResponse;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelListResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendV2DummyDataRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
@@ -105,6 +106,22 @@ public class V2RecommendPanelController {
 	    }
 
 		return new CommonApiResponse<>(new ListDto<>(recommendPanelList));
+	}
+
+	@ApiOperation(value = "추천 패널 목록 3종 전부 조회 API", httpMethod = "GET", notes = "추천 패널 트랙 목록 조회 API" )
+	@RequestMapping(value = "/panels/list", method = RequestMethod.GET)
+	public CommonApiResponse recommendPanelsTrackList(
+			@ApiIgnore @RequestGMContext GMContext ctx,
+			@RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo,
+			@RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType
+	){
+
+
+		return new CommonApiResponse<>(RecommendPanelListResponse.builder()
+				.forMePanelList(recommendPanelService.getRecommendPanelList(ctx.getCharacterNo(), RecommendPanelContentType.RC_CF_TR, ctx.getOsType()))
+				.todayFloPanelList(recommendPanelService.getRecommendPanelList(ctx.getCharacterNo(), RecommendPanelContentType.RC_SML_TR, ctx.getOsType()))
+				.artistFloPanelList(recommendPanelService.getRecommendPanelList(ctx.getCharacterNo(), RecommendPanelContentType.RC_ATST_TR, ctx.getOsType()))
+				.build());
 	}
 
 	@ApiOperation(value = "선호 장르 테마리스트 리스트 ")
