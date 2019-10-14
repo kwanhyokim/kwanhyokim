@@ -11,6 +11,7 @@ import com.sktechx.godmusic.personal.rest.service.ListenService;
 import com.sktechx.godmusic.personal.rest.validate.Validator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -25,6 +26,7 @@ import javax.validation.Valid;
  * @date 2018. 8. 8.
  * @time PM 7:15
  */
+@Slf4j
 @Api(basePath = "personal/v1/listen", value = "청취", description = "청취 API")
 @RestController
 @RequestMapping(Naming.serviceCode + "/v1/listen")
@@ -68,12 +70,14 @@ public class ListenController {
 	@PostMapping("/resource")
 	public CommonApiResponse recordWatchedVideoHistory(
 			@ApiIgnore @RequestGMContext GMContext context,
-			@ApiIgnore @RequestHeader(name = "client_ip", required = false, defaultValue = "") String clientIp,
-			@Valid @RequestBody ResourcePlayLogRequest logRequest) {
+			@Valid @RequestBody ResourcePlayLogRequest logRequest,
+			HttpServletRequest httpServletRequest) {
 
+		GMContext currentContext = GMContext.getContext();
 		Validator.loginValidate(context);
+		log.debug("[RESOUCE 청취 로그] request={}", logRequest);
 
-		// TODO. MQ로 시청 로그 전달
+		listenService.addPlayHistoryByResource(logRequest, currentContext, httpServletRequest);
 
 		return CommonApiResponse.emptySuccess();
 	}
