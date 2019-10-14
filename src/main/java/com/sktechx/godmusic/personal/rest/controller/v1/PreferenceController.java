@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
@@ -27,7 +28,7 @@ import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.ChartResponse;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
+import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 import com.sktechx.godmusic.personal.rest.service.PreferenceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -85,43 +86,42 @@ public class PreferenceController {
 
 	@ApiOperation(value = "좋아하는 아티스트 최신영상 조회")
 	@GetMapping("/video/artist/new/list")
-	public CommonApiResponse getPreferenceVideoArtistNewList(
+	public CommonApiResponse<ListDto<List<VideoVo>>> getPreferenceVideoArtistNewList(
 			@ApiIgnore @RequestGMContext GMContext ctx,
 			@RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo,
 			@RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType
 	){
 
-//		if(ObjectUtils.isEmpty(characterNo)){
-//			return null;
-//		}
-
-
-		List<Panel> panelList = preferenceService.getPreferenceVideoArtistNewList(characterNo, osType);
-
-		if(CollectionUtils.isEmpty(panelList)){
+		if(ObjectUtils.isEmpty(characterNo)){
 			return null;
 		}
 
-		return new CommonApiResponse<>(new ListDto<>(panelList));
+		List<VideoVo> videoVoList = preferenceService.getPreferenceVideoArtistNewList(characterNo, osType);
+
+		if(CollectionUtils.isEmpty(videoVoList)){
+			return null;
+		}
+
+		return new CommonApiResponse<>(new ListDto<>(videoVoList));
 
 	}
 
 	@ApiOperation(value = "좋아하는 장르 최신영상 조회")
 	@GetMapping("/video/genre/new/list")
-	public CommonApiResponse getPreferenceVideoGenreNewList(
+	public CommonApiResponse<ListDto<List<VideoVo>>>  getPreferenceVideoGenreNewList(
 			@ApiIgnore @RequestGMContext GMContext ctx,
 			@RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo,
 			@RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType
 	){
 
 
-    	List<Panel> panelList = preferenceService.getPreferenceVideoGenreNewList(characterNo, osType);
+		List<VideoVo> videoVoList = preferenceService.getPreferenceVideoGenreNewList(characterNo, osType);
 
-    	if(CollectionUtils.isEmpty(panelList)){
+    	if(CollectionUtils.isEmpty(videoVoList)){
     		return null;
 	    }
 
-		return new CommonApiResponse<>(new ListDto<>(panelList));
+		return new CommonApiResponse<>(new ListDto<>(videoVoList));
 
 	}
 }
