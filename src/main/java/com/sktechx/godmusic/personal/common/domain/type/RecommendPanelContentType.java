@@ -24,25 +24,23 @@ import com.sktechx.godmusic.lib.mybatis.code.CodeEnumTypeHandler;
  * @date 2018. 07. 09.
  */
 public enum RecommendPanelContentType implements CodeEnum{
-    CHNL("CHNL" , "채널", ""),
-    CHART("CHART" , "차트", ""),
+    CHNL("CHNL" , "채널"),
+    CHART("CHART" , "차트"),
 
-    AFLO("AFLO", "AFLO채널", "AfloPannelAssembly"),
-    RC_CF_TR("RC_CF_TR" , "추천 유사곡", "ForMeFloPanelAssembly"),
-    RC_SML_TR("RC_SML_TR" , "선호 유사곡", "TodayFloPanelAssembly"),
-    RC_ATST_TR("RC_ATST_TR" , "아티스트 인기곡", "ArtistFloPanelAssembly"),
-    RC_GR_TR("RC_GR_TR" , "선호 장르 유사곡", ""),
-    RC_MD_CN("RC_MD_CN" , "청취 무드 인기채널", ""),
+    AFLO("AFLO", "AFLO채널"),
+    RC_CF_TR("RC_CF_TR" , "추천 유사곡"),
+    RC_SML_TR("RC_SML_TR" , "선호 유사곡"),
+    RC_ATST_TR("RC_ATST_TR" , "아티스트 인기곡"),
+    RC_GR_TR("RC_GR_TR" , "선호 장르 유사곡"),
+    RC_MD_CN("RC_MD_CN" , "청취 무드 인기채널"),
     ;
 
     private final String code;
     private final String value;
-    private final String className;
 
-    RecommendPanelContentType(String code, String value, String className) {
+    RecommendPanelContentType(String code, String value) {
         this.code = code;
         this.value = value;
-        this.className = className;
     }
 
     @MappedTypes(RecommendPanelContentType.class)
@@ -61,8 +59,6 @@ public enum RecommendPanelContentType implements CodeEnum{
     public String getValue() {
         return value;
     }
-
-    public String getClassName() { return className; }
 
     @Override
     public CodeEnum getDefault() {
