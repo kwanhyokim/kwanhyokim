@@ -468,8 +468,8 @@ public class PreferenceServiceImpl implements PreferenceService {
 //			return redisService.getListWithPrefix(redisKey, Panel.class);
 //		}
 
-		Date from = new Date();
-		Date to = DateUtil.getDate(from, 259200);
+		Date to = DateUtil.toDate(DateUtil.toString(new Date()));
+		Date from = DateUtil.getDate(to, -259200);
 
 		List<VideoVo> videoVoList 	=
 				Optional.ofNullable(
@@ -528,8 +528,8 @@ public class PreferenceServiceImpl implements PreferenceService {
 					.collect(Collectors.toList());
 
 		}else {
-			Date from = DateUtil.toDate(DateUtil.toString(new Date()));
-			Date to = DateUtil.getDate(from, 604800);
+			Date to = DateUtil.toDate(DateUtil.toString(new Date()));
+			Date from = DateUtil.getDate(to, -604800);
 
 			videoVoList = Optional.ofNullable(
 					metaClient.getVideos(
