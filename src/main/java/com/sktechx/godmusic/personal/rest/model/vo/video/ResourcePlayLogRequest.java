@@ -64,9 +64,9 @@ public class ResourcePlayLogRequest {
 		}
 	}
 
-	@NotBlank
-	@ApiModelProperty(name = "resourceId", value = "리소스 ID ex) Video Meta의 resourceId")
-	private String resourceId;
+	@NotNull
+	@ApiModelProperty(name = "resourceId", value = "리소스 ID ex) Video Meta의 videoId")
+	private Long resourceId;
 
 	@NotBlank
 	@ApiModelProperty(name = "logType", value = "로그 타입 - STRT | 1MIN | MEND", allowableValues = "STRT | 1MIN | MEND")
