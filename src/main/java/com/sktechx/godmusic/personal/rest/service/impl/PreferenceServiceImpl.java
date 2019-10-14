@@ -464,11 +464,11 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 		String redisKey = String.format(RedisKeyConstant.PERSONAL_PREFERENCE_VIDEO_ARTIST_NEW_LIST, characterNo);
 
-//		if(redisService.exists(redisKey)){
-//			return redisService.getListWithPrefix(redisKey, Panel.class);
-//		}
+		if(redisService.exists(redisKey)){
+			return redisService.getListWithPrefix(redisKey, VideoVo.class);
+		}
 
-		Date to = DateUtil.toDate(DateUtil.toString(new Date()));
+		Date to = new Date();
 		Date from = DateUtil.getDate(to, -259200);
 
 		List<VideoVo> videoVoList 	=
@@ -506,9 +506,9 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 		String redisKey = String.format(RedisKeyConstant.PERSONAL_PREFERENCE_VIDEO_GENRE_NEW_LIST, characterNo);
 
-//        if(redisService.exists(redisKey)){
-//        	return redisService.getListWithPrefix(redisKey, Panel.class);
-//        }
+        if(redisService.exists(redisKey)){
+        	return redisService.getListWithPrefix(redisKey, VideoVo.class);
+        }
 
 		List<Long> videoIdList = preferenceMapper.selectPreferGenreVideoIdListByCharacterNo(characterNo);
 		List<VideoVo> videoVoList;
@@ -528,7 +528,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 					.collect(Collectors.toList());
 
 		}else {
-			Date to = DateUtil.toDate(DateUtil.toString(new Date()));
+			Date to = new Date();
 			Date from = DateUtil.getDate(to, -604800);
 
 			videoVoList = Optional.ofNullable(
