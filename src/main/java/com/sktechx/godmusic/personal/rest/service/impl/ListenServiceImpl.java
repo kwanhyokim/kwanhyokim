@@ -96,7 +96,7 @@ public class ListenServiceImpl implements ListenService {
 		Long characterNo = currentContext.getCharacterNo();
 		String deviceId = currentContext.getDeviceId();
 		String playChannel = AppNameType.fromCode(currentContext.getAppName()) != null ? AppNameType.fromCode(currentContext.getAppName()).getCode() : "";
-		String sourceId = request.getResourceId();
+		Long sourceId = request.getResourceId();
 		String logType = request.getLogType();
 		String bitrate = request.getQuality();
 		String quality = request.getQuality();
@@ -130,7 +130,7 @@ public class ListenServiceImpl implements ListenService {
 				.playChnl(playChannel)
 				.memberNo(memberNo)
 				.characterNo(characterNo)
-				.sourceId(sourceId)
+				.sourceId(String.valueOf(sourceId))
 				.logType(logType)
 				.bitrate(bitrate)
 				.quality(quality)
@@ -178,7 +178,7 @@ public class ListenServiceImpl implements ListenService {
 					.event(userEventType)
 					.memberNo(memberNo)
 					.charactorNo(characterNo)
-					.targetId(sourceId)
+					.targetId(String.valueOf(sourceId))
 					.targetType(UserEventTarget.VIDEO)
 					.sourceType(SourceType.fromCode(sourceType))
 					.trackTotTm(request.getRunningTimeSecs())
