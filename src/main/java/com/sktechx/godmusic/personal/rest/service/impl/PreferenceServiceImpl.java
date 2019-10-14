@@ -511,26 +511,40 @@ public class PreferenceServiceImpl implements PreferenceService {
 //        }
 
 		List<Long> videoIdList = preferenceMapper.selectPreferGenreVideoIdListByCharacterNo(characterNo);
+		List<VideoVo> videoVoList;
 
 		if(CollectionUtils.isEmpty(videoIdList)) {
 			videoIdList = preferenceMapper.selectDefaultSvcGenreVideoIdList();
-		}
 
-		Date from = DateUtil.toDate(DateUtil.toString(new Date()));
-		Date to = DateUtil.getDate(from, 604800);
-
-		List<VideoVo> videoVoList =
-			Optional.ofNullable(
+			videoVoList = Optional.ofNullable(
 					metaClient.getVideos(
 							MetaVideoRequestVo.builder().videoIds(videoIdList).build()
 					)
-					.getData().getList()
+							.getData().getList()
 			)
-				.orElseGet(Collections::emptyList)
-				.stream()
-				.filter(Objects::nonNull)
-				.filter(videoVo -> videoVo.getDispStartDtime().after(from) && videoVo.getDispStartDtime().before(to))
-				.collect(Collectors.toList());
+					.orElseGet(Collections::emptyList)
+					.stream()
+					.filter(Objects::nonNull)
+					.collect(Collectors.toList());
+
+		}else {
+			Date from = DateUtil.toDate(DateUtil.toString(new Date()));
+			Date to = DateUtil.getDate(from, 604800);
+
+			videoVoList = Optional.ofNullable(
+					metaClient.getVideos(
+							MetaVideoRequestVo.builder().videoIds(videoIdList).build()
+					)
+							.getData().getList()
+			)
+					.orElseGet(Collections::emptyList)
+					.stream()
+					.filter(Objects::nonNull)
+					.filter(videoVo -> videoVo.getDispStartDtime().after(from) && videoVo.getDispStartDtime().before(to))
+					.collect(Collectors.toList());
+
+
+		}
 
 		List<VideoVo> preferArtistVideoVoList = getPreferenceVideoArtistNewList(characterNo, osType);
 
