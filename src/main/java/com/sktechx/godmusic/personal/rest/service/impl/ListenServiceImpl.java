@@ -102,7 +102,8 @@ public class ListenServiceImpl implements ListenService {
 		String quality = request.getQuality();
 		String osType = request.getOsType() != null ? request.getOsType().getCode() : "";
 		String clientIp = httpServletRequest.getHeader("client_ip") != null ? httpServletRequest.getHeader("client_ip") : "";
-		String chnlType = null;
+		Long channelId = request.getChannelId();
+		String channelType = request.getChannelType();
 		String listenSessionId = StringUtils.isEmpty(request.getSessionId()) ? null : request.getSessionId();
 		String sourceType = request.getSourceType();
 
@@ -137,7 +138,8 @@ public class ListenServiceImpl implements ListenService {
 				.elapsedTm(request.getDuration())
 				.osType(osType)
 				.dvcId(deviceId)
-				.chnlType(chnlType)
+				.chnlId(channelId)
+				.chnlType(channelType)
 				.memberRcmdId(null)
 				.addTm(request.getAddDateTime())
 				.sessionToken(null)

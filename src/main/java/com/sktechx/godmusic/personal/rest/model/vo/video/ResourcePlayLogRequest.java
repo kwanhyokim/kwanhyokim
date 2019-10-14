@@ -94,6 +94,12 @@ public class ResourcePlayLogRequest {
 	@ApiModelProperty(name = "freeYn", value = "무료 여부(Y, N)", allowableValues = "Y | N")
 	private YnType freeYn;
 
+	@ApiModelProperty(name = "channelId", value = "채널 ID")
+	private Long channelId;
+
+	@ApiModelProperty(name = "channelType", value = "채널 Type")
+	private String channelType;
+
 	@ApiModelProperty(name = "addDateTime", value = "추가 시간")
 	private String addDateTime;
 
