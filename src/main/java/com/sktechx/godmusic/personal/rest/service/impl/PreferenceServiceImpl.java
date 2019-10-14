@@ -40,7 +40,6 @@ import com.sktechx.godmusic.personal.rest.model.vo.preference.Artist;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.Chart;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.ChartResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.PreferenceSimilarArtistListRedisWrapper;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 import com.sktechx.godmusic.personal.rest.repository.*;
 import com.sktechx.godmusic.personal.rest.service.PreferenceService;
@@ -461,7 +460,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 	 * @return
 	 */
 	@Override
-	public List<Panel> getPreferenceVideoArtistNewList(Long characterNo, OsType osType){
+	public List<VideoVo> getPreferenceVideoArtistNewList(Long characterNo, OsType osType){
 
 		String redisKey = String.format(RedisKeyConstant.PERSONAL_PREFERENCE_VIDEO_ARTIST_NEW_LIST, characterNo);
 
@@ -469,12 +468,30 @@ public class PreferenceServiceImpl implements PreferenceService {
 //			return redisService.getListWithPrefix(redisKey, Panel.class);
 //		}
 
-		List<Panel> panelList = preferArtistVideoPanelAssembly
-				.getRecommendPanelList(characterNo, osType);
+		Date from = new Date();
+		Date to = DateUtil.getDate(from, 259200);
 
-		redisService.setWithPrefix(redisKey, panelList, 3600);
+		List<VideoVo> videoVoList 	=
+				Optional.ofNullable(
+						metaClient.getVideos(
+								MetaVideoRequestVo.builder()
+										.videoIds(preferenceMapper.selectPreferArtistVideoIdListByCharacterNo(characterNo))
+										.build()
+						).getData().getList()
 
-		return panelList;
+				).orElseGet(Collections::emptyList)
+						.stream()
+						.filter(Objects::nonNull)
+						.filter(videoVo -> videoVo.getDispStartDtime().after(from) && videoVo.getDispStartDtime().before(to))
+						.collect(Collectors.toList());
+
+		if(CollectionUtils.isEmpty(videoVoList)){
+			return null;
+		}
+
+		redisService.setWithPrefix(redisKey, videoVoList, 3600);
+
+		return videoVoList;
 
 	}
 
@@ -485,7 +502,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 	 * @return
 	 */
 	@Override
-    public List<Panel> getPreferenceVideoGenreNewList(Long characterNo, OsType osType){
+    public List<VideoVo> getPreferenceVideoGenreNewList(Long characterNo, OsType osType){
 
 		String redisKey = String.format(RedisKeyConstant.PERSONAL_PREFERENCE_VIDEO_GENRE_NEW_LIST, characterNo);
 
@@ -495,7 +512,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 		List<Long> videoIdList = preferenceMapper.selectPreferGenreVideoIdListByCharacterNo(characterNo);
 
-
 		if(CollectionUtils.isEmpty(videoIdList)) {
 			videoIdList = preferenceMapper.selectDefaultSvcGenreVideoIdList();
 		}
@@ -503,25 +519,33 @@ public class PreferenceServiceImpl implements PreferenceService {
 		Date from = DateUtil.toDate(DateUtil.toString(new Date()));
 		Date to = DateUtil.getDate(from, 604800);
 
-		List<Panel> panelList =	Optional.ofNullable(
-				metaClient.getVideos(
-						MetaVideoRequestVo.builder().videoIds(videoIdList).build()
-				)
-				.getData().getList()
-		)
-			.orElseGet(Collections::emptyList)
-			.stream()
-			.filter(Objects::nonNull)
-			.filter(videoVo -> videoVo.getDispStartDtime().after(from) && videoVo.getDispStartDtime().before(to))
-			.map(VideoVo::convertToVideoPanel)
-			.collect(Collectors.toList());
+		List<VideoVo> videoVoList =
+			Optional.ofNullable(
+					metaClient.getVideos(
+							MetaVideoRequestVo.builder().videoIds(videoIdList).build()
+					)
+					.getData().getList()
+			)
+				.orElseGet(Collections::emptyList)
+				.stream()
+				.filter(Objects::nonNull)
+				.filter(videoVo -> videoVo.getDispStartDtime().after(from) && videoVo.getDispStartDtime().before(to))
+				.collect(Collectors.toList());
 
-		panelList.removeAll(getPreferenceVideoArtistNewList(characterNo, osType));
+		List<VideoVo> preferArtistVideoVoList = getPreferenceVideoArtistNewList(characterNo, osType);
+
+		if(!CollectionUtils.isEmpty(preferArtistVideoVoList)) {
+			videoVoList.removeAll(preferArtistVideoVoList);
+		}
+
+
+		if(CollectionUtils.isEmpty(videoVoList)){
+			return null;
+		}
 
 		// 최신 비디오는 한시간 마다 갱신되므로 캐쉬도 한시간 정책..
+		redisService.setWithPrefix(redisKey, videoVoList, 3600);
 
-		redisService.setWithPrefix(redisKey, panelList, 3600);
-
-		return panelList;
+		return videoVoList;
     }
 }
