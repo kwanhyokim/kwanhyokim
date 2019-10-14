@@ -131,10 +131,6 @@ public class ChannelController {
 
         List<Panel> recommendPanelList = recommendPanelService.getRecommendPanelList(characterNo, RecommendPanelContentType.AFLO, ctx.getOsType());
 
-        if(CollectionUtils.isEmpty(recommendPanelList)){
-            return null;
-        }
-
         return new CommonApiResponse<>(new ListDto<>(recommendPanelList));
     }
 }
