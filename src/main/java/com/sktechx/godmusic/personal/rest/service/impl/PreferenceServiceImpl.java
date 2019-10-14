@@ -464,9 +464,9 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 		String redisKey = String.format(RedisKeyConstant.PERSONAL_PREFERENCE_VIDEO_ARTIST_NEW_LIST, characterNo);
 
-//		if(redisService.exists(redisKey)){
-//			return redisService.getListWithPrefix(redisKey, Panel.class);
-//		}
+		if(redisService.exists(redisKey)){
+			return redisService.getListWithPrefix(redisKey, VideoVo.class);
+		}
 
 		Date to = new Date();
 		Date from = DateUtil.getDate(to, -259200);
@@ -506,9 +506,9 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 		String redisKey = String.format(RedisKeyConstant.PERSONAL_PREFERENCE_VIDEO_GENRE_NEW_LIST, characterNo);
 
-//        if(redisService.exists(redisKey)){
-//        	return redisService.getListWithPrefix(redisKey, Panel.class);
-//        }
+        if(redisService.exists(redisKey)){
+        	return redisService.getListWithPrefix(redisKey, VideoVo.class);
+        }
 
 		List<Long> videoIdList = preferenceMapper.selectPreferGenreVideoIdListByCharacterNo(characterNo);
 		List<VideoVo> videoVoList;
