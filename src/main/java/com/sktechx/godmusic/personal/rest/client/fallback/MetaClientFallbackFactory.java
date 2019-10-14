@@ -75,6 +75,12 @@ public class MetaClientFallbackFactory implements FallbackFactory<MetaClient>{
                 return CommonApiResponse.<ListDto<List<VideoVo>>>builder()
                         .data(new ListDto<>(null)).build();
             }
+
+            @Override
+            public CommonApiResponse<VideoVo> getVideo(Long videoId) {
+                log.warn("Failed to retrieve videoInfo from metaClient@MetaClientFallback - {}", throwable.getMessage());
+                return null;
+            }
         };
     }
 }

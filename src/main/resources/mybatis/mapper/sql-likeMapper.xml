@@ -66,6 +66,21 @@
         </collection>
     </resultMap>
 
+    <select id="getLikeVideoByLikeType" resultType="Long">
+        SELECT
+            A.like_type_id as videoId
+        FROM (
+         SELECT
+            t1.like_type_id
+            ,t1.disp_sn
+            ,t1.update_dtime
+         FROM tb_character_like t1
+         WHERE T1.character_no = #{characterNo} AND T1.like_type = 'VIDEO'
+         ORDER BY T1.disp_sn ASC, T1.update_dtime ASC
+         LIMIT #{pageable.offset}, #{pageable.pageSize}
+         ) A
+    </select>
+
     <select id="getLikeTrackByLikeType" resultMap="trackResultMap">
         SELECT A.like_type_id                                                          AS trackId
              , A.disp_sn
@@ -417,6 +432,14 @@
         FROM TB_CHARACTER_LIKE T1
                  INNER JOIN TB_TRACK T2 ON T1.LIKE_TYPE_ID = T2.TRACK_ID
         WHERE T1.CHARACTER_NO = #{characterNo} AND T1.LIKE_TYPE = 'TRACK' AND T2.DISP_STATUS_YN = 'Y'
+    </select>
+
+    <select id="getLikeVideoCountByLikeType" resultType="int">
+        SELECT COUNT(*)
+        FROM TB_CHARACTER_LIKE T1
+        INNER JOIN TB_VIDEO T2 ON T1.LIKE_TYPE_ID = T2.VIDEO_ID
+        WHERE T1.CHARACTER_NO = #{characterNo} AND T1.LIKE_TYPE = 'VIDEO' AND T2.DISP_STATUS_YN = 'Y'
+        AND now() between T2.DISP_START_DTIME AND T2.DISP_END_DTIME
     </select>
 
     <select id="getLikeAlbumCountByLikeType" resultType="int">

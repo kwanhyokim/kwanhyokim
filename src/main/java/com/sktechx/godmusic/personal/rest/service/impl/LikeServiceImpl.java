@@ -1,8 +1,16 @@
 package com.sktechx.godmusic.personal.rest.service.impl;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Functions;
+import com.google.common.collect.Lists;
+import com.sktechx.godmusic.personal.rest.client.model.MetaVideoRequestVo;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
+import com.sktechx.godmusic.personal.rest.model.vo.video.RangeResponse;
+import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -42,6 +50,8 @@ import com.sktechx.godmusic.personal.rest.model.vo.like.*;
 import com.sktechx.godmusic.personal.rest.repository.LikeMapper;
 import com.sktechx.godmusic.personal.rest.service.LikeService;
 import lombok.extern.slf4j.Slf4j;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created by Kobe.
@@ -178,12 +188,47 @@ public class LikeServiceImpl implements LikeService {
 	}
 
 	@Override
+	public RangeResponse<VideoVo> getLikeVideos(Long characterNo, Pageable pageable) {
+		requireNonNull(characterNo);
+		requireNonNull(pageable);
+
+		int totalCount = 0;
+		long startTime = System.currentTimeMillis();
+
+		List<Long> videoIds = likeMapper.getLikeVideoByLikeType(characterNo, pageable);
+		if (CollectionUtils.isEmpty(videoIds)) {
+			return RangeResponse.empty();
+		}
+
+		Map<Long, VideoVo> response = Optional.ofNullable(metaClient.getVideos(MetaVideoRequestVo.builder()
+				.videoIds(videoIds)
+				.build()).getData().getList()).orElse(Collections.emptyList())
+				.stream()
+				.filter(VideoVo::exhibitable)
+				.collect(Collectors.toMap(VideoVo::getVideoId, Functions.identity()));
+
+		// videoIds 순서에 맞추어서 반환 VideoVo 생성
+		List<VideoVo> result = Lists.newArrayList();
+		for (Long videoId : videoIds) {
+			if (response.containsKey(videoId)) {
+				result.add(response.get(videoId));
+			}
+		}
+
+		long elapsed = System.currentTimeMillis() - startTime;
+		log.debug("elapsed time@MetaClient = [{}ms], requestCount={}, reponseCount={}", elapsed, videoIds.size(), result.size());
+
+		totalCount = getLikeTotalCount(LikeConstant.LIKE_VIDEO, characterNo);
+
+		return RangeResponse.of(new PageImpl(result, pageable, totalCount));
+	}
+
+	@Override
 	@Transactional
 	public void addLike(LikeRequest request, Long characterNo) {
 		validCheckAddLike(request, characterNo);
 
 		likeMapper.updateLikeDispSn(request.getLikeType(), characterNo);
-
 		likeMapper.insertLike(request.getLikeType(), request.getLikeTypeId(), characterNo);
 
 		try {
@@ -191,8 +236,6 @@ public class LikeServiceImpl implements LikeService {
 					characterNo, request.getLikeTypeId(), UserEventTarget.valueOf(request.getLikeType()));
 		}catch (Exception e){
 			log.warn("Like :: like add UserEvent :: failed Message :: {}", e.getMessage());
-//			throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
-
 		}
 	}
 
@@ -297,9 +340,7 @@ public class LikeServiceImpl implements LikeService {
 
 		int likeTotalCnt = getLikeTotalCount(likeType, characterNo);
 
-		if(LikeConstant.LIKE_CHANNEL.equals(likeType)
-
-		) {
+		if(LikeConstant.LIKE_CHANNEL.equals(likeType)) {
 			likeTotalCnt += getLikeTotalCount(LikeConstant.LIKE_CHART, characterNo);
 		} else if(LikeConstant.LIKE_CHART.equals(likeType)) {
 			likeTotalCnt += getLikeTotalCount(LikeConstant.LIKE_CHANNEL, characterNo);
@@ -322,6 +363,8 @@ public class LikeServiceImpl implements LikeService {
 				return likeMapper.getLikeArtistCountByLikeType(characterNo);
 			case LikeConstant.LIKE_TRACK :
 				return likeMapper.getLikeTrackCountByLikeType(characterNo);
+			case LikeConstant.LIKE_VIDEO:
+				return likeMapper.getLikeVideoCountByLikeType(characterNo);
 			default :
 				throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
 		}
@@ -341,6 +384,8 @@ public class LikeServiceImpl implements LikeService {
 				return PersonalErrorDomain.TRACK_NOT_FOUND;
 			case LikeConstant.LIKE_AFLO:
 				return PersonalErrorDomain.CHANNEL_NOT_FOUND;
+			case LikeConstant.LIKE_VIDEO:
+				return PersonalErrorDomain.VIDEO_NOT_FOUND;
 			default :
 				throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
 		}
@@ -358,6 +403,8 @@ public class LikeServiceImpl implements LikeService {
 				return PersonalErrorDomain.ARTIST_DUPLICATED_LIKE;
 			case LikeConstant.LIKE_TRACK :
 				return PersonalErrorDomain.TRACK_DUPLICATED_LIKE;
+			case LikeConstant.LIKE_VIDEO :
+				return PersonalErrorDomain.VIDEO_DUPLICATED_LIKE;
 			default :
 				throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
 		}
@@ -375,6 +422,8 @@ public class LikeServiceImpl implements LikeService {
 				return PersonalErrorDomain.ARTIST_OVER_ADD_LIKE;
 			case LikeConstant.LIKE_TRACK :
 				return PersonalErrorDomain.TRACK_OVER_ADD_LIKE;
+			case LikeConstant.LIKE_VIDEO:
+				return PersonalErrorDomain.VIDEO_OVER_ADD_LIKE;
 			default :
 				throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
 		}
@@ -387,7 +436,6 @@ public class LikeServiceImpl implements LikeService {
 	 */
 	private void validMeta(String likeType, Long likeTypeId, PersonalErrorDomain message) {
 		CommonApiResponse response;
-		log.info("validMeta :: " + likeType);
 		switch (likeType) {
 			case LikeConstant.LIKE_CHANNEL :
 				response = metaClient.channel(likeTypeId);
@@ -406,6 +454,9 @@ public class LikeServiceImpl implements LikeService {
 				break;
 			case LikeConstant.LIKE_AFLO :
 				response = metaClient.validChannelOrEmpty(likeTypeId, likeType);
+				break;
+			case LikeConstant.LIKE_VIDEO :
+				response = metaClient.getVideo(likeTypeId);
 				break;
 			default :
 				throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);

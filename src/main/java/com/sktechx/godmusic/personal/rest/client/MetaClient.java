@@ -64,5 +64,8 @@ public interface MetaClient {
         return response.getData().getValid() ? response : new CommonApiResponse<>(null);
     }
 
+    @GetMapping("/meta/internal/videos/{videoId}")
+    CommonApiResponse<VideoVo> getVideo(@PathVariable("videoId") Long videoId);
+
 
 }

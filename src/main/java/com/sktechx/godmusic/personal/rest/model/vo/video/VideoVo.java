@@ -9,6 +9,8 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.video;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -22,7 +24,11 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.video.VideoPa
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
+
+import java.util.Date;
+import java.util.List;
 
 @SuppressWarnings("WeakerAccess")
 @Data
@@ -93,26 +99,18 @@ public class VideoVo {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private Date dispEndDtime;
 
-    public static VideoVo mock() {
+    @ApiModelProperty(value = "전시 여부")
+    private YnType displayYn;
 
-        VideoVo mock = VideoVo.builder()
-                .videoId(1000L)
-                .videoNm("다니엘 뮤직 비디오")
-                .videoSubtitle("다니엘 뮤직 비디오(서브타이틀)")
-                .videoType("MV")
-                .mediaRatingType(MediaRatingType.AGE_15_OVER)
-                .playTm("03:40")
-                .agencyId(1234L)
-                .videoReleaseDt(new Date())
-                .svcFreeYn(YnType.Y)
-                .svcStreamingYn(YnType.Y)
-                .representationArtist(VideoArtistVo.builder().artistId(100L).artistNm("Daniel").build())
-                .artistList(Lists.newArrayList(VideoArtistVo.builder().artistId(100L).artistNm("Daniel").build()))
-                .thumbnailImageList(Lists.newArrayList(VideoThumbnailImageVo.builder().width(100).height(100).url("https://i.ytimg.com/vi/m8MfJg68oCs/hqdefault.jpg").build()))
-                .videoFileUpdateDtime(System.currentTimeMillis())
-                .build();
-
-        return mock;
+    public boolean exhibitable() {
+        if (this.displayYn == YnType.N || this.dispStartDtime == null || this.dispEndDtime == null) {
+            return false;
+        }
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startTime = this.dispStartDtime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime endTime = this.dispEndDtime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        return this.displayYn == YnType.Y
+                && now.isAfter(startTime) && now.isBefore(endTime);
     }
 
     public VideoPanel convertToVideoPanel(){
