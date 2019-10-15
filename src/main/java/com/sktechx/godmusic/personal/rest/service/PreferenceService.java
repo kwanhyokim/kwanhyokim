@@ -16,7 +16,6 @@ import java.util.List;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.ChartResponse;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 
 /**
@@ -73,6 +72,21 @@ public interface PreferenceService {
 	 * @return
 	 */
 	List<VideoVo> getPreferenceVideoGenreNewList(Long characterNo, OsType osType);
+
+	/**
+	 *
+	 * @param characterNo
+	 * @return
+	 */
+	void clearCachePreferenceVideoArtistNewList(Long characterNo);
+
+	/**
+	 *
+	 * @param characterNo
+	 * @return
+	 */
+
+	void clearCachePreferenceVideoGenreNewList(Long characterNo);
 
 
 }

@@ -29,6 +29,15 @@
         INNER JOIN ted_artist f ON e.artist_id = f.artist_id
         INNER JOIN tb_character_prefer_artist g ON e.artist_id = g.artist_id AND g.character_no = #{characterNo}
 
+        UNION ALL
+
+        SELECT
+            a.video_id
+        FROM tb_new_video a
+        INNER JOIN tb_video_artist e ON a.video_id = e.video_id AND rp_yn ='Y'
+        INNER JOIN ted_artist f ON e.artist_id = f.artist_id
+        INNER JOIN tb_character_like g ON e.artist_id = g.like_type_id AND g.character_no = #{characterNo} AND g.like_type='ARTIST'
+
     </select>
 
     <select id="selectPreferGenreVideoIdListByCharacterNo" resultType="Long">
