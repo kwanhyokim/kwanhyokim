@@ -562,4 +562,14 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 		return videoVoList;
     }
+
+	@Override
+	public void clearCachePreferenceVideoArtistNewList(Long characterNo) {
+		redisService.delWithPrefix(String.format(RedisKeyConstant.PERSONAL_PREFERENCE_VIDEO_ARTIST_NEW_LIST, characterNo));
+	}
+
+	@Override
+	public void clearCachePreferenceVideoGenreNewList(Long characterNo) {
+		redisService.delWithPrefix(String.format(RedisKeyConstant.PERSONAL_PREFERENCE_VIDEO_GENRE_NEW_LIST, characterNo));
+	}
 }
