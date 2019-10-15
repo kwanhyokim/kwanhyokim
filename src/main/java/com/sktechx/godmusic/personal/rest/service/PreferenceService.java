@@ -55,7 +55,7 @@ public interface PreferenceService {
 	String getPreferSimilarArtistName(Long characterNo, Integer sectionNumber);
 
 
-	ChartResponse deletePreferSimilarArtistName(Long characterNo);
+	void deletePreferSimilarArtistName(Long characterNo);
 
 	/**
 	 * 선호 아티스트 최신 비디오 목록 가져오기

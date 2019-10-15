@@ -196,13 +196,9 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public ChartResponse deletePreferSimilarArtistName(Long characterNo) {
-
-		redisService
-				.delWithPrefix(String.format(PERSONAL_SIMILAR_ARTIST_HISTORY_KEY, characterNo));
+	public void deletePreferSimilarArtistName(Long characterNo) {
+		redisService.delWithPrefix(String.format(PERSONAL_SIMILAR_ARTIST_HISTORY_KEY, characterNo));
 		redisService.delWithPrefix(String.format(PERSONAL_SIMILAR_ARTIST_KEY, characterNo));
-
-		return null;
 	}
 
 	private List<Artist> makeSimilarArtistList(Long characterNo, Integer sectionNumber) {
