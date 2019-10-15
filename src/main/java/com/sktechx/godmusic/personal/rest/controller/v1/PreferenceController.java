@@ -79,9 +79,9 @@ public class PreferenceController {
 
 	@ApiOperation(value = "유사 시드 아티스트 캐쉬 삭제", httpMethod = "GET", notes = "유사 시드 아티스트 캐쉬 삭제 API", response = ArtistDto.class)
 	@GetMapping(value = "/artist/clear")
-	public CommonApiResponse<ChartResponse> deletePreferSimilarArtistCache() {
-		Long characterNo = GMContext.getContext().getCharacterNo();
-		return new CommonApiResponse<>(preferenceService.deletePreferSimilarArtistName(characterNo));
+	public CommonApiResponse deletePreferSimilarArtistCache() {
+		preferenceService.deletePreferSimilarArtistName(GMContext.getContext().getCharacterNo());
+		return CommonApiResponse.emptySuccess();
 	}
 
 	@ApiOperation(value = "좋아하는 아티스트 최신영상 조회")
