@@ -1,9 +1,11 @@
 package com.sktechx.godmusic.personal.rest.model.vo.like;
 
-import javax.validation.constraints.NotNull;
-
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * Created by Kobe.
@@ -14,12 +16,15 @@ import lombok.Data;
  */
 @Data
 public class LikeTypeVo {
-	@NotNull
+
+	@NotBlank
 	@ApiModelProperty(name = "likeType", value = "좋아하는 타입(CHNL: 채널, ALBUM: 앨범, CHART: 차트, ARTIST: 아티스트, TRACK: 곡)",
 			allowableValues = "CHNL, ALBUM, CHART, ARTIST, TRACK, FLAC, AFLO")
 	private String likeType;
 
+	@Max(Long.MAX_VALUE)
 	@NotNull
 	@ApiModelProperty(name = "likeTypeId", value = "좋아하는 타입 아이디")
 	private Long likeTypeId;
+
 }

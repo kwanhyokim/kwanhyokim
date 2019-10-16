@@ -51,7 +51,7 @@ import lombok.extern.slf4j.Slf4j;
  * @time PM 3:41
  */
 @Slf4j
-@Service
+@Service("likeService")
 public class LikeServiceImpl implements LikeService {
 
 	@Autowired

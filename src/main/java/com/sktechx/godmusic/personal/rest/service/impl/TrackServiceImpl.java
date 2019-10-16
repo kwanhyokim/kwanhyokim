@@ -10,11 +10,13 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.IntStream;
-
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
+import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
+import com.sktechx.godmusic.personal.common.domain.constant.TrackConstant;
+import com.sktechx.godmusic.personal.rest.model.dto.MostListenedTrackDto;
+import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
+import com.sktechx.godmusic.personal.rest.service.TrackService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -24,16 +26,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
-import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
-import com.sktechx.godmusic.personal.common.domain.constant.TrackConstant;
-import com.sktechx.godmusic.personal.rest.model.dto.MostListenedTrackDto;
-import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
-import com.sktechx.godmusic.personal.rest.service.TrackService;
-import lombok.extern.slf4j.Slf4j;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.IntStream;
 
 @Slf4j
-@Service
+@Service("trackService")
 public class TrackServiceImpl implements TrackService {
 
     @Autowired
