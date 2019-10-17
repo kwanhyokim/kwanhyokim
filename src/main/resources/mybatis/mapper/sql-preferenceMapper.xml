@@ -24,7 +24,7 @@
     <select id="selectPreferArtistVideoIdListByCharacterNo" resultType="Long">
         SELECT
             a.video_id
-        FROM tb_new_video a
+        FROM tb_video a
         INNER JOIN tb_video_artist e ON a.video_id = e.video_id AND rp_yn ='Y'
         INNER JOIN ted_artist f ON e.artist_id = f.artist_id
         INNER JOIN tb_character_prefer_artist g ON e.artist_id = g.artist_id AND g.character_no = #{characterNo}
@@ -33,7 +33,7 @@
 
         SELECT
             a.video_id
-        FROM tb_new_video a
+        FROM tb_video a
         INNER JOIN tb_video_artist e ON a.video_id = e.video_id AND rp_yn ='Y'
         INNER JOIN ted_artist f ON e.artist_id = f.artist_id
         INNER JOIN tb_character_like g ON e.artist_id = g.like_type_id AND g.character_no = #{characterNo} AND g.like_type='ARTIST'
@@ -42,7 +42,7 @@
 
     <select id="selectPreferGenreVideoIdListByCharacterNo" resultType="Long">
         SELECT
-            h.video_id
+            g.video_id
          FROM
             tb_character a
 
@@ -52,7 +52,6 @@
             INNER JOIN tb_svc_genre e on d.svc_genre_id = e.svc_genre_id
             INNER JOIN tb_map_svc_genre_video f on f.svc_genre_id = e.svc_genre_id
             INNER JOIN tb_video g  on g.video_id = f.video_id
-            INNER JOIN tb_new_video h ON h.video_id = g.video_id
 
         WHERE
             b.character_no = #{characterNo}
