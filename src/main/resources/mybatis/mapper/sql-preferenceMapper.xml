@@ -23,21 +23,32 @@
 
     <select id="selectPreferArtistVideoIdListByCharacterNo" resultType="Long">
         SELECT
-            a.video_id
-        FROM tb_video a
-        INNER JOIN tb_video_artist e ON a.video_id = e.video_id AND rp_yn ='Y'
-        INNER JOIN ted_artist f ON e.artist_id = f.artist_id
-        INNER JOIN tb_character_prefer_artist g ON e.artist_id = g.artist_id AND g.character_no = #{characterNo}
+            video.video_id
+        FROM
+        (
+            SELECT
+                a.video_id, a.disp_start_dtime
+            FROM tb_video a
+            INNER JOIN tb_video_artist e ON a.video_id = e.video_id AND rp_yn ='Y'
+            INNER JOIN ted_artist f ON e.artist_id = f.artist_id
+            INNER JOIN tb_character_prefer_artist g ON e.artist_id = g.artist_id AND g.character_no = #{characterNo}
 
-        UNION ALL
+            LIMIT 50
 
-        SELECT
-            a.video_id
-        FROM tb_video a
-        INNER JOIN tb_video_artist e ON a.video_id = e.video_id AND rp_yn ='Y'
-        INNER JOIN ted_artist f ON e.artist_id = f.artist_id
-        INNER JOIN tb_character_like g ON e.artist_id = g.like_type_id AND g.character_no = #{characterNo} AND g.like_type='ARTIST'
+            UNION ALL
 
+            SELECT
+                a.video_id, a.disp_start_dtime
+            FROM tb_video a
+            INNER JOIN tb_video_artist e ON a.video_id = e.video_id AND rp_yn ='Y'
+            INNER JOIN ted_artist f ON e.artist_id = f.artist_id
+            INNER JOIN tb_character_like g ON e.artist_id = g.like_type_id AND g.character_no = #{characterNo} AND g.like_type='ARTIST'
+
+            LIMIT 50
+
+            ORDER BY disp_start_dtime DESC
+
+        ) video
     </select>
 
     <select id="selectPreferGenreVideoIdListByCharacterNo" resultType="Long">
@@ -57,6 +68,9 @@
             b.character_no = #{characterNo}
 
         GROUP BY g.video_id
+        ORDER BY g.disp_start_dtime DESC
+
+        LIMIT 50
     </select>
 
 

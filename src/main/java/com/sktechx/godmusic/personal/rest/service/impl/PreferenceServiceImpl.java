@@ -23,9 +23,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
-import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
+import com.sktechx.godmusic.lib.redis.annotation.RedisCacheable;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.PreferPropsType;
 import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
@@ -414,10 +414,8 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	private void setRedisWithWrapper(String key, PreferenceSimilarArtistListRedisWrapper preferenceSimilarArtistListRedisWrapper) {
-
 		// 캐쉬 만기는 당일 자정
-		long expireSeconds = LocalTime.now().until(LocalTime.MAX, ChronoUnit.SECONDS);
-		redisService.setWithPrefix(key, preferenceSimilarArtistListRedisWrapper, (int) expireSeconds);
+		redisService.setWithPrefix(key, preferenceSimilarArtistListRedisWrapper, (int) LocalTime.now().until(LocalTime.MAX, ChronoUnit.SECONDS));
 	}
 
     private List<Artist> preferenceArtistListConvert(List<ArtistDto> artistDtoList) {
@@ -452,11 +450,14 @@ public class PreferenceServiceImpl implements PreferenceService {
 	/**
 	 * 선호 아티스트 최신 영상
 	 * @param characterNo
-	 * @param osType
 	 * @return
 	 */
 	@Override
-	public List<VideoVo> getPreferenceVideoArtistNewList(Long characterNo, OsType osType){
+	public List<VideoVo> getPreferenceVideoArtistNewList(Long characterNo){
+
+		if(ObjectUtils.isEmpty(characterNo)){
+			return null;
+		}
 
 		String redisKey = String.format(RedisKeyConstant.PERSONAL_PREFERENCE_VIDEO_ARTIST_NEW_LIST, characterNo);
 
@@ -464,6 +465,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 			return redisService.getListWithPrefix(redisKey, VideoVo.class);
 		}
 
+		// 3일 전 부터 현 시각 사이의 전시시작일 분리
 		Date to = new Date();
 		Date from = DateUtil.getDate(to, -259200);
 
@@ -481,6 +483,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 						.filter(videoVo -> videoVo.getDispStartDtime().after(from) && videoVo.getDispStartDtime().before(to))
 						.collect(Collectors.toList());
 
+
 		if(CollectionUtils.isEmpty(videoVoList)){
 			return null;
 		}
@@ -488,66 +491,58 @@ public class PreferenceServiceImpl implements PreferenceService {
 		redisService.setWithPrefix(redisKey, videoVoList, 3600);
 
 		return videoVoList;
-
 	}
 
 	/**
 	 * 선호 장르 최신 영상
 	 * @param characterNo
-	 * @param osType
 	 * @return
 	 */
 	@Override
-    public List<VideoVo> getPreferenceVideoGenreNewList(Long characterNo, OsType osType){
+    public List<VideoVo> getPreferenceVideoGenreNewList(Long characterNo){
+
+		List<Long> videoIdList;
+		List<VideoVo> videoVoList;
+
+		// 캐릭터 없으면 최신 디폴트 비디오
+		if(ObjectUtils.isEmpty(characterNo)){
+			return getDefaultSvcGenreVideoVoList();
+		}
 
 		String redisKey = String.format(RedisKeyConstant.PERSONAL_PREFERENCE_VIDEO_GENRE_NEW_LIST, characterNo);
 
-        if(redisService.exists(redisKey)){
-        	return redisService.getListWithPrefix(redisKey, VideoVo.class);
-        }
-
-		List<Long> videoIdList = preferenceMapper.selectPreferGenreVideoIdListByCharacterNo(characterNo);
-		List<VideoVo> videoVoList;
-
-		if(CollectionUtils.isEmpty(videoIdList)) {
-			videoIdList = preferenceMapper.selectDefaultSvcGenreVideoIdList();
-
-			videoVoList = Optional.ofNullable(
-					metaClient.getVideos(
-							MetaVideoRequestVo.builder().videoIds(videoIdList).build()
-					)
-							.getData().getList()
-			)
-					.orElseGet(Collections::emptyList)
-					.stream()
-					.filter(Objects::nonNull)
-					.collect(Collectors.toList());
-
-		}else {
-			Date to = new Date();
-			Date from = DateUtil.getDate(to, -604800);
-
-			videoVoList = Optional.ofNullable(
-					metaClient.getVideos(
-							MetaVideoRequestVo.builder().videoIds(videoIdList).build()
-					)
-							.getData().getList()
-			)
-					.orElseGet(Collections::emptyList)
-					.stream()
-					.filter(Objects::nonNull)
-					.filter(videoVo -> videoVo.getDispStartDtime().after(from) && videoVo.getDispStartDtime().before(to))
-					.collect(Collectors.toList());
-
-
+		if (redisService.exists(redisKey)) {
+			return redisService.getListWithPrefix(redisKey, VideoVo.class);
 		}
 
-		List<VideoVo> preferArtistVideoVoList = getPreferenceVideoArtistNewList(characterNo, osType);
+		videoIdList = preferenceMapper.selectPreferGenreVideoIdListByCharacterNo(characterNo);
+
+		// 선호 장르 없는 경우, 기본 장르 선택
+		if(CollectionUtils.isEmpty(videoIdList)) {
+			return getDefaultSvcGenreVideoVoList();
+		}
+
+		// 선호 장르 있는 경우
+		Date to = new Date();
+		Date from = DateUtil.getDate(to, -604800);
+
+		videoVoList = Optional.ofNullable(
+				metaClient.getVideos(
+						MetaVideoRequestVo.builder().videoIds(videoIdList).build()
+				)
+						.getData().getList()
+		)
+				.orElseGet(Collections::emptyList)
+				.stream()
+				.filter(Objects::nonNull)
+				.filter(videoVo -> videoVo.getDispStartDtime().after(from) && videoVo.getDispStartDtime().before(to))
+				.collect(Collectors.toList());
+
+		List<VideoVo> preferArtistVideoVoList = getPreferenceVideoArtistNewList(characterNo);
 
 		if(!CollectionUtils.isEmpty(preferArtistVideoVoList)) {
 			videoVoList.removeAll(preferArtistVideoVoList);
 		}
-
 
 		if(CollectionUtils.isEmpty(videoVoList)){
 			return null;
@@ -559,6 +554,49 @@ public class PreferenceServiceImpl implements PreferenceService {
 		return videoVoList;
     }
 
+	/**
+	 * 기본 장르의 최신 비디오 목록 조회
+	 * @return
+	 */
+
+	@RedisCacheable(key = RedisKeyConstant.PERSONAL_PREFERENCE_VIDEO_GENRE_NEW_DEFAULT_LIST, expireSeconds = 3600)
+	private List<VideoVo> getDefaultSvcGenreVideoVoList(){
+
+	    return Optional.ofNullable(
+			    metaClient.getVideos(
+					    MetaVideoRequestVo.builder().videoIds(preferenceMapper.selectDefaultSvcGenreVideoIdList()).build()
+			    )
+					    .getData().getList()
+	    )
+			    .orElseGet(Collections::emptyList)
+			    .stream()
+			    .filter(Objects::nonNull)
+			    .collect(Collectors.toList());
+    }
+
+
+	/**
+	 * 주어진 영상 리스트를 주어진 크기로 자르고 shuffle
+	 * @param videoVoList
+	 * @param limitSize
+	 * @return
+	 */
+	@Override
+	public List<VideoVo> getLimitedShuffledVideoList(List<VideoVo> videoVoList, Integer limitSize){
+
+		if(CollectionUtils.isEmpty(videoVoList)){
+			return null;
+		}
+
+		Collections.shuffle(videoVoList);
+
+		if(videoVoList.size() > limitSize){
+			videoVoList = videoVoList.stream().limit(limitSize).collect(Collectors.toList());
+		}
+
+		return videoVoList;
+	}
+
 	@Override
 	public void clearCachePreferenceVideoArtistNewList(Long characterNo) {
 		redisService.delWithPrefix(String.format(RedisKeyConstant.PERSONAL_PREFERENCE_VIDEO_ARTIST_NEW_LIST, characterNo));
@@ -568,4 +606,5 @@ public class PreferenceServiceImpl implements PreferenceService {
 	public void clearCachePreferenceVideoGenreNewList(Long characterNo) {
 		redisService.delWithPrefix(String.format(RedisKeyConstant.PERSONAL_PREFERENCE_VIDEO_GENRE_NEW_LIST, characterNo));
 	}
+
 }
