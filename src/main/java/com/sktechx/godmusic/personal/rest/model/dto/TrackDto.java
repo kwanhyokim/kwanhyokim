@@ -92,5 +92,12 @@ public class TrackDto {
 
     private YnType svcFlacYn;
 
+    protected YnType svcStreamingYn;
+
+    protected YnType svcDrmYn;
+
+    public boolean isNotStreamable() {
+        return YnType.N == this.svcStreamingYn;
+    }
 }
 
