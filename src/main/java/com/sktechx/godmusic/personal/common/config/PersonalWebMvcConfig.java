@@ -12,13 +12,10 @@
 
 package com.sktechx.godmusic.personal.common.config;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-//import com.sktechx.godmusic.meta.common.interceptor.TransactionIdInterceptor;
-import com.sktechx.godmusic.personal.common.interceptor.TransactionIdInterceptor;
-import lombok.extern.slf4j.Slf4j;
+import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,14 +26,19 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.sktechx.godmusic.personal.common.domain.deserialize.CustomDomainSimpleDeserializers;
+import com.sktechx.godmusic.personal.common.interceptor.TransactionIdInterceptor;
+import lombok.extern.slf4j.Slf4j;
+//import com.sktechx.godmusic.meta.common.interceptor.TransactionIdInterceptor;
 
 /**
  * 설명 : XXXXXXXXX
@@ -84,6 +86,13 @@ public class PersonalWebMvcConfig implements WebMvcConfigurer {
 
         // setting datetime format
         objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+        objectMapper.registerModule(new SimpleModule() {
+            @Override
+            public void setupModule(SetupContext context) {
+                super.setupModule(context);
+                context.addDeserializers(new CustomDomainSimpleDeserializers());
+            }
+        });
 
         jsonConverter.setObjectMapper(objectMapper);
         return jsonConverter;
