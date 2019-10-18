@@ -389,6 +389,11 @@ public class MemberChannelServiceImpl implements MemberChannelService {
                     memberChannelTrackMapper.insertTrackMemberChannel(memberChannelId, trackDto.getTrackId(), viewPriority.getAndIncrement());
                     successfulIdList.add(trackDto.getTrackId());
 
+                    if (trackDto.isNotStreamable()) {
+                        dataIntegrityIdList.add(trackDto.getTrackId());
+                        continue;
+                    }
+
                     // 사용자 이벤트 전송
                     UserEvent userEvent = UserEvent.newBuilder()
                             .playChnl(appName.getCode())
