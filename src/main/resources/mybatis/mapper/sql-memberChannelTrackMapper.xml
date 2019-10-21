@@ -50,7 +50,9 @@
 		    g.title albumTitle,
 		    h.artist_id repArtistId,
 		    h.artist_nm repArtistNm,
-		    b.svc_flac_yn
+		    b.svc_flac_yn,
+			b.svc_streaming_yn,
+			b.svc_drm_yn
 		FROM
 			(
 				SELECT
