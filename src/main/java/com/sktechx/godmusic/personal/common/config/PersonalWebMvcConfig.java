@@ -41,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 //import com.sktechx.godmusic.meta.common.interceptor.TransactionIdInterceptor;
 
 /**
- * 설명 : XXXXXXXXX
+ * 설명 : Personal 서버 설정
  *
  * @author 정덕진(Deockjin Chung)/Music사업팀/SKTECH(djin.chung@sk.com)
  * @date 2018.07.01
@@ -72,14 +72,11 @@ public class PersonalWebMvcConfig implements WebMvcConfigurer {
         ObjectMapper objectMapper = new ObjectMapper();
 
         // naming converting
-//        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.LOWER_CAMEL_CASE);
 
         // serialize features
-//        objectMapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, true);
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-//        objectMapper.disable(SerializationFeature.WRITE_NULL_MAP_VALUES);
 
         // deserialize features
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
