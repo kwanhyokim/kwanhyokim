@@ -8,6 +8,17 @@ public class EnumUtil {
             return Enum.valueOf(enumType, type);
         } catch (IllegalArgumentException ignore) {}
 
+
+        try {
+
+            for(Enum<T> t : enumType.getEnumConstants()){
+                if(t.toString().equals(type)){
+                    return (T) t;
+                }
+            }
+
+        } catch (IllegalArgumentException ignore) {}
+
         return null;
 
     }
