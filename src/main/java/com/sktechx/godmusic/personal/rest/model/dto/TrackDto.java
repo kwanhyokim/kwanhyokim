@@ -92,5 +92,9 @@ public class TrackDto {
 
     private YnType svcFlacYn;
 
+    private YnType svcStreamingYn;
+
+    private YnType svcDrmYn;
+
 }
 
