@@ -372,6 +372,7 @@ public class LikeServiceImpl implements LikeService {
 
 	private PersonalErrorDomain getLikeTypeNotFoundMessage(String likeType) {
 		switch (likeType) {
+			case LikeConstant.LIKE_FLAC:
 			case LikeConstant.LIKE_CHANNEL :
 				return PersonalErrorDomain.CHANNEL_NOT_FOUND;
 			case LikeConstant.LIKE_ALBUM :
@@ -437,6 +438,7 @@ public class LikeServiceImpl implements LikeService {
 	private void validMeta(String likeType, Long likeTypeId, PersonalErrorDomain message) {
 		CommonApiResponse response;
 		switch (likeType) {
+			case LikeConstant.LIKE_FLAC :
 			case LikeConstant.LIKE_CHANNEL :
 				response = metaClient.channel(likeTypeId);
 				break;
