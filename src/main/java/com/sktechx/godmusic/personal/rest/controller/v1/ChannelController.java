@@ -125,10 +125,10 @@ public class ChannelController {
     @GetMapping("/afloChnl/list")
     public CommonApiResponse recommendPanelTrackList(
             @ApiIgnore @RequestGMContext GMContext ctx,
-            @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo,
             @RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType
     ){
 
+        Long characterNo = ctx.getCharacterNo();
         List<Panel> recommendPanelList = recommendPanelService.getRecommendPanelList(characterNo, RecommendPanelContentType.AFLO, ctx.getOsType());
 
         return new CommonApiResponse<>(new ListDto<>(recommendPanelList));

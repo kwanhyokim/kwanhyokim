@@ -89,6 +89,8 @@ public class PreferenceController {
 			@RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo
 	){
 
+    	characterNo = ctx.getCharacterNo();
+
     	List<VideoVo> videoVoList = preferenceService.getLimitedShuffledVideoList(
 			    preferenceService.getPreferenceVideoArtistNewList(characterNo), 5);
 
@@ -106,6 +108,8 @@ public class PreferenceController {
 			@ApiIgnore @RequestGMContext GMContext ctx,
 			@RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo
 	){
+
+    	characterNo = ctx.getCharacterNo();
 
 		return new CommonApiResponse<>(
 				new ListDto<>(

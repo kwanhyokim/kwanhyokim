@@ -82,8 +82,10 @@ public class V2RecommendPanelController {
 		    @RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType,
 		    @RequestHeader(value = CommonConstant.X_GM_APP_VERSION) String appVer
     ){
+		characterNo = ctx.getCharacterNo();
+
 		RecommendPanelResponse recommendPanelResponse =  recommendPanelService
-			    .createRecommendV2PanelList(ctx.getCharacterNo(), ctx.getOsType(), ctx.getAppVer());
+			    .createRecommendV2PanelList(characterNo, ctx.getOsType(), ctx.getAppVer());
 
 		return new CommonApiResponse<>(recommendPanelResponse);
     }
@@ -98,8 +100,9 @@ public class V2RecommendPanelController {
 		    @RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType
     ){
 
-		List<Panel> recommendPanelList = recommendPanelService.getRecommendPanelList(ctx.getCharacterNo(), recommendPanelContentType, ctx.getOsType());
+		characterNo = ctx.getCharacterNo();
 
+		List<Panel> recommendPanelList = recommendPanelService.getRecommendPanelList(characterNo, recommendPanelContentType, ctx.getOsType());
 
 	    if(CollectionUtils.isEmpty(recommendPanelList)){
 		    return null;
@@ -115,12 +118,12 @@ public class V2RecommendPanelController {
 			@RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo,
 			@RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType
 	){
-
+		characterNo = ctx.getCharacterNo();
 
 		return new CommonApiResponse<>(RecommendPanelListResponse.builder()
-				.forMePanelList(recommendPanelService.getRecommendPanelList(ctx.getCharacterNo(), RecommendPanelContentType.RC_CF_TR, ctx.getOsType()))
-				.todayFloPanelList(recommendPanelService.getRecommendPanelList(ctx.getCharacterNo(), RecommendPanelContentType.RC_SML_TR, ctx.getOsType()))
-				.artistFloPanelList(recommendPanelService.getRecommendPanelList(ctx.getCharacterNo(), RecommendPanelContentType.RC_ATST_TR, ctx.getOsType()))
+				.forMePanelList(recommendPanelService.getRecommendPanelList(characterNo, RecommendPanelContentType.RC_CF_TR, ctx.getOsType()))
+				.todayFloPanelList(recommendPanelService.getRecommendPanelList(characterNo, RecommendPanelContentType.RC_SML_TR, ctx.getOsType()))
+				.artistFloPanelList(recommendPanelService.getRecommendPanelList(characterNo, RecommendPanelContentType.RC_ATST_TR, ctx.getOsType()))
 				.build());
 	}
 
@@ -133,7 +136,9 @@ public class V2RecommendPanelController {
 			@RequestHeader(value = CommonConstant.X_GM_APP_VERSION) String appVer
 	){
 
-		PersonalPhaseMeta personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(ctx.getCharacterNo(),ctx.getOsType(), ctx.getAppVer());
+		characterNo = ctx.getCharacterNo();
+
+		PersonalPhaseMeta personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, ctx.getOsType(), ctx.getAppVer());
 
 		List<Long> preferGenreIdList = personalPhaseMeta.getPreferGenreList().stream().map( x -> x.getPreferGenreId()).collect(
 				Collectors.toList());
@@ -157,7 +162,10 @@ public class V2RecommendPanelController {
 	@PostMapping(value = "/home/panels/create")
 	public CommonApiResponse recommendDummyData(@ApiIgnore @RequestGMContext GMContext ctx,
 			@Valid @RequestBody RecommendV2DummyDataRequest recommendV2DummyDataRequest,
-			@ApiParam(value = "캐릭터 번호", defaultValue = "1") @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = true) Long characterNo){
+			@ApiParam(value = "캐릭터 번호", defaultValue = "1") @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo){
+
+		characterNo = ctx.getCharacterNo();
+
 		if(characterNo != null){
 			recommendDataService.createRecommendV2DummyData(characterNo,recommendV2DummyDataRequest);
 		}
@@ -168,7 +176,10 @@ public class V2RecommendPanelController {
 	@DeleteMapping(value = "/home/panels/delete")
 	public CommonApiResponse deleteRecommendDummyData(@ApiIgnore @RequestGMContext GMContext ctx,
 			@Valid @RequestBody RecommendV2DummyDataRequest recommendV2DummyDataRequest,
-			@ApiParam(value = "캐릭터 번호", defaultValue = "1") @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = true) Long characterNo){
+			@ApiParam(value = "캐릭터 번호", defaultValue = "1") @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo){
+
+		characterNo = ctx.getCharacterNo();
+
 		if(characterNo != null){
 			recommendDataService.deleteRecommendV2DummyData(characterNo,recommendV2DummyDataRequest);
 		}
