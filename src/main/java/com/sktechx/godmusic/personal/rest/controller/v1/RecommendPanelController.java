@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.controller.v1;
 
 import java.util.List;
+import java.util.Objects;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,7 +121,10 @@ public class RecommendPanelController {
 	@PostMapping(value = "/home/panels/create")
 	public CommonApiResponse recommendDummyData(@ApiIgnore @RequestGMContext GMContext ctx,
 												 @Valid @RequestBody RecommendDummyDataRequest recommendDummyDataRequest,
-												@ApiParam(value = "캐릭터 번호", defaultValue = "1") @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = true) Long characterNo){
+												@ApiParam(value = "캐릭터 번호", defaultValue = "1") @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo){
+
+		characterNo = ctx.getCharacterNo();
+
 		if(characterNo != null){
 			recommendDataService.createRecommendDummyData(characterNo,recommendDummyDataRequest);
 		}
