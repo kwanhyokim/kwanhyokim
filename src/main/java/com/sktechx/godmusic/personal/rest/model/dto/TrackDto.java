@@ -99,5 +99,9 @@ public class TrackDto {
     public boolean isNotStreamable() {
         return YnType.N == this.svcStreamingYn;
     }
+
+    public boolean isNotDownloadable() {
+        return YnType.N == this.svcDrmYn;
+    }
 }
 
