@@ -14,7 +14,6 @@ package com.sktechx.godmusic.personal.rest.service;
 
 import java.util.List;
 
-import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.ChartResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 
@@ -60,28 +59,28 @@ public interface PreferenceService {
 	/**
 	 * 선호 아티스트 최신 비디오 목록 가져오기
 	 * @param characterNo
-	 * @param osType
 	 * @return
 	 */
-	List<VideoVo> getPreferenceVideoArtistNewList(Long characterNo, OsType osType);
+	List<VideoVo> getPreferenceVideoArtistNewList(Long characterNo);
 
 	/**
 	 * 선호 장르 최신 비디오 목록 가져오기
 	 * @param characterNo
-	 * @param osType
 	 * @return
 	 */
-	List<VideoVo> getPreferenceVideoGenreNewList(Long characterNo, OsType osType);
+	List<VideoVo> getPreferenceVideoGenreNewList(Long characterNo);
+
+	List<VideoVo> getLimitedShuffledVideoList(List<VideoVo> videoVoList, Integer limitSize);
 
 	/**
-	 *
+	 * 선호 아티스트 최신 비디오 캐쉬 제거
 	 * @param characterNo
 	 * @return
 	 */
 	void clearCachePreferenceVideoArtistNewList(Long characterNo);
 
 	/**
-	 *
+	 * 선호 장르 최신 비디오 캐쉬 제거
 	 * @param characterNo
 	 * @return
 	 */

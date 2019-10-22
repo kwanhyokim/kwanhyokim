@@ -16,14 +16,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.CommonConstant;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.RequestGMContext;
-import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
@@ -88,19 +86,15 @@ public class PreferenceController {
 	@GetMapping("/video/artist/new/list")
 	public CommonApiResponse<ListDto<List<VideoVo>>> getPreferenceVideoArtistNewList(
 			@ApiIgnore @RequestGMContext GMContext ctx,
-			@RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo,
-			@RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType
+			@RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo
 	){
 
-		if(ObjectUtils.isEmpty(characterNo)){
-			return null;
-		}
+    	List<VideoVo> videoVoList = preferenceService.getLimitedShuffledVideoList(
+			    preferenceService.getPreferenceVideoArtistNewList(characterNo), 5);
 
-		List<VideoVo> videoVoList = preferenceService.getPreferenceVideoArtistNewList(characterNo, osType);
-
-		if(CollectionUtils.isEmpty(videoVoList)){
-			return null;
-		}
+    	if(CollectionUtils.isEmpty(videoVoList)){
+    		return null;
+	    }
 
 		return new CommonApiResponse<>(new ListDto<>(videoVoList));
 
@@ -110,18 +104,14 @@ public class PreferenceController {
 	@GetMapping("/video/genre/new/list")
 	public CommonApiResponse<ListDto<List<VideoVo>>>  getPreferenceVideoGenreNewList(
 			@ApiIgnore @RequestGMContext GMContext ctx,
-			@RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo,
-			@RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType
+			@RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo
 	){
 
-
-		List<VideoVo> videoVoList = preferenceService.getPreferenceVideoGenreNewList(characterNo, osType);
-
-    	if(CollectionUtils.isEmpty(videoVoList)){
-    		return null;
-	    }
-
-		return new CommonApiResponse<>(new ListDto<>(videoVoList));
+		return new CommonApiResponse<>(
+				new ListDto<>(
+					preferenceService.getLimitedShuffledVideoList(
+						preferenceService.getPreferenceVideoGenreNewList(characterNo), 5)
+		));
 
 	}
 }
