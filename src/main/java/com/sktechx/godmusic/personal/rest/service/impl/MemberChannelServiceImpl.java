@@ -389,7 +389,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
                     memberChannelTrackMapper.insertTrackMemberChannel(memberChannelId, trackDto.getTrackId(), viewPriority.getAndIncrement());
                     successfulIdList.add(trackDto.getTrackId());
 
-                    if (trackDto.isNotStreamable()) {
+                    if (trackDto.isNotStreamable() && trackDto.isNotDownloadable()) {
                         dataIntegrityIdList.add(trackDto.getTrackId());
                         continue;
                     }
