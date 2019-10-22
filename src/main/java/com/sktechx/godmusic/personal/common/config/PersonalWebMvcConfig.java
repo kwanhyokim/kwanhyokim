@@ -34,6 +34,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.sktechx.godmusic.personal.common.domain.deserialize.CustomDomainSimpleDeserializers;
 import com.sktechx.godmusic.personal.common.interceptor.TransactionIdInterceptor;
 import lombok.extern.slf4j.Slf4j;
 //import com.sktechx.godmusic.meta.common.interceptor.TransactionIdInterceptor;
@@ -81,13 +83,13 @@ public class PersonalWebMvcConfig implements WebMvcConfigurer {
 
         // setting datetime format
         objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
-//        objectMapper.registerModule(new SimpleModule() {
-//            @Override
-//            public void setupModule(SetupContext context) {
-//                super.setupModule(context);
-//                context.addDeserializers(new CustomDomainSimpleDeserializers());
-//            }
-//        });
+        objectMapper.registerModule(new SimpleModule() {
+            @Override
+            public void setupModule(SetupContext context) {
+                super.setupModule(context);
+                context.addDeserializers(new CustomDomainSimpleDeserializers());
+            }
+        });
 
         jsonConverter.setObjectMapper(objectMapper);
         return jsonConverter;
