@@ -62,8 +62,9 @@ public class VideoWatchController {
     @GetMapping(value = "/recentwatched")
     public CommonApiResponse<RangeResponse<MostWatchedVideoVo>> getRecentWatchedVideos(
             @PageableDefault(size = 50) Pageable pageable,
-            @ApiIgnore @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO) Long characterNo) {
+            @ApiIgnore @RequestGMContext GMContext context) {
 
+        Long characterNo = context.getCharacterNo();
         RangeResponse<MostWatchedVideoVo> response = videoService.getRecentWatchedVideos(characterNo, pageable);
         return new CommonApiResponse<>(response);
     }
@@ -74,9 +75,10 @@ public class VideoWatchController {
     @ApiOperation(value = "최근 본 영상 목록 삭제", httpMethod = "DELETE", notes = "보관함 > 최근 본 영상")
     @DeleteMapping(value = "/recentwatched")
     public CommonApiResponse<Void> removeRecentWatchedVideos(
-            @ApiIgnore @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO) Long characterNo,
+            @ApiIgnore @RequestGMContext GMContext context,
             @RequestBody @Valid WatchedVideoDeleteRequest request) {
 
+        Long characterNo = context.getCharacterNo();
         videoService.deleteRecentWatchedVideos(characterNo, request.getVideoIds());
         return CommonApiResponse.emptySuccess();
     }

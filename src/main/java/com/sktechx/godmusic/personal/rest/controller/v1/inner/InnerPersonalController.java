@@ -51,6 +51,7 @@ public class InnerPersonalController {
             @ApiIgnore @RequestGMContext GMContext ctx,
             @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo
     ){
+        characterNo = ctx.getCharacterNo();
 
         personalRecommendPhaseService.clearPersonalRecommendPhaseMetaCache(characterNo);
         return CommonApiResponse.emptySuccess();
@@ -62,6 +63,8 @@ public class InnerPersonalController {
             @ApiIgnore @RequestGMContext GMContext ctx,
             @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo
     ){
+
+        characterNo = ctx.getCharacterNo();
 
         personalRecommendPhaseService.clearPersonalRecommendPhaseMetaCache(characterNo);
         preferenceService.deletePreferSimilarArtistName(characterNo);

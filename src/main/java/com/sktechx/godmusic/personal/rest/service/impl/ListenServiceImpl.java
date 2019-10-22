@@ -165,8 +165,8 @@ public class ListenServiceImpl implements ListenService {
 			listenBuilder
 					.pssrlCd(serviceId)
 					.serviceId(serviceId)
-					.prchsId(purchaseId == null ? null : purchaseId)
-					.goodsId(goodsId == null ? null : goodsId);
+					.prchsId(purchaseId)
+					.goodsId(goodsId);
 		}
 		amqpService.deliverTrackListen(listenBuilder.build());
 		log.info("[청취로그 MQ 발송] listen = {}", listenBuilder.toString());
