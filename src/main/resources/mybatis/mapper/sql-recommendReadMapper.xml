@@ -1233,7 +1233,7 @@
                         WHEN '6' THEN 'FRI'
                         WHEN '7' THEN 'SAT'
                         END AS week,
-                        a.create_dtime rcmmdCreateDtime,
+                        a.disp_std_start_dt AS rcmmdCreateDtime,
                         a.disp_sn panel_disp_sn,
                         (
                             SELECT
