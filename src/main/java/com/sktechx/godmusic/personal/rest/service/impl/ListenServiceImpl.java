@@ -31,6 +31,7 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -58,9 +59,9 @@ public class ListenServiceImpl implements ListenService {
 	private final String FLAC_ALTERTIVE_DRM_SERVCIE_ID = "TD2";
 	private final String FLAC_ALTERTIVE_MUSIC_VIDEOD_SERVCIE_ID = "TM2";
 
-	// TODO config 변경 필요
-	private static final String SECRET_KEY = "E393D69717418091CD1297E9D6E956906B357715E8FCEEE5842A89D4140AA909";
-	
+	@Value("${gd.settlement.jwt.secret-key}")
+	private String JWT_SECRET_KEY;
+
 	@Autowired
 	ListenMapper listenMapper;
 
@@ -115,7 +116,7 @@ public class ListenServiceImpl implements ListenService {
 			String sttToken = request.getSttToken();
 
 			Jws<Claims> claims = Jwts.parser()
-					.setSigningKey(SECRET_KEY.getBytes(StandardCharsets.UTF_8))
+					.setSigningKey(JWT_SECRET_KEY.getBytes(StandardCharsets.UTF_8))
 					.parseClaimsJws(sttToken);
 
 			Integer version = claims.getBody().get("version", Integer.class);
@@ -123,7 +124,7 @@ public class ListenServiceImpl implements ListenService {
 			purchaseId = claims.getBody().get("purchaseId", Long.class);
 			goodsId = claims.getBody().get("goodsId", Long.class);
 
-			log.debug("[정산 토큰 정보] version={}, serviceId={}, purchaseId={}, goodsId={}", version, serviceId, purchaseId, goodsId);
+			log.debug("[정산 토큰(sttToken) 정보] version={}, serviceId={}, purchaseId={}, goodsId={}", version, serviceId, purchaseId, goodsId);
 		}
 
 		ResourceListen listen = ResourceListen.builder()
