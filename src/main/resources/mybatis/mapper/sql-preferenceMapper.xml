@@ -27,28 +27,38 @@
         FROM
         (
             SELECT
-                a.video_id, a.disp_start_dtime
-            FROM tb_video a
-            INNER JOIN tb_video_artist e ON a.video_id = e.video_id AND rp_yn ='Y'
-            INNER JOIN ted_artist f ON e.artist_id = f.artist_id
-            INNER JOIN tb_character_prefer_artist g ON e.artist_id = g.artist_id AND g.character_no = #{characterNo}
+                preferArtist.video_id, preferArtist.disp_start_dtime
+            FROM (
+                SELECT
+                    a.video_id, a.disp_start_dtime
+                FROM tb_video a
+                INNER JOIN tb_video_artist e ON a.video_id = e.video_id AND rp_yn ='Y'
+                INNER JOIN ted_artist f ON e.artist_id = f.artist_id
+                INNER JOIN tb_character_prefer_artist g ON e.artist_id = g.artist_id AND g.character_no = #{characterNo}
 
-            LIMIT 50
+                ORDER BY a.disp_start_dtime DESC
+                LIMIT 50
+
+                ) preferArtist
 
             UNION ALL
 
             SELECT
-                a.video_id, a.disp_start_dtime
-            FROM tb_video a
-            INNER JOIN tb_video_artist e ON a.video_id = e.video_id AND rp_yn ='Y'
-            INNER JOIN ted_artist f ON e.artist_id = f.artist_id
-            INNER JOIN tb_character_like g ON e.artist_id = g.like_type_id AND g.character_no = #{characterNo} AND g.like_type='ARTIST'
+                likeArtist.video_id, likeArtist.disp_start_dtime
+            FROM (
 
-            LIMIT 50
+                SELECT
+                    a.video_id, a.disp_start_dtime
+                FROM tb_video a
+                INNER JOIN tb_video_artist e ON a.video_id = e.video_id AND rp_yn ='Y'
+                INNER JOIN ted_artist f ON e.artist_id = f.artist_id
+                INNER JOIN tb_character_like g ON e.artist_id = g.like_type_id AND g.character_no = #{characterNo} AND g.like_type='ARTIST'
 
-            ORDER BY disp_start_dtime DESC
-
+                ORDER BY a.disp_start_dtime DESC
+                LIMIT 50
+            ) likeArtist
         ) video
+
     </select>
 
     <select id="selectPreferGenreVideoIdListByCharacterNo" resultType="Long">

@@ -588,7 +588,9 @@ public class PreferenceServiceImpl implements PreferenceService {
 			return null;
 		}
 
-		Collections.shuffle(videoVoList);
+		if(videoVoList.size() >= 5) {
+			Collections.shuffle(videoVoList);
+		}
 
 		if(videoVoList.size() > limitSize){
 			videoVoList = videoVoList.stream().limit(limitSize).collect(Collectors.toList());
