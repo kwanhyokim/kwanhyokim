@@ -52,6 +52,7 @@ import com.sktechx.godmusic.personal.rest.service.LikeService;
 import lombok.extern.slf4j.Slf4j;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * Created by Kobe.
@@ -192,7 +193,6 @@ public class LikeServiceImpl implements LikeService {
 		requireNonNull(characterNo);
 		requireNonNull(pageable);
 
-		int totalCount = 0;
 		long startTime = System.currentTimeMillis();
 
 		List<Long> videoIds = likeMapper.getLikeVideoByLikeType(characterNo, pageable);
@@ -200,25 +200,30 @@ public class LikeServiceImpl implements LikeService {
 			return RangeResponse.empty();
 		}
 
-		Map<Long, VideoVo> response = Optional.ofNullable(metaClient.getVideos(MetaVideoRequestVo.builder()
-				.videoIds(videoIds)
-				.build()).getData().getList()).orElse(Collections.emptyList())
-				.stream()
+		List<VideoVo> response = Optional.ofNullable(
+				metaClient.getVideos(MetaVideoRequestVo.builder()
+						.videoIds(videoIds)
+						.build()).getData().getList())
+				.orElse(Collections.emptyList());
+
+		long elapsed = System.currentTimeMillis() - startTime;
+		log.info("[MetaClient][{}ms] responseCount={}", elapsed, response.size());
+
+		Map<Long, VideoVo> videoIndex = response.stream()
 				.filter(VideoVo::exhibitable)
-				.collect(Collectors.toMap(VideoVo::getVideoId, Functions.identity()));
+				.collect(toMap(VideoVo::getVideoId, Functions.identity()));
 
 		// videoIds 순서에 맞추어서 반환 VideoVo 생성
 		List<VideoVo> result = Lists.newArrayList();
 		for (Long videoId : videoIds) {
-			if (response.containsKey(videoId)) {
-				result.add(response.get(videoId));
+			if (videoIndex.containsKey(videoId)) {
+				result.add(videoIndex.get(videoId));
 			}
 		}
 
-		long elapsed = System.currentTimeMillis() - startTime;
-		log.debug("elapsed time@MetaClient = [{}ms], requestCount={}, reponseCount={}", elapsed, videoIds.size(), result.size());
+		int totalCount = likeMapper.getLikeVideoCountByLikeType(characterNo);
 
-		totalCount = getLikeTotalCount(LikeConstant.LIKE_VIDEO, characterNo);
+		log.info("[영상 좋아요 목록] likeVideoCount={}, filteredVideoCount={}, totalCount={}", videoIds.size(), result.size(), totalCount);
 
 		return RangeResponse.of(new PageImpl(result, pageable, totalCount));
 	}
