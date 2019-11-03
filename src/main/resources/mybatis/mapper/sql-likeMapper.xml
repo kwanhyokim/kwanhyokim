@@ -72,11 +72,11 @@
         FROM (
          SELECT
             t1.like_type_id
-            ,t1.disp_sn
-            ,t1.update_dtime
-         FROM tb_character_like t1
-         WHERE T1.character_no = #{characterNo} AND T1.like_type = 'VIDEO'
-         ORDER BY T1.disp_sn ASC, T1.update_dtime ASC
+         FROM tb_character_like t1 INNER JOIN tb_video t2 ON t1.like_type_id = t2.video_id
+                AND t2.disp_status_yn = 'Y'
+                AND now() BETWEEN t2.disp_start_dtime AND t2.disp_end_dtime
+         WHERE t1.character_no = #{characterNo} AND t1.like_type = 'VIDEO'
+         ORDER BY t1.disp_sn ASC, t1.update_dtime ASC
          LIMIT #{pageable.offset}, #{pageable.pageSize}
          ) A
     </select>
