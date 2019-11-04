@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2018 SK TECHX.
+  ~ All right reserved.
+  ~
+  ~ This software is the confidential and proprietary information of SK TECHX.
+  ~ You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with SK TECHX.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.PreferenceMapper" >
+
+    <resultMap id="videoResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.VideoDto" autoMapping="true">
+        <id property="videoId" column="video_id"/>
+        <collection property="artistList" resultMap="com.sktechx.godmusic.personal.rest.repository.ArtistMapper.artistResultMap" autoMapping="true">
+        </collection>
+    </resultMap>
+
+    <select id="selectPreferArtistVideoIdListByCharacterNo" resultType="Long">
+        SELECT
+            video.video_id
+        FROM
+        (
+            SELECT
+                preferArtist.video_id, preferArtist.disp_start_dtime
+            FROM (
+                SELECT
+                    a.video_id, a.disp_start_dtime
+                FROM tb_video a
+                INNER JOIN tb_video_artist e ON a.video_id = e.video_id AND rp_yn ='Y'
+                INNER JOIN ted_artist f ON e.artist_id = f.artist_id
+                INNER JOIN tb_character_prefer_artist g ON e.artist_id = g.artist_id AND g.character_no = #{characterNo}
+
+                ORDER BY a.disp_start_dtime DESC
+                LIMIT 50
+
+                ) preferArtist
+
+            UNION ALL
+
+            SELECT
+                likeArtist.video_id, likeArtist.disp_start_dtime
+            FROM (
+
+                SELECT
+                    a.video_id, a.disp_start_dtime
+                FROM tb_video a
+                INNER JOIN tb_video_artist e ON a.video_id = e.video_id AND rp_yn ='Y'
+                INNER JOIN ted_artist f ON e.artist_id = f.artist_id
+                INNER JOIN tb_character_like g ON e.artist_id = g.like_type_id AND g.character_no = #{characterNo} AND g.like_type='ARTIST'
+
+                ORDER BY a.disp_start_dtime DESC
+                LIMIT 50
+            ) likeArtist
+        ) video
+
+    </select>
+
+    <select id="selectPreferGenreVideoIdListByCharacterNo" resultType="Long">
+        SELECT
+            g.video_id
+         FROM
+            tb_character a
+
+            INNER JOIN tb_character_prefer_genre b on a.character_no = b.character_no
+            INNER JOIN tb_prefer_genre c on b.prefer_genre_id = c.prefer_genre_id
+            INNER JOIN tb_map_prefer_genre_svc_genre d on d.prefer_genre_id = c.prefer_genre_id
+            INNER JOIN tb_svc_genre e on d.svc_genre_id = e.svc_genre_id
+            INNER JOIN tb_map_svc_genre_video f on f.svc_genre_id = e.svc_genre_id
+            INNER JOIN tb_video g  on g.video_id = f.video_id
+
+        WHERE
+            b.character_no = #{characterNo}
+
+        GROUP BY g.video_id
+        ORDER BY g.disp_start_dtime DESC
+
+        LIMIT 50
+    </select>
+
+
+    <select id="selectDefaultSvcGenreVideoIdList" resultType="Long">
+        SELECT
+             d.video_id
+        FROM
+            tb_svc_genre a
+            INNER JOIN tb_map_svc_genre_video b on b.svc_genre_id = a.svc_genre_id
+            INNER JOIN tb_video c  on c.video_id = b.video_id
+            INNER JOIN tb_new_video d ON d.video_id = c.video_id
+
+        WHERE a.main_disp_std_yn = 'Y'
+
+        GROUP BY d.video_id
+    </select>
+</mapper>

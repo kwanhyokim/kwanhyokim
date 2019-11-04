@@ -13,6 +13,7 @@
 package com.sktechx.godmusic.personal.common.amqp.domain;
 
 import com.sktechx.godmusic.personal.common.domain.type.TrackLogType;
+import com.sktechx.godmusic.personal.rest.model.vo.video.ResourcePlayLogRequest;
 
 /**
  * 설명 : XXXXXXXXX
@@ -33,7 +34,7 @@ public enum UserEventType {
 	LISTEN_FULL,
 	SKIP;
 	
-	public final static UserEventType	fromTrackLogType(TrackLogType logType)	{
+	public final static UserEventType fromTrackLogType(TrackLogType logType)	{
 		if( logType == null )
 			return UNKNOWN;
 		
@@ -42,6 +43,19 @@ public enum UserEventType {
 		case ONEMIN :	return MIN_LISTEN;
 		case MEND :	return LISTEN_FULL;
 		case USKP :	return SKIP;
+		}
+		return UNKNOWN;
+	}
+
+	public final static UserEventType fromPlayLogType(ResourcePlayLogRequest.LogType logType)	{
+		if( logType == null )
+			return UNKNOWN;
+
+		switch(logType)	{
+			case STRT :	return STRT_LISTEN;
+			case ONEMIN :	return MIN_LISTEN;
+			case MEND :	return LISTEN_FULL;
+			case USKP :	return SKIP;
 		}
 		return UNKNOWN;
 	}

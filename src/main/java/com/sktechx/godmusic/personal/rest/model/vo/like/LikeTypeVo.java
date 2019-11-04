@@ -18,13 +18,13 @@ import javax.validation.constraints.NotNull;
 public class LikeTypeVo {
 
 	@NotBlank
-	@ApiModelProperty(name = "likeType", value = "좋아하는 타입(CHNL: 채널, ALBUM: 앨범, CHART: 차트, ARTIST: 아티스트, TRACK: 곡)",
-			allowableValues = "CHNL, ALBUM, CHART, ARTIST, TRACK, FLAC, AFLO")
+	@ApiModelProperty(name = "likeType", value = "좋아요 대상 타입 - CHNL: 채널, ALBUM: 앨범, CHART: 차트, ARTIST: 아티스트, TRACK: 곡, FLAC: FLAC, AFLO: Artist&FLO, VIDEO: 영상",
+			allowableValues = "CHNL, ALBUM, CHART, ARTIST, TRACK, FLAC, AFLO, VIDEO")
 	private String likeType;
 
 	@Max(Long.MAX_VALUE)
 	@NotNull
-	@ApiModelProperty(name = "likeTypeId", value = "좋아하는 타입 아이디")
+	@ApiModelProperty(name = "likeTypeId", value = "좋아요 대상 아이디")
 	private Long likeTypeId;
 
 }

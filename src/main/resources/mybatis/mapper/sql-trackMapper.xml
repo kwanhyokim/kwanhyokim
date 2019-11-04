@@ -59,7 +59,9 @@
             d.artist_id,
             d.artist_nm,
             b.album_img_size size,
-            b.album_img_url url
+            b.album_img_url url,
+            a.svc_streaming_yn,
+            a.svc_drm_yn
         FROM
           tb_track a
         LEFT OUTER JOIN	tb_album_img b ON a.album_id = b.album_id

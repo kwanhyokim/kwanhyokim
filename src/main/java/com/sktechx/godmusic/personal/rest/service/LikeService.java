@@ -1,5 +1,7 @@
 package com.sktechx.godmusic.personal.rest.service;
 
+import com.sktechx.godmusic.personal.rest.model.vo.video.RangeResponse;
+import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 import org.springframework.data.domain.Pageable;
 
 import com.sktechx.godmusic.personal.rest.model.vo.like.*;
@@ -24,4 +26,9 @@ public interface LikeService {
 	void updateLike(LikeTypeIdListRequest request, Long characterNo);
 
 	LikeYnResponse getLikeYn(String likeType, Long likeTypeId, Long characterNo);
+
+	/**
+	 * 좋아요 영상 목록 조회
+	 */
+	RangeResponse<VideoVo> getLikeVideos(Long characterNo, Pageable pageable);
 }

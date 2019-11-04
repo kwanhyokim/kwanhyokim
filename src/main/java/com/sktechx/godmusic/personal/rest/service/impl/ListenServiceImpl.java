@@ -1,5 +1,6 @@
 package com.sktechx.godmusic.personal.rest.service.impl;
 
+import com.google.common.base.Strings;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
@@ -12,25 +13,32 @@ import com.sktechx.godmusic.personal.common.domain.type.BitrateType;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.common.domain.type.TrackLogType;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
+import com.sktechx.godmusic.personal.rest.model.dto.listen.ResourceListen;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SettlementInfoDto;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.TrackListen;
 import com.sktechx.godmusic.personal.rest.model.vo.drm.OwnerTokenClaim;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenTrackRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.video.ResourcePlayLogRequest;
 import com.sktechx.godmusic.personal.rest.repository.ListenMapper;
 import com.sktechx.godmusic.personal.rest.service.DrmService;
 import com.sktechx.godmusic.personal.rest.service.ListenService;
 import com.sktechx.godmusic.personal.rest.service.PurchaseService;
 import com.sktechx.godmusic.personal.rest.service.SettlementService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDataService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import static com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType.*;
@@ -50,7 +58,10 @@ public class ListenServiceImpl implements ListenService {
 	private final String FLAC_ALTERTIVE_STREAMING_SERVCIE_ID = "TS2";
 	private final String FLAC_ALTERTIVE_DRM_SERVCIE_ID = "TD2";
 	private final String FLAC_ALTERTIVE_MUSIC_VIDEOD_SERVCIE_ID = "TM2";
-	
+
+	@Value("${gd.settlement.jwt.secret-key}")
+	private String JWT_SECRET_KEY;
+
 	@Autowired
 	ListenMapper listenMapper;
 
@@ -79,6 +90,105 @@ public class ListenServiceImpl implements ListenService {
 			recommendDataService.updateRecommendDataRemovePrevent(request , characterNo);
 		}
 
+	}
+
+	public void addPlayHistoryByResource(ResourcePlayLogRequest request, GMContext currentContext, HttpServletRequest httpServletRequest) {
+		Long memberNo = currentContext.getMemberNo();
+		Long characterNo = currentContext.getCharacterNo();
+		String deviceId = currentContext.getDeviceId();
+		String playChannel = AppNameType.fromCode(currentContext.getAppName()) != null ? AppNameType.fromCode(currentContext.getAppName()).getCode() : "";
+		Long sourceId = request.getResourceId();
+		String logType = request.getLogType();
+		String bitrate = request.getQuality();
+		String quality = request.getQuality();
+		String osType = request.getOsType() != null ? request.getOsType().getCode() : "";
+		String clientIp = httpServletRequest.getHeader("client_ip") != null ? httpServletRequest.getHeader("client_ip") : "";
+		Long channelId = request.getChannelId();
+		String channelType = request.getChannelType();
+		String listenSessionId = StringUtils.isEmpty(request.getSessionId()) ? null : request.getSessionId();
+		String sourceType = request.getSourceType();
+
+		String serviceId = null;
+		Long purchaseId = null;
+		Long goodsId = null;
+
+		if (!Strings.isNullOrEmpty(request.getSttToken())) {
+			String sttToken = request.getSttToken();
+
+			Jws<Claims> claims = Jwts.parser()
+					.setSigningKey(JWT_SECRET_KEY.getBytes(StandardCharsets.UTF_8))
+					.parseClaimsJws(sttToken);
+
+			Integer version = claims.getBody().get("version", Integer.class);
+			serviceId = claims.getBody().get("serviceId", String.class);
+			purchaseId = claims.getBody().get("purchaseId", Long.class);
+			goodsId = claims.getBody().get("goodsId", Long.class);
+
+			log.debug("[정산 토큰(sttToken) 정보] version={}, serviceId={}, purchaseId={}, goodsId={}", version, serviceId, purchaseId, goodsId);
+		}
+
+		ResourceListen listen = ResourceListen.builder()
+				.playChnl(playChannel)
+				.memberNo(memberNo)
+				.characterNo(characterNo)
+				.sourceId(String.valueOf(sourceId))
+				.logType(logType)
+				.bitrate(bitrate)
+				.quality(quality)
+				.trackTotTm(request.getRunningTimeSecs())
+				.elapsedTm(request.getDuration())
+				.osType(osType)
+				.dvcId(deviceId)
+				.chnlId(channelId)
+				.chnlType(channelType)
+				.memberRcmdId(null)
+				.addTm(request.getAddDateTime())
+				.sessionToken(null)
+				.sourceType(SourceType.fromCode(sourceType))
+				.free(request.isFree())
+				.timeMillis(System.currentTimeMillis())
+				.userClientIp(clientIp)
+				.ownerToken(request.getOwnerToken())
+				.listenSessionId(listenSessionId)
+				.pssrlCd(serviceId)
+				.build();
+
+		ResourceListen.ResourceListenBuilder listenBuilder = listen.toBuilder();
+
+		ResourcePlayLogRequest.LogType playLogType = ResourcePlayLogRequest.LogType.fromCode(request.getLogType());
+		if(ResourcePlayLogRequest.LogType.ONEMIN == playLogType) {
+
+			if(Strings.isNullOrEmpty(serviceId)){
+				log.warn("[1분 리소스 청취로그] 정산정보 없음");
+				throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
+			}
+
+			listenBuilder
+					.pssrlCd(serviceId)
+					.serviceId(serviceId)
+					.prchsId(purchaseId)
+					.goodsId(goodsId);
+		}
+		amqpService.deliverTrackListen(listenBuilder.build());
+		log.info("[청취로그 MQ 발송] listen = {}", listenBuilder.toString());
+
+		UserEventType userEventType = UserEventType.fromPlayLogType(playLogType);
+		if( !userEventType.equals(UserEventType.UNKNOWN) )	{
+			UserEvent userEvent = UserEvent.newBuilder()
+					.playChnl(currentContext.getAppName())
+					.event(userEventType)
+					.memberNo(memberNo)
+					.charactorNo(characterNo)
+					.targetId(String.valueOf(sourceId))
+					.targetType(UserEventTarget.VIDEO)
+					.sourceType(SourceType.fromCode(sourceType))
+					.trackTotTm(request.getRunningTimeSecs())
+					.elapsedTm(request.getDuration())
+					.timeMillis(System.currentTimeMillis())
+					.build();
+			amqpService.deliverUserEvent(userEvent);
+			log.info("[청취로그 사용자 EVENT MQ 발송] event = {}", userEvent.toString());
+		}
 	}
 
 	@Override

@@ -105,8 +105,7 @@ public class ChannelController {
 
     @ApiOperation(value = "FLO AND DATA 테마 리스트 ")
     @GetMapping("/floAndDataChnl/list")
-    public CommonApiResponse<ChannelListResponse> getFloAndDataChannelList(
-            @ApiIgnore @RequestGMContext GMContext ctx){
+    public CommonApiResponse<ChannelListResponse> getFloAndDataChannelList(){
 
         ChnlDto floAndDataChannel = channelService.getFloAndDataChannel();
 
@@ -117,6 +116,7 @@ public class ChannelController {
         List<ChnlDto> floAndDataChannelList = new ArrayList<>();
         floAndDataChannelList.add(floAndDataChannel);
 
+
         return new CommonApiResponse<>(ChannelListResponse.builder().list(floAndDataChannelList).build());
 
     }
@@ -125,15 +125,11 @@ public class ChannelController {
     @GetMapping("/afloChnl/list")
     public CommonApiResponse recommendPanelTrackList(
             @ApiIgnore @RequestGMContext GMContext ctx,
-            @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo,
             @RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType
     ){
 
+        Long characterNo = ctx.getCharacterNo();
         List<Panel> recommendPanelList = recommendPanelService.getRecommendPanelList(characterNo, RecommendPanelContentType.AFLO, ctx.getOsType());
-
-        if(CollectionUtils.isEmpty(recommendPanelList)){
-            return null;
-        }
 
         return new CommonApiResponse<>(new ListDto<>(recommendPanelList));
     }
