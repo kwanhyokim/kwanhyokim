@@ -469,11 +469,19 @@ public class PreferenceServiceImpl implements PreferenceService {
 		Date to = new Date();
 		Date from = DateUtil.getDate(to, -259200);
 
+
+		List<Long> videoIdList = preferenceMapper.selectPreferArtistVideoIdListByCharacterNo(characterNo);
+
+		// 선호 장르 없는 경우, 기본 장르 선택
+		if(CollectionUtils.isEmpty(videoIdList)) {
+			return null;
+		}
+
 		List<VideoVo> videoVoList 	=
 				Optional.ofNullable(
 						metaClient.getVideos(
 								MetaVideoRequestVo.builder()
-										.videoIds(preferenceMapper.selectPreferArtistVideoIdListByCharacterNo(characterNo))
+										.videoIds(videoIdList)
 										.build()
 						).getData().getList()
 
