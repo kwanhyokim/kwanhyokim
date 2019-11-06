@@ -465,19 +465,17 @@ public class PreferenceServiceImpl implements PreferenceService {
 			return redisService.getListWithPrefix(redisKey, VideoVo.class);
 		}
 
-		// 3일 전 부터 현 시각 사이의 전시시작일 분리
-		Date to = new Date();
-		Date from = DateUtil.getDate(to, -259200);
-
-
 		List<Long> videoIdList = preferenceMapper.selectPreferArtistVideoIdListByCharacterNo(characterNo);
 
-		// 선호 장르 없는 경우, 기본 장르 선택
 		if(CollectionUtils.isEmpty(videoIdList)) {
 			return null;
 		}
 
-		List<VideoVo> videoVoList 	=
+        // 3일 전 부터 현 시각 사이의 전시시작일 분리
+        Date to = new Date();
+        Date from = DateUtil.getDate(to, -259200);
+
+        List<VideoVo> videoVoList 	=
 				Optional.ofNullable(
 						metaClient.getVideos(
 								MetaVideoRequestVo.builder()
