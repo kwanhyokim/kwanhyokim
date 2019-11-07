@@ -386,6 +386,11 @@ public class MemberChannelServiceImpl implements MemberChannelService {
             for(TrackDto trackDto : trackDtoList){
                 try{
 
+                    if (trackDto.isNotStreamable() && trackDto.isNotDownloadable()) {
+                        dataIntegrityIdList.add(trackDto.getTrackId());
+                        continue;
+                    }
+
                     memberChannelTrackMapper.insertTrackMemberChannel(memberChannelId, trackDto.getTrackId(), viewPriority.getAndIncrement());
                     successfulIdList.add(trackDto.getTrackId());
 
@@ -400,7 +405,8 @@ public class MemberChannelServiceImpl implements MemberChannelService {
                             .timeMillis(System.currentTimeMillis())
                             .build();
                     amqpService.deliverUserEvent(userEvent);
-                }catch (Exception e){
+                }
+                catch (Exception e) {
                     // 중복 등록 - 키 중복 에러로 체크
                     if(e instanceof DuplicateKeyException){
                         duplicateKeyIdList.add(trackDto.getTrackId());

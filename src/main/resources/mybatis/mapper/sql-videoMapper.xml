@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2019 DREAMUS COMPANY.
+  ~ All right reserved.
+  ~ This software is the confidential and proprietary information of DREAMUS COMPANY.
+  ~ You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with DREAMUS COMPANY.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.VideoMapper" >
+
+    <resultMap id="mostWatchedVideoResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.MostWatchedVideoDto" autoMapping="true">
+        <result property="characterNo" column="characterNo" />
+        <result property="videoId" column="videoId" />
+        <result property="watchCount" column="watchCount" />
+        <result property="lastWatchDateTime" column="lastWatchDateTime" />
+        <result property="createDateTime" column="createDateTime" />
+        <result property="updateDateTime" column="updateDateTime" />
+    </resultMap>
+
+    <select id="selectRecentVideoList" resultMap="mostWatchedVideoResultMap">
+		SELECT t.*
+        FROM (
+            SELECT
+                a.character_no AS characterNo,
+                a.video_id AS videoId,
+                a.watch_cnt AS watchCount,
+                a.last_watch_dtime AS lastWatchDateTime,
+                a.create_dtime AS createDateTime,
+                a.update_dtime AS updateDateTime
+            FROM tb_most_watch_video a INNER JOIN tb_video b
+                 ON a.video_id = b.video_id
+                 AND b.disp_status_yn = 'Y'
+                 AND now() between disp_start_dtime AND disp_end_dtime
+            WHERE a.character_no = #{characterNo}
+            ORDER BY a.last_watch_dtime DESC
+            LIMIT 500
+        ) t
+        LIMIT #{pageable.offset}, #{pageable.pageSize}
+	</select>
+
+    <select id="selectRecentVideoTotalCount" resultType="long">
+        SELECT count(*)
+        FROM (
+            SELECT
+                a.video_id AS videoId
+            FROM tb_most_watch_video a INNER JOIN tb_video b
+                 ON a.video_id = b.video_id
+                 AND b.disp_status_yn = 'Y'
+                 AND now() between disp_start_dtime AND disp_end_dtime
+            WHERE a.character_no = #{characterNo}
+            LIMIT 500
+        ) t
+    </select>
+
+    <update id="deleteRecentVideoList">
+        DELETE FROM tb_most_watch_video
+        WHERE character_no = #{characterNo}
+        AND video_id IN
+        <foreach item="videoId" index="index" collection="videoIds" open="(" separator="," close=")">
+            #{videoId}
+        </foreach>
+    </update>
+</mapper>

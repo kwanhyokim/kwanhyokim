@@ -19,6 +19,9 @@ import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentTyp
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * 설명 : 인기 채널 패널
@@ -27,9 +30,17 @@ import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
  * @date 2018. 07. 19.
  */
 public class AfloChannelPanel extends ChannelPanel{
+
+    @Getter
+    @Setter
+    @ApiModelProperty(required = true, value = "AFLO 패널 사인 이미지 리스트")
+    private List<ImageInfo> signImgList;
+
     public AfloChannelPanel( ChnlDto channel , List<ImageInfo> imgList) throws CommonBusinessException {
 
         super(RecommendPanelType.ARTIST_FLO_TRACK, channel , null , imgList);
+
+        this.signImgList = channel.getSignImgList();
 
         if (!ObjectUtils.isEmpty(this.content)) {
             this.content.setType(RecommendPanelContentType.AFLO);

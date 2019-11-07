@@ -43,10 +43,12 @@ import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentTyp
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.common.util.BooleanComparator;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
+import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.header.RecommendPanelHeaderVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedArtistVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedGenreVo;
@@ -57,7 +59,6 @@ import com.sktechx.godmusic.personal.rest.repository.ArtistMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
 import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
-import com.sktechx.godmusic.personal.rest.service.MetaApiProxy;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2.AfloPanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2.OperationTpoPanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2.PreferGenreThemePanelAssembly;
@@ -106,7 +107,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     private RedisService redisService;
 
     @Autowired
-    private MetaApiProxy metaApiProxy;
+    private MetaClient metaClient;
 
     @Autowired
     private AfloPanelAssembly afloPanelAssembly;
@@ -326,7 +327,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     }
 
     @Override
-    public RecommendPanelInfoDto getRecommendPanelInfo(Long characterNo, RecommendPanelContentType recommendPanelContentType,
+    public RecommendPanelHeaderVo getRecommendPanelInfo(Long characterNo, RecommendPanelContentType recommendPanelContentType,
             Long panelContentId, OsType osType, String appVer) {
 
         if( ObjectUtils.isEmpty(appVer) || new ComparableVersion(appVer).compareTo(new ComparableVersion("4.6.0")) < 0 ) {
@@ -340,10 +341,10 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
     }
 
-    private RecommendPanelInfoDto getRecommendPanelInfo(Long characterNo, RecommendPanelContentType recommendPanelContentType,
+    private RecommendPanelHeaderVo getRecommendPanelInfo(Long characterNo, RecommendPanelContentType recommendPanelContentType,
             Long panelContentId, OsType osType) {
 
-        RecommendPanelInfoDto panel = null;
+        RecommendPanelHeaderVo panel = null;
 
         ListDto<List<RecommendPanelTrackDto>> trackList = getRecommendPanelTrackList(characterNo, recommendPanelContentType, panelContentId);
 
@@ -352,7 +353,6 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         if( trackList != null && !CollectionUtils.isEmpty(trackList.getList())){
             trackCount = trackList.getList().size();
         }
-
 
         switch (recommendPanelContentType){
             // 아티스트
@@ -386,7 +386,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 }
 
                 // 아티스트의 첫 이미지를 배경 이미지로 사용
-                panel =  RecommendPanelInfoDto.builder()
+                panel =  RecommendPanelHeaderVo.builder()
                         .title(RecommendConstant.ARTIST_PANEL_TITLE)
                         .subTitle(String.join(",", artistNameList))
                         .imgList((artistDtoList == null || artistDtoList.get(0) == null? null : artistDtoList.get(0).getImgList()))
@@ -413,7 +413,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                     }
                 }
 
-                panel = RecommendPanelInfoDto.builder()
+                panel = RecommendPanelHeaderVo.builder()
                         .title(RecommendConstant.SIMILAR_TRACK_PANEL_TITLE)
                         .subTitle(RecommendConstant.SIMILAR_TRACK_PANEL_DETAIL_SUB_TITLE)
                         .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType , dispSn))
@@ -426,7 +426,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             // 유사 장르
             case RC_GR_TR:
                 Date createDateTime = new Date();
-                panel = RecommendPanelInfoDto.builder()
+                panel = RecommendPanelHeaderVo.builder()
                         .title(RecommendConstant.SIMILAR_TRACK_PANEL_TITLE)
                         .subTitle(RecommendConstant.SIMILAR_TRACK_PANEL_DETAIL_SUB_TITLE)
                         .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType , 0) )
@@ -455,7 +455,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                     }
                 }
 
-                panel = RecommendPanelInfoDto.builder()
+                panel = RecommendPanelHeaderVo.builder()
                         .title(RecommendConstant.RCMMD_TRACK_PANEL_TITLE)
                         .subTitle(String.format(RecommendConstant.RCMMD_TRACK_PANEL_DETAIL_SUB_TITLE,(genreNm)))
                         .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType , 0))
@@ -470,20 +470,20 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         return panel;
     }
 
-    private RecommendPanelInfoDto getRecommendPanelInfoV2(Long characterNo, RecommendPanelContentType recommendPanelContentType,
+    private RecommendPanelHeaderVo getRecommendPanelInfoV2(Long characterNo, RecommendPanelContentType recommendPanelContentType,
             Long panelContentId, OsType osType) {
 
         ListDto<List<RecommendPanelTrackDto>> trackList = getRecommendPanelTrackList(characterNo, recommendPanelContentType, panelContentId);
 
 
-        return getRecommendPanelInfoDto(recommendPanelContentType, panelContentId, characterNo, osType, trackList);
+        return getRecommendPanelInfo(recommendPanelContentType, panelContentId, characterNo, osType, trackList);
     }
 
-    private RecommendPanelInfoDto getRecommendPanelInfoDto(
+    private RecommendPanelHeaderVo getRecommendPanelInfo(
             RecommendPanelContentType recommendPanelContentType, Long panelContentId, Long characterNo, OsType osType,
             ListDto<List<RecommendPanelTrackDto>> trackList) {
 
-        RecommendPanelInfoDto panel = null;
+        RecommendPanelHeaderVo panel = null;
 
         PersonalPhaseMeta personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType, "4.6.0");
 
@@ -514,12 +514,12 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         return panel;
     }
 
-    private RecommendPanelInfoDto getForMeRecommendPanelInfoDto(
+    private RecommendPanelHeaderVo getForMeRecommendPanelInfoDto(
             RecommendPanelContentType recommendPanelContentType, Long panelContentId, OsType osType,
             PersonalPhaseMeta personalPhaseMeta, int trackCount) {
 
         String title;
-        RecommendPanelInfoDto panel;
+        RecommendPanelHeaderVo panel;
         RecommendGenreVo recommendGenreVo = recommendReadMapper.selectRecommendGenreByRcmmdId(panelContentId);
         String genreNm;
 
@@ -559,7 +559,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             }
         }
 
-        panel = RecommendPanelInfoDto.builder()
+        panel = RecommendPanelHeaderVo.builder()
                 .title(title)
                 .subTitle(subTitle)
                 .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType , dispSn))
@@ -570,11 +570,11 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 .build();
         return panel;
     }
-    private RecommendPanelInfoDto getTodayFloRecommendPanelInfoDto(
+    private RecommendPanelHeaderVo getTodayFloRecommendPanelInfoDto(
             RecommendPanelContentType recommendPanelContentType, Long panelContentId, OsType osType,
             ListDto<List<RecommendPanelTrackDto>> trackList, int trackCount) {
         String title;
-        RecommendPanelInfoDto panel;
+        RecommendPanelHeaderVo panel;
         RecommendSimilarTrackDto recommendSimilarTrackDto =
                 recommendReadMapper.selectRecommendSimilarTrack(panelContentId);
         int dispSn = recommendSimilarTrackDto.getDispSn();
@@ -589,7 +589,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         Date dispDate = recommendSimilarTrackDto.getDispStdStartDt();
 
         RecommendPanelTrackDto recommendTrackDto = trackCount > 0 ? trackList.getList().get(0) : null;
-        panel = RecommendPanelInfoDto.builder()
+        panel = RecommendPanelHeaderVo.builder()
                 .title(title)
                 .subTitle(RecommendConstant.SIMILAR_TRACK_PANEL_DETAIL_SUB_TITLE)
                 .imgList(getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId, osType , dispSn))
@@ -620,8 +620,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         }
         return panel;
     }
-    private RecommendPanelInfoDto getArtistFloRecommendPanelInfoDto(Long panelContentId) {
-        RecommendPanelInfoDto panel;
+    private RecommendPanelHeaderVo getArtistFloRecommendPanelInfoDto(Long panelContentId) {
+        RecommendPanelHeaderVo panel;
         RecommendArtistDto recommendArtistDto= recommendReadMapper.selectRecommendArtistById(panelContentId);
         List<ArtistDto> artistDtoList;
         if(recommendArtistDto == null || CollectionUtils.isEmpty(recommendArtistDto.getArtistList())){
@@ -645,7 +645,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 Collectors.toList());
         String subTitle = String.join(",", artistNameList);
         // 아티스트의 첫 이미지를 배경 이미지로 사용
-        panel =  RecommendPanelInfoDto.builder()
+        panel =  RecommendPanelHeaderVo.builder()
                 .title(RecommendConstant.ARTIST_PANEL_TITLE)
                 .subTitle(subTitle)
                 .imgList((artistDtoList == null || artistDtoList.get(0) == null? null : artistDtoList.get(0).getImgList()))
@@ -697,7 +697,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
         // feign 으로 변경
         // edited by Bob 2018.09.05
-        CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>> response = metaApiProxy.recommendPanelTracks(trackIdList.toArray(new Long[0]));
+        CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>> response = metaClient.recommendPanelTracks(trackIdList.toArray(new Long[0]));
 
         return response.getData();
 
@@ -872,7 +872,6 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         }
     }
 
-
     private List<RecommendPreferGenreSimilarTrackDto> getRecommendPreferGenreSimilarTrackDtos(Long characterNo, List<PreferGenreTrackDto> preferGenreTrackDtoList) {
         int dispSn = 0;
         List<RecommendPreferGenreSimilarTrackDto> recommendPreferGenreSimilarTrackDtoList = new ArrayList<>();
@@ -994,16 +993,6 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         public int compare(CharacterPreferArtistGenreDto arg0, CharacterPreferArtistGenreDto arg1) {
             return Integer.compare(arg1.getGenreCnt(), arg0.getGenreCnt());
         }
-    }
-
-    private String makeRecommendPanelTitleWithDtime(Date date, String title){
-
-        if(ObjectUtils.isEmpty(date)){
-            return title;
-        }
-
-        return sdf.format(date) + " " + title;
-
     }
 
     private YnType getNewYn(Date dispDate){
