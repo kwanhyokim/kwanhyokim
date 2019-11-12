@@ -81,8 +81,12 @@ public class VideoServiceImpl implements VideoService {
             }
         }
 
+        result = result.stream().sorted(BY_WATCH_DATE_DESC).collect(toList());
+
         return RangeResponse.of(new PageImpl<>(result, pageable, totalCount));
     }
+
+    private static final Comparator<MostWatchedVideoVo> BY_WATCH_DATE_DESC = Comparator.comparing(MostWatchedVideoVo::getLastWatchDateTime).reversed();
 
     private List<VideoVo> findVideos(List<Long> videoIds) {
         return Optional.ofNullable(metaClient.getVideos(MetaVideoRequestVo.of(videoIds))
