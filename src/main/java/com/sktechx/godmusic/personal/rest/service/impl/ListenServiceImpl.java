@@ -106,7 +106,7 @@ public class ListenServiceImpl implements ListenService {
 		Long channelId = request.getChannelId();
 		String channelType = request.getChannelType();
 		String listenSessionId = StringUtils.isEmpty(request.getSessionId()) ? null : request.getSessionId();
-		String sourceType = request.getSourceType();
+		SourceType sourceType = SourceType.fromCode(request.getSourceType());
 
 		String serviceId = null;
 		Long purchaseId = null;
@@ -144,7 +144,7 @@ public class ListenServiceImpl implements ListenService {
 				.memberRcmdId(null)
 				.addTm(request.getAddDateTime())
 				.sessionToken(null)
-				.sourceType(SourceType.fromCode(sourceType))
+				.sourceType(sourceType)
 				.free(request.isFree())
 				.timeMillis(System.currentTimeMillis())
 				.userClientIp(clientIp)
@@ -158,9 +158,11 @@ public class ListenServiceImpl implements ListenService {
 		ResourcePlayLogRequest.LogType playLogType = ResourcePlayLogRequest.LogType.fromCode(request.getLogType());
 		if(ResourcePlayLogRequest.LogType.ONEMIN == playLogType) {
 
-			if(Strings.isNullOrEmpty(serviceId)){
-				log.warn("[1분 리소스 청취로그] 정산정보 없음");
-				throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
+			if (SourceType.VIDEO_MV == sourceType) {
+				if (Strings.isNullOrEmpty(serviceId)) {
+					log.warn("[1분 리소스 청취로그] 정산정보 없음");
+					throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
+				}
 			}
 
 			listenBuilder
@@ -181,7 +183,7 @@ public class ListenServiceImpl implements ListenService {
 					.charactorNo(characterNo)
 					.targetId(String.valueOf(sourceId))
 					.targetType(UserEventTarget.VIDEO)
-					.sourceType(SourceType.fromCode(sourceType))
+					.sourceType(sourceType)
 					.trackTotTm(request.getRunningTimeSecs())
 					.elapsedTm(request.getDuration())
 					.timeMillis(System.currentTimeMillis())
