@@ -80,7 +80,11 @@ public class ChannelController {
 
         if(end > lastListenHistory.size()) end = lastListenHistory.size();
 
-        return new CommonApiResponse<>(new ListResponse(new PageImpl<>(lastListenHistory.subList(start, end), pageable, lastListenHistory.size())));
+        List<LastListenHistoryDto> result = lastListenHistory.subList(start, end);
+        if (OsType.WEB == ctx.getOsType()) {
+            result.stream().forEach(LastListenHistoryDto::changeToWebOsType);
+        }
+        return new CommonApiResponse<>(new ListResponse(new PageImpl<>(result, pageable, lastListenHistory.size())));
 
     }
 

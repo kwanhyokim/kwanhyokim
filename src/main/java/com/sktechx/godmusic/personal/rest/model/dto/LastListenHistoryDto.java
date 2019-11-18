@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.*;
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import io.swagger.annotations.ApiModel;
@@ -63,6 +64,20 @@ public class LastListenHistoryDto {
 
     @JsonIgnore
     private Date renewDtime;
+
+    @JsonIgnore
+    private OsType osType;
+
+    public Object getId() {
+        if (OsType.WEB == this.osType) {
+            return String.valueOf(this.listenTypeId);
+        }
+        return this.listenTypeId;
+    }
+
+    public void changeToWebOsType() {
+        this.osType = OsType.WEB;
+    }
 
     @ApiModelProperty(value = "업데이트 여부")
     public YnType getRenewYn(){
