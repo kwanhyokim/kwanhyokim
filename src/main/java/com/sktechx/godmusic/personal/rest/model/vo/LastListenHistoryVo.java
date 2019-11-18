@@ -1,19 +1,26 @@
-package com.sktechx.godmusic.personal.rest.model.dto;
+/*
+ * Copyright (c) 2019 DREAMUS COMPANY.
+ * All right reserved.
+ * This software is the confidential and proprietary information of DREAMUS COMPANY.
+ * You shall not disclose such Confidential Information and
+ * shall use it only in accordance with the terms of the license agreement
+ * you entered into with DREAMUS COMPANY.
+ */
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+package com.sktechx.godmusic.personal.rest.model.vo;
 
 import com.fasterxml.jackson.annotation.*;
-import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.code.YnType;
-import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
+import com.sktechx.godmusic.personal.rest.model.dto.AlbumDto;
+import com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * 설명 : XXXXXXXXX
@@ -28,7 +35,7 @@ import lombok.EqualsAndHashCode;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"type", "id", "name", "trackCount", "updatedTrackCount", "lastListenDateTime", "imgList", "artistName"})
 @ApiModel(value = "최근들은 컨텐츠")
-public class LastListenHistoryDto {
+public class LastListenHistoryVo {
 
     @JsonIgnore
     private String listenId;
@@ -39,7 +46,7 @@ public class LastListenHistoryDto {
 
     @ApiModelProperty(required = true, example = "1", value = "아이디")
     @JsonProperty("id")
-    private Long listenTypeId;
+    private String listenTypeId;
 
     @ApiModelProperty(required = true, example = "월간 인기 차트", value = "제목")
     @JsonProperty("name")
@@ -59,34 +66,22 @@ public class LastListenHistoryDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private AlbumDto album;
 
-    @JsonIgnore
-    private Integer renewTrackCnt;
+    private Integer renewTrackCount;
 
-    @JsonIgnore
-    private Date renewDtime;
+    private YnType renewYn;
 
-    @ApiModelProperty(value = "업데이트 여부")
-    public YnType getRenewYn(){
-
-        if(!"CHNL".equals(listenType)) return null;
-
-        if(renewDtime == null) return YnType.N;
-
-        Calendar c = Calendar.getInstance();
-        c.setTime(new Date());
-        c.add(Calendar.DATE , -1);
-        if(renewDtime.after(c.getTime())) return YnType.Y;
-        else return YnType.N;
-
-    }
-
-    @ApiModelProperty(value = "업데이트 된 트랙 수")
-    @JsonProperty("renewTrackCount")
-    public Integer getRenewTrackCnt(){
-        if(YnType.Y.equals(getRenewYn())){
-            return this.renewTrackCnt;
-        }else{
-            return 0;
-        }
+    public static LastListenHistoryVo from(LastListenHistoryDto other) {
+        return LastListenHistoryVo.builder()
+                .listenId(other.getListenId())
+                .listenType(other.getListenType())
+                .listenTypeId(String.valueOf(other.getListenTypeId()))
+                .contentTitle(other.getContentTitle())
+                .trackCount(other.getTrackCount())
+                .lastListenDtime(other.getLastListenDtime())
+                .imgList(other.getImgList())
+                .album(other.getAlbum())
+                .renewTrackCount(other.getRenewTrackCnt())
+                .renewYn(other.getRenewYn())
+                .build();
     }
 }
