@@ -29,8 +29,8 @@ public class BaseNineEventConfig {
 
         @Override
         public String getBaseURL() {
-            return "http://dev.music-flo.com/";
-        }
+            return "https://dev-img.music-flo.com";
+        } // 현재 DEV향 image baseurl 없음.
     }
 
     @Component
@@ -39,7 +39,7 @@ public class BaseNineEventConfig {
 
         @Override
         public String getBaseURL() {
-            return "http://qa.music-flo.com/";
+            return "https://qa-img.music-flo.com";
         }
     }
 
@@ -49,7 +49,7 @@ public class BaseNineEventConfig {
 
         @Override
         public String getBaseURL() {
-            return "http://prod.music-flo.com/";
+            return "https://img.music-flo.com";
         }
     }
 }
