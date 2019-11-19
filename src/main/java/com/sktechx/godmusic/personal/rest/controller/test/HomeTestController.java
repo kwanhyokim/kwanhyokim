@@ -16,6 +16,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendV2DummyDat
 import com.sktechx.godmusic.personal.rest.service.DevToolService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDataService;
 import lombok.extern.slf4j.Slf4j;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * 홈 테스트를 위환 컨트롤러
@@ -27,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @Slf4j
 @RequestMapping(Naming.serviceCode + "/test")
+@ApiIgnore
 public class HomeTestController {
 
 
