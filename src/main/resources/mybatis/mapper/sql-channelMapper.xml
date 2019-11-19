@@ -108,7 +108,10 @@
             d.create_dtime trackCreateDtime,
             d.update_dtime trackUpdateDtime,
             c.create_dtime trackRenewDtime,
-            c.track_sn
+            c.track_sn,
+            d.svc_streaming_yn,
+            d.svc_drm_yn,
+            d.free_yn
         FROM
           tb_chnl a INNER JOIN tb_map_chnl_track c ON a.chnl_id = c.chnl_id AND a.disp_status_type = 'Y'
                     INNER JOIN tb_track d ON c.track_id = d.track_id AND d.disp_status_yn = 'Y' AND now() BETWEEN d.disp_start_dtime AND d.disp_end_dtime
@@ -187,6 +190,9 @@
             a.trackCreateDtime,
             a.trackUpdateDtime,
             a.trackRenewDtime,
+            a.svc_streaming_yn,
+            a.svc_drm_yn,
+            a.free_yn,
             a.rank
         FROM
             (SELECT
@@ -210,6 +216,9 @@
                 a.trackUpdateDtime trackUpdateDtime,
                 a.trackRenewDtime trackRenewDtime,
                 a.title_yn,
+                a.svc_streaming_yn,
+                a.svc_drm_yn,
+                a.free_yn,
                 @curRank:=IF(@prevChnlId = a.chnl_id, @curRank + 1, 1) AS rank,
                 @prevChnlId:=a.chnl_id
                 FROM
@@ -233,7 +242,10 @@
                     c.update_dtime trackUpdateDtime,
                     b.create_dtime trackRenewDtime,
                     b.track_sn,
-                    b.title_yn
+                    b.title_yn,
+                    c.svc_streaming_yn,
+                    c.svc_drm_yn,
+                    c.free_yn
                     FROM
                         (SELECT
                             g.*,
@@ -311,6 +323,9 @@
             a.trackCreateDtime,
             a.trackUpdateDtime,
             a.trackRenewDtime,
+            a.svc_streaming_yn,
+            a.svc_drm_yn,
+            a.free_yn,
             a.rank
         FROM (
             SELECT
@@ -333,6 +348,9 @@
                 a.trackCreateDtime trackCreateDtime,
                 a.trackUpdateDtime trackUpdateDtime,
                 a.trackRenewDtime trackRenewDtime,
+                a.svc_streaming_yn,
+                a.svc_drm_yn,
+                a.free_yn,
                 @curRank:=IF(@prevChnlId = a.chnl_id,@curRank + 1,1) AS rank,
                 @prevChnlId:=a.chnl_id
             FROM
@@ -361,6 +379,9 @@
                     c.reprsnt_artist_id,
                     c.create_dtime trackCreateDtime,
                     c.update_dtime trackUpdateDtime,
+                    c.svc_streaming_yn,
+                    c.svc_drm_yn,
+                    c.free_yn,
                     b.create_dtime trackRenewDtime,
                     b.track_sn
                 FROM
