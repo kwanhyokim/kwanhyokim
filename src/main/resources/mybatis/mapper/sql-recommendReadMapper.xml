@@ -1333,17 +1333,18 @@
     </select>
 
     <select id="selectTpoAndThemeImageList" resultType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo">
-    SELECT img_url as url,
-           600 as size
+        SELECT
+            img_url as url,
+            600 as size
 
-    FROM tb_pannel_img
+        FROM tb_pannel_img
 
-    WHERE
-        pannel_type = 'PREFER_GENRE_CHNL'
-        AND os_type = #{osType}
+        WHERE
+            pannel_type = 'PREFER_GENRE_CHNL'
+            AND os_type = #{osType}
 
-    ORDER BY rand()
-    LIMIT 5
+        ORDER BY rand()
+        LIMIT 5
     </select>
 
     <select id="selectRecommendCfTrackIdListByCharacterNo" resultMap="rcmmdTrackResultMap">
