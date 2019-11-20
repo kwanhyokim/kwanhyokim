@@ -182,7 +182,10 @@
 			    a.title albumTitle,
 			    h.artist_id repArtistId,
 				h.artist_nm repArtistNm,
-				a.svc_flac_yn
+				a.svc_flac_yn,
+				a.free_yn freeYn,
+				a.svc_streaming_yn svcStreamingYn,
+				a.svc_drm_yn svcDrmYn
 			FROM
 				(
 				    SELECT
@@ -193,7 +196,6 @@
 						aa.listen_cnt listen_cnt,
 						aa.create_dtime,
 						aa.update_dtime,
-
 						b.svc_flac_yn,
 						b.track_play_tm,
 						b.adult_auth_need_track_yn,
@@ -206,8 +208,10 @@
 						b.disp_status_yn,
 						b.reprsnt_artist_id,
 						g.title,
-						g.album_id
-
+						g.album_id,
+						b.free_yn,
+						b.svc_streaming_yn,
+						b.svc_drm_yn
 					FROM
 						tb_most_listen_track aa
                     INNER JOIN tb_track b
@@ -291,7 +295,10 @@
                g.title AS albumTitle,
                h.artist_id AS repArtistId,
                h.artist_nm AS repArtistNm,
-               a.svc_flac_yn
+               a.svc_flac_yn,
+               a.free_yn freeYn,
+               a.svc_streaming_yn svcStreamingYn,
+               a.svc_drm_yn svcDrmYn
           FROM ( SELECT *
                    FROM ( SELECT a.member_no,
                                  a.character_no,
@@ -310,7 +317,10 @@
                                  b.reprsnt_artist_id,
                                  b.create_dtime,
                                  b.update_dtime,
-                                 b.svc_flac_yn
+                                 b.svc_flac_yn,
+                                 b.free_yn,
+                                 b.svc_streaming_yn,
+                                 b.svc_drm_yn
                             FROM tb_most_listen_track a
                                 INNER JOIN tb_track b ON a.track_id = b.track_id AND b.disp_status_yn = 'Y' AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
                            WHERE a.member_no = #{memberNo}
