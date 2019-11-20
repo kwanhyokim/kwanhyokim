@@ -98,10 +98,12 @@ public class TrackDto {
 
     private YnType freeYn;
 
+    @JsonIgnore
     public boolean isNotStreamable() {
         return YnType.N == this.svcStreamingYn;
     }
 
+    @JsonIgnore
     public boolean isNotDownloadable() {
         return YnType.N == this.svcDrmYn;
     }
