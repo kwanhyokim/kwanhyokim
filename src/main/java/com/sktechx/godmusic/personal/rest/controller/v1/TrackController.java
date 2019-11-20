@@ -58,7 +58,14 @@ public class TrackController {
     public CommonApiResponse<ListResponse> mostTrackList(
             @ApiIgnore @PageableDefault(size=50, page=0) Pageable pageable) {
 
-        Page<?> result = trackMongoService.mostTrackList(GMContext.getContext().getCharacterNo(), pageable);
+        Long memberNo = GMContext.getContext().getMemberNo();
+        Long characterNo = GMContext.getContext().getCharacterNo();
+        if (memberNo == null || characterNo == null) {
+            log.info("[MostListened][많이들은곡목록조회] 요청에 characterNo 가 없습니다.");
+            throw new CommonBusinessException(CommonErrorDomain.UNAUTHORIZED);
+        }
+
+        Page<?> result = trackMongoService.mostTrackList(characterNo, pageable);
         return new CommonApiResponse<>(new ListResponse(result));
     }
 
@@ -75,7 +82,15 @@ public class TrackController {
             @ApiIgnore @RequestGMContext GMContext ctx,
             @ApiIgnore @PageableDefault(size=50, page=0) Pageable pageable) {
 
-        Page<?> result = trackMongoService.getMyRecentTrackList(ctx.getMemberNo(), ctx.getCharacterNo(), pageable);
+        Long memberNo = ctx.getMemberNo();
+        Long characterNo = ctx.getCharacterNo();
+
+        if (memberNo == null || characterNo == null) {
+            log.info("[RecentListened][최근들은곡목록조회] 요청에 memberNo or characterNo 가 없습니다.");
+            throw new CommonBusinessException(CommonErrorDomain.UNAUTHORIZED);
+        }
+
+        Page<?> result = trackMongoService.getMyRecentTrackList(memberNo, characterNo, pageable);
         return new CommonApiResponse<>(new ListResponse(result));
     }
 
@@ -85,15 +100,23 @@ public class TrackController {
             @ApiIgnore @RequestGMContext GMContext ctx,
             @Valid @RequestBody ListenDeleteTrackRequest listenDeleteTrackRequest) {
 
-        if(listenDeleteTrackRequest == null){
+        if(listenDeleteTrackRequest == null) {
             throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
         }
 
+        Long memberNo = ctx.getMemberNo();
+        Long characterNo = ctx.getCharacterNo();
+
+        if (memberNo == null || characterNo == null) {
+            log.info("[RecentListened][최근들은곡목록삭제] 요청에 memberNo or characterNo 가 없습니다.");
+            throw new CommonBusinessException(CommonErrorDomain.UNAUTHORIZED);
+        }
+
         // MongoDB 에서 삭제
-        trackMongoService.deleteMyRecentTrackList(ctx.getMemberNo(), ctx.getCharacterNo(), listenDeleteTrackRequest.getTrackIds());
+        trackMongoService.deleteMyRecentTrackList(memberNo, characterNo, listenDeleteTrackRequest.getTrackIds());
 
         // MySQLDB 에서 삭제
-        trackService.deleteMyRecentTrackList(ctx.getMemberNo(), ctx.getCharacterNo(), listenDeleteTrackRequest.getTrackIds());
+        trackService.deleteMyRecentTrackList(memberNo, characterNo, listenDeleteTrackRequest.getTrackIds());
 
         return CommonApiResponse.emptySuccess();
     }
