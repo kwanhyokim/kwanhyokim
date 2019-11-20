@@ -191,16 +191,31 @@ public abstract class PanelAssembly {
 
     protected void putTpoAndThemeImageList(PersonalPhaseMeta personalPhaseMeta,
             List<Panel> myPanelList) {
-        List<ImageInfo> imageInfoList = recommendReadMapper.selectTpoAndThemeImageList(personalPhaseMeta.getOsType());
-        if(CollectionUtils.isEmpty(imageInfoList)){
-            imageInfoList = new ArrayList<>();
-        }
-        if(imageInfoList.size() < 5){
-            List<ImageInfo> tempImageInfoList = Arrays.asList(new ImageInfo[5]);
-            Collections.fill(tempImageInfoList, imageInfoList.get(0));
-            imageInfoList = tempImageInfoList;
-        }
-        for(int i=0; i<myPanelList.size(); i++) {
+
+
+        List<ImageInfo> imageInfoList =
+                Optional.ofNullable(
+                        recommendReadMapper.selectTpoAndThemeImageList(personalPhaseMeta.getOsType())
+                )
+                        .orElseGet(Collections::emptyList)
+                        .stream()
+                        .collect(Collectors.collectingAndThen(
+                                Collectors.toCollection(ArrayList::new),
+
+                                list -> {
+
+                                    if(list.size() < 5){
+                                        List<ImageInfo> tempImageInfoList = Arrays.asList(new ImageInfo[5]);
+                                        Collections.fill(tempImageInfoList, list.get(0));
+                                        return tempImageInfoList;
+                                    }else {
+                                        return list;
+                                    }
+                                }
+
+                        ));
+
+        for (int i = 0; i < myPanelList.size(); i++) {
             ImageInfo imageInfo = imageInfoList.get(i);
             myPanelList.get(i).setImgList(Arrays.asList(imageInfo));
         }

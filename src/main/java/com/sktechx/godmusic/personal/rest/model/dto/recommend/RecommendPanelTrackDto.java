@@ -41,7 +41,6 @@ public class RecommendPanelTrackDto {
 
     private YnType likeYn;
 
-
     @JsonProperty("id")
     private Long trackId;
     @JsonProperty("name")
@@ -62,6 +61,7 @@ public class RecommendPanelTrackDto {
     @JsonProperty("priority")
     private Integer trackSn;
 
+
     private Long agencyId;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -76,6 +76,12 @@ public class RecommendPanelTrackDto {
     private Date updateDateTime;
 
     private AlbumDto album;
+
+    private YnType svcStreamingYn;
+
+    private YnType svcDrmYn;
+
+    private YnType freeYn;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<RecommendPanelTrackArtistDto> trackArtistList;

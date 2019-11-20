@@ -109,17 +109,21 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
 
     private Panel createTPOChannelPanel(final ChnlDto channel,final PersonalPhaseMeta personalPhaseMeta){
 
-        List<ImageInfo> imageInfoList = recommendReadMapper.selectTpoAndThemeImageList(personalPhaseMeta.getOsType());
+        List<ImageInfo> imageInfoList =
+                Optional.ofNullable(
+                        recommendReadMapper.selectTpoAndThemeImageList(personalPhaseMeta.getOsType())
+                )
+                .orElseGet(Collections::emptyList)
+                .stream()
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toCollection(ArrayList::new),
 
-        if(CollectionUtils.isEmpty(imageInfoList)){
-            imageInfoList = new ArrayList<>();
-        }
+                        list -> {
+                            Collections.shuffle(list);
+                            return list.stream().limit(1).collect(Collectors.toList());
+                        }
 
-        Collections.shuffle(imageInfoList);
-
-        if( imageInfoList.size() > 1){
-            imageInfoList = Arrays.asList(imageInfoList.get(0));
-        }
+                ));
 
         TPOChannelPanel tpoChannelPanel = new TPOChannelPanel(channel, imageInfoList);
         tpoChannelPanel.setType(RecommendPanelType.POPULAR_CHANNEL);
