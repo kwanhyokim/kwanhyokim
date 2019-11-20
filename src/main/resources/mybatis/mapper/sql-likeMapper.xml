@@ -102,6 +102,9 @@
              , G.artist_id                                                             AS repArtistId
              , G.artist_nm                                                             AS repArtistNm
              , A.svc_flac_yn
+             , A.free_yn as freeYn
+             , A.svc_streaming_yn as svcStreamingYn
+             , A.svc_drm_yn as svcDrmYn
         FROM (
              SELECT t1.like_type_id
                   , t1.disp_sn
@@ -118,6 +121,9 @@
                   , t2.adult_auth_need_track_yn
                   , t2.pps_yn
                   , t2.svc_flac_yn
+                  , t2.free_yn
+                  , t2.svc_streaming_yn
+                  , t2.svc_drm_yn
              FROM tb_character_like T1
                     INNER JOIN tb_track T2 ON T1.like_type_id = T2.track_id
              WHERE T1.character_no = #{characterNo} AND T1.like_type = 'TRACK' AND T2.disp_status_yn = 'Y'
