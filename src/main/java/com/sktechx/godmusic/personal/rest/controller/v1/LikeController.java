@@ -151,10 +151,11 @@ public class LikeController {
 			notes = "좋아요 대상 타입 - CHNL(채널) | ALBUM(앨범) | CHART(차트) | ARTIST(아티스트) | TRACK(곡) | VIDEO(영상)")
 	@PostMapping("")
 	public CommonApiResponse addLike(
-			@Valid @RequestBody LikeRequest request
-	) {
+			@Valid @RequestBody LikeRequest request) {
+
 		GMContext context = GMContext.getContext();
 		Validator.loginValidate(context);
+
 		Long characterNo = context.getCharacterNo();
 
 		likeMongoService.addLike(request, characterNo);
