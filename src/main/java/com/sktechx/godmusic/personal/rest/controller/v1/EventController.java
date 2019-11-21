@@ -52,7 +52,7 @@ public class EventController {
     @ApiOperation(value = "베스트나인 이벤트 - 앨범 이미지 + 트랙 목록 조회", httpMethod = "GET")
     @GetMapping("/bestnines/{eventDate}")
     public CommonApiResponse<BestNineVo> getBestNineTracks(
-            @PathVariable(name = "eventDate") @Length(min=6, max=6) String eventDate,
+            @PathVariable(name = "eventDate") @Length(min=4, max=6) String eventDate,
             @ApiIgnore @RequestGMContext GMContext gmContext) {
 
         Long characterNo = gmContext.getCharacterNo();
