@@ -192,7 +192,7 @@ public abstract class PanelAssembly {
     protected void putTpoAndThemeImageList(PersonalPhaseMeta personalPhaseMeta,
             List<Panel> myPanelList) {
 
-
+        log.info("{}", personalPhaseMeta.getOsType());
         List<ImageInfo> imageInfoList =
                 Optional.ofNullable(
                         recommendReadMapper.selectTpoAndThemeImageList(personalPhaseMeta.getOsType())
@@ -204,7 +204,7 @@ public abstract class PanelAssembly {
 
                                 list -> {
 
-                                    if(list.size() < 5){
+                                    if(list.size() > 0 && list.size() < 5){
                                         List<ImageInfo> tempImageInfoList = Arrays.asList(new ImageInfo[5]);
                                         Collections.fill(tempImageInfoList, list.get(0));
                                         return tempImageInfoList;
