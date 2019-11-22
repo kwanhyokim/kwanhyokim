@@ -215,6 +215,10 @@ public abstract class PanelAssembly {
 
                         ));
 
+        if(CollectionUtils.isEmpty(imageInfoList)){
+            return;
+        }
+
         for (int i = 0; i < myPanelList.size(); i++) {
             ImageInfo imageInfo = imageInfoList.get(i);
             myPanelList.get(i).setImgList(Arrays.asList(imageInfo));
