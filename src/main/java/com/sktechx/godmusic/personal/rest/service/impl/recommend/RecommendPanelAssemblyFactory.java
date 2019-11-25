@@ -112,7 +112,7 @@ public class RecommendPanelAssemblyFactory {
             // 나를 위한 새로운 발견
             case RC_CF_TR:
                 return forMeFloPanelAssembly;
-            // 오늘의 발견
+            // 오늘의 추천
             case RC_SML_TR:
                 return todayFloPanelAssembly;
             // 좋아할만한 아티스트 MIX

@@ -165,7 +165,7 @@ public class RecommendDataServiceImpl implements RecommendDataService {
                     recommendDummyDataMapper.insertRcmmdMforuSubData( recommendTrackDto.getRcmmdId());
                 }
                 break;
-            // 오늘의 발견
+            // 오늘의 추천
             case "RC_SML_TR":
 //                svcGenreIdList = recommendDummyDataMapper.selectRandomSvcGenreId(recommendV2DummyDataRequest.getPanelCount());
                 for( int i = 0 ; i < recommendV2DummyDataRequest.getPanelCount() ; i++){
@@ -201,7 +201,7 @@ public class RecommendDataServiceImpl implements RecommendDataService {
 			case "RC_CF_TR":
 				recommendDummyDataMapper.updateRcmmdMforuData(characterNo);
 				break;
-			// 오늘의 발견
+			// 오늘의 추천
 			case "RC_SML_TR":
 				recommendDummyDataMapper.updateRcmmdSimilarTrackData(characterNo);
 				break;
@@ -227,7 +227,7 @@ public class RecommendDataServiceImpl implements RecommendDataService {
                     recommendDummyDataMapper.deleteRcmmdMforuData(characterNo);
                     recommendDummyDataMapper.deleteRcmmdMforuSubData(characterNo);
                 break;
-            // 오늘의 발견
+            // 오늘의 추천
             case "RC_SML_TR":
                 recommendDummyDataMapper.deleteRcmmdSimilarTrackData(characterNo);
                 recommendDummyDataMapper.deleteRcmmdSimilarTrackSubData(characterNo);

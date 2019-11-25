@@ -498,7 +498,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             case RC_ATST_TR:
                 panel = getArtistFloRecommendPanelInfoDto(panelContentId);
                 break;
-            // 오늘의 발견
+            // 오늘의 추천
             case RC_SML_TR:
                 panel = getTodayFloRecommendPanelInfoDto(recommendPanelContentType, panelContentId,
                         osType, trackList, trackCount);
