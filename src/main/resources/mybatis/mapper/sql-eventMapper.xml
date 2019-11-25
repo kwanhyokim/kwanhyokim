@@ -54,6 +54,8 @@
                  where bestnine.event_dt = #{eventDate}
                  and bestnine.character_no = besttrack.character_no
                  and bestnine.character_no = #{characterNo}
+                 and besttrack.event_dt = #{eventDate}
+                 and besttrack.character_no = #{characterNo}
              ) t
              left outer join tb_track track
                  on t.track_id = track.track_id
