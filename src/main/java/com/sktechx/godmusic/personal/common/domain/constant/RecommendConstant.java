@@ -73,7 +73,7 @@ public class RecommendConstant {
 
     public static final String RCMMD_CF_TRACK_PANEL_SUB_TITLE = "추천 음악\n음악추천 맛집";
 
-    public static final String SIMILAR_TRACK_PANEL_TITLE = "오늘의 발견";
+    public static final String SIMILAR_TRACK_PANEL_TITLE = "오늘의 추천";
     public static final String SIMILAR_TRACK_PANEL_SUB_TITLE = "많이 들은 곡과\n비슷한 음악";
     public static final String SIMILAR_TRACK_PANEL_DETAIL_SUB_TITLE = "많이 들은 곡과\n비슷한 음악";
 
