@@ -11,7 +11,6 @@
 package com.sktechx.godmusic.personal.rest.controller.v1;
 
 import java.util.List;
-import java.util.Objects;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +25,10 @@ import com.sktechx.godmusic.lib.domain.RequestGMContext;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.header.RecommendPanelHeaderVo;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendDummyDataRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.header.RecommendPanelHeaderVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDataService;
@@ -105,6 +104,7 @@ public class RecommendPanelController {
 	    	return null;
 	    }
 
+	    recommendPanelResponse.setOsType(ctx.getOsType());
 	    recommendPanelResponse.setList(recommendPanelList);
 
 		return new CommonApiResponse<>(recommendPanelResponse);
