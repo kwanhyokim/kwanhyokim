@@ -100,12 +100,7 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
                             (ArtistDto a, ArtistDto b) -> (BooleanComparator.TRUE_HIGH.compare(a.hasDefaultImage(), b.hasDefaultImage()))
                     );
 
-
-                    ArtistPanel artistPanel = new ArtistPanel(recommendArtistDto);
-                    artistPanel.makeSeedInfo();
-                    artistPanel.getContent().setCreateDtime(recommendArtistDto.getDispStdStartDt());
-
-                    panelList.add(artistPanel);
+                    panelList.add(new ArtistPanel(recommendArtistDto));
 
                 } catch (Exception e) {
                     log.error("PanelSignAssembly appendPreferArtistPanel artistPanel create error : {}", e.getMessage());

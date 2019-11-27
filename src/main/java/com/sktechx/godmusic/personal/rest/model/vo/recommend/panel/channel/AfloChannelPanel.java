@@ -47,8 +47,4 @@ public class AfloChannelPanel extends ChannelPanel{
         }
 
     }
-
-    @Override
-    public void makeSeedInfo() {
-    }
 }

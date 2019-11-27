@@ -84,8 +84,12 @@ public class PreferGenreThemePanelAssembly extends PanelSignAssembly {
 
         Collections.shuffle(appendChannelList);
 
-        for (PreferGenrePopularChnlDto preferGenrePopularChnlDto : appendChannelList.stream()
-                .filter(Objects::nonNull).limit(panelLimitSize).collect(Collectors.toList())) {
+        for (PreferGenrePopularChnlDto preferGenrePopularChnlDto :
+                appendChannelList.stream()
+                    .filter(Objects::nonNull)
+                    .limit(panelLimitSize)
+                    .collect(Collectors.toList())
+        ) {
             try {
                 panelList.add(createPreferGenrePopularChannelPanel(personalPhaseMeta,
                         preferGenrePopularChnlDto));

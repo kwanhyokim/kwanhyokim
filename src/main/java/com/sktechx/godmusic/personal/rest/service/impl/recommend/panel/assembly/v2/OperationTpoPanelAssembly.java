@@ -133,7 +133,6 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
             panelContentVo.setTrackCount(panelContentVo.getTrackList().size());
         }
 
-
         return tpoChannelPanel;
     }
 

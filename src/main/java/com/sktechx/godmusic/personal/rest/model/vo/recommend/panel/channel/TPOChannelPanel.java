@@ -27,7 +27,4 @@ public class TPOChannelPanel extends ChannelPanel{
     public TPOChannelPanel( ChnlDto channel , List<ImageInfo> imgList) throws CommonBusinessException {
         super(RecommendPanelType.TPO_CHANNEL, channel , null , imgList);
     }
-    @Override
-    public void makeSeedInfo() {
-    }
 }

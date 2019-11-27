@@ -35,8 +35,4 @@ public class PreferGenreSimilarTrackPanel extends TrackPanel {
                 bgImgList
         );
     }
-
-    @Override
-    public void makeSeedInfo() {
-    }
 }

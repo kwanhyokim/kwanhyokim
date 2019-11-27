@@ -93,10 +93,8 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
                     .filter(Objects::nonNull)
                     .sorted(Comparator.comparing(RecommendTrackDto::getRcmmdCreateDtime).reversed()).collect(Collectors.toList())) {
             try {
-                RcmmdTrackPanel rcmmdTrackPanel = createRecommendCfTrackPanel(personalPhaseMeta,
-                        recommendTrackDto);
-                rcmmdTrackPanel.makeSeedInfo();
-                panelList.add(rcmmdTrackPanel);
+                panelList.add(createRecommendCfTrackPanel(personalPhaseMeta,
+                        recommendTrackDto));
 
             } catch (Exception e) {
                 log.error("RecommendPhasePanelAssembly appendRecommendCfTrackPanelList error : {}",

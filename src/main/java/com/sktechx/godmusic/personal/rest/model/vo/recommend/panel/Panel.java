@@ -16,7 +16,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
@@ -92,9 +91,4 @@ public abstract class Panel {
     public Panel(){
 
     }
-
-    abstract protected void initialPanel() throws CommonBusinessException;
-    abstract protected PanelContentVo createPanelContent();
-
-    abstract public void makeSeedInfo();
 }

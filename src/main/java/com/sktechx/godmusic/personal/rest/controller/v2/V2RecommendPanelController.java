@@ -12,7 +12,6 @@ package com.sktechx.godmusic.personal.rest.controller.v2;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -32,11 +31,10 @@ import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ChannelListResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelListResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendV2DummyDataRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
-import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDataService;
+import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDummyDataService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import io.swagger.annotations.ApiOperation;
@@ -52,20 +50,13 @@ public class V2RecommendPanelController {
     private RecommendPanelService recommendPanelService;
 
     @Autowired
-    private RecommendDataService recommendDataService;
+    private RecommendDummyDataService recommendDummyDataService;
 
 	@Autowired
 	private PersonalRecommendPhaseService personalRecommendPhaseService;
 
 	@Autowired
 	private ChannelService channelService;
-
-	@ApiOperation(value = "추천 개인화 정보 조회 ( New )", httpMethod = "GET" , hidden = true)
-	@GetMapping(value = "/phase/meta")
-    public CommonApiResponse<PersonalPhaseMeta> personalPhaseMeta(
-    		@ApiIgnore @RequestGMContext GMContext ctx){
-		return new CommonApiResponse<>(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(ctx.getCharacterNo(),ctx.getOsType(), ctx.getAppVer()));
-	}
 
     @ApiOperation(value = "추천 홈 패널 조회 ( New )", httpMethod = "GET",response = RecommendPanelResponse.class,
 			notes = "사용자 별 추천 단계에 따른 추천 데이터를 조회 하는 API \r\n" +
@@ -150,41 +141,6 @@ public class V2RecommendPanelController {
 
 		return new CommonApiResponse<>(ChannelListResponse.builder().list(preferGenrePopularChannelList).build());
 
-	}
-
-	@ApiOperation(value = "추천 단계별 데이터 생성 ( New )", httpMethod = "POST", notes =
-			"추천 단계별 데이터 생성\r\n" +
-					"1단계 : 기존 2,3단계 데이터를 모두 삭제 \r\n" +
-					"2단계 : 기존 3단계 데이터를 모두 삭제 후 2단계 패널 생성 ( 2단계 패널 데이터가 있는 경우 유지 ) \r\n" +
-					"3단계 : 3단계 데이터를 생성 ( 3단계 패널 데이터가 있는 경우 유지 ) \r\n" +
-					"TPO : TPO 데이터 추가 (기존 1,2,3 단계와는 무관) "
-			, response = CommonApiResponse.class)
-	@PostMapping(value = "/home/panels/create")
-	public CommonApiResponse recommendDummyData(@ApiIgnore @RequestGMContext GMContext ctx,
-			@Valid @RequestBody RecommendV2DummyDataRequest recommendV2DummyDataRequest,
-			@ApiParam(value = "캐릭터 번호", defaultValue = "1") @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo){
-
-		characterNo = ctx.getCharacterNo();
-
-		if(characterNo != null){
-			recommendDataService.createRecommendV2DummyData(characterNo,recommendV2DummyDataRequest);
-		}
-
-		return CommonApiResponse.emptySuccess();
-	}
-
-	@DeleteMapping(value = "/home/panels/delete")
-	public CommonApiResponse deleteRecommendDummyData(@ApiIgnore @RequestGMContext GMContext ctx,
-			@Valid @RequestBody RecommendV2DummyDataRequest recommendV2DummyDataRequest,
-			@ApiParam(value = "캐릭터 번호", defaultValue = "1") @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo){
-
-		characterNo = ctx.getCharacterNo();
-
-		if(characterNo != null){
-			recommendDataService.deleteRecommendV2DummyData(characterNo,recommendV2DummyDataRequest);
-		}
-
-		return CommonApiResponse.emptySuccess();
 	}
 
 }

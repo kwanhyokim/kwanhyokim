@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.util.StringUtils;
 
@@ -49,32 +50,20 @@ public abstract class ChannelPanel extends Panel{
         this.channel = neverNullChannel(channel);
         this.genre = genre;
         this.imgList = imgList;
-        this.initialPanel();
-    }
-
-    @Override
-    protected void initialPanel(){
-        this.title = (channel.getChnlDispNm() == null ? channel.getChnlNm() : channel.getChnlDispNm());
+        this.title = Optional.ofNullable(channel.getChnlDispNm()).orElse(channel.getChnlNm());
         this.subTitle = "";
-        this.content = createPanelContent();
-    }
+        this.content = PanelContentVo.builder()
+                    .id(channel.getChnlId())
+                    .type(RecommendPanelContentType.CHNL)
+                    .trackCount(channel.getTrackCount())
+                    .trackList(channel.getTrackList())
+                    .createDtime(channel.getCreateDtime())
+                    .updateDtime(channel.getUpdateDtime())
+                    .renewYn(channel.getRenewYn())
+                    .renewTrackCount( YnType.Y.equals(channel.getRenewYn())?channel.getRenewTrackCnt() : 0)
+                    .genre(this.genre)
+                .build();
 
-
-    @Override
-    public PanelContentVo createPanelContent() {
-        PanelContentVo content = new PanelContentVo();
-
-        content.setId(channel.getChnlId());
-        content.setType(RecommendPanelContentType.CHNL);
-        content.setTrackCount(channel.getTrackCount());
-        content.setTrackList(channel.getTrackList());
-        content.setCreateDtime(channel.getCreateDtime());
-        content.setUpdateDtime(channel.getUpdateDtime());
-        content.setRenewYn(channel.getRenewYn());
-        content.setRenewTrackCount( YnType.Y.equals(channel.getRenewYn())?channel.getRenewTrackCnt() : 0);
-        content.setGenre(this.genre);
-
-        return content;
     }
 
     private static ChnlDto neverNullChannel(ChnlDto channel) throws CommonBusinessException {
