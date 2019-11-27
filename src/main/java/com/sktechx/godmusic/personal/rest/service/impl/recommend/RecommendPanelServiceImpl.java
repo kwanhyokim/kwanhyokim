@@ -831,11 +831,30 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
         try {
 
-            PanelAssembly panelAssembly = recommendPanelAssemblyFactory.getV2RecommendPanelAssembly(recommendPanelType);
+            return Optional.ofNullable(
+                    recommendPanelAssemblyFactory
+                            .getV2RecommendPanelAssembly(recommendPanelType)
+                                .getRecommendPanelList(characterNo, osType)
+            )
+                    .orElseGet(Collections::emptyList)
+                    .stream()
+                    .filter(panel ->
+                            Optional.ofNullable(panel).isPresent() &&
+                            Optional.ofNullable(panel.getContent()).isPresent())
+                    .collect(Collectors.collectingAndThen(
+                            Collectors.toCollection(ArrayList::new),
 
-            List<Panel> recommendPanelList = panelAssembly.getRecommendPanelList(characterNo, osType);
+                            panels -> {
+                                for (Panel panel : panels) {
+                                    panel.getContent().setOsType(osType);
+                                }
 
-            return recommendPanelList;
+                                return panels;
+                            }
+
+                    ))
+                    ;
+
         } catch (Exception e) {
             e.printStackTrace();
             return null;

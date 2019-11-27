@@ -10,7 +10,6 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.chart;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +24,9 @@ import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
+
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.CHART_PANEL_HOURLY_BASIS_PHRASES;
+
 /**
  * 설명 : 차트형 추천 패널
  *
@@ -63,9 +65,9 @@ public class ChartPanel extends Panel {
 
         return content;
     }
+
     @Override
-    public void makeSeedInfo() {
-    }
+    public void makeSeedInfo() {}
 
     private static ChartDto neverNullChart(ChartDto chart) throws CommonBusinessException {
         if(chart == null || StringUtils.isEmpty(chart.getChartNm()))
@@ -75,13 +77,14 @@ public class ChartPanel extends Panel {
 
     private String getBasedOnUpdate(ChartDto chart , RecommendPanelType panelType){
         if(chart != null){
-//            if(RecommendPanelType.KIDS_CHART.equals(panelType)){
-//                return getChartUpdateDateBetween(chart.getDispStartDtime());
-//            }else if(RecommendPanelType.LIVE_CHART.equals(panelType)){
-//                return getChartUpdateHourly(chart.getUpdateDtime());
-//            }
+            if(RecommendPanelType.LIVE_CHART.equals(panelType)){
+                return DateUtil.dateToString(chart.getDispStartDtime(), "HH")+CHART_PANEL_HOURLY_BASIS_PHRASES;
+            }else if(RecommendPanelType.KIDS_CHART.equals(panelType)){
+                return DateUtil.dateToString(chart.getUpdateDtime(), "yyyy.MM.dd");
+            }
             return getChartUpdateHourly(chart.getUpdateDtime());
         }
+
         return null;
     }
     private String getChartUpdateHourly(Date updateDateTime){
@@ -90,18 +93,5 @@ public class ChartPanel extends Panel {
             return DateUtil.dateToString(updateDateTime, "yyyy.MM.dd");
         }
         return "";
-    }
-
-    private String getChartUpdateDateBetween(Date dispStartDtime) {
-        if(dispStartDtime != null){
-            Calendar c = Calendar.getInstance();
-            c.setTime(dispStartDtime);
-            c.add(Calendar.MINUTE , - 1);
-            String end = String.format("%02d/%02d" , c.get(Calendar.MONTH) , c.get(Calendar.DAY_OF_MONTH));
-            c.add(Calendar.DATE , -7);
-            String start = String.format("%02d/%02d" , c.get(Calendar.MONTH) , c.get(Calendar.DAY_OF_MONTH));
-            return String.format("%s ~ %s" , start , end );
-        }
-        return null;
     }
 }
