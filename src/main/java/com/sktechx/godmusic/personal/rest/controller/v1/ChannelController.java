@@ -2,8 +2,10 @@ package com.sktechx.godmusic.personal.rest.controller.v1;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 
+import com.sktechx.godmusic.personal.rest.model.vo.LastListenHistoryVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -74,14 +76,29 @@ public class ChannelController {
         int end = Ints.checkedCast(pageable.getOffset()) + pageable.getPageSize();
 
         List<LastListenHistoryDto> lastListenHistory = channelService.getLastListenHistory(ctx.getMemberNo(), ctx.getCharacterNo(), ctx.getOsType(), ctx.getAppVer());
-        if(CollectionUtils.isEmpty(lastListenHistory)) throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
+        if(CollectionUtils.isEmpty(lastListenHistory))
+            throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
 
-        if(start >= lastListenHistory.size() || start >= end) throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
+        if(start >= lastListenHistory.size() || start >= end)
+            throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
 
-        if(end > lastListenHistory.size()) end = lastListenHistory.size();
+        if(end > lastListenHistory.size())
+            end = lastListenHistory.size();
 
-        return new CommonApiResponse<>(new ListResponse(new PageImpl<>(lastListenHistory.subList(start, end), pageable, lastListenHistory.size())));
-
+        /**
+         * WEB 요청시 응답필드의 id field 가 javascript number 값이 표현할 수 있는 범위를 초과하기 때문에
+         * WEB 요청 응답에는 id field 를 string 값으로 반환한다.
+         */
+        if (OsType.WEB == ctx.getOsType()) {
+            List<LastListenHistoryVo> result = lastListenHistory.subList(start, end).stream()
+                    .map(LastListenHistoryVo::from)
+                    .collect(Collectors.toList());
+            return new CommonApiResponse<>(new ListResponse(new PageImpl<>(result, pageable, lastListenHistory.size())));
+        }
+        else {
+            List<LastListenHistoryDto> result = lastListenHistory.subList(start, end);
+            return new CommonApiResponse<>(new ListResponse(new PageImpl<>(result, pageable, lastListenHistory.size())));
+        }
     }
 
     @DeleteMapping("/recentListened")

@@ -60,8 +60,6 @@ import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
 import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
 import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2.AfloPanelAssembly;
-import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2.OperationTpoPanelAssembly;
-import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2.PreferGenreThemePanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
@@ -155,12 +153,6 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             }
         }
 
-        if(!CollectionUtils.isEmpty(panelList)){
-            panelList.stream().forEach(
-                    panel -> panel.getContent().setOsType(osType)
-            );
-        }
-
         return panelList;
     }
     @Override
@@ -200,30 +192,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             return null;
         }
 
-        Integer mostRecentPanelIndex = 0;
-        Date updateDtime = null;
-
-        Optional<Panel> firstPanel = recommendPanelList.stream().max(
-                Comparator.comparing(o -> o.getContent().getCreateDtime()));
-
-        // 첫 패널 정보
-        if(firstPanel.isPresent()){
-
-            // 운영 TPO / 선호장르테마리스트 인 경우, 랜덤으로 나오므로.. 무조건 첫번째 패널을 가리키도록 함
-            if(panelAssembly instanceof OperationTpoPanelAssembly ||
-                    panelAssembly instanceof PreferGenreThemePanelAssembly) {
-                mostRecentPanelIndex = 0;
-                updateDtime = new Date();
-
-            }else {
-                mostRecentPanelIndex = recommendPanelList.indexOf(firstPanel.get());
-                updateDtime = firstPanel.get().getContent().getCreateDtime();
-            }
-        }
-
+        recommendPanelResponse.setOsType(osType);
         recommendPanelResponse.setList(recommendPanelList);
-        recommendPanelResponse.setMostRecentPanelIndex(mostRecentPanelIndex);
-        recommendPanelResponse.setUpdateDtime(updateDtime);
 
         return recommendPanelResponse;
     }
@@ -861,11 +831,30 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
         try {
 
-            PanelAssembly panelAssembly = recommendPanelAssemblyFactory.getV2RecommendPanelAssembly(recommendPanelType);
+            return Optional.ofNullable(
+                    recommendPanelAssemblyFactory
+                            .getV2RecommendPanelAssembly(recommendPanelType)
+                                .getRecommendPanelList(characterNo, osType)
+            )
+                    .orElseGet(Collections::emptyList)
+                    .stream()
+                    .filter(panel ->
+                            Optional.ofNullable(panel).isPresent() &&
+                            Optional.ofNullable(panel.getContent()).isPresent())
+                    .collect(Collectors.collectingAndThen(
+                            Collectors.toCollection(ArrayList::new),
 
-            List<Panel> recommendPanelList = panelAssembly.getRecommendPanelList(characterNo, osType);
+                            panels -> {
+                                for (Panel panel : panels) {
+                                    panel.getContent().setOsType(osType);
+                                }
 
-            return recommendPanelList;
+                                return panels;
+                            }
+
+                    ))
+                    ;
+
         } catch (Exception e) {
             e.printStackTrace();
             return null;

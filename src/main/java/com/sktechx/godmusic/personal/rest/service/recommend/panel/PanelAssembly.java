@@ -67,20 +67,15 @@ public abstract class PanelAssembly {
     public abstract List<Panel> getRecommendPanelList(Long characterNo, OsType osType);
 
     protected int panelCount(RecommendPanelType recommendPanelType ,final List<Panel> panelList){
-        return (int)Optional.ofNullable(panelList).orElse(Collections.emptyList()).stream().filter(panel -> {
-            return recommendPanelType.equals(panel.getType());
-        }).count();
+        return (int)Optional.ofNullable(panelList).orElse(Collections.emptyList()).stream().filter(panel -> recommendPanelType.equals(panel.getType())).count();
 
     }
     protected void sort(final PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList){
-        panelList.sort(new Comparator<Panel>() {
-            @Override
-            public int compare(Panel panel1, Panel panel2) {
-                Integer panel1Sn = panel1.getPanelOrderSn(personalPhaseMeta.getFirstPhaseType());
-                Integer panel2Sn = panel2.getPanelOrderSn(personalPhaseMeta.getFirstPhaseType());
-                return panel1Sn < panel2Sn
-                        ? -1 : panel1Sn == panel2Sn? 0 :1 ;
-            }
+        panelList.sort((panel1, panel2) -> {
+            Integer panel1Sn = panel1.getPanelOrderSn(personalPhaseMeta.getFirstPhaseType());
+            Integer panel2Sn = panel2.getPanelOrderSn(personalPhaseMeta.getFirstPhaseType());
+            return panel1Sn < panel2Sn
+                    ? -1 : panel1Sn == panel2Sn? 0 :1 ;
         });
 
         pullForwardKidsChartPanel(panelList);
@@ -171,19 +166,25 @@ public abstract class PanelAssembly {
                 .stream()
                 .filter(panel -> RecommendPanelType.KIDS_CHART.equals(panel.getType()))
                 .findFirst();
+
         if(liveChartPanel.isPresent()){
             panelSize--;
         }
+
         if(kidsChartPanel.isPresent()){
             panelSize--;
         }
+
         if(myPanelList.size() > panelSize){
             myPanelList = myPanelList.subList(0, panelSize - 1);
         }
+
         panelList.addAll(myPanelList);
+
         if(liveChartPanel.isPresent()) {
             panelList.add(0, liveChartPanel.get());
         }
+
         if(kidsChartPanel.isPresent()){
             panelList.add(kidsChartPanel.get());
         }
@@ -192,7 +193,7 @@ public abstract class PanelAssembly {
     protected void putTpoAndThemeImageList(PersonalPhaseMeta personalPhaseMeta,
             List<Panel> myPanelList) {
 
-
+        log.info("{}", personalPhaseMeta.getOsType());
         List<ImageInfo> imageInfoList =
                 Optional.ofNullable(
                         recommendReadMapper.selectTpoAndThemeImageList(personalPhaseMeta.getOsType())
@@ -204,7 +205,7 @@ public abstract class PanelAssembly {
 
                                 list -> {
 
-                                    if(list.size() < 5){
+                                    if(list.size() > 0 && list.size() < 5){
                                         List<ImageInfo> tempImageInfoList = Arrays.asList(new ImageInfo[5]);
                                         Collections.fill(tempImageInfoList, list.get(0));
                                         return tempImageInfoList;
@@ -214,6 +215,10 @@ public abstract class PanelAssembly {
                                 }
 
                         ));
+
+        if(CollectionUtils.isEmpty(imageInfoList)){
+            return;
+        }
 
         for (int i = 0; i < myPanelList.size(); i++) {
             ImageInfo imageInfo = imageInfoList.get(i);
