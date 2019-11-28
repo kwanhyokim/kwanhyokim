@@ -15,6 +15,8 @@ import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.common.domain.type.TrackLogType;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.rest.client.McpClient;
+import com.sktechx.godmusic.personal.rest.client.StreamClient;
+import com.sktechx.godmusic.personal.rest.client.model.OneTimeUrlDto;
 import com.sktechx.godmusic.personal.rest.client.model.OneTimeUrlResponse;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.ResourceListen;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SettlementInfoDto;
@@ -87,7 +89,7 @@ public class ListenServiceImpl implements ListenService {
 	DrmService drmService;
 
 	@Autowired
-	McpClient mcpClient;
+	StreamClient streamClient;
 	
 	@Override
 	public void addListenHistByChannel(ListenRequest request, Long memberNo, Long characterNo) {
@@ -274,7 +276,7 @@ public class ListenServiceImpl implements ListenService {
 					 * Notice. 무료곡인 경우 MCP에 조회하여 MCP쪽 svcCd를 청취 로그의 serviceId 로 남긴다.
 					 *         (무료곡인 경우는 정산쪽의 serviceId 와 MCP쪽의 serviceId(svcCd)가 다르기 때문)
 					 */
-					serviceId = getServiceCodeFromMCP(memberNo, deviceId, trackId, bitrate, osType);
+					serviceId = getServiceCodeFromMCP(trackId, bitrate, osType);
 					log.debug("[TRACK 청취로그] 무료곡 청취 로그. trackId={}, freeYn={}, serviceId={}", trackId, request.getFreeYn(), serviceId);
 
 					if (!ObjectUtils.isEmpty(settlementInfo)) {
@@ -357,9 +359,10 @@ public class ListenServiceImpl implements ListenService {
 		}
 	}
 
-	private String getServiceCodeFromMCP(Long memberNo, String deviceId, Long trackId, String bitrate, String osType) {
-		CommonApiResponse<OneTimeUrlResponse> oneTimeUrlResponse = mcpClient.getOneTimeURL(
-				String.valueOf(memberNo), deviceId, String.valueOf(trackId), bitrate, osType, null, null);
+	private String getServiceCodeFromMCP(Long trackId, String bitrate, String osType) {
+		CommonApiResponse<OneTimeUrlDto> oneTimeUrlResponse = streamClient.getTrackStreamingUrl(
+				trackId, bitrate, osType, null, null);
+
 		if (oneTimeUrlResponse != null && oneTimeUrlResponse.getData() != null) {
 			return oneTimeUrlResponse.getData().getSvcCd();
 		}
