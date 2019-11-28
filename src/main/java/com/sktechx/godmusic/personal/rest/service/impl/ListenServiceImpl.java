@@ -261,36 +261,53 @@ public class ListenServiceImpl implements ListenService {
 			}
 			else {
 				log.debug("[TRACK 청취로그][sttToken 없음]");
+
+				String serviceId = null;
+				Long purchaseId = null;
+				Long goodsId = null;
+
 				SettlementInfoDto settlementInfo = settlementService.getSettlementInfo(memberNo, playType);
 
-				if (ObjectUtils.isEmpty(settlementInfo)) {
-					log.warn("[TRACK 청취로그] 정산 정보 조회 실패. request={}", request);
-					throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
-				}
-
-				/*
-				 * Notice. 무료곡인 경우 MCP에 조회하여 MCP쪽 svcCd를 청취 로그의 serviceId 로 남긴다.
-				 *         무료곡인 경우는 정산쪽의 serviceId 와 MCP쪽의 serviceId(svcCd)가 다르기 때문.
-				 */
-				String serviceId = null;
 				if (request.getFreeYn() == YnType.Y) {
-					log.debug("[TRACK 청취로그] 무료곡 청취 로그. trackId={}, freeYn={}", trackId, request.getFreeYn());
+					/*
+					 * 무료곡인 경우
+					 * Notice. 무료곡인 경우 MCP에 조회하여 MCP쪽 svcCd를 청취 로그의 serviceId 로 남긴다.
+					 *         (무료곡인 경우는 정산쪽의 serviceId 와 MCP쪽의 serviceId(svcCd)가 다르기 때문)
+					 */
 					serviceId = getServiceCodeFromMCP(memberNo, deviceId, trackId, bitrate, osType);
+					log.debug("[TRACK 청취로그] 무료곡 청취 로그. trackId={}, freeYn={}, serviceId={}", trackId, request.getFreeYn(), serviceId);
+
+					if (!ObjectUtils.isEmpty(settlementInfo)) {
+						purchaseId = settlementInfo.getPrchsId();
+						goodsId = settlementInfo.getGoodsId();
+					}
 				}
 				else {
+					/*
+					 * 무료곡이 아닌 경우
+					 */
+					if (ObjectUtils.isEmpty(settlementInfo)) {
+						log.warn("[TRACK 청취로그] 정산 정보 조회 실패. request={}", request);
+						throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
+					}
+
 					serviceId = evaluateServiceId(request, settlementInfo);
+					purchaseId = settlementInfo.getPrchsId();
+					goodsId = settlementInfo.getGoodsId();
+
+					log.debug("[TRACK 청취로그] 유료곡 청취 로그. trackId={}, freeYn={}, serviceId={}", trackId, request.getFreeYn(), serviceId);
 				}
 
 				if(ObjectUtils.isEmpty(serviceId)){
-					log.warn("[TRACK 청취로그] serviceId 조회 실패. request={}", request);
+					log.warn("[TRACK 청취로그] Not Found serviceId. request={}", request);
 					throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
 				}
 
 				trackListenBuilder
 						.pssrlCd(serviceId)
 						.serviceId(serviceId)
-						.prchsId(settlementInfo.getPrchsId())
-						.goodsId(settlementInfo.getGoodsId());
+						.prchsId(purchaseId)
+						.goodsId(goodsId);
 			}
 		}
 
