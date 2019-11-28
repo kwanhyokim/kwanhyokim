@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2019 DREAMUS COMPANY.
+  ~ All right reserved.
+  ~ This software is the confidential and proprietary information of DREAMUS COMPANY.
+  ~ You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with DREAMUS COMPANY.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.EventMapper" >
+
+    <resultMap id="bestNineTracksResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.event.BestNineTrackDto" autoMapping="true">
+
+        <result property="characterNo" column="characterNo" />
+        <result property="bestNineImagePath" column="bestNineImagePath" />
+        <result property="bestNineShareImagePath" column="bestNineShareImagePath" />
+
+        <collection property="tracks" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.dto.event.BestNineTrackDto$BestNineTrack" column="trackId">
+            <result property="id" column="trackid"></result>
+            <result property="name" column="trackName"></result>
+            <result property="displayOrder" column="displayOrder"></result>
+            <association property="artist" javaType="com.sktechx.godmusic.personal.rest.model.dto.event.BestNineTrackDto$BestNineTrackArtist" autoMapping="true">
+                <result property="id" column="artistId"></result>
+                <result property="name" column="artistName"></result>
+            </association>
+        </collection>
+
+    </resultMap>
+
+    <select id="findBestNineTracks" resultMap="bestNineTracksResultMap">
+		select
+            t.character_no as characterNo,
+            t.bestnine_img as bestNineImagePath,
+            t.bestnine_share_img as bestNineShareImagePath,
+            t.track_id as trackId,
+            track.track_nm as trackName,
+            t.disp_sn as displayOrder,
+            artist.artist_id as artistId,
+            artist.artist_nm as artistName
+        from (
+                 select bestnine.event_dt,
+                        bestnine.character_no,
+                        bestnine.bestnine_img,
+                        bestnine.bestnine_share_img,
+                        besttrack.track_id,
+                        besttrack.disp_sn
+                 from tb_event_bestnine bestnine,
+                      tb_event_bestnine_track besttrack
+                 where bestnine.event_dt = #{eventDate}
+                 and bestnine.character_no = besttrack.character_no
+                 and bestnine.character_no = #{characterNo}
+                 and besttrack.event_dt = #{eventDate}
+                 and besttrack.character_no = #{characterNo}
+             ) t
+             left outer join tb_track track
+                 on t.track_id = track.track_id
+                 and track.disp_status_yn = 'Y'
+                 and now() between disp_start_dtime and disp_end_dtime
+             left outer join ted_artist artist
+                 on track.reprsnt_artist_id = artist.artist_id
+	</select>
+
+</mapper>

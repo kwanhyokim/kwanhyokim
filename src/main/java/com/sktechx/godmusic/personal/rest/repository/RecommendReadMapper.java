@@ -17,8 +17,6 @@ import org.apache.ibatis.annotations.Param;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.mybatis.annotation.ReadOnlyMapper;
-import com.sktechx.godmusic.lib.redis.annotation.RedisCacheable;
-import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
@@ -120,7 +118,6 @@ public interface RecommendReadMapper {
 
     RecommendSimilarTrackDto selectRecommendSimilarTrack(@Param("rcmmdId") Long rcmmdId);
 
-    @RedisCacheable(prefix = RedisKeyConstant.PREFIX, format = RedisKeyConstant.PERSONAL_TPOANDTHEME_IMAGELIST_KEY, expireSeconds = 3600)
     List<ImageInfo> selectTpoAndThemeImageList(@Param("osType") OsType osType);
 
     List<RecommendTrackDto> selectRecommendCfTrackIdListByCharacterNo(
