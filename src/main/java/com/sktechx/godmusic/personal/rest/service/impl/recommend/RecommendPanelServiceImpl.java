@@ -15,6 +15,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.ibatis.session.ExecutorType;
@@ -72,48 +73,63 @@ import lombok.extern.slf4j.Slf4j;
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 09.
  */
-@Service
+@Service("recommendPanelService")
 @Slf4j
 public class RecommendPanelServiceImpl implements RecommendPanelService {
 
-    private final int recommendPanelDefaultImageExpiredSec = 3600;
+    private final SqlSessionTemplate sqlSessionTemplate;
 
-    @Autowired
-    private SqlSessionTemplate sqlSessionTemplate;
+    private final ArtistMapper artistMapper;
 
-    @Autowired
-    private ArtistMapper artistMapper;
+    private final TrackMapper trackMapper;
 
-    @Autowired
-    private TrackMapper trackMapper;
+    private final PersonalRecommendPhaseService personalRecommendPhaseService;
 
-    @Autowired
-    private PersonalRecommendPhaseService personalRecommendPhaseService;
+    private final RecommendPanelAssemblyFactory recommendPanelAssemblyFactory;
 
-    @Autowired
-    private RecommendPanelAssemblyFactory recommendPanelAssemblyFactory;
+    private final RecommendMapper recommendMapper;
+    private final RecommendReadMapper recommendReadMapper;
 
-    @Autowired
-    private RecommendMapper recommendMapper;
-    @Autowired
-    private RecommendReadMapper recommendReadMapper;
+    private final RestTemplate restTemplate;
 
-    @Autowired
-    RestTemplate restTemplate;
+    private final RedisService redisService;
 
-    @Autowired
-    private RedisService redisService;
+    private final MetaClient metaClient;
 
-    @Autowired
-    private MetaClient metaClient;
-
-    @Autowired
-    private AfloPanelAssembly afloPanelAssembly;
+    private final AfloPanelAssembly afloPanelAssembly;
 
     @Value("${personal.prefer.artist.panel.addPreferArtistPanel.instrumentalTrackRegexPattern}")
     private String instrumentalTrackRegexPattern;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yy년 MM월");
+
+    @Autowired
+    public RecommendPanelServiceImpl(
+            AfloPanelAssembly afloPanelAssembly,
+            MetaClient metaClient,
+            RedisService redisService,
+            RestTemplate restTemplate,
+            RecommendReadMapper recommendReadMapper,
+            RecommendMapper recommendMapper,
+            RecommendPanelAssemblyFactory recommendPanelAssemblyFactory,
+            PersonalRecommendPhaseService personalRecommendPhaseService,
+            TrackMapper trackMapper,
+            ArtistMapper artistMapper,
+            SqlSessionTemplate sqlSessionTemplate
+                ) {
+
+        this.afloPanelAssembly = afloPanelAssembly;
+        this.metaClient = metaClient;
+        this.redisService = redisService;
+        this.restTemplate = restTemplate;
+        this.recommendReadMapper = recommendReadMapper;
+        this.recommendMapper = recommendMapper;
+        this.recommendPanelAssemblyFactory = recommendPanelAssemblyFactory;
+        this.personalRecommendPhaseService = personalRecommendPhaseService;
+        this.trackMapper = trackMapper;
+        this.artistMapper = artistMapper;
+        this.sqlSessionTemplate = sqlSessionTemplate;
+    }
 
     @Override
     public List<Panel> createRecommendPanelList(Long characterNo , OsType osType, String appVer) {
@@ -158,8 +174,6 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     @Override
     public RecommendPanelResponse createRecommendV2PanelList(Long characterNo, OsType osType, String appVer) {
 
-        RecommendPanelResponse recommendPanelResponse = new RecommendPanelResponse();
-
         List<Panel> recommendPanelList = null;
         PersonalPhaseMeta personalPhaseMeta = null;
         PanelAssembly panelAssembly = null;
@@ -172,7 +186,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         }catch(CommonBusinessException cbex){
             log.error("createRecommendPanelV2 business exception : {}", cbex.getDisplayMessage());
         }catch(Exception ex){
-            log.error("createRecommendPanelV2 not catched exception : {}",ex);
+            log.error("createRecommendPanelV2 not catched exception : {}", ex.getMessage());
         }finally{
             if(CollectionUtils.isEmpty(recommendPanelList)){
                 if(panelAssembly == null)
@@ -188,52 +202,12 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             }
         }
 
-        if(CollectionUtils.isEmpty(recommendPanelList)){
-            return null;
-        }
-
-        recommendPanelResponse.setOsType(osType);
-        recommendPanelResponse.setList(recommendPanelList);
-
-        return recommendPanelResponse;
+        return RecommendPanelResponse.builder().osType(osType).list(
+                        Optional.ofNullable(
+                                recommendPanelList
+                        ).orElseThrow( () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA))
+                ).build();
     }
-
-    private List<ImageInfo> makePanelBackGroundImageList(String url){
-        List<ImageInfo> artistImgList = new ArrayList<>();
-        ImageInfo image = new ImageInfo();
-        image.setSize(new Long(75));
-        image.setUrl(url);
-
-        artistImgList.add(image);
-        image = new ImageInfo();
-        image.setSize(new Long(140));
-        image.setUrl(url);
-        artistImgList.add(image);
-
-        image = new ImageInfo();
-        image.setSize(new Long(200));
-        image.setUrl(url);
-        artistImgList.add(image);
-
-
-        image = new ImageInfo();
-        image.setSize(new Long(350));
-        image.setUrl(url);
-        artistImgList.add(image);
-
-        image = new ImageInfo();
-        image.setSize(new Long(500));
-        image.setUrl(url);
-        artistImgList.add(image);
-
-        image = new ImageInfo();
-        image.setSize(new Long(1000));
-        image.setUrl(url);
-        artistImgList.add(image);
-
-        return artistImgList;
-    }
-
 
     @Override
     public ListDto<List<RecommendPanelTrackDto>> getRecommendPanelPopularTrackList(Long characterNo, Long rcmmdArtistId) {
@@ -281,19 +255,22 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
 	private List<ImageInfo> getRecommendPanelInfoBgImage(RecommendPanelContentType recommendPanelContentType,Long panelContentId, OsType osType , int dispSn){
 
-        if(dispSn == 0){
-            dispSn = 1;
-        }
+        return Stream.of(75L, 140L, 200L, 350L, 500L, 1000L)
+                .map( size -> {
+                    ImageInfo imageInfo = new ImageInfo();
+                    imageInfo.setSize(size);
+                    imageInfo.setUrl(
 
-        String imgUrl = recommendReadMapper.selectRecommendPanelInfoBgImageUrl(recommendPanelContentType, panelContentId, osType , dispSn);
+                        Optional.ofNullable(
+                                recommendReadMapper.selectRecommendPanelInfoBgImageUrl(recommendPanelContentType, panelContentId, osType , (dispSn == 0 ? 1 : dispSn))
+                        ).orElse(
+                                getRecommendPanelDefaultImageList(osType).get(0).getUrl()
+                        )
 
-        if(ObjectUtils.isEmpty(imgUrl)) {
-            List<ImageInfo> imageInfoList = getRecommendPanelDefaultImageList(osType);
-
-            imgUrl = imageInfoList.get(0).getUrl();
-        }
-
-        return makePanelBackGroundImageList(imgUrl);
+                    );
+                    return imageInfo;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -338,13 +315,13 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                     artistDtoList = recommendArtistDto.getArtistList();
                 }
 
-                List<String> artistNameList = artistDtoList.stream().map(x -> x.getArtistName()).limit(5).collect(
+                List<String> artistNameList = artistDtoList.stream().map(ArtistDto::getArtistName).limit(5).collect(
 		                Collectors.toList());
 
                 // 아티스트 이미지가 default 이미지인것은 목록에서 뒷 부분으로 위치를 변경한다
                 List<ArtistDto> normalImageArtistList = new LinkedList<>();
                 List<ArtistDto> defaultImageArtistList = new LinkedList<>();
-                artistDtoList.stream().forEach(x ->  {
+                artistDtoList.forEach(x ->  {
                     if( x.hasDefaultImage() ) {
                         defaultImageArtistList.add(x);
                     } else {
@@ -359,10 +336,11 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 panel =  RecommendPanelHeaderVo.builder()
                         .title(RecommendConstant.ARTIST_PANEL_TITLE)
                         .subTitle(String.join(",", artistNameList))
-                        .imgList((artistDtoList == null || artistDtoList.get(0) == null? null : artistDtoList.get(0).getImgList()))
+                        .imgList(
+                                artistDtoList.get(0) == null ? null : artistDtoList.get(0).getImgList())
                         .artistList(normalImageArtistList)
                         .artistCount(artistDtoList.size())
-                        .createDtime(recommendArtistDto.getCreateDtime())
+                        .createDtime(Objects.requireNonNull(recommendArtistDto).getCreateDtime())
                         .newYn(YnType.Y)
                         .build();
                 break;
@@ -370,7 +348,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             case RC_SML_TR:
 
                 List<RecommendTrackDto> similarTrackList =
-                        recommendReadMapper.selectRecommendSimilarTrackListByIdList(Arrays.asList(panelContentId), 1,
+                        recommendReadMapper.selectRecommendSimilarTrackListByIdList(
+                                Collections.singletonList(panelContentId), 1,
                                 1, osType);
 
                 int dispSn = 1;
@@ -516,10 +495,10 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 personalPanel -> panelContentId.equals(personalPanel.getRecommendId())
         ).findFirst();
 
-        Integer dispSn = 1;
+        int dispSn = 1;
 
         if(!ObjectUtils.isEmpty(optionalPersonalPanel) && optionalPersonalPanel.isPresent()){
-            Integer panelIndex = personalPhaseMeta.getRecommendPersonalPanelList(RecommendPanelContentType.RC_CF_TR).indexOf(optionalPersonalPanel.get());
+            int panelIndex = personalPhaseMeta.getRecommendPersonalPanelList(RecommendPanelContentType.RC_CF_TR).indexOf(optionalPersonalPanel.get());
 
             // 홀수패널이면 1, 짝수패널이면 2
             if ((panelIndex % 2) != 0) {
@@ -550,12 +529,6 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         int dispSn = recommendSimilarTrackDto.getDispSn();
         title = RecommendConstant.SIMILAR_TRACK_PANEL_TITLE;
 
-        // 시드값이 둘다 존재하는 경우에만 시드 정보를 만들어서 내림
-        if(!ObjectUtils.isEmpty(recommendSimilarTrackDto.getSeedTrackNm())
-                && !ObjectUtils.isEmpty(recommendSimilarTrackDto.getSeedArtistNm())){
-        }
-
-
         Date dispDate = recommendSimilarTrackDto.getDispStdStartDt();
 
         RecommendPanelTrackDto recommendTrackDto = trackCount > 0 ? trackList.getList().get(0) : null;
@@ -574,7 +547,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             if(CollectionUtils.isEmpty(recommendTrackDto.getArtistList())){
                 artistName = null;
             }else{
-                artistName = recommendTrackDto.getArtistList().stream().map(x -> x.getArtistName()).collect(
+                artistName = recommendTrackDto.getArtistList().stream().map(
+                        ArtistDto::getArtistName).collect(
                         Collectors.joining(","));
             }
 
@@ -611,17 +585,17 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 log.error("PanelSignAssembly appendPreferArtistPanel artistPanel create error : {}", e.getMessage());
             }
         }
-        List<String> artistNameList = artistDtoList.stream().map(x -> x.getArtistName()).limit(5).collect(
+        List<String> artistNameList = artistDtoList.stream().map(ArtistDto::getArtistName).limit(5).collect(
                 Collectors.toList());
         String subTitle = String.join(",", artistNameList);
         // 아티스트의 첫 이미지를 배경 이미지로 사용
         panel =  RecommendPanelHeaderVo.builder()
                 .title(RecommendConstant.ARTIST_PANEL_TITLE)
                 .subTitle(subTitle)
-                .imgList((artistDtoList == null || artistDtoList.get(0) == null? null : artistDtoList.get(0).getImgList()))
+                .imgList(artistDtoList.get(0) == null ? null : artistDtoList.get(0).getImgList())
                 .artistList(artistDtoList)
                 .artistCount(artistDtoList.size())
-                .renewDtime(recommendArtistDto.getDispStdStartDt())
+                .renewDtime(Objects.requireNonNull(recommendArtistDto).getDispStdStartDt())
 
                 .newYn(this.getNewYn(recommendArtistDto.getDispStdStartDt()))
                 .seedArtistVo(SeedArtistVo.builder()
@@ -646,7 +620,9 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             if(CollectionUtils.isEmpty(imgList)){
                 imgList = recommendReadMapper.selectRecommendPanelDefaultImageList();
                 if(!CollectionUtils.isEmpty(imgList)){
-                    redisService.setWithPrefix(RedisKeyConstant.RECOMMEND_PANEL_DEFAULT_IMGLIST_KEY, imgList, recommendPanelDefaultImageExpiredSec);
+                    int recommendPanelDefaultImageExpiredSec = 3600;
+                    redisService.setWithPrefix(RedisKeyConstant.RECOMMEND_PANEL_DEFAULT_IMGLIST_KEY, imgList,
+                            recommendPanelDefaultImageExpiredSec);
                 }
             }
         }
@@ -654,7 +630,9 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         if(!CollectionUtils.isEmpty(imgList)){
             Collections.shuffle(imgList);
 
-            return Arrays.asList(imgList.stream().filter(imageInfo -> osType.equals(imageInfo.getOsType())).findFirst().orElse(null));
+            return Collections.singletonList(
+                    imgList.stream().filter(imageInfo -> osType.equals(imageInfo.getOsType()))
+                            .findFirst().orElse(null));
         }
         return null;
     }
@@ -680,7 +658,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
         if (CollectionUtils.isEmpty(characterPreferArtistGenreDtos)) throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
 
-        Collections.sort(characterPreferArtistGenreDtos, new GenreCountCompare());
+        characterPreferArtistGenreDtos.sort(new GenreCountCompare());
 
         List<CharacterPreferArtistGenreDto> genreDtos = new ArrayList<>();
         int genreCnt = 0;
@@ -775,7 +753,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             sqlSession.commit();
         } catch(Exception e) {
             e.printStackTrace();
-            log.error("Recommend :: recommend artist :: Error Message", e.getMessage());
+            log.error("Recommend :: recommend artist :: Error Message {}", e.getMessage());
             throw new CommonBusinessException(PersonalErrorDomain.PREFER_ARTIST_PANEL_FAIL);
         }
     }
@@ -820,7 +798,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             sqlSession.flushStatements();
             sqlSession.commit();
         } catch(Exception e) {
-            log.error("Recommend :: recommend Genre :: Error Message", e.getMessage());
+            log.error("Recommend :: recommend Genre :: Error Message {}", e.getMessage());
             throw new CommonBusinessException(PersonalErrorDomain.PREFER_GENRE_PANEL_FAIL);
         }
 	}
@@ -943,18 +921,18 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         int checkCount = 0;
         if (!CollectionUtils.isEmpty(similarArtistDtoList)) {
             Collections.shuffle(similarArtistDtoList);
-
-            for (int i = 0; i < similarArtistDtoList.size(); i++) {
-                if (beforeArtistId == null) beforeArtistId = similarArtistDtoList.get(i).getArtistId();
-                if (!beforeArtistId.equals(similarArtistDtoList.get(i).getArtistId())) {
+            for (SimilarArtistDto similarArtistDto : similarArtistDtoList) {
+                if (beforeArtistId == null)
+                    beforeArtistId = similarArtistDto.getArtistId();
+                if (!beforeArtistId.equals(similarArtistDto.getArtistId())) {
                     checkCount = 0;
-                    beforeArtistId = similarArtistDtoList.get(i).getArtistId();
+                    beforeArtistId = similarArtistDto.getArtistId();
                 }
-                if (checkCount < count && !ids.contains(similarArtistDtoList.get(i).getSimilarArtistId())) {
+                if (checkCount < count && !ids.contains(similarArtistDto.getSimilarArtistId())) {
                     recommendArtistListDto.add(RecommendArtistListDto.builder()
-                            .artistId(similarArtistDtoList.get(i).getSimilarArtistId())
+                            .artistId(similarArtistDto.getSimilarArtistId())
                             .artistType(ArtistType.SIMILAR).build());
-                    ids.add(similarArtistDtoList.get(i).getSimilarArtistId());
+                    ids.add(similarArtistDto.getSimilarArtistId());
                     checkCount++;
                 }
             }

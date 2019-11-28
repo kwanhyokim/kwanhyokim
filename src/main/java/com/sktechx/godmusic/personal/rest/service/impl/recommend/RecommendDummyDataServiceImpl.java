@@ -12,7 +12,6 @@ package com.sktechx.godmusic.personal.rest.service.impl.recommend;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sktechx.godmusic.lib.redis.service.RedisService;
@@ -37,16 +36,21 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class RecommendDummyDataServiceImpl implements RecommendDummyDataService {
 
-    @Autowired
-    private RedisService redisService;
-    @Autowired
-    private RecommendMapper recommendMapper;
+    private final RedisService redisService;
+    private final RecommendMapper recommendMapper;
 
-    @Autowired
-    private RecommendDummyDataMapper recommendDummyDataMapper;
+    private final RecommendDummyDataMapper recommendDummyDataMapper;
 
-    @Autowired
-    private RecommendPanelService recommendPanelService;
+    private final RecommendPanelService recommendPanelService;
+
+    public RecommendDummyDataServiceImpl(RedisService redisService, RecommendMapper recommendMapper,
+            RecommendDummyDataMapper recommendDummyDataMapper,
+            RecommendPanelService recommendPanelService) {
+        this.redisService = redisService;
+        this.recommendMapper = recommendMapper;
+        this.recommendDummyDataMapper = recommendDummyDataMapper;
+        this.recommendPanelService = recommendPanelService;
+    }
 
     @Override
     public void updateRecommendDataRemovePrevent(ListenRequest request, Long characterNo) {
@@ -59,7 +63,7 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
                 }
             }
         }catch(Exception e){
-            log.error("Recommend :: updateRecommendDataPrevent :: Error Message",e.getMessage());
+            log.error("Recommend :: updateRecommendDataPrevent :: Error Message {}",e.getMessage());
         }
     }
 
@@ -171,8 +175,7 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
     public String clearCacheHome(Long characterNo) {
         String personalRecommendPhaseKey = String
                 .format(RedisKeyConstant.PERSONAL_RECOMMEND_PHASE_KEY, characterNo);
-        redisService.delWithPrefix(personalRecommendPhaseKey);
-        return personalRecommendPhaseKey;
+        return (redisService.delWithPrefix(personalRecommendPhaseKey) ? "true" : "false");
     }
 
     @Override
@@ -191,7 +194,7 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
         return recommendDummyDataMapper.deleteTpoRecommendData(characterNo);
     }
 
-    public Boolean existCharacterPreferArtist(Long characterNo){
+    private Boolean existCharacterPreferArtist(Long characterNo){
         return recommendDummyDataMapper.selectCharacterPreferArtist(characterNo) > 0;
 
     }

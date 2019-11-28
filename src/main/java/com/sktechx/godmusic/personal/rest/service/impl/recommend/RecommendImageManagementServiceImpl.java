@@ -12,6 +12,11 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.sktechx.godmusic.personal.common.domain.type.ImageDisplayType;
 import com.sktechx.godmusic.personal.common.domain.type.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
@@ -19,11 +24,6 @@ import com.sktechx.godmusic.personal.rest.model.dto.ImageManagementDto;
 import com.sktechx.godmusic.personal.rest.repository.RecommendImageManagementMapper;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendImageManagementService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * 설명 :
@@ -35,8 +35,12 @@ import java.util.List;
 @Slf4j
 public class RecommendImageManagementServiceImpl implements RecommendImageManagementService {
 
-    @Autowired
-    RecommendImageManagementMapper recommendImageManagementMapper;
+    private final RecommendImageManagementMapper recommendImageManagementMapper;
+
+    public RecommendImageManagementServiceImpl(
+            RecommendImageManagementMapper recommendImageManagementMapper) {
+        this.recommendImageManagementMapper = recommendImageManagementMapper;
+    }
 
     @Override
     public List<ImageManagementDto> getRecommendImageList(RecommendPanelContentType recommendType, Long recommendId, ImageDisplayType imageType, OsType osType) {
