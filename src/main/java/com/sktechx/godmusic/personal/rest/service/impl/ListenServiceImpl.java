@@ -362,6 +362,7 @@ public class ListenServiceImpl implements ListenService {
 	private String getServiceCodeFromMCP(Long trackId, String bitrate, String osType) {
 		CommonApiResponse<OneTimeUrlDto> oneTimeUrlResponse = streamClient.getTrackStreamingUrl(
 				trackId, bitrate, osType, null, null);
+		log.info("[TRACK 청취로그][MCP 조회 응답] {}", oneTimeUrlResponse);
 
 		if (oneTimeUrlResponse != null && oneTimeUrlResponse.getData() != null) {
 			return oneTimeUrlResponse.getData().getSvcCd();
