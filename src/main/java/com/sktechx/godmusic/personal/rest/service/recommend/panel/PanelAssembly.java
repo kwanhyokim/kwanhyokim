@@ -189,21 +189,7 @@ public abstract class PanelAssembly {
                 )
                         .orElseGet(Collections::emptyList)
                         .stream()
-                        .collect(Collectors.collectingAndThen(
-                                Collectors.toCollection(ArrayList::new),
-
-                                list -> {
-
-                                    if(list.size() > 0 && list.size() < 5){
-                                        List<ImageInfo> tempImageInfoList = Arrays.asList(new ImageInfo[5]);
-                                        Collections.fill(tempImageInfoList, list.get(0));
-                                        return tempImageInfoList;
-                                    }else {
-                                        return list;
-                                    }
-                                }
-
-                        ));
+                        .collect(Collectors.toList());
 
         for (int i = 0; i < myPanelList.size(); i++) {
             myPanelList.get(i).setImgList(
