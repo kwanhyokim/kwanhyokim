@@ -154,30 +154,33 @@ public abstract class PanelAssembly {
         }
     }
 
-    protected List<Panel> mergePanelList(List<Panel> panelList, List<Panel> myPanelList, List<Panel> chartPanelList, int panelMaxSize) {
+    protected void mergePanelList(List<Panel> panelList, List<Panel> myPanelList, List<Panel> chartPanelList, int panelMaxSize) {
 
-        panelList.addAll(
-                Optional.ofNullable(myPanelList)
-                        .orElseGet(Collections::emptyList)
-                    .stream()
-                    .limit(panelMaxSize).collect(Collectors.toList())
-        );
-
-        Optional.ofNullable(chartPanelList)
+        Optional<Panel> liveChartPanel = Optional.ofNullable(chartPanelList)
                 .orElseGet(Collections::emptyList)
                 .stream()
                 .filter(panel -> RecommendPanelType.LIVE_CHART.equals(panel.getType()))
-                .findFirst()
-                .ifPresent(panel -> panelList.add(0, panel));
-
-        Optional.ofNullable(chartPanelList)
+                .findFirst();
+        Optional<Panel> kidsChartPanel = Optional.ofNullable(chartPanelList)
                 .orElseGet(Collections::emptyList)
                 .stream()
                 .filter(panel -> RecommendPanelType.KIDS_CHART.equals(panel.getType()))
-                .findFirst()
-                .ifPresent( panel -> panelList.set(panelList.size() -1, panel));
+                .findFirst();
 
-        return panelList;
+        if(liveChartPanel.isPresent()){
+            panelMaxSize--;
+        }
+
+        if(kidsChartPanel.isPresent()){
+            panelMaxSize--;
+        }
+
+        panelList.addAll(
+                myPanelList.stream().limit(panelMaxSize).collect(Collectors.toList())
+        );
+
+        liveChartPanel.ifPresent(panel -> panelList.add(0, panel));
+        kidsChartPanel.ifPresent(panelList::add);
     }
 
     protected List<ImageInfo> getTpoAndThemeBackgroundImageList(OsType osType) {
