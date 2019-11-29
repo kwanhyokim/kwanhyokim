@@ -168,14 +168,14 @@ public abstract class PanelAssembly {
                 .stream()
                 .filter(panel -> RecommendPanelType.LIVE_CHART.equals(panel.getType()))
                 .findFirst()
-                .ifPresent(panelList::add);
+                .ifPresent(panel -> panelList.add(0, panel));
 
         Optional.ofNullable(chartPanelList)
                 .orElseGet(Collections::emptyList)
                 .stream()
                 .filter(panel -> RecommendPanelType.KIDS_CHART.equals(panel.getType()))
                 .findFirst()
-                .ifPresent( panel -> panelList.set(panelMaxSize -1, panel));
+                .ifPresent( panel -> panelList.set(panelList.size() -1, panel));
 
         return panelList;
     }
