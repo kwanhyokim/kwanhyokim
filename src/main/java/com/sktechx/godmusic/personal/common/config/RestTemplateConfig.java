@@ -1,6 +1,5 @@
 package com.sktechx.godmusic.personal.common.config;
 
-import com.sktechx.godmusic.personal.rest.client.McpClient;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -48,11 +47,6 @@ public class RestTemplateConfig {
 
     @Value("5000")
     private int readTimeout;
-
-    @Bean
-    public McpClient mcpClient() {
-        return new McpClient(restTemplate());
-    }
 
     @Bean
     public RestTemplate restTemplate() {
