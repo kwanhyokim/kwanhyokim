@@ -180,22 +180,23 @@ public abstract class PanelAssembly {
         return panelList;
     }
 
-    protected void putTpoAndThemeImageList(PersonalPhaseMeta personalPhaseMeta,
-            List<Panel> myPanelList) {
+    protected List<ImageInfo> getTpoAndThemeBackgroundImageList(OsType osType) {
 
-        List<ImageInfo> imageInfoList =
+        return
                 Optional.ofNullable(
-                        recommendReadMapper.selectTpoAndThemeImageList(personalPhaseMeta.getOsType())
+                        recommendReadMapper.selectTpoAndThemeImageList(osType)
                 )
                         .orElseGet(Collections::emptyList)
                         .stream()
-                        .collect(Collectors.toList());
+                        .collect(Collectors.collectingAndThen(
+                                Collectors.toCollection(ArrayList::new),
 
-        for (int i = 0; i < myPanelList.size(); i++) {
-            myPanelList.get(i).setImgList(
-                    Collections.singletonList(imageInfoList.get(i))
-            );
-        }
+                                list -> {
+                                    Collections.shuffle(list);
+                                    return list.stream().limit(1).collect(Collectors.toList());
+                                }
+
+                        ));
     }
 
 }

@@ -26,7 +26,6 @@ import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.client.DisplayClient;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ChannelListResponse;
-import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.TPOChannelPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
@@ -66,7 +65,6 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
         List<Panel> chartPanelList = new ArrayList<>();
 
         appendTPOPanel(personalPhaseMeta, myPanelList);
-        putTpoAndThemeImageList(personalPhaseMeta, myPanelList);
         appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
 
         mergePanelList(panelList, myPanelList, chartPanelList, 7);
@@ -113,23 +111,9 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
 
     private Panel createTPOChannelPanel(final ChnlDto channel,final PersonalPhaseMeta personalPhaseMeta){
 
-        List<ImageInfo> imageInfoList =
-                Optional.ofNullable(
-                        recommendReadMapper.selectTpoAndThemeImageList(personalPhaseMeta.getOsType())
-                )
-                .orElseGet(Collections::emptyList)
-                .stream()
-                .collect(Collectors.collectingAndThen(
-                        Collectors.toCollection(ArrayList::new),
-
-                        list -> {
-                            Collections.shuffle(list);
-                            return list.stream().limit(1).collect(Collectors.toList());
-                        }
-
-                ));
-
-        TPOChannelPanel tpoChannelPanel = new TPOChannelPanel(channel, imageInfoList);
+        TPOChannelPanel tpoChannelPanel = new TPOChannelPanel(channel,
+                getTpoAndThemeBackgroundImageList(personalPhaseMeta.getOsType())
+        );
         tpoChannelPanel.setType(RecommendPanelType.POPULAR_CHANNEL);
         PanelContentVo panelContentVo = tpoChannelPanel.getContent();
 

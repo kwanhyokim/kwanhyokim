@@ -49,7 +49,6 @@ public class PreferGenreThemePanelAssembly extends PanelSignAssembly {
 
         this.appendPreferGenreChannelPanelList(personalPhaseMeta, myPanelList, 5 );
 
-        putTpoAndThemeImageList(personalPhaseMeta, myPanelList);
         appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
 
         mergePanelList(panelList, myPanelList, chartPanelList, 7);
@@ -78,7 +77,6 @@ public class PreferGenreThemePanelAssembly extends PanelSignAssembly {
                                     POPULAR_CHNL_TRACK_LIMIT_SIZE, personalPhaseMeta.getOsType()))
                             .orElseGet(ArrayList::new);
 
-
                     Collections.shuffle(appendChannelList);
 
                     appendChannelList.stream()
@@ -89,7 +87,8 @@ public class PreferGenreThemePanelAssembly extends PanelSignAssembly {
 
                                 try {
                                     panelList.add(
-                                            createPreferGenrePopularChannelPanel(personalPhaseMeta, preferGenrePopularChnlDto));
+                                            createPreferGenrePopularChannelPanel(personalPhaseMeta, preferGenrePopularChnlDto)
+                                    );
                                 } catch (Exception e) {
                                     log.error("appendPreferGenreChannelPanelList error : {}", e.getMessage());
                                 }
