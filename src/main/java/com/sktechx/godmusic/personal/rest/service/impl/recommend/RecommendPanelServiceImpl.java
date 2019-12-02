@@ -590,8 +590,6 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         RecommendPanelHeaderVo panel;
         RecommendArtistDto recommendArtistDto= recommendReadMapper.selectRecommendArtistById(panelContentId);
 
-        log.info("artistFLO #1 {}", recommendArtistDto);
-
         List<ArtistDto> artistDtoList;
         if(recommendArtistDto == null || CollectionUtils.isEmpty(recommendArtistDto.getArtistList())){
             artistDtoList = artistMapper.getArtistList(Arrays.asList(12L,14L,15L));
@@ -611,12 +609,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             }
         }
 
-        log.info("artistFLO #2 {}", artistDtoList);
-
         List<String> artistNameList = artistDtoList.stream().map(x -> x.getArtistName()).limit(5).collect(
                 Collectors.toList());
-
-        log.info("artistFLO #3 {}", artistNameList);
 
         String subTitle = String.join(",", artistNameList);
         // 아티스트의 첫 이미지를 배경 이미지로 사용
