@@ -3,6 +3,8 @@ package com.sktechx.godmusic.personal.rest.model.vo.listen;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.Strings;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.domain.type.BitrateType;
 import com.sktechx.godmusic.personal.common.domain.type.OsType;
@@ -84,4 +86,9 @@ public class ListenTrackRequest {
 
 	@ApiModelProperty(name = "sttToken", value = "정산 토큰")
 	private String sttToken;
+
+	@JsonIgnore
+	public boolean hasSttToken() {
+		return !Strings.isNullOrEmpty(sttToken);
+	}
 }

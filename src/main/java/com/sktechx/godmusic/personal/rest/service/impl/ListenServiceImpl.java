@@ -1,6 +1,7 @@
 package com.sktechx.godmusic.personal.rest.service.impl;
 
 import com.google.common.base.Strings;
+import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
@@ -13,6 +14,8 @@ import com.sktechx.godmusic.personal.common.domain.type.BitrateType;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.common.domain.type.TrackLogType;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
+import com.sktechx.godmusic.personal.rest.client.StreamClient;
+import com.sktechx.godmusic.personal.rest.client.model.OneTimeUrlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.ResourceListen;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SettlementInfoDto;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.TrackListen;
@@ -29,6 +32,9 @@ import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDataService
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,6 +85,9 @@ public class ListenServiceImpl implements ListenService {
 
 	@Autowired
 	DrmService drmService;
+
+	@Autowired
+	StreamClient streamClient;
 	
 	@Override
 	public void addListenHistByChannel(ListenRequest request, Long memberNo, Long characterNo) {
@@ -172,7 +181,7 @@ public class ListenServiceImpl implements ListenService {
 					.goodsId(goodsId);
 		}
 		amqpService.deliverTrackListen(listenBuilder.build());
-		log.info("[청취로그 MQ 발송] listen = {}", listenBuilder.toString());
+		log.info("[RESOURCE 청취로그 MQ 발송] listen = {}", listenBuilder.toString());
 
 		UserEventType userEventType = UserEventType.fromPlayLogType(playLogType);
 		if( !userEventType.equals(UserEventType.UNKNOWN) )	{
@@ -189,7 +198,7 @@ public class ListenServiceImpl implements ListenService {
 					.timeMillis(System.currentTimeMillis())
 					.build();
 			amqpService.deliverUserEvent(userEvent);
-			log.info("[청취로그 사용자 EVENT MQ 발송] event = {}", userEvent.toString());
+			log.info("[RESOURCE 청취로그 사용자 EVENT MQ 발송] event = {}", userEvent.toString());
 		}
 	}
 
@@ -197,6 +206,7 @@ public class ListenServiceImpl implements ListenService {
 	public void addListenHistByTrack(ListenTrackRequest request, GMContext currentContext, HttpServletRequest httpServletRequest) {
 		Long memberNo = currentContext.getMemberNo();
 		Long characterNo = currentContext.getCharacterNo();
+		Long trackId = request.getTrackId();
 		String deviceId = currentContext.getDeviceId();
 		String playChannel = AppNameType.fromCode(currentContext.getAppName()) != null ? AppNameType.fromCode(currentContext.getAppName()).getCode() : "";
 		String logType = request.getTrackLogType() != null ? request.getTrackLogType().getCode() : "";
@@ -211,7 +221,7 @@ public class ListenServiceImpl implements ListenService {
 				.playChnl(playChannel)
 				.memberNo(memberNo)
 				.characterNo(characterNo)
-				.trackId(request.getTrackId())
+				.trackId(trackId)
 				.logType(logType)
 				.bitrate(bitrate)
 				.trackTotTm(request.getTrackTotalSec())
@@ -234,45 +244,89 @@ public class ListenServiceImpl implements ListenService {
 
 		TrackListen.TrackListenBuilder trackListenBuilder = trackListen.toBuilder();
 
-		log.info("addListenHistByTrack...");
-		if(request.getTrackLogType() == TrackLogType.ONEMIN){
-			SettlementInfoDto settlementInfo = settlementService.getSettlementInfo(memberNo, playType);
-			
-			if(ObjectUtils.isEmpty(settlementInfo)){
-				log.warn("정산 정보 조회 실패 : request={}", request);
-				throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
+		log.info("[TRACK 청취로그] addListenHistByTrack...");
+		if (request.getTrackLogType() == TrackLogType.ONEMIN) {
+
+			SettlementToken sttToken = Optional.ofNullable(request.getSttToken())
+					.map(token -> parseSettlementToken(token))
+					.orElse(null);
+
+			if (sttToken != null) {
+				log.debug("[TRACK 청취로그] sttToken 이용하여 serviceId 전달");
+				trackListenBuilder
+						.pssrlCd(sttToken.getServiceId())
+						.serviceId(sttToken.getServiceId())
+						.prchsId(sttToken.getPurchaseId())
+						.goodsId(sttToken.getGoodsId());
 			}
-			
-			String serviceId = evaluateServiceId(request, settlementInfo);
-			
-			if(ObjectUtils.isEmpty(serviceId)){
-				log.warn("serviceId 조회 실패 : request={}", request);
-				throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
-			}
-			
-			trackListenBuilder
-					.pssrlCd(serviceId)	// todo evtTrackCharge 에서 제거시 같이 제거 필요
-					.serviceId(serviceId)
-					.prchsId(settlementInfo.getPrchsId())
-					.goodsId(settlementInfo.getGoodsId());
-			
-			if (SourceType.DN == request.getSourceType()) {
-				if (StringUtils.isEmpty(request.getOwnerToken())) {
-					log.warn("OwnerToken 없음 (DRM 스트리밍)");
-//					throw new CommonBusinessException(PersonalErrorDomain.OWNER_TOKEN_INVALID);
-				} else {
-					OwnerTokenClaim ownerToken = drmService.getOwnerTokenInfo(request.getOwnerToken());
-					
-					if (ObjectUtils.isEmpty(ownerToken)) {
-						log.warn("OwnerToken Parse 실패 (DRM 스트리밍)");
-//						throw new CommonBusinessException(PersonalErrorDomain.OWNER_TOKEN_INVALID);
-					} else {
-						trackListenBuilder.drmMemberNo(ownerToken.getMemberNo());
-						trackListenBuilder.drmGoodsId(ownerToken.getGoodsId());
-						trackListenBuilder.drmPrchsId(ownerToken.getPurchaseId());
-						trackListenBuilder.drmPssrlCd(ownerToken.getPssrlCode());
-						trackListenBuilder.drmServiceId(ownerToken.getServiceId());
+			else {
+				log.debug("[TRACK 청취로그][sttToken 없음]");
+
+				String serviceId = null;
+				Long purchaseId = null;
+				Long goodsId = null;
+
+				SettlementInfoDto settlementInfo = settlementService.getSettlementInfo(memberNo, playType);
+
+				if (request.getFreeYn() == YnType.Y) {
+					/*
+					 * 무료곡인 경우
+					 * Notice. 무료곡인 경우 MCP에 조회하여 MCP쪽 svcCd를 청취 로그의 serviceId 로 남긴다.
+					 *         (무료곡인 경우는 정산쪽의 serviceId 와 MCP쪽의 serviceId(svcCd)가 다르기 때문)
+					 */
+					serviceId = getServiceCodeFromMCP(trackId, bitrate, osType);
+					log.debug("[TRACK 청취로그] 무료곡 청취 로그. trackId={}, freeYn={}, serviceId={}", trackId, request.getFreeYn(), serviceId);
+
+					if (!ObjectUtils.isEmpty(settlementInfo)) {
+						purchaseId = settlementInfo.getPrchsId();
+						goodsId = settlementInfo.getGoodsId();
 					}
+				}
+				else {
+					/*
+					 * 무료곡이 아닌 경우
+					 */
+					if (ObjectUtils.isEmpty(settlementInfo)) {
+						log.warn("[TRACK 청취로그] 정산 정보 조회 실패. request={}", request);
+						throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
+					}
+
+					serviceId = evaluateServiceId(request, settlementInfo);
+					purchaseId = settlementInfo.getPrchsId();
+					goodsId = settlementInfo.getGoodsId();
+
+					log.debug("[TRACK 청취로그] 유료곡 청취 로그. trackId={}, freeYn={}, serviceId={}", trackId, request.getFreeYn(), serviceId);
+				}
+
+				if(ObjectUtils.isEmpty(serviceId)){
+					log.warn("[TRACK 청취로그] Not Found serviceId. request={}", request);
+					throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
+				}
+
+				trackListenBuilder
+						.pssrlCd(serviceId)
+						.serviceId(serviceId)
+						.prchsId(purchaseId)
+						.goodsId(goodsId);
+			}
+		}
+
+		if (SourceType.DN == request.getSourceType()) {
+			if (StringUtils.isEmpty(request.getOwnerToken())) {
+				log.warn("OwnerToken 없음 (DRM 스트리밍)");
+			}
+			else {
+				OwnerTokenClaim ownerToken = drmService.getOwnerTokenInfo(request.getOwnerToken());
+
+				if (ObjectUtils.isEmpty(ownerToken)) {
+					log.warn("OwnerToken Parse 실패 (DRM 스트리밍)");
+				}
+				else {
+					trackListenBuilder.drmMemberNo(ownerToken.getMemberNo());
+					trackListenBuilder.drmPssrlCd(ownerToken.getPssrlCode());
+					trackListenBuilder.drmServiceId(ownerToken.getServiceId());
+					trackListenBuilder.drmPrchsId(ownerToken.getPurchaseId());
+					trackListenBuilder.drmGoodsId(ownerToken.getGoodsId());
 				}
 			}
 		}
@@ -282,7 +336,7 @@ public class ListenServiceImpl implements ListenService {
 		}
 
 		amqpService.deliverTrackListen(trackListenBuilder.build());
-		log.info("[Track Listen Hist] " + trackListenBuilder.toString());
+		log.info("[TRACK 청취로그][MQ 발송] {}", trackListenBuilder.toString());
 
 		UserEventType userEventType = UserEventType.fromTrackLogType(request.getTrackLogType());
 		if( !userEventType.equals(UserEventType.UNKNOWN) )	{
@@ -299,8 +353,19 @@ public class ListenServiceImpl implements ListenService {
 					.timeMillis(System.currentTimeMillis())
 					.build();
 			amqpService.deliverUserEvent(userEvent);
-			log.info("[Track Listen Hist - User event] " + userEvent.toString());
+			log.info("[TRACK 청취로그][UserEvent MQ 발송] {}", userEvent.toString());
 		}
+	}
+
+	private String getServiceCodeFromMCP(Long trackId, String bitrate, String osType) {
+		CommonApiResponse<OneTimeUrlDto> oneTimeUrlResponse = streamClient.getTrackStreamingUrl(
+				trackId, bitrate, osType, null, null);
+		log.info("[TRACK 청취로그][MCP 조회 응답] {}", oneTimeUrlResponse);
+
+		if (oneTimeUrlResponse != null && oneTimeUrlResponse.getData() != null) {
+			return oneTimeUrlResponse.getData().getSvcCd();
+		}
+		return null;
 	}
 
 	private boolean isRecommendListen(String listenType){
@@ -324,11 +389,6 @@ public class ListenServiceImpl implements ListenService {
 			return settlement.getSvcId();
 		}
 		
-		// todo 무료곡 서비스 시점에 다시 수정 필요
-//		if (YnType.Y == request.getFreeYn()) {
-//			return "FREE_SVC";
-//		}
-		
 		// flac 요청일 경우 대체
 		if (request.getBitrate() == BitrateType.BITRATE_FLAC16 || request.getBitrate() == BitrateType.BITRATE_FLAC24) {
 			switch (request.getSourceType()) {
@@ -342,5 +402,35 @@ public class ListenServiceImpl implements ListenService {
 		}
 		
 		return settlement.getSvcId();
+	}
+
+	private SettlementToken parseSettlementToken(String sttToken) {
+		Jws<Claims> claims = Jwts.parser()
+				.setSigningKey(JWT_SECRET_KEY.getBytes(StandardCharsets.UTF_8))
+				.parseClaimsJws(sttToken);
+
+		Integer version = claims.getBody().get("version", Integer.class);
+		String serviceId = claims.getBody().get("serviceId", String.class);
+		Long purchaseId = claims.getBody().get("purchaseId", Long.class);
+		Long goodsId = claims.getBody().get("goodsId", Long.class);
+
+		log.debug("[정산 토큰(sttToken) 정보] version={}, serviceId={}, purchaseId={}, goodsId={}", version, serviceId, purchaseId, goodsId);
+
+		return SettlementToken.builder()
+				.version(version)
+				.serviceId(serviceId)
+				.purchaseId(purchaseId)
+				.goodsId(goodsId)
+				.build();
+	}
+
+	@Getter
+	@ToString
+	@Builder
+	static class SettlementToken {
+		Integer version;
+		String serviceId;
+		Long purchaseId;
+		Long goodsId;
 	}
 }
