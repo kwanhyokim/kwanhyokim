@@ -43,27 +43,15 @@ public abstract class TrackPanel extends Panel {
         this.imgList = bgImgList;
         this.title = title;
         this.subTitle = subTitle;
-        initialPanel();
-    }
-
-    @Override
-    protected void initialPanel() {
-        this.content = createPanelContent();
-    }
-
-    @Override
-    protected PanelContentVo createPanelContent() {
-        PanelContentVo content = new PanelContentVo();
-
-        content.setId(recommendTrackDto.getRcmmdId());
-        content.setType(RecommendPanelContentType.getRecommendPanelContentByPanelType(type));
-        content.setTrackList(recommendTrackDto.getTrackList());
-        content.setTrackCount(recommendTrackDto.getTrackCount());
-        content.setGenre(new GenreVo(recommendTrackDto.getSvcGenreDto()));
-        content.setCreateDtime(recommendTrackDto.getRcmmdCreateDtime());
-        content.setUpdateDtime(recommendTrackDto.getRcmmdCreateDtime());
-
-        return content;
+        this.content = PanelContentVo.builder()
+                .id(recommendTrackDto.getRcmmdId())
+                .type(RecommendPanelContentType.getRecommendPanelContentByPanelType(type))
+                .trackList(recommendTrackDto.getTrackList())
+                .trackCount(recommendTrackDto.getTrackCount())
+                .genre(new GenreVo(recommendTrackDto.getSvcGenreDto()))
+                .createDtime(recommendTrackDto.getRcmmdCreateDtime())
+                .updateDtime(recommendTrackDto.getRcmmdCreateDtime())
+            .build();
     }
 
     protected static RecommendTrackDto neverRecommdnTrackNull(RecommendTrackDto recommendTrackDto) throws CommonBusinessException {

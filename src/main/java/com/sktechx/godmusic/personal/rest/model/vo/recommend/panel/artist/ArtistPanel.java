@@ -11,11 +11,11 @@
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.artist;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.stream.IntStream;
 
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -44,12 +44,7 @@ public class ArtistPanel extends Panel{
     public ArtistPanel(RecommendArtistDto recommendArtist)  throws CommonBusinessException{
         super(RecommendPanelType.ARTIST_POPULAR_TRACK);
         this.recommendArtistDto = recommendArtist;
-        this.initialPanel();
-    }
 
-
-    @Override
-    protected void initialPanel() throws CommonBusinessException{
         ArtistDto representationArtist = neverNullArtist(recommendArtistDto);
 
         this.title = ARTIST_PANEL_TITLE;
@@ -57,35 +52,24 @@ public class ArtistPanel extends Panel{
         this.subTitle = getArtistSubTitle(recommendArtistDto);
 
         this.imgList = representationArtist.getImgList();
-        this.content = createPanelContent();
+        this.content = PanelContentVo.builder()
+                    .id(recommendArtistDto.getRcmmdArtistId())
+                    .artistCount(recommendArtistDto.getArtistList().size())
+                    .artistList(recommendArtistDto.getArtistList())
+                    .type(RecommendPanelContentType.RC_ATST_TR)
+                    .createDtime(recommendArtistDto.getDispStdStartDt())
+                    .updateDtime(recommendArtistDto.getUpdateDtime())
+                .build();
 
-    }
-
-    @Override
-    public PanelContentVo createPanelContent() {
-        PanelContentVo content = new PanelContentVo();
-
-        content.setId(recommendArtistDto.getRcmmdArtistId());
-        content.setArtistCount(recommendArtistDto.getArtistList().size());
-        content.setArtistList(recommendArtistDto.getArtistList());
-        content.setType(RecommendPanelContentType.RC_ATST_TR);
-        content.setCreateDtime(recommendArtistDto.getCreateDtime());
-        content.setUpdateDtime(recommendArtistDto.getUpdateDtime());
-
-        return content;
-    }
-    @Override
-    public void makeSeedInfo() {
-
-        if(ObjectUtils.isEmpty(content) || CollectionUtils.isEmpty(content.getArtistList()) || content.getArtistCount() <=0){
-            return;
-        }
-
-        this.seedArtistVo = SeedArtistVo.builder()
+        this.seedArtistVo = Optional.ofNullable(this.content).isPresent() ?
+                SeedArtistVo.builder()
                 .name(this.subTitle)
                 .suffix("")
-                .build();
+                .build()
+                : null
+                ;
     }
+
 
     private String getArtistSubTitle(RecommendArtistDto recommendArtistDto){
         List<ArtistDto> artistList = recommendArtistDto.getArtistList();

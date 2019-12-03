@@ -15,6 +15,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
+import com.sktechx.godmusic.personal.rest.model.dto.member.CharacterType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 
 /**
@@ -60,5 +61,14 @@ public interface RecommendDummyDataMapper {
     void updateRcmmdArtistData(@Param("characterNo") Long characterNo);
 
     void updateAfloChannel();
+
+    void updateCharacterType(@Param("characterNo") Long characterNo, @Param("characterType") CharacterType characterType);
+    void insertAfloCharacter(@Param("characterNo") Long characterNo);
+    void deleteAfloCharacter(@Param("characterNo") Long characterNo);
+    void insertCharacterPreferArtist(@Param("characterNo") Long characterNo, @Param("preferGenreId") Long preferGenreId, @Param("preferArtistId") Long preferArtistId);
+    Integer selectCharacterPreferArtist(@Param("characterNo") Long characterNo);
+
+    void insertOrUpdateCharacterPreferDisp(@Param("characterNo") Long characterNo, @Param("preferDispId") Long preferDispId);
+    void deleteCharacterPreferDisp(@Param("characterNo") Long characterNo);
 
 }
