@@ -1,5 +1,8 @@
 package com.sktechx.godmusic.personal.rest.model.dto;
 
+import java.util.Date;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,10 +11,6 @@ import com.sktechx.godmusic.personal.common.domain.type.ChartType;
 import com.sktechx.godmusic.personal.common.domain.type.PlayListType;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import lombok.Data;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Created by Kobe.
@@ -58,6 +57,15 @@ public class PlayListDto {
 	@JsonProperty("renewTrackCount")
 	public Integer getRenewTrackCnt() {
 		return this.renewYn == YnType.N ? 0 : renewTrackCnt;
+	}
+
+	public void setImgList(List<ImageInfo> imgList) {
+
+		if (imgList != null) {
+			imgList.sort(null);
+		}
+
+		this.imgList = imgList;
 	}
 
 }

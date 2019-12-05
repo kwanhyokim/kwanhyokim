@@ -1,5 +1,7 @@
 package com.sktechx.godmusic.personal.rest.model.dto.like;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import io.swagger.annotations.ApiModelProperty;
@@ -7,8 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 /**
  * Created by Kobe.
@@ -38,4 +38,13 @@ public class LikeAlbumDto {
 	private String albumTypeStr;
 	@ApiModelProperty(value = "앨범 이미지")
 	private List<ImageInfo> imgList;
+
+	public void setImgList(List<ImageInfo> imgList) {
+
+		if (imgList != null) {
+			imgList.sort(null);
+		}
+
+		this.imgList = imgList;
+	}
 }
