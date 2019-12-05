@@ -92,4 +92,13 @@ public class ChnlDto {
         return YnType.N;
     }
 
+    public void setImgList(List<ImageInfo> imgList) {
+
+        if (imgList != null) {
+            imgList.sort(null);
+        }
+
+        this.imgList = imgList;
+    }
+
 }

@@ -88,20 +88,27 @@
 
     <select id="selectRecommendPanelPopularTrackList" resultType="Long">
         SELECT
-            a.track_id
+            c.track_id
         FROM
-            tb_rcmmd_artist_track_list a
-            JOIN tb_track b ON b.track_id = a.track_id AND b.disp_status_yn = 'Y' AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
-        WHERE
-            a.rcmmd_artist_id = (SELECT
-                    rcmmd_artist_id
-                FROM
-                    tb_rcmmd_artist
-                WHERE
-                    rcmmd_artist_id = #{rcmmdArtistId}
-                    )
 
-        ORDER BY a.disp_sn ASC
+            (SELECT
+                a.track_id
+            FROM
+                tb_rcmmd_artist_track_list a
+                JOIN tb_track b ON b.track_id = a.track_id AND b.disp_status_yn = 'Y' AND now() BETWEEN b.disp_start_dtime AND b.disp_end_dtime
+            WHERE
+                a.rcmmd_artist_id = (SELECT
+                        rcmmd_artist_id
+                    FROM
+                        tb_rcmmd_artist
+                    WHERE
+                        rcmmd_artist_id = #{rcmmdArtistId}
+                        )
+
+            ORDER BY a.disp_sn ASC
+
+            LIMIT 300) c
+
     </select>
     <select id="selectRecommendPanelSimilarTrackList" resultType="Long">
         SELECT
