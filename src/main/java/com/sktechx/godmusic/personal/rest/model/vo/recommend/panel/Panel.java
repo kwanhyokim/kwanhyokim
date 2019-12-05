@@ -97,4 +97,13 @@ public abstract class Panel {
     abstract protected PanelContentVo createPanelContent();
 
     abstract public void makeSeedInfo();
+
+    public void setImgList(List<ImageInfo> imgList) {
+
+        if (imgList != null) {
+            imgList.sort(null);
+        }
+
+        this.imgList = imgList;
+    }
 }

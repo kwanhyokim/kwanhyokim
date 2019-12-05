@@ -3,10 +3,8 @@ package com.sktechx.godmusic.personal.rest.model.dto;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.*;
-import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import io.swagger.annotations.ApiModel;
@@ -88,5 +86,14 @@ public class LastListenHistoryDto {
         }else{
             return 0;
         }
+    }
+
+    public void setImgList(List<ImageInfo> imgList) {
+
+        if (imgList != null) {
+            imgList.sort(null);
+        }
+
+        this.imgList = imgList;
     }
 }
