@@ -65,22 +65,6 @@ import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelServic
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.ListUtils;
-import org.apache.ibatis.session.ExecutorType;
-import org.apache.ibatis.session.SqlSession;
-import org.mybatis.spring.SqlSessionTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
-
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 
 /**
@@ -583,6 +567,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     private RecommendPanelHeaderVo getArtistFloRecommendPanelInfoDto(Long panelContentId) {
         RecommendPanelHeaderVo panel;
         RecommendArtistDto recommendArtistDto= recommendReadMapper.selectRecommendArtistById(panelContentId);
+
         List<ArtistDto> artistDtoList;
         if(recommendArtistDto == null || CollectionUtils.isEmpty(recommendArtistDto.getArtistList())){
             artistDtoList = artistMapper.getArtistList(Arrays.asList(12L,14L,15L));
@@ -601,8 +586,10 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 log.error("PanelSignAssembly appendPreferArtistPanel artistPanel create error : {}", e.getMessage());
             }
         }
-        List<String> artistNameList = artistDtoList.stream().map(ArtistDto::getArtistName).limit(5).collect(
+
+        List<String> artistNameList = artistDtoList.stream().map(x -> x.getArtistName()).limit(5).collect(
                 Collectors.toList());
+
         String subTitle = String.join(",", artistNameList);
         // 아티스트의 첫 이미지를 배경 이미지로 사용
         panel =  RecommendPanelHeaderVo.builder()

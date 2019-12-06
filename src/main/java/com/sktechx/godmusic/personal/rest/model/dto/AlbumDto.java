@@ -94,4 +94,13 @@ public class AlbumDto {
         }
         return null;
     }
+
+    public void setImgList(List<ImageInfo> imgList) {
+
+        if (imgList != null) {
+            imgList.sort(null);
+        }
+
+        this.imgList = imgList;
+    }
 }

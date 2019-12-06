@@ -91,4 +91,18 @@ public abstract class Panel {
     public Panel(){
 
     }
+
+    abstract protected void initialPanel() throws CommonBusinessException;
+    abstract protected PanelContentVo createPanelContent();
+
+    abstract public void makeSeedInfo();
+
+    public void setImgList(List<ImageInfo> imgList) {
+
+        if (imgList != null) {
+            imgList.sort(null);
+        }
+
+        this.imgList = imgList;
+    }
 }
