@@ -57,7 +57,7 @@
                  and besttrack.event_dt = #{eventDate}
                  and besttrack.character_no = #{characterNo}
              ) t
-             left outer join tb_track track
+             inner join tb_track track
                  on t.track_id = track.track_id
                  and track.disp_status_yn = 'Y'
                  and now() between disp_start_dtime and disp_end_dtime
