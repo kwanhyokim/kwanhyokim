@@ -134,11 +134,12 @@
 
 	<select id="selectTrackTotalCount" resultType="int">
 		SELECT
-			COUNT(MMCT.member_chnl_id)
-		FROM
-			tb_map_member_chnl_track MMCT
-		WHERE
-			member_chnl_id = #{channelId}
+			COUNT(channeltrack.member_chnl_id)
+		FROM tb_map_member_chnl_track channeltrack inner join tb_track track
+		WHERE channeltrack.member_chnl_id = #{channelId}
+		and channeltrack.track_id = track.track_id
+		and track.disp_status_yn = 'Y'
+		and now() between track.disp_start_dtime and track.disp_end_dtime
 	</select>
 
 	<select id="selectMaxTrackViewPriority" resultType ="int">
