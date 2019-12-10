@@ -37,12 +37,14 @@ public abstract class TrackPanel extends Panel {
     @JsonIgnore
     private RecommendTrackDto recommendTrackDto;
 
-    public TrackPanel(RecommendPanelType panelType ,String title, String subTitle, RecommendTrackDto recommendTrackDto, List<ImageInfo> bgImgList) throws CommonBusinessException {
+    public TrackPanel(RecommendPanelType panelType ,String title, String subTitle, String playListTitle, RecommendTrackDto recommendTrackDto, List<ImageInfo> bgImgList) throws CommonBusinessException {
         super(panelType);
         this.recommendTrackDto = recommendTrackDto;
         this.imgList = bgImgList;
         this.title = title;
         this.subTitle = subTitle;
+        this.playListTitle = playListTitle;
+        
         this.content = PanelContentVo.builder()
                 .id(recommendTrackDto.getRcmmdId())
                 .type(RecommendPanelContentType.getRecommendPanelContentByPanelType(type))

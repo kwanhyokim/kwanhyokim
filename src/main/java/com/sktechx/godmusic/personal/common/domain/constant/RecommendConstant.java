@@ -64,19 +64,21 @@ public class RecommendConstant {
 
     public static final int RCMMD_CF_TRACK_DISP_STANDARD_COUNT = 15;
 
-    public static final String ARTIST_PANEL_TITLE = "좋아할만한 아티스트 MIX";
     public static final String CHART_PANEL_HOURLY_BASIS_PHRASES = "시 기준";
+
+    public static final String ARTIST_PANEL_TITLE = "좋아할만한 아티스트 MIX";
+    public static final String ARTIST_PANEL_PLAYLIST_TITLE = "아티스트 MIX";
 
     public static final String RCMMD_TRACK_PANEL_TITLE = "나를 위한 새로운 발견";
     public static final String RCMMD_TRACK_PANEL_SUB_TITLE = "많이 들은\n%s 장르의 추천 음악";
     public static final String RCMMD_TRACK_PANEL_DETAIL_SUB_TITLE = "많이 들은 %s 장르의 추천 음악";
+    public static final String RCMMD_TRACK_PANEL_PLAYLIST_TITLE = "나를 위한 발견";
 
     public static final String RCMMD_CF_TRACK_PANEL_SUB_TITLE = "추천 음악\n음악추천 맛집";
 
     public static final String SIMILAR_TRACK_PANEL_TITLE = "오늘의 추천";
     public static final String SIMILAR_TRACK_PANEL_SUB_TITLE = "많이 들은 곡과\n비슷한 음악";
     public static final String SIMILAR_TRACK_PANEL_DETAIL_SUB_TITLE = "많이 들은 곡과\n비슷한 음악";
-
     public static final String SIMILAR_TRACK_PANEL_SEED_SUFFIX = "곡과 비슷한 음악";
 
     public static final String RCMMD_TRACK_PANEL_SUB_TITLE_NEW = "%s\n추천 음악";
