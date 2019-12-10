@@ -13,8 +13,6 @@ package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.util.ObjectUtils;
-
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
@@ -35,6 +33,7 @@ public class RcmmdTrackPanel extends TrackPanel {
         super(RecommendPanelType.RCMMD_TRACK ,
                 RCMMD_TRACK_PANEL_TITLE ,
                 String.format(RCMMD_TRACK_PANEL_SUB_TITLE,neverRecommdnTrackNull(recommendTrackDto).getSvcGenreDto().getSvcGenreNm()),
+                RCMMD_TRACK_PANEL_PLAYLIST_TITLE,
                 recommendTrackDto,
                 bgImgList);
 

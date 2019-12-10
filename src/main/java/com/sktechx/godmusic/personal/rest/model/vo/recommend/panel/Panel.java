@@ -54,6 +54,10 @@ public abstract class Panel {
     protected String subTitle;
 
     @Getter
+    @ApiModelProperty(required = true, value = "재생목록 표기용 제목")
+    protected String playListTitle;
+
+    @Getter
     @Setter
     @ApiModelProperty(required = true, value = "패널 배경 이미지 리스트")
     protected List<ImageInfo> imgList;

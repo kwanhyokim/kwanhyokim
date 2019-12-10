@@ -28,8 +28,8 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedArtistVo;
 
-import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.ARTIST_PANEL_TITLE;
-import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.ARTIST_POPULAR_ARTIST_NAME_COUNT;
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
+
 /**
  * 설명 : 아티스트형 추천 패널
  *
@@ -50,6 +50,7 @@ public class ArtistPanel extends Panel{
         this.title = ARTIST_PANEL_TITLE;
 
         this.subTitle = getArtistSubTitle(recommendArtistDto);
+        this.playListTitle = ARTIST_PANEL_PLAYLIST_TITLE;
 
         this.imgList = representationArtist.getImgList();
         this.content = PanelContentVo.builder()

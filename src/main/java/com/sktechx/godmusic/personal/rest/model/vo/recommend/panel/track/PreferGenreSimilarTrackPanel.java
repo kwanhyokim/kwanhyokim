@@ -31,6 +31,7 @@ public class PreferGenreSimilarTrackPanel extends TrackPanel {
         super(RecommendPanelType.PREFER_GENRE_SIMILAR_TRACK ,
                 SIMILAR_TRACK_PANEL_TITLE ,
                 neverRecommdnTrackNull(recommendTrackDto).getSvcGenreDto().getSvcGenreNm(),
+                SIMILAR_TRACK_PANEL_TITLE,
                 recommendTrackDto ,
                 bgImgList
         );
