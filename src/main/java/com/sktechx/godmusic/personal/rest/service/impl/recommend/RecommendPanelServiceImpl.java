@@ -196,17 +196,19 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
                 try{
                     recommendPanelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
-                    recommendPanelList.forEach(
-                            panel -> {
-                                if(!ObjectUtils.isEmpty(panel.getContent())) {
-                                    panel.getContent().setOsType(osType);
-                                }
-                            }
-                    );
+
                 }catch(Exception e){
                     log.error("createRecommendPanelV2 recovery not catched exception : {}",e.getMessage());
                 }
             }
+
+            recommendPanelList.forEach(
+                    panel -> {
+                        if(!ObjectUtils.isEmpty(panel.getContent())) {
+                            panel.getContent().setOsType(osType);
+                        }
+                    }
+            );
         }
 
         return RecommendPanelResponse.builder().osType(osType).list(
