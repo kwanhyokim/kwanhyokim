@@ -211,7 +211,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             );
         }
 
-        return RecommendPanelResponse.builder().osType(osType).list(
+        return RecommendPanelResponse.builder().list(
                         Optional.ofNullable(
                                 recommendPanelList
                         ).orElseThrow( () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA))
