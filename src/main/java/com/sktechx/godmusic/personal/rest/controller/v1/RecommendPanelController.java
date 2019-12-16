@@ -20,7 +20,9 @@ import com.sktechx.godmusic.lib.domain.RequestGMContext;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
+import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import com.sktechx.godmusic.personal.rest.validate.Validator;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -38,8 +40,19 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping(Naming.serviceCode+"/v1/recommends")
 public class RecommendPanelController {
     private final RecommendPanelService recommendPanelService;
-	public RecommendPanelController(RecommendPanelService recommendPanelService) {
+    private final PersonalRecommendPhaseService personalRecommendPhaseService;
+	public RecommendPanelController(RecommendPanelService recommendPanelService, PersonalRecommendPhaseService personalRecommendPhaseService) {
 		this.recommendPanelService = recommendPanelService;
+		this.personalRecommendPhaseService = personalRecommendPhaseService;
+	}
+
+	@ApiOperation(value = "추천 개인화 정보 조회 ( New )", httpMethod = "GET" , hidden = true)
+	@GetMapping(value = "/phase/meta")
+	public CommonApiResponse<PersonalPhaseMeta> personalPhaseMeta(@ApiIgnore @RequestGMContext GMContext ctx){
+
+		// APP Version 체크로 personalmeta의 추천 패널 disp end date 사용 여부를 조절..
+
+		return new CommonApiResponse<>(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(ctx.getCharacterNo(),ctx.getOsType(), ctx.getAppVer()));
 	}
 
 	@ApiOperation(value = "추천 홈 패널 조회 ( New )", httpMethod = "GET",response = RecommendPanelResponse.class,
