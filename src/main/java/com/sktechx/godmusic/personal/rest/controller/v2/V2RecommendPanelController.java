@@ -71,6 +71,7 @@ public class V2RecommendPanelController {
 				Optional.ofNullable(
 					recommendPanelService.createRecommendV2PanelList(ctx.getCharacterNo(), ctx.getOsType(), ctx.getAppVer())
 				).orElseThrow( () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA))
+
 		);
     }
 
