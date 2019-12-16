@@ -66,6 +66,8 @@ public class PersonalWebMvcConfig implements WebMvcConfigurer {
                 .allowedMethods(
                         HttpMethod.GET.name(),
                         HttpMethod.POST.name(),
+                        HttpMethod.PUT.name(),
+                        HttpMethod.DELETE.name(),
                         HttpMethod.OPTIONS.name())
                 .maxAge(3600);
     }
