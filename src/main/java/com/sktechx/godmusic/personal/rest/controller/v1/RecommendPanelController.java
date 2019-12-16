@@ -68,7 +68,7 @@ public class RecommendPanelController {
 		return Optional.ofNullable(
 					recommendPanelService.createRecommendPanelList(ctx.getCharacterNo(), ctx.getOsType(), ctx.getAppVer())
 			).isPresent() ?
-				new CommonApiResponse<>(RecommendPanelResponse.builder().osType(ctx.getOsType()).build())
+				new CommonApiResponse<>(RecommendPanelResponse.builder().build())
 				: null;
     }
 
