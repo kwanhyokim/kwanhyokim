@@ -11,7 +11,6 @@
 package com.sktechx.godmusic.personal.rest.service.recommend;
 
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendDummyDataRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendV2DummyDataRequest;
 
 /**
@@ -20,9 +19,8 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendV2DummyDat
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 08. 25.
  */
-public interface RecommendDataService {
+public interface RecommendDummyDataService {
     void updateRecommendDataRemovePrevent(ListenRequest request, Long characterNo);
-    void createRecommendDummyData(Long characterNo ,RecommendDummyDataRequest recommendDummyDataRequest);
 
     int addTpoRecommendDummyData(Long characterNo);
     int deleteTpoRecommendDummyData(Long characterNo);
@@ -36,4 +34,6 @@ public interface RecommendDataService {
     void addChart(Long characterNo);
 
     void deleteChart(Long characterNo);
+
+    String clearCacheHome(Long characterNo);
 }

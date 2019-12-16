@@ -37,33 +37,23 @@ public abstract class TrackPanel extends Panel {
     @JsonIgnore
     private RecommendTrackDto recommendTrackDto;
 
-    public TrackPanel(RecommendPanelType panelType ,String title, String subTitle, RecommendTrackDto recommendTrackDto, List<ImageInfo> bgImgList) throws CommonBusinessException {
+    public TrackPanel(RecommendPanelType panelType ,String title, String subTitle, String playListTitle, RecommendTrackDto recommendTrackDto, List<ImageInfo> bgImgList) throws CommonBusinessException {
         super(panelType);
         this.recommendTrackDto = recommendTrackDto;
         this.imgList = bgImgList;
         this.title = title;
         this.subTitle = subTitle;
-        initialPanel();
-    }
-
-    @Override
-    protected void initialPanel() {
-        this.content = createPanelContent();
-    }
-
-    @Override
-    protected PanelContentVo createPanelContent() {
-        PanelContentVo content = new PanelContentVo();
-
-        content.setId(recommendTrackDto.getRcmmdId());
-        content.setType(RecommendPanelContentType.getRecommendPanelContentByPanelType(type));
-        content.setTrackList(recommendTrackDto.getTrackList());
-        content.setTrackCount(recommendTrackDto.getTrackCount());
-        content.setGenre(new GenreVo(recommendTrackDto.getSvcGenreDto()));
-        content.setCreateDtime(recommendTrackDto.getRcmmdCreateDtime());
-        content.setUpdateDtime(recommendTrackDto.getRcmmdCreateDtime());
-
-        return content;
+        this.playListTitle = playListTitle;
+        
+        this.content = PanelContentVo.builder()
+                .id(recommendTrackDto.getRcmmdId())
+                .type(RecommendPanelContentType.getRecommendPanelContentByPanelType(type))
+                .trackList(recommendTrackDto.getTrackList())
+                .trackCount(recommendTrackDto.getTrackCount())
+                .genre(new GenreVo(recommendTrackDto.getSvcGenreDto()))
+                .createDtime(recommendTrackDto.getRcmmdCreateDtime())
+                .updateDtime(recommendTrackDto.getRcmmdCreateDtime())
+            .build();
     }
 
     protected static RecommendTrackDto neverRecommdnTrackNull(RecommendTrackDto recommendTrackDto) throws CommonBusinessException {

@@ -16,7 +16,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
@@ -53,6 +52,10 @@ public abstract class Panel {
     @Getter
     @ApiModelProperty(required = true, value = "패널 부제목")
     protected String subTitle;
+
+    @Getter
+    @ApiModelProperty(required = true, value = "재생목록 표기용 제목")
+    protected String playListTitle;
 
     @Getter
     @Setter
@@ -92,11 +95,6 @@ public abstract class Panel {
     public Panel(){
 
     }
-
-    abstract protected void initialPanel() throws CommonBusinessException;
-    abstract protected PanelContentVo createPanelContent();
-
-    abstract public void makeSeedInfo();
 
     public void setImgList(List<ImageInfo> imgList) {
 

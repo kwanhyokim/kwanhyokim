@@ -10,6 +10,7 @@ import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.RequestGMContext;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.rest.model.vo.aflo.MigrateAFloCharacterRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.service.AFloService;
 import com.sktechx.godmusic.personal.rest.service.PreferenceService;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
@@ -43,6 +44,13 @@ public class InnerPersonalController {
         }
 
         return CommonApiResponse.emptySuccess();
+    }
+
+    @ApiOperation(value = "추천 개인화 정보 조회 ( New )", httpMethod = "GET" , hidden = true)
+    @GetMapping(value = "/phase/meta")
+    public CommonApiResponse<PersonalPhaseMeta> personalPhaseMeta(@ApiIgnore @RequestGMContext GMContext ctx){
+        // APP Version 체크로 personalmeta의 추천 패널 disp end date 사용 여부를 조절..
+        return new CommonApiResponse<>(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(ctx.getCharacterNo(),ctx.getOsType(), ctx.getAppVer()));
     }
 
     @ApiOperation(value = "홈 캐쉬 삭제")

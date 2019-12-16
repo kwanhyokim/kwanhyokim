@@ -10,7 +10,6 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl.recommend;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -33,36 +32,37 @@ import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 @Service
 public class RecommendPanelAssemblyFactory {
 
+    private final VisitPhasePanelAssembly visitPhasePanelAssembly;
+    private final ListenPhasePanelAssembly listenPhasePanelAssembly;
+    private final RecommendPhasePanelAssembly recommendPhasePanelAssembly;
+    private final GuestPhasePanelAssembly guestPhasePanelAssembly;
+    private final ForMeFloPanelAssembly forMeFloPanelAssembly;
+    private final ArtistFloPanelAssembly artistFloPanelAssembly;
+    private final TodayFloPanelAssembly todayFloPanelAssembly;
+    private final AfloPanelAssembly afloPanelAssembly;
+    private final PreferGenreThemePanelAssembly preferGenreThemePanelAssembly;
+    private final OperationTpoPanelAssembly operationTpoPanelAssembly;
 
-    @Autowired
-    VisitPhasePanelAssembly visitPhasePanelAssembly;
-
-    @Autowired
-    ListenPhasePanelAssembly listenPhasePanelAssembly;
-
-    @Autowired
-    RecommendPhasePanelAssembly recommendPhasePanelAssembly;
-
-    @Autowired
-    GuestPhasePanelAssembly guestPhasePanelAssembly;
-
-    @Autowired
-    ForMeFloPanelAssembly forMeFloPanelAssembly;
-
-    @Autowired
-    ArtistFloPanelAssembly artistFloPanelAssembly;
-
-    @Autowired
-    TodayFloPanelAssembly todayFloPanelAssembly;
-
-    @Autowired
-    AfloPanelAssembly afloPanelAssembly;
-
-    @Autowired
-    PreferGenreThemePanelAssembly preferGenreThemePanelAssembly;
-
-    @Autowired
-    OperationTpoPanelAssembly operationTpoPanelAssembly;
+    public RecommendPanelAssemblyFactory(VisitPhasePanelAssembly visitPhasePanelAssembly,
+            ListenPhasePanelAssembly listenPhasePanelAssembly,
+            RecommendPhasePanelAssembly recommendPhasePanelAssembly,
+            GuestPhasePanelAssembly guestPhasePanelAssembly,
+            ForMeFloPanelAssembly forMeFloPanelAssembly,
+            ArtistFloPanelAssembly artistFloPanelAssembly,
+            TodayFloPanelAssembly todayFloPanelAssembly, AfloPanelAssembly afloPanelAssembly,
+            PreferGenreThemePanelAssembly preferGenreThemePanelAssembly,
+            OperationTpoPanelAssembly operationTpoPanelAssembly) {
+        this.visitPhasePanelAssembly = visitPhasePanelAssembly;
+        this.listenPhasePanelAssembly = listenPhasePanelAssembly;
+        this.recommendPhasePanelAssembly = recommendPhasePanelAssembly;
+        this.guestPhasePanelAssembly = guestPhasePanelAssembly;
+        this.forMeFloPanelAssembly = forMeFloPanelAssembly;
+        this.artistFloPanelAssembly = artistFloPanelAssembly;
+        this.todayFloPanelAssembly = todayFloPanelAssembly;
+        this.afloPanelAssembly = afloPanelAssembly;
+        this.preferGenreThemePanelAssembly = preferGenreThemePanelAssembly;
+        this.operationTpoPanelAssembly = operationTpoPanelAssembly;
+    }
 
     public PanelAssembly getRecommendPanelAssembly(PersonalPhaseType personalPhaseType ){
         if(PersonalPhaseType.VISIT.equals(personalPhaseType)){
@@ -109,13 +109,13 @@ public class RecommendPanelAssemblyFactory {
         switch (recommendPanelContentType){
             case AFLO:
                 return afloPanelAssembly;
-            // 나를 위한 FLO
+            // 나를 위한 새로운 발견
             case RC_CF_TR:
                 return forMeFloPanelAssembly;
-            // 오늘의 FLO
+            // 오늘의 추천
             case RC_SML_TR:
                 return todayFloPanelAssembly;
-            // 아티스트 FLO
+            // 좋아할만한 아티스트 MIX
             case RC_ATST_TR:
                 return artistFloPanelAssembly;
             default:

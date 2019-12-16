@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -31,6 +32,7 @@ import lombok.Data;
  * @date 2018. 07. 09.
  */
 @Data
+@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RecommendPanelResponse {
     List<Panel> list;

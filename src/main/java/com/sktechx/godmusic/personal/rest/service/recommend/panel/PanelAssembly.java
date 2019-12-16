@@ -14,6 +14,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.util.CollectionUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
@@ -46,8 +47,11 @@ public abstract class PanelAssembly {
     protected ChartService chartService;
     @Autowired
     protected ChannelService channelService;
+
     @Autowired
+    @Lazy
     protected RecommendPanelService recommendPanelService;
+
     @Autowired
     protected ChannelMapper channelMapper;
     @Autowired
@@ -74,14 +78,12 @@ public abstract class PanelAssembly {
         panelList.sort((panel1, panel2) -> {
             Integer panel1Sn = panel1.getPanelOrderSn(personalPhaseMeta.getFirstPhaseType());
             Integer panel2Sn = panel2.getPanelOrderSn(personalPhaseMeta.getFirstPhaseType());
-            return panel1Sn < panel2Sn
-                    ? -1 : panel1Sn == panel2Sn? 0 :1 ;
+            return panel1Sn.compareTo(panel2Sn);
         });
 
         pullForwardKidsChartPanel(panelList);
 
     }
-
 
     protected void appendDefaultPopularChannelPanel(final PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int panelLimitSize , List<Long> filterChnlIdList) {
         List<ChnlDto> popularChannelList = channelService.getPopularChannelList(panelLimitSize,POPULAR_CHNL_TRACK_LIMIT_SIZE ,personalPhaseMeta.getOsType(),filterChnlIdList);
@@ -139,9 +141,7 @@ public abstract class PanelAssembly {
     private void pullForwardKidsChartPanel(final List<Panel> panelList ){
         if(!CollectionUtils.isEmpty(panelList) && panelList.size() > 1){
 
-            List<Panel> chartPanelList = panelList.stream().filter(panel -> {
-                return panel instanceof ChartPanel;
-            }).collect(Collectors.toList());
+            List<Panel> chartPanelList = panelList.stream().filter(panel -> panel instanceof ChartPanel).collect(Collectors.toList());
 
             if(!CollectionUtils.isEmpty(chartPanelList) && chartPanelList.size() == 1 ){
                 Panel chartPanel = chartPanelList.get(0);
@@ -154,8 +154,8 @@ public abstract class PanelAssembly {
         }
     }
 
-    protected void mergePanelList(List<Panel> panelList, List<Panel> myPanelList,
-            List<Panel> chartPanelList, int panelSize) {
+    protected void mergePanelList(List<Panel> panelList, List<Panel> myPanelList, List<Panel> chartPanelList, int panelMaxSize) {
+
         Optional<Panel> liveChartPanel = Optional.ofNullable(chartPanelList)
                 .orElseGet(Collections::emptyList)
                 .stream()
@@ -168,47 +168,38 @@ public abstract class PanelAssembly {
                 .findFirst();
 
         if(liveChartPanel.isPresent()){
-            panelSize--;
+            panelMaxSize--;
         }
 
         if(kidsChartPanel.isPresent()){
-            panelSize--;
+            panelMaxSize--;
         }
 
-        if(myPanelList.size() > panelSize){
-            myPanelList = myPanelList.subList(0, panelSize - 1);
-        }
+        panelList.addAll(
+                myPanelList.stream().limit(panelMaxSize).collect(Collectors.toList())
+        );
 
-        panelList.addAll(myPanelList);
-
-        if(liveChartPanel.isPresent()) {
-            panelList.add(0, liveChartPanel.get());
-        }
-
-        if(kidsChartPanel.isPresent()){
-            panelList.add(kidsChartPanel.get());
-        }
+        liveChartPanel.ifPresent(panel -> panelList.add(0, panel));
+        kidsChartPanel.ifPresent(panelList::add);
     }
 
-    protected void putTpoAndThemeImageList(PersonalPhaseMeta personalPhaseMeta,
-            List<Panel> myPanelList) {
+    protected List<ImageInfo> getTpoAndThemeBackgroundImageList(OsType osType) {
 
-        List<ImageInfo> imageInfoList =
+        return
                 Optional.ofNullable(
-                        recommendReadMapper.selectTpoAndThemeImageList(personalPhaseMeta.getOsType())
+                        recommendReadMapper.selectTpoAndThemeImageList(osType)
                 )
                         .orElseGet(Collections::emptyList)
                         .stream()
-                        .collect(Collectors.toList());
+                        .collect(Collectors.collectingAndThen(
+                                Collectors.toCollection(ArrayList::new),
 
-        if(CollectionUtils.isEmpty(imageInfoList)){
-            return;
-        }
+                                list -> {
+                                    Collections.shuffle(list);
+                                    return list.stream().limit(1).collect(Collectors.toList());
+                                }
 
-        for (int i = 0; i < myPanelList.size(); i++) {
-            ImageInfo imageInfo = imageInfoList.get(i);
-            myPanelList.get(i).setImgList(Arrays.asList(imageInfo));
-        }
+                        ));
     }
 
 }

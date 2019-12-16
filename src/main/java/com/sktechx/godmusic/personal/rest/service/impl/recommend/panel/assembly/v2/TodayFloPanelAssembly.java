@@ -78,8 +78,6 @@ public class TodayFloPanelAssembly extends PanelSignAssembly {
                             if(similarTrack.getTrackCount() >= SIMILAR_TRACK_DISP_STANDARD_COUNT){
                                 PreferSimilarTrackPanel panel = (PreferSimilarTrackPanel) createSimilarTrackPanel (personalPhaseMeta, similarTrack);
 
-                                panel.makeSeedInfo();
-
                                 List<TrackDto> trackDtoList = Optional.ofNullable(panel.getContent().getTrackList()).orElseGet(
                                         Collections::emptyList);
                                 List<List<ImageInfo>> imageInfosList = trackDtoList.stream().map(TrackDto::getAlbum).map(AlbumDto::getImgList).distinct().limit(3).collect(

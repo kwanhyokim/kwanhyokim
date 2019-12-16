@@ -29,7 +29,9 @@ public enum AppNameType implements CodeEnum {
 	NUGU("NUGU","NUGU"),
 	TMAP_APP("TMAP_APP","TMAP_APP"),
 	FLO_APP("FLO", "FLO"),
-	FLO_WEB("FLO_WEB", "FLO_WEB")
+	FLO_WEB("FLO_WEB", "FLO_WEB"),
+	BIXBY("BIXBY", "BIXBY"),
+	BIXBY_SPEAKER("BIXBY_SPEAKER", "BIXBY_SPEAKER")
 	;
 	
 	final String code;

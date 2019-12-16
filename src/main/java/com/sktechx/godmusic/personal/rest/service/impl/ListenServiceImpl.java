@@ -1,5 +1,15 @@
 package com.sktechx.godmusic.personal.rest.service.impl;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
+
 import com.google.common.base.Strings;
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
@@ -28,7 +38,7 @@ import com.sktechx.godmusic.personal.rest.service.DrmService;
 import com.sktechx.godmusic.personal.rest.service.ListenService;
 import com.sktechx.godmusic.personal.rest.service.PurchaseService;
 import com.sktechx.godmusic.personal.rest.service.SettlementService;
-import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDataService;
+import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDummyDataService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -36,16 +46,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
-
-import javax.servlet.http.HttpServletRequest;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
 import static com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType.*;
 /**
@@ -78,7 +78,7 @@ public class ListenServiceImpl implements ListenService {
 	PurchaseService purchaseService;    // 실제론 Purchase 에서 처리해야하지만 청취로그 특성상 빈번한 호출이 예상되어 일단 필요한부분 구현
 
 	@Autowired
-	RecommendDataService recommendDataService;
+	RecommendDummyDataService recommendDummyDataService;
 	
 	@Autowired
 	SettlementService settlementService;
@@ -96,7 +96,7 @@ public class ListenServiceImpl implements ListenService {
 
 		//추천 패널의 경우 기존 추천 데이터  삭제 방지를 위한 DB 업데이트 처리
 		if(isRecommendListen(request.getListenType())){
-			recommendDataService.updateRecommendDataRemovePrevent(request , characterNo);
+			recommendDummyDataService.updateRecommendDataRemovePrevent(request , characterNo);
 		}
 
 	}
@@ -369,13 +369,8 @@ public class ListenServiceImpl implements ListenService {
 	}
 
 	private boolean isRecommendListen(String listenType){
-		if(RC_ATST_TR.getCode().equals(listenType)
-				|| RC_SML_TR.getCode().equals(listenType)
-					|| RC_GR_TR.getCode().equals(listenType)
-						|| RC_CF_TR.getCode().equals(listenType)){
-			return true;
-		}
-		return false;
+		return RC_ATST_TR.getCode().equals(listenType) || RC_SML_TR.getCode().equals(listenType)
+				|| RC_GR_TR.getCode().equals(listenType) || RC_CF_TR.getCode().equals(listenType);
 	}
 	
 	private String evaluateServiceId(ListenTrackRequest request, SettlementInfoDto settlement) {

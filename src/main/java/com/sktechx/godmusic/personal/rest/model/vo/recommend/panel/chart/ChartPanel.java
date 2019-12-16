@@ -41,33 +41,18 @@ public class ChartPanel extends Panel {
         super(panelType);
         this.chart = neverNullChart(chart);
         this.imgList = bgImgList;
-        this.initialPanel();
-    }
-
-    @Override
-    protected void initialPanel() {
         this.title = chart.getChartNm();
         this.subTitle = getBasedOnUpdate(chart , this.type);
-        this.content = createPanelContent();
+        this.content = PanelContentVo.builder()
+                .id(chart.getChartId())
+
+                .type(RecommendPanelContentType.CHART)
+                .createDtime(chart.getCreateDtime())
+                .updateDtime(chart.getUpdateDtime())
+                .trackList(chart.getTrackList())
+                .trackCount(chart.getTrackCount())
+                .build();
     }
-
-    @Override
-    protected PanelContentVo createPanelContent() {
-        PanelContentVo content = new PanelContentVo();
-
-        content.setId(chart.getChartId());
-
-        content.setType(RecommendPanelContentType.CHART);
-        content.setCreateDtime(chart.getCreateDtime());
-        content.setUpdateDtime(chart.getUpdateDtime());
-        content.setTrackList(chart.getTrackList());
-        content.setTrackCount(chart.getTrackCount());
-
-        return content;
-    }
-
-    @Override
-    public void makeSeedInfo() {}
 
     private static ChartDto neverNullChart(ChartDto chart) throws CommonBusinessException {
         if(chart == null || StringUtils.isEmpty(chart.getChartNm()))

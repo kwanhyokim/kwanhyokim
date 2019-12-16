@@ -63,14 +63,4 @@ public class VideoPanel extends Panel {
     @ApiModelProperty(value = "동영상 썸네일 목록")
     private List<VideoThumbnailImageVo> thumbnailImageList;
 
-    @Override
-    protected void initialPanel() throws CommonBusinessException {
-    }
-    @Override
-    protected PanelContentVo createPanelContent() {
-        return null;
-    }
-    @Override
-    public void makeSeedInfo() {
-    }
 }

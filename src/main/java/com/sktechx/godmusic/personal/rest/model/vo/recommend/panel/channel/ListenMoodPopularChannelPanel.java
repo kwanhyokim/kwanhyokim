@@ -27,7 +27,4 @@ public class ListenMoodPopularChannelPanel extends ChannelPanel{
     public ListenMoodPopularChannelPanel( ChnlDto channel , List<ImageInfo> imgList) throws CommonBusinessException {
         super(RecommendPanelType.LISTEN_MOOD_POPULAR_CHANNEL, channel , null , imgList);
     }
-    @Override
-    public void makeSeedInfo() {
-    }
 }

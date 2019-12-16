@@ -50,7 +50,7 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
         List<Panel> myPanelList = new ArrayList<>();
         List<Panel> chartPanelList = new ArrayList<>();
 
-        appendRecommendCfTrackPanelList(personalPhaseMeta, myPanelList, 4);
+        appendRecommendCfTrackPanelList(personalPhaseMeta, myPanelList);
         appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
 
         if(!CollectionUtils.isEmpty(myPanelList)){
@@ -69,7 +69,7 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
                         tempImageInfo = myPanel.getImgList().get(1);
                     }
 
-                    myPanel.setImgList(Arrays.asList(tempImageInfo));
+                    myPanel.setImgList(Collections.singletonList(tempImageInfo));
                 }
 
             }
@@ -81,10 +81,12 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
 
     }
 
-    public void appendRecommendCfTrackPanelList(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int panelLimitSize) {
+    private void appendRecommendCfTrackPanelList(PersonalPhaseMeta personalPhaseMeta,
+            final List<Panel> panelList) {
 
         List<RecommendTrackDto> recommendCfTrackList =
-                Optional.ofNullable(recommendReadMapper.selectRecommendCfTrackListByCharacterNo(personalPhaseMeta.getCharacterNo(), panelLimitSize, RCMMD_CF_TRACK_LIMIT_SIZE, personalPhaseMeta.getOsType()))
+                Optional.ofNullable(recommendReadMapper.selectRecommendCfTrackListByCharacterNo(personalPhaseMeta.getCharacterNo(),
+                        4, RCMMD_CF_TRACK_LIMIT_SIZE, personalPhaseMeta.getOsType()))
                 .orElseGet(Collections::emptyList);
 
         for(RecommendTrackDto recommendTrackDto :
@@ -93,14 +95,10 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
                     .filter(Objects::nonNull)
                     .sorted(Comparator.comparing(RecommendTrackDto::getRcmmdCreateDtime).reversed()).collect(Collectors.toList())) {
             try {
-                RcmmdTrackPanel rcmmdTrackPanel = createRecommendCfTrackPanel(personalPhaseMeta,
-                        recommendTrackDto);
-                rcmmdTrackPanel.makeSeedInfo();
-                panelList.add(rcmmdTrackPanel);
+                panelList.add(createRecommendCfTrackPanel(personalPhaseMeta, recommendTrackDto));
 
             } catch (Exception e) {
-                log.error("RecommendPhasePanelAssembly appendRecommendCfTrackPanelList error : {}",
-                        e.getMessage());
+                log.error("RecommendPhasePanelAssembly appendRecommendCfTrackPanelList error : {}", e.getMessage());
             }
         }
 
@@ -120,7 +118,7 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
 
         List<Panel> panelList = new ArrayList<>();
 
-        appendRecommendCfTrackPanelList(personalPhaseMeta, panelList, 4);
+        appendRecommendCfTrackPanelList(personalPhaseMeta, panelList);
 
         return panelList;
 
