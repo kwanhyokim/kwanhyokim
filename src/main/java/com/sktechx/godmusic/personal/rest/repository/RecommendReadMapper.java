@@ -92,7 +92,7 @@ public interface RecommendReadMapper {
     RecommendDuplicateCountDto selectPreferGenreSimilarTrackPanelBetweenDuplicateCount(@Param("characterNo") Long characterNo);
 
 
-    // 좋아할만한 아티스트 MIX에서 최신 전시일 가져오기
+    // 아티스트 FLO에서 최신 전시일 가져오기
     Date selectRecommendArtistMostRecentDispDateByCharacterNo(@Param("characterNo") Long characterNo);
 
     // 2-C 선호 아티스트 인기곡 리스트 by characterNo
