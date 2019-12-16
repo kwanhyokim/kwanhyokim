@@ -27,7 +27,7 @@ import lombok.Data;
 @ApiModel(value = "추천 데이터 생성 파라미터")
 public class RecommendV2DummyDataRequest {
     @NotNull
-    @ApiModelProperty(required = true, example = "RC_SML_TR", value = "오늘의 플로(RC_SML_TR), 나를 위한 새로운 발견(RC_CF_TR), 좋아할만한 아티스트 MIX(RC_ATST_TR)")
+    @ApiModelProperty(required = true, example = "RC_SML_TR", value = "오늘의 플로(RC_SML_TR), 나를 위한 FLO(RC_CF_TR), 아티스트 FLO(RC_ATST_TR)")
     private String type;
     @NotNull
     @ApiModelProperty(required = true, example = "10", value = "단계별 패널 개수")
