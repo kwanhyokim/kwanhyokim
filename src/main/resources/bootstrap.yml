@@ -84,10 +84,5 @@ spring:
       uri: http://172.21.100.210:8888
       label: master
 
-  datasource:
-    archive-db:
-      minimum-idle: 1
-      maximum-pool-size: 10
-
 server:
   port: 8080
