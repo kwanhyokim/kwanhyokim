@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2019 DREAMUS COMPANY.
  * All right reserved.
+ *
  * This software is the confidential and proprietary information of DREAMUS COMPANY.
  * You shall not disclose such Confidential Information and
  * shall use it only in accordance with the terms of the license agreement
@@ -9,113 +10,104 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.video;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sktechx.godmusic.lib.domain.code.YnType;
-import com.sktechx.godmusic.personal.common.domain.type.BitrateType;
 import com.sktechx.godmusic.personal.common.domain.type.OsType;
-import com.sktechx.godmusic.personal.common.domain.type.SourceType;
-import com.sktechx.godmusic.personal.common.domain.type.TrackLogType;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
+import lombok.ToString;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.Arrays;
+import java.util.Optional;
 
 @Data
 @Builder
 @ToString
 public class ResourcePlayLogRequest {
+    @NotNull
+    @ApiModelProperty(name = "resourceId", value = "리소스 ID ex) Video Meta의 videoId")
+    private Long resourceId;
 
-	public enum LogType {
-		/**
-		 * 영상 시청 시작
-		 */
-		STRT("STRT"),
+    @NotBlank
+    @ApiModelProperty(name = "logType", value = "로그 타입 - STRT | 1MIN | MEND", allowableValues = "STRT | 1MIN | MEND")
+    private String logType;
 
-		/**
-		 * 영상 1분 시청
-		 */
-		ONEMIN("1MIN"),
+    @NotBlank
+    @ApiModelProperty(name = "quality", value = "영상 해상도 - 480p | 720p | 1080p", allowableValues = "480P | 720P | 1080P")
+    private String quality;
 
-		/**
-		 * 영상 시청 종료
-		 */
-		MEND("MEND"),
+    @NotNull
+    @ApiModelProperty(name = "osType", value = "OS Type(ALL, AOS, IOS, WEB)", allowableValues = "ALL, AOS, IOS, WEB")
+    private OsType osType;
 
-		/**
-		 * 사용자 스킵
-		 */
-		USKP("USKP")
-		;
+    @Min(0)
+    @Max(value = Long.MAX_VALUE)
+    @ApiModelProperty(name = "duration", value = "리소스 Play Time - Duration(초단위)")
+    private Long duration;
 
-		@Getter
-		private final String code;
+    @Min(0)
+    @Max(value = Long.MAX_VALUE)
+    @ApiModelProperty(name = "runningTimeSecs", value = "리소스 전체 Play 길이(초단위), 못 구할 시 0 입력")
+    private Long runningTimeSecs;
 
-		LogType(String code) {
-			this.code = code;
-		}
+    @NotNull
+    @ApiModelProperty(name = "freeYn", value = "무료 여부(Y, N)", allowableValues = "Y | N")
+    private YnType freeYn;
 
-		public static LogType fromCode(String code) {
-			return Arrays.stream(LogType.values())
-					.filter(e -> e.getCode().equalsIgnoreCase(code))
-					.findFirst().orElse(null);
-		}
-	}
+    @ApiModelProperty(name = "albumId", value = "앨범 ID")
+    private Long albumId;
 
-	@NotNull
-	@ApiModelProperty(name = "resourceId", value = "리소스 ID ex) Video Meta의 videoId")
-	private Long resourceId;
+    @ApiModelProperty(name = "channelId", value = "채널 ID")
+    private Long channelId;
 
-	@NotBlank
-	@ApiModelProperty(name = "logType", value = "로그 타입 - STRT | 1MIN | MEND", allowableValues = "STRT | 1MIN | MEND")
-	private String logType;
+    @ApiModelProperty(name = "channelType", value = "채널 Type")
+    private String channelType;
 
-	@NotBlank
-	@ApiModelProperty(name = "quality", value = "영상 해상도 - 480p | 720p | 1080p", allowableValues = "480P | 720P | 1080P")
-	private String quality;
+    @ApiModelProperty(name = "recommendTrackId", value = "추천곡 ID")
+    private Long recommendTrackId;
 
-	@NotNull
-	@ApiModelProperty(name = "osType", value = "OS Type(ALL, AOS, IOS, WEB)", allowableValues = "ALL, AOS, IOS, WEB")
-	private OsType osType;
+    @ApiModelProperty(name = "addDateTime", value = "추가 시간")
+    private String addDateTime;
 
-	@Min(0)
-	@Max(value = Long.MAX_VALUE)
-	@ApiModelProperty(name = "duration", value = "리소스 Play Time - Duration(초단위)")
-	private Long duration;
+    @ApiModelProperty(name = "sourceType", value = "소스 타입 - VIDEO_MV | VIDEO_TEASER | VIDEO_SPECIAL | VIDEO_LIVE | VIDEO_INTERVIEW | VIDEO_ETC")
+    private String sourceType;
 
-	@Min(0)
-	@Max(value = Long.MAX_VALUE)
-	@ApiModelProperty(name = "runningTimeSecs", value = "리소스 전체 Play 길이(초단위), 못 구할 시 0 입력")
-	private Long runningTimeSecs;
+    @ApiModelProperty(name = "ownerToken", value = "파일 원천 정보")
+    private String ownerToken;
 
-	@NotNull
-	@ApiModelProperty(name = "freeYn", value = "무료 여부(Y, N)", allowableValues = "Y | N")
-	private YnType freeYn;
+    @ApiModelProperty(name = "sessionId", value = "세션 아이디")
+    private String sessionId;
 
-	@ApiModelProperty(name = "channelId", value = "채널 ID")
-	private Long channelId;
+    @ApiModelProperty(name = "sttToken", value = "정산 토큰")
+    private String sttToken;
 
-	@ApiModelProperty(name = "channelType", value = "채널 Type")
-	private String channelType;
+    @ApiModelProperty(name = "cachedToken", value = "캐시드 토큰")
+    private String cachedToken;
 
-	@ApiModelProperty(name = "addDateTime", value = "추가 시간")
-	private String addDateTime;
+    @JsonProperty(defaultValue = "N")
+    @ApiModelProperty(name = "playOfflineYn", value = "오프라인 여부(Y, N)")
+    private YnType playOfflineYn;
 
-	@ApiModelProperty(name = "sourceType", value = "소스 타입 - VIDEO_MV | VIDEO_TEASER | VIDEO_SPECIAL | VIDEO_LIVE | VIDEO_INTERVIEW | VIDEO_ETC")
-	private String sourceType;
+    @JsonProperty(defaultValue = "N")
+    @ApiModelProperty(name = "playCacheYn", value = "Cache 여부(Y, N)")
+    private YnType playCacheYn;
 
-	@ApiModelProperty(name = "ownerToken", value = "파일 원천 정보")
-	private String ownerToken;
+    @ApiModelProperty(name = "offlineStartDtime", value = "오프라인 시작 일시")
+    private String offlineStartDtime;
 
-	@ApiModelProperty(name = "sessionId", value = "세션 아이디")
-	private String sessionId;
+    @ApiModelProperty(name = "metaCacheUpdateDtime", value = "meta cache 업데이트 일시")
+    private String metaCacheUpdateDtime;
 
-	@ApiModelProperty(name = "sttToken", value = "정산 토큰")
-	private String sttToken;
+    public boolean isFree() {
+        return YnType.Y == freeYn;
+    }
 
-	public boolean isFree() {
-		return YnType.Y == freeYn;
-	}
+    public String getOsTypeToStr() {
+        return Optional.ofNullable(osType).map(OsType::getCode).orElse("");
+    }
+
 }
