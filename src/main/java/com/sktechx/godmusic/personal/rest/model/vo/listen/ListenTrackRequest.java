@@ -1,9 +1,7 @@
 package com.sktechx.godmusic.personal.rest.model.vo.listen;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Strings;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.domain.type.BitrateType;
@@ -15,6 +13,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import java.util.Optional;
 
 /**
  * Created by Kobe.
@@ -33,31 +35,50 @@ public class ListenTrackRequest {
 	private Long trackId;
 
 	@NotNull
-	@ApiModelProperty(name = "trackLogType", value = "로그 타입 (STRT:곡시작 , 1MIN:1분청취, MEND:곡종료, USKP:유저스킵(미확정))",
-			allowableValues = "STRT, 1MIN, MEND, USKP")
+	@ApiModelProperty(
+			name = "trackLogType",
+			value = "로그 타입 (STRT:곡시작, 1MIN:1분청취, MEND:곡종료, USKP:유저스킵(미확정))",
+			allowableValues = "STRT, 1MIN, MEND, USKP"
+	)
 	private TrackLogType trackLogType;
 
 	@NotNull
-	@ApiModelProperty(name = "bitrate", value = "재생할 비트레이트(aac, 192k, 320k, flac16bit, flac24bit)",
-			allowableValues = "aac, 192k, 320k, flac16bit, flac24bit")
+	@ApiModelProperty(
+			name = "bitrate",
+			value = "재생할 비트레이트(aac, 192k, 320k, flac16bit, flac24bit)",
+			allowableValues = "aac, 192k, 320k, flac16bit, flac24bit"
+	)
 	private BitrateType bitrate;
 
 	@NotNull
-	@ApiModelProperty(name = "osType", value = "OS Type(ALL, AOS, IOS, WEB)",
-			allowableValues = "ALL, AOS, IOS, WEB")
+	@ApiModelProperty(
+			name = "osType",
+			value = "OS Type(ALL, AOS, IOS, WEB)",
+			allowableValues = "ALL, AOS, IOS, WEB"
+	)
 	private OsType osType;
 
 	@NotNull
-	@ApiModelProperty(name = "elapsedSec", value = "트랙 현재 들은 길이(초단위)")
+	@ApiModelProperty(
+			name = "elapsedSec",
+			value = "트랙 현재 들은 길이(초단위)"
+	)
 	private Long elapsedSec;
 
 	@NotNull
 	@Min(1)
-	@ApiModelProperty(name = "trackTotalSec", value = "트랙 전체 길이(초단위), 못 구할 시 0 입력")
+	@ApiModelProperty(
+			name = "trackTotalSec",
+			value = "트랙 전체 길이(초단위), 못 구할 시 0 입력"
+	)
 	private Long trackTotalSec;
 
 	@NotNull
-	@ApiModelProperty(name = "freeYn", value = "무료곡 여부(Y, N)", allowableValues = "Y, N")
+	@ApiModelProperty(
+			name = "freeYn",
+			value = "무료곡 여부(Y, N)",
+			allowableValues = "Y, N"
+	)
 	private YnType freeYn;
 
 	@ApiModelProperty(name = "albumId", value = "앨범 ID")
@@ -86,6 +107,43 @@ public class ListenTrackRequest {
 
 	@ApiModelProperty(name = "sttToken", value = "정산 토큰")
 	private String sttToken;
+
+	@ApiModelProperty(name = "cachedToken", value = "캐시드 토큰")
+	private String cachedToken;
+
+	@JsonProperty(defaultValue = "N")
+	@ApiModelProperty(name = "playOfflineYn", value = "오프라인 여부(Y, N)")
+	private YnType playOfflineYn;
+
+	@JsonProperty(defaultValue = "N")
+	@ApiModelProperty(name = "playCacheYn", value = "Cache 여부(Y, N)")
+	private YnType playCacheYn;
+
+	@ApiModelProperty(name = "offlineStartDtime", value = "오프라인 시작 일시")
+	private String offlineStartDtime;
+
+	@ApiModelProperty(name = "metaCacheUpdateDtime", value = "meta cache 업데이트 일시")
+	private String metaCacheUpdateDtime;
+
+	public String getTrackLogTypeToStr() {
+		return Optional.ofNullable(trackLogType)
+				.map(TrackLogType::getCode)
+				.orElse("");
+	}
+
+	public String getBitrateToStr() {
+		return Optional.ofNullable(bitrate)
+				.map(BitrateType::getCode)
+				.orElse(BitrateType.UNKNOWN.getCode());
+	}
+
+	public String getOsTypeToStr() {
+		return Optional.ofNullable(osType).map(OsType::getCode).orElse("");
+	}
+
+	public String getSourceTypeToStr() {
+		return Optional.ofNullable(sourceType).map(SourceType::getCode).orElse(null);
+	}
 
 	@JsonIgnore
 	public boolean hasSttToken() {
