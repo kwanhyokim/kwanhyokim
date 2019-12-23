@@ -35,31 +35,50 @@ public class ListenTrackRequest {
 	private Long trackId;
 
 	@NotNull
-	@ApiModelProperty(name = "trackLogType", value = "로그 타입 (STRT:곡시작, 1MIN:1분청취, MEND:곡종료, USKP:유저스킵(미확정))",
-			allowableValues = "STRT, 1MIN, MEND, USKP")
+	@ApiModelProperty(
+			name = "trackLogType",
+			value = "로그 타입 (STRT:곡시작, 1MIN:1분청취, MEND:곡종료, USKP:유저스킵(미확정))",
+			allowableValues = "STRT, 1MIN, MEND, USKP"
+	)
 	private TrackLogType trackLogType;
 
 	@NotNull
-	@ApiModelProperty(name = "bitrate", value = "재생할 비트레이트(aac, 192k, 320k, flac16bit, flac24bit)",
-			allowableValues = "aac, 192k, 320k, flac16bit, flac24bit")
+	@ApiModelProperty(
+			name = "bitrate",
+			value = "재생할 비트레이트(aac, 192k, 320k, flac16bit, flac24bit)",
+			allowableValues = "aac, 192k, 320k, flac16bit, flac24bit"
+	)
 	private BitrateType bitrate;
 
 	@NotNull
-	@ApiModelProperty(name = "osType", value = "OS Type(ALL, AOS, IOS, WEB)",
-			allowableValues = "ALL, AOS, IOS, WEB")
+	@ApiModelProperty(
+			name = "osType",
+			value = "OS Type(ALL, AOS, IOS, WEB)",
+			allowableValues = "ALL, AOS, IOS, WEB"
+	)
 	private OsType osType;
 
 	@NotNull
-	@ApiModelProperty(name = "elapsedSec", value = "트랙 현재 들은 길이(초단위)")
+	@ApiModelProperty(
+			name = "elapsedSec",
+			value = "트랙 현재 들은 길이(초단위)"
+	)
 	private Long elapsedSec;
 
 	@NotNull
 	@Min(1)
-	@ApiModelProperty(name = "trackTotalSec", value = "트랙 전체 길이(초단위), 못 구할 시 0 입력")
+	@ApiModelProperty(
+			name = "trackTotalSec",
+			value = "트랙 전체 길이(초단위), 못 구할 시 0 입력"
+	)
 	private Long trackTotalSec;
 
 	@NotNull
-	@ApiModelProperty(name = "freeYn", value = "무료곡 여부(Y, N)", allowableValues = "Y, N")
+	@ApiModelProperty(
+			name = "freeYn",
+			value = "무료곡 여부(Y, N)",
+			allowableValues = "Y, N"
+	)
 	private YnType freeYn;
 
 	@ApiModelProperty(name = "albumId", value = "앨범 ID")

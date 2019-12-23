@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.model.vo.video;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.domain.type.OsType;
 import io.swagger.annotations.ApiModelProperty;
@@ -24,38 +25,67 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
+/**
+ * 통합 ResourcePlayLog 클래스 (트랙, 비디오. 오디오 등 모두 포함)
+ */
 @Data
 @Builder
 @ToString
+@JsonPropertyOrder({"resourceId", "logType", "quality", "osType", "duration", "runningTimeSecs", "freeYn"})
 public class ResourcePlayLogRequest {
     @NotNull
-    @ApiModelProperty(name = "resourceId", value = "리소스 ID ex) Video Meta의 videoId")
+    @ApiModelProperty(
+            name = "resourceId",
+            value = "리소스 ID ex) videoId || trackId"
+    )
     private Long resourceId;
 
     @NotBlank
-    @ApiModelProperty(name = "logType", value = "로그 타입 - STRT | 1MIN | MEND", allowableValues = "STRT | 1MIN | MEND")
+    @ApiModelProperty(
+            name = "logType",
+            value = "로그 타입 - STRT | 1MIN | MEND",
+            allowableValues = "STRT | 1MIN | MEND"
+    )
     private String logType;
 
     @NotBlank
-    @ApiModelProperty(name = "quality", value = "영상 해상도 - 480p | 720p | 1080p", allowableValues = "480P | 720P | 1080P")
+    @ApiModelProperty(
+            name = "quality",
+            value = "영상 해상도 또는 재생할 비트레이트 - aac | 192k | 320k | flac16bit | flac24bit | 480p | 720p | 1080p",
+            allowableValues = "aac | 192k | 320k | flac16bit | flac24bit | 480P | 720P | 1080P"
+    )
     private String quality;
 
     @NotNull
-    @ApiModelProperty(name = "osType", value = "OS Type(ALL, AOS, IOS, WEB)", allowableValues = "ALL, AOS, IOS, WEB")
+    @ApiModelProperty(
+            name = "osType",
+            value = "OS Type(ALL, AOS, IOS, WEB)",
+            allowableValues = "ALL, AOS, IOS, WEB"
+    )
     private OsType osType;
 
     @Min(0)
     @Max(value = Long.MAX_VALUE)
-    @ApiModelProperty(name = "duration", value = "리소스 Play Time - Duration(초단위)")
+    @ApiModelProperty(
+            name = "duration",
+            value = "리소스 Play Time - Duration(초단위)"
+    )
     private Long duration;
 
     @Min(0)
     @Max(value = Long.MAX_VALUE)
-    @ApiModelProperty(name = "runningTimeSecs", value = "리소스 전체 Play 길이(초단위), 못 구할 시 0 입력")
+    @ApiModelProperty(
+            name = "runningTimeSecs",
+            value = "리소스 전체 Play 길이(초단위), 못 구할 시 0 입력"
+    )
     private Long runningTimeSecs;
 
     @NotNull
-    @ApiModelProperty(name = "freeYn", value = "무료 여부(Y, N)", allowableValues = "Y | N")
+    @ApiModelProperty(
+            name = "freeYn",
+            value = "무료 여부(Y, N)",
+            allowableValues = "Y | N"
+    )
     private YnType freeYn;
 
     @ApiModelProperty(name = "albumId", value = "앨범 ID")
@@ -73,7 +103,10 @@ public class ResourcePlayLogRequest {
     @ApiModelProperty(name = "addDateTime", value = "추가 시간")
     private String addDateTime;
 
-    @ApiModelProperty(name = "sourceType", value = "소스 타입 - VIDEO_MV | VIDEO_TEASER | VIDEO_SPECIAL | VIDEO_LIVE | VIDEO_INTERVIEW | VIDEO_ETC")
+    @ApiModelProperty(
+            name = "sourceType",
+            value = "소스 타입 - STRM | DN | VIDEO_MV | VIDEO_TEASER | VIDEO_SPECIAL | VIDEO_LIVE | VIDEO_INTERVIEW | VIDEO_ETC"
+    )
     private String sourceType;
 
     @ApiModelProperty(name = "ownerToken", value = "파일 원천 정보")
@@ -85,7 +118,7 @@ public class ResourcePlayLogRequest {
     @ApiModelProperty(name = "sttToken", value = "정산 토큰")
     private String sttToken;
 
-    @ApiModelProperty(name = "cachedToken", value = "캐시드 토큰")
+    @ApiModelProperty(name = "cachedToken", value = "캐시드 스트리밍 토큰")
     private String cachedToken;
 
     @JsonProperty(defaultValue = "N")

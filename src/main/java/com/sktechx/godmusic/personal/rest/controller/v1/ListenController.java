@@ -14,11 +14,14 @@ import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.common.domain.type.AppNameType;
+import com.sktechx.godmusic.personal.common.domain.type.SourceType;
+import com.sktechx.godmusic.personal.common.resolver.ResourcePlayLogResolver;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenTrackRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.SourcePlayLogGMContextVo;
 import com.sktechx.godmusic.personal.rest.model.vo.video.ResourcePlayLogRequest;
 import com.sktechx.godmusic.personal.rest.service.ListenService;
+import com.sktechx.godmusic.personal.rest.service.ResourcePlayLogService;
 import com.sktechx.godmusic.personal.rest.validate.Validator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -52,11 +55,16 @@ public class ListenController {
     @Autowired
     private ListenService listenService;
 
+    @Autowired
+    private ResourcePlayLogResolver resourcePlayLogResolver;
+
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @ApiOperation(value = "Resource 청취 로그", notes = "Resource 재생(청취) (ex.영상) 로그를 MQ 로 남김")
     @PostMapping("/resource")
-    public CommonApiResponse addListenVideoHist(@Valid @RequestBody ResourcePlayLogRequest request,
-                                                HttpServletRequest httpServletRequest) {
+    public CommonApiResponse addListenHistByResource(@Valid @RequestBody ResourcePlayLogRequest request,
+                                                     HttpServletRequest httpServletRequest) {
         GMContext currentContext = GMContext.getContext();
+        SourceType sourceType = SourceType.fromCode(request.getSourceType());
         Validator.loginValidate(currentContext);
         log.debug("[RESOURCE 청취 로그] request={}", request);
 
@@ -68,8 +76,12 @@ public class ListenController {
                 .userClientIp(Optional.ofNullable(httpServletRequest.getHeader("client_ip")).orElse(""))
                 .build();
 
+        // TODO Resolver 적용
+        ResourcePlayLogService resolver = resourcePlayLogResolver.findResolver(sourceType).get();
+        log.info("[RESOURCE] Resolver에 의해 DI된 Service={}", resolver);
+        resolver.deliverResourcePlayLog(sourcePlayLogGMContextVo, request);
+
 //        listenService.addPlayHistoryByResource(request, currentContext, httpServletRequest);    // 기존
-//        resourcePlayLogService.deliverResourcePlayLog(sourcePlayLogGMContextVo, request);
         return CommonApiResponse.emptySuccess();
     }
 

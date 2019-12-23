@@ -22,9 +22,9 @@ import com.sktechx.godmusic.personal.rest.model.vo.video.ResourcePlayLogRequest;
  */
 public interface ResourcePlayLogService {
 
+    SourceType shouldHandle();
+
     void deliverResourcePlayLog(SourcePlayLogGMContextVo sourcePlayLogGMContextVo,
                                 ResourcePlayLogRequest request);
-
-    SourceType shouldHandle();
 
 }

@@ -8,12 +8,10 @@
  * you entered into with DREAMUS COMPANY.
  */
 
-package com.sktechx.godmusic.personal.rest.service.impl;
+package com.sktechx.godmusic.personal.rest.util;
 
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
-import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
-import com.sktechx.godmusic.personal.common.domain.type.ResourceLogType;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SettlementInfoDto;
@@ -22,47 +20,44 @@ import com.sktechx.godmusic.personal.rest.model.vo.drm.OwnerTokenClaim;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.SettlementToken;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.SourcePlayLogGMContextVo;
 import com.sktechx.godmusic.personal.rest.model.vo.video.ResourcePlayLogRequest;
-import com.sktechx.godmusic.personal.rest.service.*;
+import com.sktechx.godmusic.personal.rest.service.DrmService;
+import com.sktechx.godmusic.personal.rest.service.McpService;
+import com.sktechx.godmusic.personal.rest.service.SettlementService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 /**
- * 설명 : 곡 청취 로그 Service
+ * 설명 : SourcePlayLogBuilder 집합
  *
  * @author groot
- * @since 2019. 12. 20
+ * @since 2019. 12. 23
  */
 @Slf4j
-@Service
-public class TrackResourcePlayLogServiceImpl implements ResourcePlayLogService {
+@Component
+public class SourcePlayLogBuilderUtils {
 
-    @Autowired
-    private SettlementService settlementService;
+    private final SettlementService settlementService;
+    private final McpService mcpService;
+    private final DrmService drmService;
 
-    @Autowired
-    private McpService mcpService;
+    public SourcePlayLogBuilderUtils(SettlementService settlementService,
+                                     McpService mcpService,
+                                     DrmService drmService) {
+        this.settlementService = settlementService;
+        this.mcpService = mcpService;
+        this.drmService = drmService;
+    }
 
-    @Autowired
-    private DrmService drmService;
-
-    @Autowired
-    private AmqpService amqpService;
-
-    @Autowired
-    private UserEventService userEventService;
-
-    @Override
-    public void deliverResourcePlayLog(SourcePlayLogGMContextVo sourcePlayLogGMContextVo,
-                                       ResourcePlayLogRequest request) {
-        SourcePlayLog sourcePlayLog = SourcePlayLog.builder()
-                .playChnl(sourcePlayLogGMContextVo.getPlayChnl())
+    public SourcePlayLog buildBasicSourcePlayLogByTrack(SourcePlayLogGMContextVo gmContextVo,
+                                                        ResourcePlayLogRequest request) {
+        return SourcePlayLog.builder()
+                .playChnl(gmContextVo.getPlayChnl())
                 .sessionId(request.getSessionId())
                 .timeMillis(System.currentTimeMillis())
-                .memberNo(sourcePlayLogGMContextVo.getMemberNo())
-                .characterNo(sourcePlayLogGMContextVo.getCharacterNo())
+                .memberNo(gmContextVo.getMemberNo())
+                .characterNo(gmContextVo.getCharacterNo())
                 .sourceType(SourceType.fromCode(request.getSourceType()))
                 .trackId(request.getResourceId())
                 .sourceId(String.valueOf(request.getResourceId()))
@@ -72,7 +67,7 @@ public class TrackResourcePlayLogServiceImpl implements ResourcePlayLogService {
                 .trackTotTm(request.getRunningTimeSecs())
                 .elapsedTm(request.getDuration())
                 .osType(request.getOsTypeToStr())
-                .dvcId(sourcePlayLogGMContextVo.getDeviceId())
+                .dvcId(gmContextVo.getDeviceId())
                 .albumId(request.getAlbumId())
                 .chnlId(request.getChannelId())
                 .chnlType(request.getChannelType())
@@ -80,46 +75,21 @@ public class TrackResourcePlayLogServiceImpl implements ResourcePlayLogService {
                 .addTm(request.getAddDateTime())
                 .free(request.isFree())
                 .sessionToken("")
-                .userClientIp(sourcePlayLogGMContextVo.getUserClientIp())
+                .userClientIp(gmContextVo.getUserClientIp())
                 .ownerToken(request.getOwnerToken())
                 .metaCacheUpdateDtime(request.getMetaCacheUpdateDtime())        // 캐시드 스트리밍
                 .offlineStartDtime(request.getOfflineStartDtime())              // 캐시드 스트리밍
                 .playOfflineYn(request.getPlayOfflineYn())                      // 캐시드 스트리밍
                 .playCacheYn(request.getPlayCacheYn())                          // 캐시드 스트리밍
                 .build();
-
-        // TODO cachedToken을 활용해서 캐시드 스트리밍 처리해야함
-
-        SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder = sourcePlayLog.toBuilder();
-        log.info("[TRACK 청취 로그] makeTrackListenLog START");
-        if (ResourceLogType.ONEMIN == ResourceLogType.fromCode(request.getLogType())) {
-            sourcePlayLogBuilder = this.buildOneMinListenTrackLog(sourcePlayLogGMContextVo, request, sourcePlayLogBuilder);
-        }
-
-        if (SourceType.DN == SourceType.fromCode(request.getSourceType())) {
-            sourcePlayLogBuilder = this.buildDrmListenTrackLog(request, sourcePlayLogBuilder);
-        }
-
-        if (YnType.Y == request.getFreeYn()) {
-            sourcePlayLogBuilder.free(true);
-        }
-
-        amqpService.deliverSourcePlay(sourcePlayLogBuilder.build());
-        log.info("[TRACK 청취로그][MQ 발송] {}", sourcePlayLogBuilder.toString());
-        userEventService.deliverUserEventByTrackListenLog(sourcePlayLogGMContextVo, request);
-    }
-
-    @Override
-    public SourceType shouldHandle() {
-        return SourceType.STRM;
     }
 
     /**
      * 곡 ONEMIN 청취 로그 만들기 (sttToken == null || sttToken != null 2가지 케이스로 분기됨)
      */
-    private SourcePlayLog.SourcePlayLogBuilder buildOneMinListenTrackLog(SourcePlayLogGMContextVo sourcePlayLogGMContextVo,
-                                                                         ResourcePlayLogRequest request,
-                                                                         SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
+    public SourcePlayLog.SourcePlayLogBuilder buildOneMinListenTrackLog(SourcePlayLogGMContextVo gmContextVo,
+                                                                        ResourcePlayLogRequest request,
+                                                                        SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
         SettlementToken sttToken = settlementService.parseSettlementToken(request.getSttToken());
 
         if (null != sttToken) {
@@ -130,18 +100,17 @@ public class TrackResourcePlayLogServiceImpl implements ResourcePlayLogService {
                     .prchsId(sttToken.getPurchaseId())
                     .goodsId(sttToken.getGoodsId());
         }
-        return this.checkSourceFreeYnWithAppendSttInfo(sourcePlayLogGMContextVo, request, sourcePlayLogBuilder);
+        return this.checkSourceFreeYnWithAppendSttInfo(gmContextVo, request, sourcePlayLogBuilder);
     }
 
     /**
      * 무료곡인 경우, MCP를 조회하여 MCP 쪽 svcCd를 청취 로그의 serviceId로 넘긴다.
      * (무료곡인 경우는 정산쪽의 serviceId와 MCP의 serviceId(svcCd)가 다르기 때문에)
      */
-    private SourcePlayLog.SourcePlayLogBuilder checkSourceFreeYnWithAppendSttInfo(SourcePlayLogGMContextVo sourcePlayLogGMContextVo,
+    private SourcePlayLog.SourcePlayLogBuilder checkSourceFreeYnWithAppendSttInfo(SourcePlayLogGMContextVo gmContextVo,
                                                                                   ResourcePlayLogRequest request,
                                                                                   SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
         log.debug("[TRACK 청취로그][sttToken 없음]");
-
         String serviceId = null;
         Long purchaseId = null;
         Long goodsId = null;
@@ -151,7 +120,7 @@ public class TrackResourcePlayLogServiceImpl implements ResourcePlayLogService {
         String bitrate = request.getQuality();
         String osType = request.getOsTypeToStr();
 
-        SettlementInfoDto settlementInfo = settlementService.getSettlementInfo(sourcePlayLogGMContextVo.getMemberNo(), sourceType);
+        SettlementInfoDto settlementInfo = settlementService.getSettlementInfo(gmContextVo.getMemberNo(), sourceType);
 
         if (YnType.Y == request.getFreeYn()) {
             serviceId = mcpService.getServiceCodeFromMCP(trackId, bitrate, osType);
@@ -189,8 +158,8 @@ public class TrackResourcePlayLogServiceImpl implements ResourcePlayLogService {
     /**
      * DRM 곡의 경우
      */
-    private SourcePlayLog.SourcePlayLogBuilder buildDrmListenTrackLog(ResourcePlayLogRequest request,
-                                                                      SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
+    public SourcePlayLog.SourcePlayLogBuilder buildDrmListenTrackLog(ResourcePlayLogRequest request,
+                                                                     SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
         String ownerToken = request.getOwnerToken();
         if (StringUtils.isEmpty(ownerToken)) {
             log.warn("OwnerToken 없음 (DRM 스트리밍)");
@@ -209,6 +178,59 @@ public class TrackResourcePlayLogServiceImpl implements ResourcePlayLogService {
                 .drmServiceId(ownerTokenClaim.getServiceId())
                 .drmPrchsId(ownerTokenClaim.getPurchaseId())
                 .drmGoodsId(ownerTokenClaim.getGoodsId());
+    }
+
+    public SourcePlayLog buildBasicSourcePlayLogByVideo(SourcePlayLogGMContextVo gmContextVo,
+                                                        ResourcePlayLogRequest request) {
+        return SourcePlayLog.builder()
+                .playChnl(gmContextVo.getPlayChnl())
+                .sessionId(request.getSessionId())
+                .timeMillis(System.currentTimeMillis())
+                .memberNo(gmContextVo.getMemberNo())
+                .characterNo(gmContextVo.getCharacterNo())
+                .sourceType(SourceType.fromCode(request.getSourceType()))
+                .sourceId(String.valueOf(request.getResourceId()))
+                .logType(request.getLogType())
+                .bitrate(request.getQuality())
+                .quality(request.getQuality())
+                .trackTotTm(request.getRunningTimeSecs())
+                .elapsedTm(request.getDuration())
+                .osType(request.getOsTypeToStr())
+                .dvcId(gmContextVo.getDeviceId())
+                .chnlId(request.getChannelId())
+                .chnlType(request.getChannelType())
+                .memberRcmdId(null)
+                .addTm(request.getAddDateTime())
+                .free(request.isFree())
+                .sessionToken(null)
+                .userClientIp(gmContextVo.getUserClientIp())
+                .ownerToken(request.getOwnerToken())
+                .metaCacheUpdateDtime(null)
+                .offlineStartDtime(null)
+                .playOfflineYn(null)
+                .playCacheYn(null)
+                .build();
+    }
+
+    /**
+     * 비디오 ONEMIN 청취 로그 만들기
+     */
+    public SourcePlayLog.SourcePlayLogBuilder buildOneMinVideoPlayLog(ResourcePlayLogRequest request,
+                                                                      SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
+        SettlementToken sttToken = settlementService.parseSettlementToken(request.getSttToken());
+        String serviceId = sttToken.getServiceId();
+        SourceType sourceType = SourceType.fromCode(request.getSourceType());
+
+        if (SourceType.VIDEO_MV == sourceType && StringUtils.isEmpty(serviceId)) {
+            log.warn("[1분 리소스 청취로그] 정산정보 없음");
+            throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
+        }
+
+        return sourcePlayLogBuilder
+                .pssrlCd(serviceId)
+                .serviceId(serviceId)
+                .prchsId(sttToken.getPurchaseId())
+                .goodsId(sttToken.getGoodsId());
     }
 
 }
