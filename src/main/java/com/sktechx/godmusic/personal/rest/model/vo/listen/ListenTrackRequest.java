@@ -1,7 +1,6 @@
 package com.sktechx.godmusic.personal.rest.model.vo.listen;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Strings;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.domain.type.BitrateType;
@@ -31,14 +30,20 @@ import java.util.Optional;
 @AllArgsConstructor
 public class ListenTrackRequest {
 	@NotNull
-	@ApiModelProperty(name = "trackId", value = "곡 ID")
+	@ApiModelProperty(
+			name = "trackId",
+			value = "곡 ID",
+			example = "31228110",
+			position = 1
+	)
 	private Long trackId;
 
 	@NotNull
 	@ApiModelProperty(
 			name = "trackLogType",
 			value = "로그 타입 (STRT:곡시작, 1MIN:1분청취, MEND:곡종료, USKP:유저스킵(미확정))",
-			allowableValues = "STRT, 1MIN, MEND, USKP"
+			allowableValues = "STRT, 1MIN, MEND, USKP",
+			example = "MEND"
 	)
 	private TrackLogType trackLogType;
 
@@ -46,7 +51,8 @@ public class ListenTrackRequest {
 	@ApiModelProperty(
 			name = "bitrate",
 			value = "재생할 비트레이트(aac, 192k, 320k, flac16bit, flac24bit)",
-			allowableValues = "aac, 192k, 320k, flac16bit, flac24bit"
+			allowableValues = "aac, 192k, 320k, flac16bit, flac24bit",
+			example = "aac"
 	)
 	private BitrateType bitrate;
 
@@ -54,14 +60,16 @@ public class ListenTrackRequest {
 	@ApiModelProperty(
 			name = "osType",
 			value = "OS Type(ALL, AOS, IOS, WEB)",
-			allowableValues = "ALL, AOS, IOS, WEB"
+			allowableValues = "ALL, AOS, IOS, WEB",
+			example = "AOS"
 	)
 	private OsType osType;
 
 	@NotNull
 	@ApiModelProperty(
 			name = "elapsedSec",
-			value = "트랙 현재 들은 길이(초단위)"
+			value = "트랙 현재 들은 길이(초단위)",
+			example = "101"
 	)
 	private Long elapsedSec;
 
@@ -69,7 +77,8 @@ public class ListenTrackRequest {
 	@Min(1)
 	@ApiModelProperty(
 			name = "trackTotalSec",
-			value = "트랙 전체 길이(초단위), 못 구할 시 0 입력"
+			value = "트랙 전체 길이(초단위), 못 구할 시 0 입력",
+			example = "101"
 	)
 	private Long trackTotalSec;
 
@@ -77,70 +86,90 @@ public class ListenTrackRequest {
 	@ApiModelProperty(
 			name = "freeYn",
 			value = "무료곡 여부(Y, N)",
-			allowableValues = "Y, N"
+			allowableValues = "Y, N",
+			example = "N"
 	)
 	private YnType freeYn;
 
-	@ApiModelProperty(name = "albumId", value = "앨범 ID")
+	@ApiModelProperty(
+			name = "albumId",
+			value = "앨범 ID",
+			example = "20193170"
+	)
 	private Long albumId;
 
-	@ApiModelProperty(name = "channelId", value = "채널 ID")
+	@ApiModelProperty(
+			name = "channelId",
+			value = "채널 ID",
+			example = "20193170"
+	)
 	private Long channelId;
 
-	@ApiModelProperty(name = "channelType", value = "채널 Type")
+	@ApiModelProperty(
+			name = "channelType",
+			value = "채널 Type",
+			example = "ALBUM"
+	)
 	private String channelType;
 
-	@ApiModelProperty(name = "recommendTrackId", value = "추천곡 ID")
+	@ApiModelProperty(
+			name = "recommendTrackId",
+			value = "추천곡 ID"
+	)
 	private Long recommendTrackId;
 
-	@ApiModelProperty(name = "addDateTime", value = "추가 시간")
+	@ApiModelProperty(
+			name = "addDateTime",
+			value = "추가 시간",
+			example = "20191211161526"
+	)
 	private String addDateTime;
 
-	@ApiModelProperty(name = "sourceType", value = "요청 타입")
+	@ApiModelProperty(
+			name = "sourceType",
+			value = "요청 타입",
+			example = "STRM"
+	)
 	private SourceType sourceType;
 
-	@ApiModelProperty(name = "ownerToken", value = "파일 원천 정보")
+	@ApiModelProperty(
+			name = "ownerToken",
+			value = "파일 원천 정보"
+	)
 	private String ownerToken;
 
-	@ApiModelProperty(name = "listenSessionId", value = "청취 세션 아이디")
+	@ApiModelProperty(
+			name = "listenSessionId",
+			value = "청취 세션 아이디"
+	)
 	private String listenSessionId;
 
-	@ApiModelProperty(name = "sttToken", value = "정산 토큰")
+	@ApiModelProperty(
+			name = "sttToken",
+			value = "정산 토큰"
+	)
 	private String sttToken;
 
-	@ApiModelProperty(name = "cachedToken", value = "캐시드 토큰")
-	private String cachedToken;
-
-	@JsonProperty(defaultValue = "N")
-	@ApiModelProperty(name = "playOfflineYn", value = "오프라인 여부(Y, N)")
-	private YnType playOfflineYn;
-
-	@JsonProperty(defaultValue = "N")
-	@ApiModelProperty(name = "playCacheYn", value = "Cache 여부(Y, N)")
-	private YnType playCacheYn;
-
-	@ApiModelProperty(name = "offlineStartDtime", value = "오프라인 시작 일시")
-	private String offlineStartDtime;
-
-	@ApiModelProperty(name = "metaCacheUpdateDtime", value = "meta cache 업데이트 일시")
-	private String metaCacheUpdateDtime;
-
+	@JsonIgnore
 	public String getTrackLogTypeToStr() {
 		return Optional.ofNullable(trackLogType)
 				.map(TrackLogType::getCode)
 				.orElse("");
 	}
 
+	@JsonIgnore
 	public String getBitrateToStr() {
 		return Optional.ofNullable(bitrate)
 				.map(BitrateType::getCode)
 				.orElse(BitrateType.UNKNOWN.getCode());
 	}
 
+	@JsonIgnore
 	public String getOsTypeToStr() {
 		return Optional.ofNullable(osType).map(OsType::getCode).orElse("");
 	}
 
+	@JsonIgnore
 	public String getSourceTypeToStr() {
 		return Optional.ofNullable(sourceType).map(SourceType::getCode).orElse(null);
 	}
