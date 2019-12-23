@@ -30,3 +30,4 @@ sh.exe.stackdump
 ### sonar ###
 .scannerwork/
 sonar-project.properties
+/catalina.home_IS_UNDEFINED/logs/service/

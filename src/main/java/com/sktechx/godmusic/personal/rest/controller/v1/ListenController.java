@@ -26,7 +26,6 @@ import com.sktechx.godmusic.personal.rest.validate.Validator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,11 +51,14 @@ import java.util.Optional;
 @RequestMapping(Naming.serviceCode + "/v1/listen")
 public class ListenController {
 
-    @Autowired
-    private ListenService listenService;
+    private final ListenService listenService;
+    private final ResourcePlayLogResolver resourcePlayLogResolver;
 
-    @Autowired
-    private ResourcePlayLogResolver resourcePlayLogResolver;
+    public ListenController(ListenService listenService,
+                            ResourcePlayLogResolver resourcePlayLogResolver) {
+        this.listenService = listenService;
+        this.resourcePlayLogResolver = resourcePlayLogResolver;
+    }
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     @ApiOperation(value = "Resource 청취 로그", notes = "Resource 재생(청취) (ex.영상) 로그를 MQ 로 남김")
@@ -97,6 +99,8 @@ public class ListenController {
                 .characterNo(currentContext.getCharacterNo())
                 .deviceId(currentContext.getDeviceId())
                 .build();
+
+        // TODO 신규 Service로 컨버팅 작업
 
         listenService.addListenHistByTrack(request, currentContext, httpServletRequest);
         return CommonApiResponse.emptySuccess();
