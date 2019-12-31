@@ -452,17 +452,17 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         }
 
         switch (recommendPanelContentType){
-            // 아티스트 FLO
+            // 좋아할만한 아티스트 MIX
             case RC_ATST_TR:
                 panel = getArtistFloRecommendPanelInfoDto(panelContentId);
                 break;
-            // 오늘의 FLO
+            // 오늘의 추천
             case RC_SML_TR:
                 panel = getTodayFloRecommendPanelInfoDto(recommendPanelContentType, panelContentId,
                         osType, trackList, trackCount);
                 break;
 
-            // 나를 위한 FLO
+            // 나를 위한 새로운 발견
             case RC_GR_TR:
             case RC_CF_TR:
                 panel = getForMeRecommendPanelInfoDto(recommendPanelContentType, panelContentId,

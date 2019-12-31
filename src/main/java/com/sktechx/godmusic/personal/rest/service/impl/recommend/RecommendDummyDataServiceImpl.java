@@ -73,7 +73,7 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
         List<Long> svcGenreIdList;
 
         switch(recommendV2DummyDataRequest.getType()){
-            // 나를 위한 FLO
+            // 나를 위한 새로운 발견
             case "RC_CF_TR":
                 svcGenreIdList = recommendDummyDataMapper.selectRandomSvcGenreId(recommendV2DummyDataRequest.getPanelCount());
                 for( int i = 0 ; i < recommendV2DummyDataRequest.getPanelCount() ; i++){
@@ -85,7 +85,7 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
                     recommendDummyDataMapper.insertRcmmdMforuSubData( recommendTrackDto.getRcmmdId());
                 }
                 break;
-            // 오늘의 FLO
+            // 오늘의 추천
             case "RC_SML_TR":
 //                svcGenreIdList = recommendDummyDataMapper.selectRandomSvcGenreId(recommendV2DummyDataRequest.getPanelCount());
                 for( int i = 0 ; i < recommendV2DummyDataRequest.getPanelCount() ; i++){
@@ -116,11 +116,11 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
 	@Override
 	public void updateRecommendV2DummyData(Long characterNo, RecommendV2DummyDataRequest recommendV2DummyDataRequest) {
 		switch(recommendV2DummyDataRequest.getType()){
-			// 나를 위한 FLO
+			// 나를 위한 새로운 발견
 			case "RC_CF_TR":
 				recommendDummyDataMapper.updateRcmmdMforuData(characterNo);
 				break;
-			// 오늘의 FLO
+			// 오늘의 추천
 			case "RC_SML_TR":
 				recommendDummyDataMapper.updateRcmmdSimilarTrackData(characterNo);
 				break;
@@ -138,12 +138,12 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
     public void deleteRecommendV2DummyData(Long characterNo, RecommendV2DummyDataRequest recommendV2DummyDataRequest) {
 
         switch(recommendV2DummyDataRequest.getType()){
-            // 나를 위한 FLO
+            // 나를 위한 새로운 발견
             case "RC_CF_TR":
                     recommendDummyDataMapper.deleteRcmmdMforuData(characterNo);
                     recommendDummyDataMapper.deleteRcmmdMforuSubData(characterNo);
                 break;
-            // 오늘의 FLO
+            // 오늘의 추천
             case "RC_SML_TR":
                 recommendDummyDataMapper.deleteRcmmdSimilarTrackData(characterNo);
                 recommendDummyDataMapper.deleteRcmmdSimilarTrackSubData(characterNo);
