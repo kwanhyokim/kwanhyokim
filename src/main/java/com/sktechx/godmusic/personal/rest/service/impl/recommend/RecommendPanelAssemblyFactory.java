@@ -109,13 +109,13 @@ public class RecommendPanelAssemblyFactory {
         switch (recommendPanelContentType){
             case AFLO:
                 return afloPanelAssembly;
-            // 나를 위한 FLO
+            // 나를 위한 새로운 발견
             case RC_CF_TR:
                 return forMeFloPanelAssembly;
-            // 오늘의 FLO
+            // 오늘의 추천
             case RC_SML_TR:
                 return todayFloPanelAssembly;
-            // 아티스트 FLO
+            // 좋아할만한 아티스트 MIX
             case RC_ATST_TR:
                 return artistFloPanelAssembly;
             default:

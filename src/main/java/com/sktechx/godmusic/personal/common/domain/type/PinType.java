@@ -21,10 +21,10 @@ import com.sktechx.godmusic.lib.mybatis.code.CodeEnum;
  * @date 2018. 8. 1.
  */
 public enum PinType implements CodeEnum {
-    RC_SML_TR("RC_SML_TR", "오늘의 FLO"),
-    RC_GR_TR("RC_GR_TR", "오늘의 FLO"),
-    RC_ATST_TR("RC_ATST_TR", "아티스트 FLO"),
-    RC_CF_TR("RC_CF_TR", "나를 위한 FLO"),
+    RC_SML_TR("RC_SML_TR", "오늘의 추천"),
+    RC_GR_TR("RC_GR_TR", "오늘의 추천"),
+    RC_ATST_TR("RC_ATST_TR", "좋아할만한 아티스트 MIX"),
+    RC_CF_TR("RC_CF_TR", "나를 위한 새로운 발견"),
     CHNL("CHNL", "채널"),
     MY_CHNL("MY_CHNL", "마이 채널"),
     FLAC("FLAC", "FLAC 채널"),

@@ -23,7 +23,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedGenr
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
 
 /**
- * 설명 : 나를 위한 FLO 패널
+ * 설명 : 나를 위한 새로운 발견 패널
  *
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 10.
