@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.controller.v1;
 
+import com.sktechx.godmusic.personal.rest.validate.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -58,7 +59,13 @@ public class TrackController {
     public CommonApiResponse<ListResponse> mostTrackList(
             @ApiIgnore @PageableDefault(size=50, page=0) Pageable pageable) {
 
-        Page<?> result = trackMongoService.mostTrackList(GMContext.getContext().getCharacterNo(), pageable);
+        GMContext context = GMContext.getContext();
+        Validator.loginValidate(context);
+
+        Long memberNo = context.getMemberNo();
+        Long characterNo = context.getCharacterNo();
+
+        Page<?> result = trackMongoService.mostTrackList(characterNo, pageable);
         return new CommonApiResponse<>(new ListResponse(result));
     }
 
@@ -72,28 +79,38 @@ public class TrackController {
     @ApiOperation(value = "최근 들은 by Peter ( 기존 /v2/my/track/recent/list GET )")
     @GetMapping("/recentlistened")
     public CommonApiResponse<ListResponse> recentListenedTrackList(
-            @ApiIgnore @RequestGMContext GMContext ctx,
+            @ApiIgnore @RequestGMContext GMContext context,
             @ApiIgnore @PageableDefault(size=50, page=0) Pageable pageable) {
 
-        Page<?> result = trackMongoService.getMyRecentTrackList(ctx.getMemberNo(), ctx.getCharacterNo(), pageable);
+        Validator.loginValidate(context);
+
+        Long memberNo = context.getMemberNo();
+        Long characterNo = context.getCharacterNo();
+
+        Page<?> result = trackMongoService.getMyRecentTrackList(memberNo, characterNo, pageable);
         return new CommonApiResponse<>(new ListResponse(result));
     }
 
     @ApiOperation(value = "최근 들은 삭제 ")
     @DeleteMapping("/recentlistened")
     public CommonApiResponse<ListResponse> deleteMyrecentListenedTrackList(
-            @ApiIgnore @RequestGMContext GMContext ctx,
+            @ApiIgnore @RequestGMContext GMContext context,
             @Valid @RequestBody ListenDeleteTrackRequest listenDeleteTrackRequest) {
 
-        if(listenDeleteTrackRequest == null){
+        Validator.loginValidate(context);
+
+        if(listenDeleteTrackRequest == null) {
             throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
         }
 
+        Long memberNo = context.getMemberNo();
+        Long characterNo = context.getCharacterNo();
+
         // MongoDB 에서 삭제
-        trackMongoService.deleteMyRecentTrackList(ctx.getMemberNo(), ctx.getCharacterNo(), listenDeleteTrackRequest.getTrackIds());
+        trackMongoService.deleteMyRecentTrackList(memberNo, characterNo, listenDeleteTrackRequest.getTrackIds());
 
         // MySQLDB 에서 삭제
-        trackService.deleteMyRecentTrackList(ctx.getMemberNo(), ctx.getCharacterNo(), listenDeleteTrackRequest.getTrackIds());
+        trackService.deleteMyRecentTrackList(memberNo, characterNo, listenDeleteTrackRequest.getTrackIds());
 
         return CommonApiResponse.emptySuccess();
     }

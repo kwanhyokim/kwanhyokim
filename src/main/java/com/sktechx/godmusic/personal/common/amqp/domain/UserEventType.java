@@ -1,17 +1,16 @@
 /*
+ * Copyright (c) 2019 DREAMUS COMPANY.
+ * All right reserved.
  *
- *  * Copyright (c) 2018 SK TECHX.
- *  * All right reserved.
- *  *
- *  * This software is the confidential and proprietary information of SK TECHX.
- *  * You shall not disclose such Confidential Information and
- *  * shall use it only in accordance with the terms of the license agreement
- *  * you entered into with SK TECHX.
- *
+ * This software is the confidential and proprietary information of DREAMUS COMPANY.
+ * You shall not disclose such Confidential Information and
+ * shall use it only in accordance with the terms of the license agreement
+ * you entered into with DREAMUS COMPANY.
  */
 
 package com.sktechx.godmusic.personal.common.amqp.domain;
 
+import com.sktechx.godmusic.personal.common.domain.type.ResourceLogType;
 import com.sktechx.godmusic.personal.common.domain.type.TrackLogType;
 
 /**
@@ -21,7 +20,6 @@ import com.sktechx.godmusic.personal.common.domain.type.TrackLogType;
  * @date 2018. 3. 26.
  *
  */
-
 public enum UserEventType {
 	UNKNOWN,
 	LIKE,
@@ -33,7 +31,7 @@ public enum UserEventType {
 	LISTEN_FULL,
 	SKIP;
 	
-	public final static UserEventType	fromTrackLogType(TrackLogType logType)	{
+	public final static UserEventType fromTrackLogType(TrackLogType logType)	{
 		if( logType == null )
 			return UNKNOWN;
 		
@@ -42,6 +40,19 @@ public enum UserEventType {
 		case ONEMIN :	return MIN_LISTEN;
 		case MEND :	return LISTEN_FULL;
 		case USKP :	return SKIP;
+		}
+		return UNKNOWN;
+	}
+
+	public final static UserEventType fromPlayLogType(ResourceLogType logType)	{
+		if( logType == null )
+			return UNKNOWN;
+
+		switch(logType)	{
+			case STRT :	return STRT_LISTEN;
+			case ONEMIN :	return MIN_LISTEN;
+			case MEND :	return LISTEN_FULL;
+			case USKP :	return SKIP;
 		}
 		return UNKNOWN;
 	}

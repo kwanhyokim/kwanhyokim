@@ -69,6 +69,8 @@ public class ChnlDto {
     //채널 용 별도 이미지
     private List<ImageInfo> imgList;
 
+    // AFLO 사인 이미지
+    private List<ImageInfo> signImgList;
 
     public List<TrackDto> getTrackList(){
         if(!CollectionUtils.isEmpty(trackList)){
@@ -88,6 +90,15 @@ public class ChnlDto {
             }
         }
         return YnType.N;
+    }
+
+    public void setImgList(List<ImageInfo> imgList) {
+
+        if (imgList != null) {
+            imgList.sort(null);
+        }
+
+        this.imgList = imgList;
     }
 
 }

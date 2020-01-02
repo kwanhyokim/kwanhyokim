@@ -1,6 +1,15 @@
+/*
+ * Copyright (c) 2019 DREAMUS COMPANY.
+ * All right reserved.
+ *
+ * This software is the confidential and proprietary information of DREAMUS COMPANY.
+ * You shall not disclose such Confidential Information and
+ * shall use it only in accordance with the terms of the license agreement
+ * you entered into with DREAMUS COMPANY.
+ */
+
 package com.sktechx.godmusic.personal.rest.controller.v1;
 
-import com.google.common.collect.Lists;
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
@@ -12,7 +21,6 @@ import com.sktechx.godmusic.personal.rest.validate.Validator;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
@@ -117,12 +125,13 @@ public class LikeController {
 	public CommonApiResponse<RangeResponse<VideoVo>> getVideoes(
 			@PageableDefault(page = 1, size = 50) Pageable pageable) {
 
-		GMContext currentContext = GMContext.getContext();
-		Validator.loginValidate(currentContext);
+		GMContext context = GMContext.getContext();
+		Validator.loginValidate(context);
 
-		RangeResponse<VideoVo> mockResponse = RangeResponse.of(new PageImpl(Lists.newArrayList(VideoVo.mock()), pageable, 1L) );
+		Long characterNo = context.getCharacterNo();
+		RangeResponse<VideoVo> response = likeService.getLikeVideos(characterNo, pageable);
 
-		return new CommonApiResponse(mockResponse);
+		return new CommonApiResponse(response);
 	}
 
 	/**
@@ -150,10 +159,11 @@ public class LikeController {
 			notes = "좋아요 대상 타입 - CHNL(채널) | ALBUM(앨범) | CHART(차트) | ARTIST(아티스트) | TRACK(곡) | VIDEO(영상)")
 	@PostMapping("")
 	public CommonApiResponse addLike(
-			@Valid @RequestBody LikeRequest request
-	) {
+			@Valid @RequestBody LikeRequest request) {
+
 		GMContext context = GMContext.getContext();
 		Validator.loginValidate(context);
+
 		Long characterNo = context.getCharacterNo();
 
 		likeMongoService.addLike(request, characterNo);

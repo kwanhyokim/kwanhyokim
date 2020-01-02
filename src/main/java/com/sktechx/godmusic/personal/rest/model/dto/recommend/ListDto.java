@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 /**
- * 설명 : XXXXXXXXX
+ * 설명 : Json list 형식 응답용
  *
  * @author 김관효(Kwanhyo Kim)/Music사업팀/SKTECH(kwanhyo.kim@sk.com)
  * @date 2018. 8. 1.

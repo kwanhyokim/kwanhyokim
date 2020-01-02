@@ -11,10 +11,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
-import com.sktechx.godmusic.personal.rest.model.dto.member.CharacterType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendV2DummyDataRequest;
-import com.sktechx.godmusic.personal.rest.service.DevToolService;
-import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDataService;
+import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDummyDataService;
 import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -36,10 +34,7 @@ public class HomeTestController {
     RedisService redisService;
 
     @Autowired
-    RecommendDataService recommendDataService;
-
-    @Autowired
-    DevToolService devToolService;
+    RecommendDummyDataService recommendDummyDataService;
 
     @GetMapping(value = "/v2home")
     public ModelAndView testV2Home() {
@@ -51,7 +46,7 @@ public class HomeTestController {
     public String clearHomeCache(@RequestParam Long characterNo){
         log.info("clearHomeCache :" + characterNo);
 
-        return String.valueOf(redisService.delWithPrefix("godmusic.personalapi.recommend.phase:" + characterNo));
+        return recommendDummyDataService.clearCacheHome(characterNo);
     }
 
     @GetMapping(value = "/createRecommendPanel")
@@ -63,9 +58,9 @@ public class HomeTestController {
         recommendV2DummyDataRequest.setPanelCount(5);
         recommendV2DummyDataRequest.setType(type);
 
-        recommendDataService.createRecommendV2DummyData(characterNo,recommendV2DummyDataRequest);
+        recommendDummyDataService.createRecommendV2DummyData(characterNo,recommendV2DummyDataRequest);
 
-        return String.valueOf(redisService.delWithPrefix("godmusic.personalapi.recommend.phase:" + characterNo));
+        return "true";
     }
 
     @GetMapping(value = "/updateRecommendPanel")
@@ -76,9 +71,9 @@ public class HomeTestController {
 
         recommendV2DummyDataRequest.setType(type);
 
-        recommendDataService.updateRecommendV2DummyData(characterNo,recommendV2DummyDataRequest);
+        recommendDummyDataService.updateRecommendV2DummyData(characterNo,recommendV2DummyDataRequest);
 
-        return String.valueOf(redisService.delWithPrefix("godmusic.personalapi.recommend.phase:" + characterNo));
+        return "true";
     }
 
 
@@ -90,31 +85,39 @@ public class HomeTestController {
 
         recommendV2DummyDataRequest.setType(type);
 
-        recommendDataService.deleteRecommendV2DummyData(characterNo,recommendV2DummyDataRequest);
+        recommendDummyDataService.deleteRecommendV2DummyData(characterNo,recommendV2DummyDataRequest);
 
-        return String.valueOf(redisService.delWithPrefix("godmusic.personalapi.recommend.phase:" + characterNo));
+        return "true";
     }
-
-    @GetMapping(value = "/changeCharacterType")
-    @ResponseBody
-    public String changeCharacterType(@RequestParam CharacterType type, @RequestParam Long characterNo){
-        log.info("changeCharacterType :" + characterNo);
-        devToolService.updateCharacterType(characterNo, type);
-
-        return String.valueOf(redisService.delWithPrefix("godmusic.personalapi.recommend.phase:" + characterNo));
-    }
-
 
     @GetMapping(value = "/updateAfloChnl")
     @ResponseBody
     public String updateAfloChnl(@RequestParam Long characterNo){
         log.info("updateAfloChnl :" );
 
-        recommendDataService.updateAfloChnl();
+        recommendDummyDataService.updateAfloChnl();
 
-        return String.valueOf(redisService.delWithPrefix("godmusic.personalapi.recommend.phase:" + characterNo));
+        return "true";
     }
 
+    @GetMapping(value = "/addChart")
+    @ResponseBody
+    public String addChart(@RequestParam Long characterNo){
+        log.info("addChart :" );
 
+        recommendDummyDataService.addChart(characterNo);
+
+        return "true";
+    }
+
+    @GetMapping(value = "/deleteChart")
+    @ResponseBody
+    public String deleteChart(@RequestParam Long characterNo){
+        log.info("deleteChart :" );
+
+        recommendDummyDataService.deleteChart(characterNo);
+
+        return "true";
+    }
 }
 

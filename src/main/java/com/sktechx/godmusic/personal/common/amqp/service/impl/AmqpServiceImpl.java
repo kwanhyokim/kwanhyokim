@@ -1,13 +1,11 @@
 /*
+ * Copyright (c) 2019 DREAMUS COMPANY.
+ * All right reserved.
  *
- *  * Copyright (c) 2018 SK TECHX.
- *  * All right reserved.
- *  *
- *  * This software is the confidential and proprietary information of SK TECHX.
- *  * You shall not disclose such Confidential Information and
- *  * shall use it only in accordance with the terms of the license agreement
- *  * you entered into with SK TECHX.
- *
+ * This software is the confidential and proprietary information of DREAMUS COMPANY.
+ * You shall not disclose such Confidential Information and
+ * shall use it only in accordance with the terms of the license agreement
+ * you entered into with DREAMUS COMPANY.
  */
 
 package com.sktechx.godmusic.personal.common.amqp.service.impl;
@@ -25,72 +23,62 @@ import org.springframework.util.ObjectUtils;
 
 /**
  * 설명 : AMQP 서비스 구현체
- * 
+ *
  * @author 정덕진(Deockjin Chung)/Server 개발팀/SKTECH(djin.chung@sk.com)
  * @date 2018. 3. 15.
- *
  */
-
 @Component
 public class AmqpServiceImpl implements AmqpService, CommandLineRunner, DisposableBean {
-	public final static String		propExchangeTrackListen = "amqp.exchange.track_listen";
-	public final static String		propExchangeUserEvent = "amqp.exchange.user_event";
-	
-	@Autowired
-	private RabbitTemplate rabbitTemplate;
+    public final static String propExchangeTrackListen = "amqp.exchange.track_listen";
+    public final static String propExchangeUserEvent = "amqp.exchange.user_event";
 
-	@Autowired
-	private Environment environment;
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
-	private AmqpDeliver amqpDeliver;
-	
-	private String 			exchangeTrackListen;
-	private String 			exchangeUserEvent;
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sktechx.musicmate.common.amqp.service.AmqpService#deliverTrackListen(java
-	 * .lang.Object)
-	 */
-	@Override
-	public void deliverTrackListen(Object message) {
-		amqpDeliver.request(exchangeTrackListen, message);
-	}
+    @Autowired
+    private Environment environment;
 
-	/* (non-Javadoc)
-	 * @see com.sktechx.musicmate.common.amqp.service.AmqpService#deliverUserEvent(com.sktechx.musicmate.common.amqp.domain.UserEvent)
-	 */
-	@Override
-	public void deliverUserEvent(UserEvent data) {
-		amqpDeliver.request(exchangeUserEvent, data);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.springframework.boot.CommandLineRunner#run(java.lang.String[])
-	 */
-	@Override
-	public void run(String... args) throws Exception {
-		amqpDeliver = new AmqpDeliverImpl(rabbitTemplate);
-		this.exchangeTrackListen = environment.getProperty(propExchangeTrackListen);
-		if( this.exchangeTrackListen == null )
-			throw new IllegalArgumentException("not found exchange key name : " + propExchangeTrackListen);
+    private AmqpDeliver amqpDeliver;
 
-		this.exchangeUserEvent = environment.getProperty(propExchangeUserEvent);
-		if( this.exchangeUserEvent == null )
-			throw new IllegalArgumentException("not found exchange key name : " + propExchangeUserEvent);
-		
-		amqpDeliver.start();
-	}
-	
+    private String exchangeTrackListen;
+    private String exchangeUserEvent;
 
-	/* (non-Javadoc)
-	 * @see org.springframework.beans.factory.DisposableBean#destroy()
-	 */
-	@Override
-	public void destroy() throws Exception {
-		if(!ObjectUtils.isEmpty(amqpDeliver))
+    /**
+     * 곡, 비디오 청취 로그 발송
+     */
+    @Override
+    public void deliverSourcePlay(Object message) {
+        amqpDeliver.request(exchangeTrackListen, message);
+    }
+
+    /**
+     * UserEvent 발송
+     */
+    @Override
+    public void deliverUserEvent(UserEvent data) {
+        amqpDeliver.request(exchangeUserEvent, data);
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        amqpDeliver = new AmqpDeliverImpl(rabbitTemplate);
+
+        this.exchangeTrackListen = environment.getProperty(propExchangeTrackListen);
+        if (this.exchangeTrackListen == null) {
+            throw new IllegalArgumentException("not found exchange key name : " + propExchangeTrackListen);
+        }
+
+        this.exchangeUserEvent = environment.getProperty(propExchangeUserEvent);
+        if (this.exchangeUserEvent == null) {
+            throw new IllegalArgumentException("not found exchange key name : " + propExchangeUserEvent);
+        }
+        amqpDeliver.start();
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        if (!ObjectUtils.isEmpty(amqpDeliver)) {
 			amqpDeliver.stop();
-	}
+		}
+    }
 }

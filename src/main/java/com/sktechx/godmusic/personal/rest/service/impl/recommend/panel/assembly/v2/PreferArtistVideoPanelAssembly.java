@@ -13,7 +13,6 @@ package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
@@ -37,13 +36,14 @@ import lombok.extern.slf4j.Slf4j;
 @Service("preferArtistVideoPanelAssembly")
 public class PreferArtistVideoPanelAssembly extends PanelSignAssembly {
 
-    public PreferArtistVideoPanelAssembly(){}
+    public PreferArtistVideoPanelAssembly(PreferenceMapper preferMapper, MetaClient metaClient){
+        this.preferMapper = preferMapper;
+        this.metaClient = metaClient;
+    }
 
-    @Autowired
-    private PreferenceMapper preferMapper;
+    private final PreferenceMapper preferMapper;
 
-    @Autowired
-    private MetaClient metaClient;
+    private final MetaClient metaClient;
 
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
@@ -63,10 +63,8 @@ public class PreferArtistVideoPanelAssembly extends PanelSignAssembly {
 
     }
 
-    protected void appendPreferArtistVideoList(
-            final PersonalPhaseMeta personalPhaseMeta,
-            final List<Panel> panelList,
-            Boolean isTop) {
+    private void appendPreferArtistVideoList(final PersonalPhaseMeta personalPhaseMeta,
+            final List<Panel> panelList, Boolean isTop) {
 
         Date from;
         Date to;
@@ -93,6 +91,7 @@ public class PreferArtistVideoPanelAssembly extends PanelSignAssembly {
                 ).orElseGet(Collections::emptyList)
                         .stream()
                         .filter(Objects::nonNull)
+                        .filter(videoVo -> videoVo.getDispStartDtime().after(from) && videoVo.getDispStartDtime().before(to))
                         .map(VideoVo::convertToVideoPanel)
                         .collect(Collectors.toList())
         );

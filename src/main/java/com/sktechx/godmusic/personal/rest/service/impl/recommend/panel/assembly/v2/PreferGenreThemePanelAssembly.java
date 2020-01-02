@@ -13,14 +13,12 @@ package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
-import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelSignAssembly;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,9 +36,6 @@ public class PreferGenreThemePanelAssembly extends PanelSignAssembly {
 
     public PreferGenreThemePanelAssembly(){}
 
-    @Autowired
-    private RecommendReadMapper recommendReadMapper;
-
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
         return new ArrayList<>();
@@ -54,7 +49,6 @@ public class PreferGenreThemePanelAssembly extends PanelSignAssembly {
 
         this.appendPreferGenreChannelPanelList(personalPhaseMeta, myPanelList, 5 );
 
-        putTpoAndThemeImageList(personalPhaseMeta, myPanelList);
         appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
 
         mergePanelList(panelList, myPanelList, chartPanelList, 7);
@@ -73,28 +67,34 @@ public class PreferGenreThemePanelAssembly extends PanelSignAssembly {
             final List<Panel> panelList,
             int panelLimitSize) {
 
-        List<Long> preferGenreIdList = personalPhaseMeta.getPreferGenreIdList(panelLimitSize);
+        Optional.ofNullable(
+                personalPhaseMeta.getPreferGenreIdList(panelLimitSize)
+        ).ifPresent(
+                preferGenreIdList -> {
 
-        List<PreferGenrePopularChnlDto> appendChannelList =
-                Optional.ofNullable(channelService.getPreferGenrePopularChannelListV2(
-                        preferGenreIdList,
-                        POPULAR_CHNL_TRACK_LIMIT_SIZE,
-                        personalPhaseMeta.getOsType()))
-                        .orElseGet(Collections::emptyList);
+                    List<PreferGenrePopularChnlDto> appendChannelList = Optional.ofNullable(
+                            channelService.getPreferGenrePopularChannelListV2(preferGenreIdList,
+                                    POPULAR_CHNL_TRACK_LIMIT_SIZE, personalPhaseMeta.getOsType()))
+                            .orElseGet(ArrayList::new);
 
-        Collections.shuffle(appendChannelList);
+                    Collections.shuffle(appendChannelList);
 
-        for (PreferGenrePopularChnlDto preferGenrePopularChnlDto : appendChannelList.stream()
-                .filter(Objects::nonNull).limit(panelLimitSize).collect(Collectors.toList())) {
-            try {
-                panelList.add(createPreferGenrePopularChannelPanel(personalPhaseMeta,
-                        preferGenrePopularChnlDto));
+                    appendChannelList.stream()
+                            .filter(Objects::nonNull)
+                            .limit(panelLimitSize)
+                            .collect(Collectors.toList())
+                            .forEach(preferGenrePopularChnlDto -> {
 
-            } catch (Exception e) {
-                log.error("appendPreferGenreChannelPanelList error : {}", e.getMessage());
-            }
-        }
-
+                                try {
+                                    panelList.add(
+                                            createPreferGenrePopularChannelPanel(personalPhaseMeta, preferGenrePopularChnlDto)
+                                    );
+                                } catch (Exception e) {
+                                    log.error("appendPreferGenreChannelPanelList error : {}", e.getMessage());
+                                }
+                            });
+                }
+        );
     }
 }
 

@@ -10,19 +10,17 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.video;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.MediaRatingType;
 import com.sktechx.godmusic.personal.common.domain.type.VideoType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
 import com.sktechx.godmusic.personal.rest.model.vo.video.VideoArtistVo;
 import com.sktechx.godmusic.personal.rest.model.vo.video.VideoThumbnailImageVo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * 설명 : 비디오 패널 vo
@@ -63,14 +61,4 @@ public class VideoPanel extends Panel {
     @ApiModelProperty(value = "동영상 썸네일 목록")
     private List<VideoThumbnailImageVo> thumbnailImageList;
 
-    @Override
-    protected void initialPanel() throws CommonBusinessException {
-    }
-    @Override
-    protected PanelContentVo createPanelContent() {
-        return null;
-    }
-    @Override
-    public void makeSeedInfo() {
-    }
 }

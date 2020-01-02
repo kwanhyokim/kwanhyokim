@@ -10,6 +10,10 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto;
 
+import java.util.List;
+
+import org.springframework.util.ObjectUtils;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -18,11 +22,6 @@ import com.sktechx.godmusic.personal.common.domain.type.ArtistGroupType;
 import com.sktechx.godmusic.personal.common.domain.type.GenderType;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import lombok.*;
-
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
-
-import java.util.List;
 
 /**
  * 설명 : 아티스트 DTO
@@ -84,6 +83,15 @@ public class ArtistDto {
             return true;
         }
 
-        return this.imgList.get(0).getUrl().contains("000000000") ? true : false;
+        return this.imgList.get(0).getUrl().contains("000000000");
+    }
+
+    public void setImgList(List<ImageInfo> imgList) {
+
+        if (imgList != null) {
+            imgList.sort(null);
+        }
+
+        this.imgList = imgList;
     }
 }

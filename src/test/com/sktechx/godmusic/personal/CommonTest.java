@@ -1,45 +1,26 @@
 /*
- * Copyright (c) 2018 SK TECHX.
+ * Copyright (c) 2019 DREAMUS COMPANY.
  * All right reserved.
  *
- * This software is the confidential and proprietary information of SK TECHX.
+ * This software is the confidential and proprietary information of DREAMUS COMPANY.
  * You shall not disclose such Confidential Information and
  * shall use it only in accordance with the terms of the license agreement
- * you entered into with SK TECHX.
+ * you entered into with DREAMUS COMPANY.
  */
 
 package com.sktechx.godmusic.personal;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.Test;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
-/**
- * 설명 : XXXXXXXX
- *
- * @author 오경무/SKTECHX (km.oh@sk.com)
- * @date 2018. 07. 10.
- */
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@ActiveProfiles("local")
 @Slf4j
+@ActiveProfiles("local")
 public class CommonTest {
-    @Autowired
-    private WebApplicationContext context;
 
-    private MockMvc mvc;
-
-    @BeforeEach
-    public void setup() throws Exception {
-        mvc = MockMvcBuilders.webAppContextSetup(context).build();
+    @Test
+    public void 테스트() {
+        log.info("테스트 시작..");
     }
 
 }

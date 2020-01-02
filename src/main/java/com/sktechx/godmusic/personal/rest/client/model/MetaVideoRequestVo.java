@@ -26,4 +26,8 @@ import lombok.Data;
 @Builder
 public class MetaVideoRequestVo {
     private List<Long> videoIds;
+
+    public static MetaVideoRequestVo of(List<Long> videoIds) {
+        return MetaVideoRequestVo.builder().videoIds(videoIds).build();
+    }
 }

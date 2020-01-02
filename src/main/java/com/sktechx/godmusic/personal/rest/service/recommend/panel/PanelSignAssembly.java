@@ -263,12 +263,11 @@ public abstract class PanelSignAssembly extends PanelAssembly {
 
     public Panel createPreferGenrePopularChannelPanel(final PersonalPhaseMeta personalPhaseMeta,
                                                        final PreferGenrePopularChnlDto preferGenrePopularChannel) {
-
-        ChnlDto channel = preferGenrePopularChannel.getChannel();
-        GenreVo genre = new GenreVo(preferGenrePopularChannel.getPreferGenreId());
-
-        return new PreferGenrePopularChannelPanel(channel,genre,
-                getDefaultBgImageList( channel.getImgList(), personalPhaseMeta.getOsType()));
+        return new PreferGenrePopularChannelPanel(
+                preferGenrePopularChannel.getChannel(),
+                new GenreVo(preferGenrePopularChannel.getPreferGenreId()),
+                getTpoAndThemeBackgroundImageList(personalPhaseMeta.getOsType())
+        );
     }
 
 

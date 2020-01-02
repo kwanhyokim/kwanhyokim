@@ -13,19 +13,19 @@ package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
+import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.personal.common.domain.PreferPropsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.client.DisplayClient;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ChannelListResponse;
-import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.TPOChannelPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
@@ -46,13 +46,15 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
 @Service("operationTpoPanelAssembly")
 public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
 
-    public OperationTpoPanelAssembly(){}
+    public OperationTpoPanelAssembly(DisplayClient displayClient,
+            RecommendReadMapper recommendReadMapper){
+        this.displayClient = displayClient;
+        this.recommendReadMapper = recommendReadMapper;
+    }
 
-    @Autowired
-    DisplayClient displayClient;
+    private final DisplayClient displayClient;
 
-    @Autowired
-    private RecommendReadMapper recommendReadMapper;
+    private final RecommendReadMapper recommendReadMapper;
 
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
@@ -62,8 +64,7 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
         List<Panel> myPanelList = new ArrayList<>();
         List<Panel> chartPanelList = new ArrayList<>();
 
-        appendTPOPanel(personalPhaseMeta, myPanelList, 5);
-        putTpoAndThemeImageList(personalPhaseMeta, myPanelList);
+        appendTPOPanel(personalPhaseMeta, myPanelList);
         appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
 
         mergePanelList(panelList, myPanelList, chartPanelList, 7);
@@ -77,58 +78,48 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
         return null;
     }
 
-    private void appendTPOPanel(final PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int panelLimitSize) {
+    private void appendTPOPanel(final PersonalPhaseMeta personalPhaseMeta,
+            final List<Panel> panelList) {
+        CommonApiResponse<ChannelListResponse> chnlDtoCommonApiResponse = displayClient.getOperationTpoList();
 
-            CommonApiResponse<ChannelListResponse> chnlDtoCommonApiResponse =  displayClient.getOperationTpoList();
-            List<ChnlDto> tpoChnlList = new ArrayList();
-            if (chnlDtoCommonApiResponse != null && "2000000".equals(chnlDtoCommonApiResponse.getCode())) {
-                if(chnlDtoCommonApiResponse.getData() != null && chnlDtoCommonApiResponse.getData().getList() != null) {
-                    tpoChnlList = channelMapper.selectChannelByIds(
-                            chnlDtoCommonApiResponse.getData().getList().stream().map( chnl -> chnl.getChnlId()).collect(
-                                    Collectors.toList())
-                    );
-
+        Optional.ofNullable(chnlDtoCommonApiResponse)
+            .ifPresent(channelListResponseCommonApiResponse -> {
+                if ("2000000".equals(chnlDtoCommonApiResponse.getCode())) {
+                        Optional.ofNullable(channelMapper.selectChannelByIds(Optional.ofNullable(
+                                Optional.ofNullable(channelListResponseCommonApiResponse.getData())
+                                        .orElseThrow(() -> new CommonBusinessException(
+                                                CommonErrorDomain.EMPTY_DATA)).getList())
+                                .orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA)).stream()
+                                .map(ChnlDto::getChnlId).collect(Collectors.toList())))
+                                .orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA)).stream()
+                                .filter(Objects::nonNull)
+                                .sorted(Comparator.comparing(ChnlDto::getCreateDtime).reversed())
+                                .collect(Collectors.toList())
+                                .forEach(channel -> {
+                                    try {
+                                        panelList.add(createTPOChannelPanel(channel,
+                                                personalPhaseMeta));
+                                    } catch (Exception e) {
+                                        log.error("TPO Panel defaultPanelSetting Exception : {}", e.getMessage());
+                                    }
+                                });
                 }
-            }
 
-            if(!CollectionUtils.isEmpty(tpoChnlList)){
-                tpoChnlList
-                        .stream()
-                        .filter(Objects::nonNull)
-                        .sorted(Comparator.comparing(ChnlDto::getCreateDtime).reversed())
-                        .forEach(channel -> {
-                            try{
-                                panelList.add( createTPOChannelPanel( channel,personalPhaseMeta ) );
-                            }catch(Exception e){
-                                log.error("TPO Panel defaultPanelSetting Exception : {}",e.getMessage());
-                            }
-                        });
+        });
+    }
 
-            }
-        }
 
     private Panel createTPOChannelPanel(final ChnlDto channel,final PersonalPhaseMeta personalPhaseMeta){
 
-        List<ImageInfo> imageInfoList = recommendReadMapper.selectTpoAndThemeImageList(personalPhaseMeta.getOsType());
-
-        if(CollectionUtils.isEmpty(imageInfoList)){
-            imageInfoList = new ArrayList<>();
-        }
-
-        Collections.shuffle(imageInfoList);
-
-        if( imageInfoList.size() > 1){
-            imageInfoList = Arrays.asList(imageInfoList.get(0));
-        }
-
-        TPOChannelPanel tpoChannelPanel = new TPOChannelPanel(channel, imageInfoList);
+        TPOChannelPanel tpoChannelPanel = new TPOChannelPanel(channel,
+                getTpoAndThemeBackgroundImageList(personalPhaseMeta.getOsType())
+        );
         tpoChannelPanel.setType(RecommendPanelType.POPULAR_CHANNEL);
         PanelContentVo panelContentVo = tpoChannelPanel.getContent();
 
         if( !ObjectUtils.isEmpty(panelContentVo) && !CollectionUtils.isEmpty(panelContentVo.getTrackList())) {
             panelContentVo.setTrackCount(panelContentVo.getTrackList().size());
         }
-
 
         return tpoChannelPanel;
     }

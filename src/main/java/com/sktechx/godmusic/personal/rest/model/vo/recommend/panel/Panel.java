@@ -10,13 +10,10 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
@@ -30,6 +27,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 /**
  * 설명 : 추천 패널
@@ -53,6 +52,10 @@ public abstract class Panel {
     @Getter
     @ApiModelProperty(required = true, value = "패널 부제목")
     protected String subTitle;
+
+    @Getter
+    @ApiModelProperty(required = true, value = "재생목록 표기용 제목")
+    protected String playListTitle;
 
     @Getter
     @Setter
@@ -93,8 +96,12 @@ public abstract class Panel {
 
     }
 
-    abstract protected void initialPanel() throws CommonBusinessException;
-    abstract protected PanelContentVo createPanelContent();
+    public void setImgList(List<ImageInfo> imgList) {
 
-    abstract public void makeSeedInfo();
+        if (imgList != null) {
+            imgList.sort(null);
+        }
+
+        this.imgList = imgList;
+    }
 }

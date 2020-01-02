@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2018 SK TECHX.
+ * Copyright (c) 2019 DREAMUS COMPANY.
  * All right reserved.
  *
- * This software is the confidential and proprietary information of SK TECHX.
+ * This software is the confidential and proprietary information of DREAMUS COMPANY.
  * You shall not disclose such Confidential Information and
  * shall use it only in accordance with the terms of the license agreement
- * you entered into with SK TECHX.
+ * you entered into with DREAMUS COMPANY.
  */
 
 package com.sktechx.godmusic.personal.common.exception;
@@ -35,6 +35,9 @@ public enum PersonalErrorDomain implements ErrorDomain {
 	, ALBUM_NOT_FOUND(4090717,HttpStatus.BAD_REQUEST ,"존재 하지 않은 앨범 정보 입니다.","앨범 정보 없음"  )
 	, ARTIST_NOT_FOUND(4090718,HttpStatus.BAD_REQUEST ,"존재 하지 않은 아티스트 정보 입니다.","아티스트 정보 없음"  )
 	, TRACK_NOT_FOUND(4090719,HttpStatus.BAD_REQUEST ,"권리가 중단되어 서비스가 불가능한 곡입니다.","곡 정보 없음"  )
+    , VIDEO_OVER_ADD_LIKE(4090720, HttpStatus.CONFLICT,"좋아요 한 영상을 더 이상 추가할 수 없습니다. 최대 1000개까지 담을 수 있습니다.","좋아하는 영상 추가 최대값 초과")
+    , VIDEO_NOT_FOUND(4090721,HttpStatus.BAD_REQUEST ,"권리가 중단되어 서비스가 불가능한 영상입니다.","영상 정보 없음"  )
+    , VIDEO_DUPLICATED_LIKE(4090722, HttpStatus.CONFLICT, "이미 추가된 영상 입니다.", "이미 추가된 영상")
 
 	, PREFER_ARTIST_PANEL_FAIL(4090720,HttpStatus.CONFLICT ,"선호/유사 아티스트 인기곡 입력시 문제가 발생했습니다.","데이터 문제"  )
 	, PREFER_GENRE_PANEL_FAIL(4090721,HttpStatus.CONFLICT ,"선호 장르 유사곡 입력시 문제가 발생했습니다.","데이터 문제"  )
@@ -44,7 +47,9 @@ public enum PersonalErrorDomain implements ErrorDomain {
 
     , NOT_FOUND_OCR_FILE(4090722, HttpStatus.CONFLICT, "OCR 파일 정보가 없습니다.", "OCR 파일 정보가 없습니다.")
     , ALREADY_UPLOAD_OCR_FILE(4090723, HttpStatus.CONFLICT, "이미 업로드 처리된 OCR파일 입니다", "이미 업로드 처리된 OCR파일 입니다")
-    , FAIL_UPLOAD_OCR_FILE(4090724, HttpStatus.CONFLICT, "OCR파일 업로드 실패", "OCR파일 업로드 실패"), OUT_OF_OCR_SERVICE(4090725, HttpStatus.CONFLICT, "서버 점검으로 인해 일시적으로 해당 기능을 사용할 수 없습니다.", "Ocr not working")
+    , FAIL_UPLOAD_OCR_FILE(4090724, HttpStatus.CONFLICT, "OCR파일 업로드 실패", "OCR파일 업로드 실패")
+    , OUT_OF_OCR_SERVICE(4090725, HttpStatus.CONFLICT, "서버 점검으로 인해 일시적으로 해당 기능을 사용할 수 없습니다.", "Ocr not working")
+    , FAIL_BULK_CACHED_STREAMING_PROCESS(4090726, HttpStatus.CONFLICT, "청취 로그 대량 전송 실패", "청취 로그 대량 전송 실패")
     ;
 
     private int code;

@@ -89,8 +89,7 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
     }
     @Override
     public void clearPersonalRecommendPhaseMetaCache(Long characterNo) {
-        String personalRecommendPhaseKey = String.format(PERSONAL_RECOMMEND_PHASE_KEY, characterNo);
-        redisService.delWithPrefix(personalRecommendPhaseKey);
+        redisService.delWithPrefix(String.format(PERSONAL_RECOMMEND_PHASE_KEY, characterNo));
     }
 
     private PersonalPhaseMeta getPersonalRecommendPhaseMetaWithOption(Long characterNo , OsType osType, Boolean checkDispEndDate){

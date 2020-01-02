@@ -14,10 +14,17 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Lists;
 import com.sktechx.godmusic.lib.domain.code.YnType;
+import com.sktechx.godmusic.personal.common.domain.type.MediaRatingType;
+import com.sktechx.godmusic.personal.common.util.DateUtil;
+import com.sktechx.godmusic.personal.rest.model.dto.MostWatchedVideoDto;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -33,12 +40,6 @@ import java.util.List;
 public class MostWatchedVideoVo {
 
     /**
-     * 멤버 No
-     */
-    @ApiModelProperty(value = "멤버 번호")
-    private Long memberNo;
-
-    /**
      * 캐릭터 No
      */
     @ApiModelProperty(value = "캐릭터 번호")
@@ -48,7 +49,7 @@ public class MostWatchedVideoVo {
      * 시청 횟수
      */
     @ApiModelProperty(value = "시청 횟수")
-    private Long watchCount;
+    private Integer watchCount;
 
     /**
      * 마지막 시청 일시
@@ -56,6 +57,26 @@ public class MostWatchedVideoVo {
     @ApiModelProperty(value = "마지막 시청 일시")
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
     private Date lastWatchDateTime;
+
+    /**
+     * 생성일
+     */
+    @ApiModelProperty(value = "생성일")
+    @JsonProperty("createDateTime")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
+    Date createDtime;
+
+    /**
+     * 수정일
+     */
+    @ApiModelProperty(value = "수정일")
+    @JsonProperty("updateDateTime")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
+    Date updateDtime;
+
+    /**
+     * 영상 메타 정보
+     */
 
     @ApiModelProperty(value = "동영상 아이디")
     @JsonProperty("id")
@@ -84,7 +105,7 @@ public class MostWatchedVideoVo {
     private Date videoReleaseDt;
 
     @ApiModelProperty(value = "영상 시청 연령 타입")
-    private String mediaRatingType;
+    private MediaRatingType mediaRatingType;
 
     @ApiModelProperty(value = "영상 시청 연령 타입 Description")
     private String mediaRatingTypeStr;
@@ -113,40 +134,50 @@ public class MostWatchedVideoVo {
     @ApiModelProperty(value = "동영상 대표 아티스트")
     VideoArtistVo representationArtist;
 
-    /**
-     * 생성일
-     */
-    @ApiModelProperty(value = "생성일")
-    @JsonProperty("createDateTime")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
-    Date createDtime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private Date dispStartDtime;
 
-    /**
-     * 수정일
-     */
-    @ApiModelProperty(value = "수정일")
-    @JsonProperty("updateDateTime")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
-    Date updateDtime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private Date dispEndDtime;
 
-    public static MostWatchedVideoVo mock() {
+    @ApiModelProperty(value = "전시 여부")
+    private YnType displayYn;
+
+    public boolean exhibitable() {
+        if (this.displayYn == YnType.N || this.dispStartDtime == null || this.dispEndDtime == null) {
+            return false;
+        }
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startTime = this.dispStartDtime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime endTime = this.dispEndDtime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        return this.displayYn == YnType.Y
+                && now.isAfter(startTime) && now.isBefore(endTime);
+    }
+
+    public static MostWatchedVideoVo with(MostWatchedVideoDto watch, VideoVo video) {
         return MostWatchedVideoVo.builder()
-                .memberNo(1000000L)
-                .characterNo(2000000L)
-                .videoId(1000L)
-                .videoNm("다니엘 뮤직 비디오")
-                .videoSubtitle("다니엘 뮤직 비디오(서브타이틀)")
-                .videoType("MV")
-                .mediaRatingType("15_OVER")
-                .playTm("03:40")
-                .agencyId(1234L)
-                .videoReleaseDt(new Date())
-                .svcFreeYn(YnType.Y)
-                .svcStreamingYn(YnType.Y)
-                .representationArtist(VideoArtistVo.builder().artistId(100L).artistNm("Daniel").build())
-                .artistList(Lists.newArrayList(VideoArtistVo.builder().artistId(100L).artistNm("Daniel").build()))
-                .thumbnailImageList(Lists.newArrayList(VideoThumbnailImageVo.builder().width(100).height(100).url("https://i.ytimg.com/vi/m8MfJg68oCs/hqdefault.jpg").build()))
-                .videoFileUpdateDtime(System.currentTimeMillis())
+                .characterNo(watch.getCharacterNo())
+                .watchCount(watch.getWatchCount())
+                .lastWatchDateTime(watch.getLastWatchDateTime())
+                .videoId(video.getVideoId())
+                .agencyId(video.getAgencyId())
+                .videoPopularity(video.getVideoPopularity())
+                .videoFileUpdateDtime(video.getVideoFileUpdateDtime())
+                .videoNm((video.getVideoNm()))
+                .videoSubtitle(video.getVideoSubtitle())
+                .playTm(video.getPlayTm())
+                .videoReleaseDt(video.getVideoReleaseDt())
+                .mediaRatingType(video.getMediaRatingType())
+                .mediaRatingTypeStr(video.getMediaRatingTypeStr())
+                .videoType(video.getVideoType())
+                .videoTypeStr(video.getVideoTypeStr())
+                .artistList(video.getArtistList())
+                .thumbnailImageList(video.getThumbnailImageList())
+                .gridThumbnailImageList(video.getGridThumbnailImageList())
+                .svcStreamingYn(video.getSvcStreamingYn())
+                .svcFreeYn(video.getSvcFreeYn())
+                .representationArtist(video.getRepresentationArtist())
+                .displayYn(video.getDisplayYn())
                 .build();
     }
 }

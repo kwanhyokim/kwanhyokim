@@ -73,9 +73,7 @@ public class RecommendPhasePanelAssembly extends PanelSignAssembly {
                                 RecommendPanelType.LISTEN_MOOD_POPULAR_CHANNEL.equals(panel.getType())
                                         || RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL.equals(panel.getType())
                         ) && panel.getContent() != null)
-                        .map(panel-> {
-                            return panel.getContent().getId();
-                        })
+                        .map(panel-> panel.getContent().getId())
                         .collect(Collectors.toList());
 
                 if(panelDefaultSize > panelList.size()){
@@ -98,9 +96,7 @@ public class RecommendPhasePanelAssembly extends PanelSignAssembly {
                                         RecommendPanelType.LISTEN_MOOD_POPULAR_CHANNEL.equals(panel.getType())
                                                 || RecommendPanelType.PREFER_GENRE_POPULAR_CHANNEL.equals(panel.getType())
                                 ) && panel.getContent() != null)
-                                .map(panel-> {
-                                    return panel.getContent().getId();
-                                })
+                                .map(panel-> panel.getContent().getId())
                                 .collect(Collectors.toList());
 
                         if(panelDefaultSize >= panelList.size()){

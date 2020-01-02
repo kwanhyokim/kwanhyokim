@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2019 DREAMUS COMPANY.
  * All right reserved.
+ *
  * This software is the confidential and proprietary information of DREAMUS COMPANY.
  * You shall not disclose such Confidential Information and
  * shall use it only in accordance with the terms of the license agreement
@@ -9,29 +10,26 @@
 
 package com.sktechx.godmusic.personal.rest.controller.v1;
 
-import com.google.common.collect.Lists;
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.RequestGMContext;
-import com.sktechx.godmusic.personal.common.domain.ListResponse;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.rest.model.vo.video.MostWatchedVideoVo;
 import com.sktechx.godmusic.personal.rest.model.vo.video.RangeResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.video.WatchedVideoDeleteRequest;
+import com.sktechx.godmusic.personal.rest.service.video.VideoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import java.util.List;
 
 /**
  * 설명 :
@@ -45,6 +43,9 @@ import java.util.List;
 @RequestMapping(Naming.serviceCode+"/v1/videos")
 public class VideoWatchController {
 
+    @Autowired
+    VideoService videoService;
+
     /**
      * 최근 본 영상 목록 조회
      */
@@ -55,10 +56,12 @@ public class VideoWatchController {
     })
     @GetMapping(value = "/recentwatched")
     public CommonApiResponse<RangeResponse<MostWatchedVideoVo>> getRecentWatchedVideos(
-            @ApiIgnore @RequestGMContext GMContext context,
-            @PageableDefault(page = 1, size = 50) Pageable pageable) {
+            @PageableDefault(size = 50) Pageable pageable,
+            @ApiIgnore @RequestGMContext GMContext context) {
 
-        return new CommonApiResponse<>(RangeResponse.of(new PageImpl(Lists.newArrayList(MostWatchedVideoVo.mock()), pageable, 1L)));
+        Long characterNo = context.getCharacterNo();
+        RangeResponse<MostWatchedVideoVo> response = videoService.getRecentWatchedVideos(characterNo, pageable);
+        return new CommonApiResponse<>(response);
     }
 
     /**
@@ -70,7 +73,8 @@ public class VideoWatchController {
             @ApiIgnore @RequestGMContext GMContext context,
             @RequestBody @Valid WatchedVideoDeleteRequest request) {
 
-        log.info("videoIds={}", request);
+        Long characterNo = context.getCharacterNo();
+        videoService.deleteRecentWatchedVideos(characterNo, request.getVideoIds());
         return CommonApiResponse.emptySuccess();
     }
 }

@@ -25,6 +25,7 @@ import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnum;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -34,6 +35,7 @@ import lombok.Data;
  * @date 2018. 07. 20.
  */
 @Data
+@Builder
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class PanelContentVo {
     private Long id;

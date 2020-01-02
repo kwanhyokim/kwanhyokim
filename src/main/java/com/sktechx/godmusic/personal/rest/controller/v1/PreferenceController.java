@@ -22,12 +22,11 @@ import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.CommonConstant;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.RequestGMContext;
-import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.ChartResponse;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
+import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 import com.sktechx.godmusic.personal.rest.service.PreferenceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -78,50 +77,45 @@ public class PreferenceController {
 
 	@ApiOperation(value = "유사 시드 아티스트 캐쉬 삭제", httpMethod = "GET", notes = "유사 시드 아티스트 캐쉬 삭제 API", response = ArtistDto.class)
 	@GetMapping(value = "/artist/clear")
-	public CommonApiResponse<ChartResponse> deletePreferSimilarArtistCache() {
-		Long characterNo = GMContext.getContext().getCharacterNo();
-		return new CommonApiResponse<>(preferenceService.deletePreferSimilarArtistName(characterNo));
+	public CommonApiResponse deletePreferSimilarArtistCache() {
+		preferenceService.deletePreferSimilarArtistName(GMContext.getContext().getCharacterNo());
+		return CommonApiResponse.emptySuccess();
 	}
 
 	@ApiOperation(value = "좋아하는 아티스트 최신영상 조회")
 	@GetMapping("/video/artist/new/list")
-	public CommonApiResponse getPreferenceVideoArtistNewList(
+	public CommonApiResponse<ListDto<List<VideoVo>>> getPreferenceVideoArtistNewList(
 			@ApiIgnore @RequestGMContext GMContext ctx,
-			@RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo,
-			@RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType
+			@RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo
 	){
 
-//		if(ObjectUtils.isEmpty(characterNo)){
-//			return null;
-//		}
+    	characterNo = ctx.getCharacterNo();
 
+    	List<VideoVo> videoVoList = preferenceService.getLimitedShuffledVideoList(
+			    preferenceService.getPreferenceVideoArtistNewList(characterNo), 5);
 
-		List<Panel> panelList = preferenceService.getPreferenceVideoArtistNewList(characterNo, osType);
+    	if(CollectionUtils.isEmpty(videoVoList)){
+    		return null;
+	    }
 
-		if(CollectionUtils.isEmpty(panelList)){
-			return null;
-		}
-
-		return new CommonApiResponse<>(new ListDto<>(panelList));
+		return new CommonApiResponse<>(new ListDto<>(videoVoList));
 
 	}
 
 	@ApiOperation(value = "좋아하는 장르 최신영상 조회")
 	@GetMapping("/video/genre/new/list")
-	public CommonApiResponse getPreferenceVideoGenreNewList(
+	public CommonApiResponse<ListDto<List<VideoVo>>>  getPreferenceVideoGenreNewList(
 			@ApiIgnore @RequestGMContext GMContext ctx,
-			@RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo,
-			@RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType
+			@RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo
 	){
 
+    	characterNo = ctx.getCharacterNo();
 
-    	List<Panel> panelList = preferenceService.getPreferenceVideoGenreNewList(characterNo, osType);
-
-    	if(CollectionUtils.isEmpty(panelList)){
-    		return null;
-	    }
-
-		return new CommonApiResponse<>(new ListDto<>(panelList));
+		return new CommonApiResponse<>(
+				new ListDto<>(
+					preferenceService.getLimitedShuffledVideoList(
+						preferenceService.getPreferenceVideoGenreNewList(characterNo), 5)
+		));
 
 	}
 }

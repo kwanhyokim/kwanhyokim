@@ -51,10 +51,11 @@ public class RedisKeyConstant {
 	public static final String PERSONAL_AFLO_CHNL_KEY="godmusic.personalapi.aflo.chnllist";
 
 	// 홈 선호 아티스트 최신 영상
-	public static final String PERSONAL_PREFERENCE_VIDEO_ARTIST_NEW_LIST="personalapi.preference.video.artist.new.list:%s";
+	public static final String PERSONAL_PREFERENCE_VIDEO_ARTIST_NEW_LIST="godmusic.personalapi.preference.video.artist.new.list:%s";
 
 	// 홈 선호 장르 최신 영상
-	public static final String PERSONAL_PREFERENCE_VIDEO_GENRE_NEW_LIST="personalapi.preference.video.genre.new.list:%s";
-
+	public static final String PERSONAL_PREFERENCE_VIDEO_GENRE_NEW_LIST="godmusic.personalapi.preference.video.genre.new.list:%s";
+	// 홈 선호 장르 최신 디폴트 영상
+	public static final String PERSONAL_PREFERENCE_VIDEO_GENRE_NEW_DEFAULT_LIST="godmusic.personalapi.preference.video.genre.new.default.list";
 
 }

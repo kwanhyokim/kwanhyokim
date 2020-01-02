@@ -12,34 +12,36 @@
 
 package com.sktechx.godmusic.personal.common.config;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-//import com.sktechx.godmusic.meta.common.interceptor.TransactionIdInterceptor;
-import com.sktechx.godmusic.personal.common.interceptor.TransactionIdInterceptor;
-import lombok.extern.slf4j.Slf4j;
+import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.sktechx.godmusic.personal.common.interceptor.TransactionIdInterceptor;
+import lombok.extern.slf4j.Slf4j;
+//import com.sktechx.godmusic.meta.common.interceptor.TransactionIdInterceptor;
 
 /**
- * 설명 : XXXXXXXXX
+ * 설명 : Personal 서버 설정
  *
  * @author 정덕진(Deockjin Chung)/Music사업팀/SKTECH(djin.chung@sk.com)
  * @date 2018.07.01
@@ -58,6 +60,19 @@ public class PersonalWebMvcConfig implements WebMvcConfigurer {
     }
 
     @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("*")
+                .allowedMethods(
+                        HttpMethod.GET.name(),
+                        HttpMethod.POST.name(),
+                        HttpMethod.PUT.name(),
+                        HttpMethod.DELETE.name(),
+                        HttpMethod.OPTIONS.name())
+                .maxAge(3600);
+    }
+
+    @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         converters.add(formHttpMessageConverter());
         converters.add(stringHttpMessageConverter());
@@ -70,20 +85,24 @@ public class PersonalWebMvcConfig implements WebMvcConfigurer {
         ObjectMapper objectMapper = new ObjectMapper();
 
         // naming converting
-//        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.LOWER_CAMEL_CASE);
 
         // serialize features
-//        objectMapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, true);
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-//        objectMapper.disable(SerializationFeature.WRITE_NULL_MAP_VALUES);
 
         // deserialize features
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         // setting datetime format
         objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+//        objectMapper.registerModule(new SimpleModule() {
+//            @Override
+//            public void setupModule(SetupContext context) {
+//                super.setupModule(context);
+//                context.addDeserializers(new CustomDomainSimpleDeserializers());
+//            }
+//        });
 
         jsonConverter.setObjectMapper(objectMapper);
         return jsonConverter;
