@@ -1,15 +1,5 @@
 package com.sktechx.godmusic.personal.rest.service.impl;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
-
 import com.google.common.base.Strings;
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
@@ -46,6 +36,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 import static com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType.*;
 /**
@@ -212,7 +211,7 @@ public class ListenServiceImpl implements ListenService {
 		String logType = request.getTrackLogType() != null ? request.getTrackLogType().getCode() : "";
 		String bitrate = request.getBitrate() != null ? request.getBitrate().getCode() : BitrateType.UNKNOWN.getCode();
 		String osType = request.getOsType() != null ? request.getOsType().getCode() : "";
-		String clientIp = httpServletRequest.getHeader("client_ip") != null ? httpServletRequest.getHeader("client_ip") : "";
+		String clientIp = extractClientIp(httpServletRequest);
 		String chnlType = StringUtils.isEmpty(request.getChannelType()) ? null : request.getChannelType();
 		String listenSessionId = StringUtils.isEmpty(request.getListenSessionId()) ? null : request.getListenSessionId();
 		String playType = Optional.ofNullable(request.getSourceType()).map(SourceType::getPlayType).orElse(null);
@@ -397,6 +396,17 @@ public class ListenServiceImpl implements ListenService {
 		}
 		
 		return settlement.getSvcId();
+	}
+
+	private String extractClientIp(HttpServletRequest request) {
+
+		String clientIpFromL4 = request.getHeader("client_ip");
+
+		if (StringUtils.isEmpty(clientIpFromL4)) {
+			clientIpFromL4 = request.getHeader("x-gm-client-ip");
+		}
+
+		return StringUtils.isEmpty(clientIpFromL4) ? "" : clientIpFromL4;
 	}
 
 	private SettlementToken parseSettlementToken(String sttToken) {
