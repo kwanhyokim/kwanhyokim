@@ -14,7 +14,7 @@ import com.sktechx.godmusic.personal.common.domain.type.BitrateType;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SettlementInfoDto;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenTrackRequest;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.play.ResourcePlayLogRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.play.ResourcePlayLogRequestParam;
 import com.sktechx.godmusic.personal.rest.repository.SettlementMapper;
 import com.sktechx.godmusic.personal.rest.service.SettlementService;
 import lombok.extern.slf4j.Slf4j;
@@ -88,24 +88,24 @@ public class SettlementServiceImpl implements SettlementService {
     }
 
     @Override
-    public String evaluateServiceIdByResourcePlayLogRequest(ResourcePlayLogRequest request,
+    public String evaluateServiceIdByResourcePlayLogRequest(ResourcePlayLogRequestParam param,
                                                             SettlementInfoDto settlementInfo) {
-        if (ObjectUtils.isEmpty(request.getQuality())) {
+        if (ObjectUtils.isEmpty(param.getQuality())) {
             log.info("1분 청취 요청 Bitrate 없음");
             return settlementInfo.getSvcId();
         }
 
-        if (ObjectUtils.isEmpty(request.getSourceType())) {
+        if (ObjectUtils.isEmpty(param.getSourceType())) {
             log.info("1분 청취 요청 SourceType 없음");
             return settlementInfo.getSvcId();
         }
 
         // flac 요청일 경우 대체
-        String quality = request.getQuality();
+        String quality = param.getQuality();
         if (BitrateType.BITRATE_FLAC16.getCode().equalsIgnoreCase(quality)
                 || BitrateType.BITRATE_FLAC24.getCode().equalsIgnoreCase(quality)) {
 
-            switch (SourceType.fromCode(request.getSourceType())) {
+            switch (SourceType.fromCode(param.getSourceType())) {
                 case STRM:
                     return FLAC_ALTERTIVE_STREAMING_SERVCIE_ID;
                 case DN:

@@ -10,18 +10,21 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl;
 
+import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
 import com.sktechx.godmusic.personal.common.domain.type.ResourceLogType;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SourcePlayLog;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.play.SourcePlayLogGMContextVo;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.play.ResourcePlayLogRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.drm.OwnerTokenClaim;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.play.ResourcePlayLogRequestParam;
 import com.sktechx.godmusic.personal.rest.service.ResourcePlayLogService;
-import com.sktechx.godmusic.personal.rest.service.UserEventService;
-import com.sktechx.godmusic.personal.rest.util.SourcePlayLogBuilderUtils;
+import com.sktechx.godmusic.personal.rest.service.TokenService;
+import com.sktechx.godmusic.personal.rest.service.TrackListenLogService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 /**
  * 설명 : 곡 (DRM) 청취 로그 Service
@@ -34,42 +37,65 @@ import org.springframework.stereotype.Service;
 public class ResourceDrmPlayLogServiceImpl implements ResourcePlayLogService {
 
     private final AmqpService amqpService;
-    private final UserEventService userEventService;
-    private final SourcePlayLogBuilderUtils sourcePlayLogBuilderUtils;
+    private final TokenService tokenService;
+    private final TrackListenLogService trackListenLogService;
 
     public ResourceDrmPlayLogServiceImpl(AmqpService amqpService,
-                                         UserEventService userEventService,
-                                         SourcePlayLogBuilderUtils sourcePlayLogBuilderUtils) {
+                                         TokenService tokenService,
+                                         TrackListenLogService trackListenLogService) {
         this.amqpService = amqpService;
-        this.userEventService = userEventService;
-        this.sourcePlayLogBuilderUtils = sourcePlayLogBuilderUtils;
+        this.tokenService = tokenService;
+        this.trackListenLogService = trackListenLogService;
     }
 
     @Override
-    public SourceType shouldHandle() {
+    public SourceType handleSourceType() {
         return SourceType.DN;
     }
 
     @Override
-    public void deliverResourcePlayLog(SourcePlayLogGMContextVo gmContextVo, ResourcePlayLogRequest request) {
-        SourcePlayLog sourcePlayLog = sourcePlayLogBuilderUtils.buildBasicSourcePlayLogByTrack(gmContextVo, request);
+    public void deliverResourcePlayLog(GMContext gmContext, ResourcePlayLogRequestParam param) {
+        SourcePlayLog sourcePlayLog = trackListenLogService.buildBasicSourcePlayLogByTrack(gmContext, param);
 
         SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder = sourcePlayLog.toBuilder();
 
         log.info("[DRM TRACK 청취 로그] makeTrackListenLog START");
-        if (ResourceLogType.ONEMIN == ResourceLogType.fromCode(request.getLogType())) {
-            sourcePlayLogBuilder = sourcePlayLogBuilderUtils.buildOneMinListenTrackLog(gmContextVo, request, sourcePlayLogBuilder);
+        if (ResourceLogType.ONEMIN == ResourceLogType.fromCode(param.getLogType())) {
+            sourcePlayLogBuilder = this.buildDrmListenTrackLog(param, sourcePlayLogBuilder);
         }
 
-        sourcePlayLogBuilder = sourcePlayLogBuilderUtils.buildDrmListenTrackLog(request, sourcePlayLogBuilder);
-
-        if (YnType.Y == request.getFreeYn()) {
+        if (YnType.Y == param.getFreeYn()) {
             sourcePlayLogBuilder.free(true);
         }
 
         amqpService.deliverSourcePlay(sourcePlayLogBuilder.build());
         log.info("[DRM TRACK 청취로그][MQ 발송] {}", sourcePlayLogBuilder.toString());
-        userEventService.deliverUserEventByTrackListenLog(gmContextVo, request);
+        trackListenLogService.deliverUserEventByTrackListenLog(gmContext, param);
+    }
+
+    /**
+     * DRM 곡의 경우
+     */
+    private SourcePlayLog.SourcePlayLogBuilder buildDrmListenTrackLog(ResourcePlayLogRequestParam param,
+                                                                      SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
+        String ownerToken = param.getOwnerToken();
+        if (StringUtils.isEmpty(ownerToken)) {
+            log.warn("OwnerToken 없음 (DRM 스트리밍)");
+            return sourcePlayLogBuilder;
+        }
+
+        OwnerTokenClaim ownerTokenClaim = tokenService.parseOwnerToken(ownerToken);
+        if (ObjectUtils.isEmpty(ownerTokenClaim)) {
+            log.warn("OwnerToken Parse 실패 (DRM 스트리밍)");
+            return sourcePlayLogBuilder;
+        }
+
+        return sourcePlayLogBuilder
+                .drmMemberNo(ownerTokenClaim.getMemberNo())
+                .drmPssrlCd(ownerTokenClaim.getPssrlCode())
+                .drmServiceId(ownerTokenClaim.getServiceId())
+                .drmPrchsId(ownerTokenClaim.getPurchaseId())
+                .drmGoodsId(ownerTokenClaim.getGoodsId());
     }
 
 }

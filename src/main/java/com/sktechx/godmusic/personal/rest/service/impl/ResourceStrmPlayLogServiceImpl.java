@@ -10,18 +10,26 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl;
 
+import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.code.YnType;
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
 import com.sktechx.godmusic.personal.common.domain.type.ResourceLogType;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
+import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
+import com.sktechx.godmusic.personal.rest.model.dto.listen.SettlementInfoDto;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SourcePlayLog;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.play.SourcePlayLogGMContextVo;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.play.ResourcePlayLogRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.SettlementToken;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.play.ResourcePlayLogRequestParam;
+import com.sktechx.godmusic.personal.rest.service.McpService;
 import com.sktechx.godmusic.personal.rest.service.ResourcePlayLogService;
-import com.sktechx.godmusic.personal.rest.service.UserEventService;
-import com.sktechx.godmusic.personal.rest.util.SourcePlayLogBuilderUtils;
+import com.sktechx.godmusic.personal.rest.service.SettlementService;
+import com.sktechx.godmusic.personal.rest.service.TokenService;
+import com.sktechx.godmusic.personal.rest.service.TrackListenLogService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 /**
  * 설명 : 곡(STRM) 청취 로그 Service
@@ -34,34 +42,40 @@ import org.springframework.stereotype.Service;
 public class ResourceStrmPlayLogServiceImpl implements ResourcePlayLogService {
 
     private final AmqpService amqpService;
-    private final UserEventService userEventService;
-    private final SourcePlayLogBuilderUtils sourcePlayLogBuilderUtils;
+    private final TrackListenLogService trackListenLogService;
+    private final TokenService tokenService;
+    private final SettlementService settlementService;
+    private final McpService mcpService;
 
     public ResourceStrmPlayLogServiceImpl(AmqpService amqpService,
-                                          UserEventService userEventService,
-                                          SourcePlayLogBuilderUtils sourcePlayLogBuilderUtils) {
+                                          TrackListenLogService trackListenLogService,
+                                          TokenService tokenService,
+                                          SettlementService settlementService,
+                                          McpService mcpService) {
         this.amqpService = amqpService;
-        this.userEventService = userEventService;
-        this.sourcePlayLogBuilderUtils = sourcePlayLogBuilderUtils;
+        this.trackListenLogService = trackListenLogService;
+        this.tokenService = tokenService;
+        this.settlementService = settlementService;
+        this.mcpService = mcpService;
     }
 
     @Override
-    public SourceType shouldHandle() {
+    public SourceType handleSourceType() {
         return SourceType.STRM;
     }
 
     @Override
-    public void deliverResourcePlayLog(SourcePlayLogGMContextVo gmContextVo, ResourcePlayLogRequest request) {
-        SourcePlayLog sourcePlayLog = sourcePlayLogBuilderUtils.buildBasicSourcePlayLogByTrack(gmContextVo, request);
+    public void deliverResourcePlayLog(GMContext gmContext, ResourcePlayLogRequestParam param) {
+        SourcePlayLog sourcePlayLog = trackListenLogService.buildBasicSourcePlayLogByTrack(gmContext, param);
 
         SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder = sourcePlayLog.toBuilder();
 
         log.info("[STRM TRACK 청취 로그] makeTrackListenLog START");
-        if (ResourceLogType.ONEMIN == ResourceLogType.fromCode(request.getLogType())) {
-            sourcePlayLogBuilder = sourcePlayLogBuilderUtils.buildOneMinListenTrackLog(gmContextVo, request, sourcePlayLogBuilder);
+        if (ResourceLogType.ONEMIN == ResourceLogType.fromCode(param.getLogType())) {
+            sourcePlayLogBuilder = this.buildOneMinListenTrackLog(gmContext, param, sourcePlayLogBuilder);
         }
 
-        if (YnType.Y == request.getFreeYn()) {
+        if (YnType.Y == param.getFreeYn()) {
             sourcePlayLogBuilder.free(true);
         }
 
@@ -69,9 +83,89 @@ public class ResourceStrmPlayLogServiceImpl implements ResourcePlayLogService {
         log.info("[STRM TRACK 청취로그][MQ 발송] {}", sourcePlayLogBuilder.toString());
 
         // playOfflineYn == N 일때만 UserEvent를 남긴다.
-        if (YnType.Y != request.getPlayOfflineYn()) {
-            userEventService.deliverUserEventByTrackListenLog(gmContextVo, request);
+        if (YnType.N == param.getPlayOfflineYn()) {
+            trackListenLogService.deliverUserEventByTrackListenLog(gmContext, param);
         }
+    }
+
+    /**
+     * 곡 ONEMIN 청취 로그 만들기
+     * > cached면 cachedToken 활용
+     * > 아니면 sttToken 활용
+     */
+    public SourcePlayLog.SourcePlayLogBuilder buildOneMinListenTrackLog(GMContext gmContext,
+                                                                        ResourcePlayLogRequestParam param,
+                                                                        SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
+        // 캐시드 스트리밍인 경우
+        if (YnType.Y == param.getPlayCacheYn()) {
+            // TODO tokenService.parseCachedToken(param.getCachedToken());
+        }
+
+        // 캐시드 스트리밍이 아닌 경우 SttToken 활용
+        SettlementToken sttToken = tokenService.parseSettlementToken(param.getSttToken());
+        if (null != sttToken) {
+            log.debug("[TRACK 청취로그] sttToken 이용하여 serviceId 전달");
+            return sourcePlayLogBuilder
+                    .pssrlCd(sttToken.getServiceId())
+                    .serviceId(sttToken.getServiceId())
+                    .prchsId(sttToken.getPurchaseId())
+                    .goodsId(sttToken.getGoodsId());
+        }
+
+        // sttToken == null이면 무료곡 여부 체크 후 MCP 조회
+        return this.checkFreeResourceWithAppendSttInfo(gmContext, param, sourcePlayLogBuilder);
+    }
+
+    /**
+     * 무료곡인 경우, MCP를 조회하여 MCP 쪽 svcCd를 청취 로그의 serviceId로 넘긴다.
+     * (무료곡인 경우는 정산쪽의 serviceId와 MCP의 serviceId(svcCd)가 다르기 때문에)
+     */
+    private SourcePlayLog.SourcePlayLogBuilder checkFreeResourceWithAppendSttInfo(GMContext gmContext,
+                                                                                  ResourcePlayLogRequestParam param,
+                                                                                  SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
+        log.debug("[TRACK 청취로그][sttToken 없음]");
+        String serviceId = null;
+        Long purchaseId = null;
+        Long goodsId = null;
+
+        String sourceType = param.getSourceType();
+        Long trackId = param.getResourceId();
+        String bitrate = param.getQuality();
+        String osType = param.getOsTypeToStr();
+
+        SettlementInfoDto settlementInfo = settlementService.getSettlementInfo(gmContext.getMemberNo(), sourceType);
+
+        if (YnType.Y == param.getFreeYn()) {
+            serviceId = mcpService.getServiceCodeFromMCP(trackId, bitrate, osType);
+            log.debug("[TRACK 청취로그] 무료곡 청취 로그. trackId={}, freeYn={}, serviceId={}", trackId, param.getFreeYn(), serviceId);
+
+            if (null != settlementInfo) {
+                purchaseId = settlementInfo.getPrchsId();
+                goodsId = settlementInfo.getGoodsId();
+            }
+
+        } else if (YnType.N == param.getFreeYn()) {
+            if (ObjectUtils.isEmpty(settlementInfo)) {
+                log.warn("[TRACK 청취로그] 정산 정보 조회 실패. param={}", param);
+                throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
+            }
+
+            serviceId = settlementService.evaluateServiceIdByResourcePlayLogRequest(param, settlementInfo);
+            purchaseId = settlementInfo.getPrchsId();
+            goodsId = settlementInfo.getGoodsId();
+            log.debug("[TRACK 청취로그] 유료곡 청취 로그. trackId={}, freeYn={}, serviceId={}", trackId, param.getFreeYn(), serviceId);
+        }
+
+        if (StringUtils.isEmpty(serviceId)) {
+            log.warn("[TRACK 청취로그] Not Found serviceId. param={}", param);
+            throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
+        }
+
+        return sourcePlayLogBuilder
+                .pssrlCd(serviceId)
+                .serviceId(serviceId)
+                .prchsId(purchaseId)
+                .goodsId(goodsId);
     }
 
 }

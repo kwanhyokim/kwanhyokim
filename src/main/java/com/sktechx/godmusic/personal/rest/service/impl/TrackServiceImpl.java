@@ -46,7 +46,7 @@ public class TrackServiceImpl implements TrackService {
 
         List<MostListenedTrackDto> mostTrackList = trackMapper.selectMostListenedTrackList(characterNo, pageable);
 
-        if(CollectionUtils.isEmpty(mostTrackList)){
+        if (CollectionUtils.isEmpty(mostTrackList)) {
             throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
         }
 
@@ -54,7 +54,7 @@ public class TrackServiceImpl implements TrackService {
         // 1000곡 노출 (pagination 처리 하면 달라져야 함)
 //        long totalCount = mostTrackList.size() == pageable.getPageSize() ? pageable.getPageSize() : mostTrackList.size();
 
-        if(totalCount > TrackConstant.MOST_TRACK_LIST_MAX_COUNT) {
+        if (totalCount > TrackConstant.MOST_TRACK_LIST_MAX_COUNT) {
             totalCount = TrackConstant.MOST_TRACK_LIST_MAX_COUNT;
         }
 
@@ -62,11 +62,11 @@ public class TrackServiceImpl implements TrackService {
     }
 
     @Override
-    public PageImpl<?> getMyRecentTrackList(Long memberNo, Long characterNo, Pageable pageable){
+    public PageImpl<?> getMyRecentTrackList(Long memberNo, Long characterNo, Pageable pageable) {
 
         List<MostListenedTrackDto> recentListenedTrackList = trackMapper.selectMyRecentTrackList(memberNo, characterNo, pageable);
 
-        if(CollectionUtils.isEmpty(recentListenedTrackList)){
+        if (CollectionUtils.isEmpty(recentListenedTrackList)) {
             throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
         }
 
@@ -80,13 +80,13 @@ public class TrackServiceImpl implements TrackService {
 
         Map<String, Object> batchParam = new HashMap<>();
 
-        if(trackIdList == null){
+        if (trackIdList == null) {
             throw new CommonBusinessException(CommonErrorDomain.BAD_REQUEST);
         }
 
-        try(
+        try (
                 SqlSession sqlSession = sqlSessionTemplate.getSqlSessionFactory().openSession(
-                        ExecutorType.BATCH, false)){
+                        ExecutorType.BATCH, false)) {
             IntStream.range(0, trackIdList.size())
                     .forEach(index ->
                             {
@@ -102,11 +102,12 @@ public class TrackServiceImpl implements TrackService {
 
             sqlSession.flushStatements();
             sqlSession.commit();
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             log.error("Track :: delete my recent track list :: Error Message", e.getMessage());
             throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
         }
 
     }
+
 }

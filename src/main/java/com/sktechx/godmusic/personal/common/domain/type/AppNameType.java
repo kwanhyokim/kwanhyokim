@@ -1,21 +1,20 @@
 /*
+ * Copyright (c) 2019 DREAMUS COMPANY.
+ * All right reserved.
  *
- *  * Copyright (c) 2018 SK TECHX.
- *  * All right reserved.
- *  *
- *  * This software is the confidential and proprietary information of SK TECHX.
- *  * You shall not disclose such Confidential Information and
- *  * shall use it only in accordance with the terms of the license agreement
- *  * you entered into with SK TECHX.
- *
+ * This software is the confidential and proprietary information of DREAMUS COMPANY.
+ * You shall not disclose such Confidential Information and
+ * shall use it only in accordance with the terms of the license agreement
+ * you entered into with DREAMUS COMPANY.
  */
+
 package com.sktechx.godmusic.personal.common.domain.type;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnum;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnumTypeHandler;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.type.MappedTypes;
-import org.springframework.util.StringUtils;
 
 /**
  * App 인입 채널 타입
@@ -71,5 +70,17 @@ public enum AppNameType implements CodeEnum {
 		}
 		
 		return null;		
+	}
+
+	@JsonCreator
+	public static String parseToString(String code) {
+		if (!StringUtils.isEmpty(code)) {
+			for (AppNameType type : AppNameType.values()) {
+				if (type.code.equals(code)){
+					return type.code;
+				}
+			}
+		}
+		return StringUtils.EMPTY;
 	}
 }

@@ -11,19 +11,19 @@
 package com.sktechx.godmusic.personal.rest.service;
 
 import com.sktechx.godmusic.lib.domain.GMContext;
-import com.sktechx.godmusic.personal.common.domain.type.SourceType;
+import com.sktechx.godmusic.personal.rest.model.dto.listen.SourcePlayLog;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.play.ResourcePlayLogRequestParam;
 
 /**
- * 설명 : Resource 청취(재생) 로그
+ * 설명 : XXXXXXXXXXX
  *
  * @author groot
- * @since 2019. 12. 19
+ * @since 2020. 01. 02
  */
-public interface ResourcePlayLogService {
+public interface TrackListenLogService {
 
-    SourceType handleSourceType();
+    SourcePlayLog buildBasicSourcePlayLogByTrack(GMContext gmContext, ResourcePlayLogRequestParam param);
 
-    void deliverResourcePlayLog(GMContext gmContext, ResourcePlayLogRequestParam param);
+    void deliverUserEventByTrackListenLog(GMContext gmContext, ResourcePlayLogRequestParam param);
 
 }

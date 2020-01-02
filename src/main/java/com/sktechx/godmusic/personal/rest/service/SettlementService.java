@@ -12,7 +12,7 @@ package com.sktechx.godmusic.personal.rest.service;
 
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SettlementInfoDto;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenTrackRequest;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.play.ResourcePlayLogRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.play.ResourcePlayLogRequestParam;
 
 /**
  * 정산 처리를 위한 서비스
@@ -32,7 +32,7 @@ public interface SettlementService {
 
     String evaluateServiceId(ListenTrackRequest request, SettlementInfoDto settlement);
 
-    String evaluateServiceIdByResourcePlayLogRequest(ResourcePlayLogRequest request,
+    String evaluateServiceIdByResourcePlayLogRequest(ResourcePlayLogRequestParam param,
                                                      SettlementInfoDto settlementInfo);
 
 }

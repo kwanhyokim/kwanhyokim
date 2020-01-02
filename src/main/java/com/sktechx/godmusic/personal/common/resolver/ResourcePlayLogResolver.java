@@ -34,7 +34,7 @@ public class ResourcePlayLogResolver {
     public ResourcePlayLogResolver(List<ResourcePlayLogService> resourcePlayLogServices) {
         resourcePlayLogServiceMap = resourcePlayLogServices.stream()
                 .collect(Collectors.toMap(
-                        ResourcePlayLogService::shouldHandle,
+                        ResourcePlayLogService::handleSourceType,
                         Function.identity()
                 ));
     }
