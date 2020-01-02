@@ -1,9 +1,18 @@
+/*
+ * Copyright (c) 2019 DREAMUS COMPANY.
+ * All right reserved.
+ *
+ * This software is the confidential and proprietary information of DREAMUS COMPANY.
+ * You shall not disclose such Confidential Information and
+ * shall use it only in accordance with the terms of the license agreement
+ * you entered into with DREAMUS COMPANY.
+ */
+
 package com.sktechx.godmusic.personal.rest.service;
 
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SettlementInfoDto;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenTrackRequest;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.SettlementToken;
-import com.sktechx.godmusic.personal.rest.model.vo.video.ResourcePlayLogRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.play.ResourcePlayLogRequest;
 
 /**
  * 정산 처리를 위한 서비스
@@ -20,8 +29,6 @@ public interface SettlementService {
     String getServiceCodeByPrchsId(Long prchsId, String settlementTypeCode);
 
     SettlementInfoDto getSettlementInfo(Long memberNo, String settlementTypeCode);
-
-	SettlementToken parseSettlementToken(String sttToken);
 
     String evaluateServiceId(ListenTrackRequest request, SettlementInfoDto settlement);
 

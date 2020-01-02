@@ -8,7 +8,7 @@
  * you entered into with DREAMUS COMPANY.
  */
 
-package com.sktechx.godmusic.personal;
+package com.sktechx.godmusic.personal.resolver;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,22 +23,25 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * 설명 : XXXXXXXXXXX
+ * 설명 : Resolver Pattern TEST
  *
  * @author groot
  * @since 2019. 12. 20
  */
 @Slf4j
 @SpringBootTest
-@ActiveProfiles("local")
+@ActiveProfiles("!prod")
 public class ResolverPatternTest {
 
-    interface 조민국 {
+    interface ProcessService {
+
         String doProcess(String a);
+
         String handleableMetaType();
+
     }
 
-    static class Track implements 조민국 {
+    static class TrackProcessService implements ProcessService {
         @Override
         public String doProcess(String a) {
             return a + " : track";
@@ -49,7 +52,7 @@ public class ResolverPatternTest {
         }
     }
 
-    static class Artist implements 조민국 {
+    static class ArtistProcessService implements ProcessService {
         @Override
         public String doProcess(String a) {
             return a + " : artist";
@@ -61,30 +64,34 @@ public class ResolverPatternTest {
     }
 
     @Bean
-    public Track track() {
-        return new Track();
+    public TrackProcessService track() {
+        return new TrackProcessService();
     }
 
     @Bean
-    public Artist artist() {
-        return new Artist();
+    public ArtistProcessService artist() {
+        return new ArtistProcessService();
     }
 
     static class HandlerResolver {
-        public HandlerResolver(List<조민국> all) {
-            mapper = all.stream().collect(Collectors.toMap(조민국::handleableMetaType, Function.identity()));
+
+        private Map<String, ProcessService> mapper;
+
+        public HandlerResolver(List<ProcessService> all) {
+            mapper = all.stream().collect(Collectors.toMap(ProcessService::handleableMetaType, Function.identity()));
         }
-        public Optional<조민국> findResolver(String metaType) {
+
+        public Optional<ProcessService> findResolver(String metaType) {
             return Optional.ofNullable(mapper.get(metaType));
         }
-        private Map<String, 조민국> mapper;
+
     }
 
     public static void main(String[] args) throws Exception {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ResolverPatternTest.class);
         HandlerResolver resolver = context.getBean(HandlerResolver.class);
         String param = "가나다";
-        조민국 a = resolver.findResolver("track").get();
+        ProcessService a = resolver.findResolver("track").get();
         System.out.println(a.doProcess(param));
         a = resolver.findResolver("artist").get();
         System.out.println(a.doProcess(param));

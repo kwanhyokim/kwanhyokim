@@ -18,11 +18,11 @@ import com.sktechx.godmusic.personal.rest.model.dto.listen.SettlementInfoDto;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SourcePlayLog;
 import com.sktechx.godmusic.personal.rest.model.vo.drm.OwnerTokenClaim;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.SettlementToken;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.SourcePlayLogGMContextVo;
-import com.sktechx.godmusic.personal.rest.model.vo.video.ResourcePlayLogRequest;
-import com.sktechx.godmusic.personal.rest.service.DrmService;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.play.SourcePlayLogGMContextVo;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.play.ResourcePlayLogRequest;
 import com.sktechx.godmusic.personal.rest.service.McpService;
 import com.sktechx.godmusic.personal.rest.service.SettlementService;
+import com.sktechx.godmusic.personal.rest.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -40,14 +40,14 @@ public class SourcePlayLogBuilderUtils {
 
     private final SettlementService settlementService;
     private final McpService mcpService;
-    private final DrmService drmService;
+    private final TokenService tokenService;
 
     public SourcePlayLogBuilderUtils(SettlementService settlementService,
                                      McpService mcpService,
-                                     DrmService drmService) {
+                                     TokenService tokenService) {
         this.settlementService = settlementService;
         this.mcpService = mcpService;
-        this.drmService = drmService;
+        this.tokenService = tokenService;
     }
 
     public SourcePlayLog buildBasicSourcePlayLogByTrack(SourcePlayLogGMContextVo gmContextVo,
@@ -90,8 +90,18 @@ public class SourcePlayLogBuilderUtils {
     public SourcePlayLog.SourcePlayLogBuilder buildOneMinListenTrackLog(SourcePlayLogGMContextVo gmContextVo,
                                                                         ResourcePlayLogRequest request,
                                                                         SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
-        SettlementToken sttToken = settlementService.parseSettlementToken(request.getSttToken());
+        /**
+         * TODO 스트리밍 상태에 따른 Token 넘어오는 케이스 정리해야 할 듯.
+         * TODO 케이스 별로 사용되는 토큰이 1:1이면 각각 개별 메소드로 나눈다.
+         */
 
+        // 캐시드 스트리밍인 경우
+        if (YnType.Y == request.getPlayCacheYn()) {
+            // TODO tokenService.parseCachedToken(request.getCachedToken());
+        }
+
+        // 캐시드 스트리밍이 아닌 경우 SttToken 활용
+        SettlementToken sttToken = tokenService.parseSettlementToken(request.getSttToken());
         if (null != sttToken) {
             log.debug("[TRACK 청취로그] sttToken 이용하여 serviceId 전달");
             return sourcePlayLogBuilder
@@ -100,14 +110,14 @@ public class SourcePlayLogBuilderUtils {
                     .prchsId(sttToken.getPurchaseId())
                     .goodsId(sttToken.getGoodsId());
         }
-        return this.checkSourceFreeYnWithAppendSttInfo(gmContextVo, request, sourcePlayLogBuilder);
+        return this.checkFreeResourceWithAppendSttInfo(gmContextVo, request, sourcePlayLogBuilder);
     }
 
     /**
      * 무료곡인 경우, MCP를 조회하여 MCP 쪽 svcCd를 청취 로그의 serviceId로 넘긴다.
      * (무료곡인 경우는 정산쪽의 serviceId와 MCP의 serviceId(svcCd)가 다르기 때문에)
      */
-    private SourcePlayLog.SourcePlayLogBuilder checkSourceFreeYnWithAppendSttInfo(SourcePlayLogGMContextVo gmContextVo,
+    private SourcePlayLog.SourcePlayLogBuilder checkFreeResourceWithAppendSttInfo(SourcePlayLogGMContextVo gmContextVo,
                                                                                   ResourcePlayLogRequest request,
                                                                                   SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
         log.debug("[TRACK 청취로그][sttToken 없음]");
@@ -122,6 +132,7 @@ public class SourcePlayLogBuilderUtils {
 
         SettlementInfoDto settlementInfo = settlementService.getSettlementInfo(gmContextVo.getMemberNo(), sourceType);
 
+        // TODO 캐시드일 때도 트랙은 트랙이니까 무료곡일 경우 체크해서 serviceId를 따로 채워야 하는지도 확인 필요
         if (YnType.Y == request.getFreeYn()) {
             serviceId = mcpService.getServiceCodeFromMCP(trackId, bitrate, osType);
             log.debug("[TRACK 청취로그] 무료곡 청취 로그. trackId={}, freeYn={}, serviceId={}", trackId, request.getFreeYn(), serviceId);
@@ -166,7 +177,7 @@ public class SourcePlayLogBuilderUtils {
             return sourcePlayLogBuilder;
         }
 
-        OwnerTokenClaim ownerTokenClaim = drmService.getOwnerTokenInfo(ownerToken);
+        OwnerTokenClaim ownerTokenClaim = tokenService.parseOwnerToken(ownerToken);
         if (ObjectUtils.isEmpty(ownerTokenClaim)) {
             log.warn("OwnerToken Parse 실패 (DRM 스트리밍)");
             return sourcePlayLogBuilder;
@@ -217,7 +228,7 @@ public class SourcePlayLogBuilderUtils {
      */
     public SourcePlayLog.SourcePlayLogBuilder buildOneMinVideoPlayLog(ResourcePlayLogRequest request,
                                                                       SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
-        SettlementToken sttToken = settlementService.parseSettlementToken(request.getSttToken());
+        SettlementToken sttToken = tokenService.parseSettlementToken(request.getSttToken());
         String serviceId = sttToken.getServiceId();
         SourceType sourceType = SourceType.fromCode(request.getSourceType());
 

@@ -15,8 +15,8 @@ import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
 import com.sktechx.godmusic.personal.common.domain.type.ResourceLogType;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SourcePlayLog;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.SourcePlayLogGMContextVo;
-import com.sktechx.godmusic.personal.rest.model.vo.video.ResourcePlayLogRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.play.SourcePlayLogGMContextVo;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.play.ResourcePlayLogRequest;
 import com.sktechx.godmusic.personal.rest.service.ResourcePlayLogService;
 import com.sktechx.godmusic.personal.rest.service.UserEventService;
 import com.sktechx.godmusic.personal.rest.util.SourcePlayLogBuilderUtils;
@@ -24,22 +24,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
- * 설명 : 곡(STRM) 청취 로그 Service
+ * 설명 : 곡 (DRM) 청취 로그 Service
  *
  * @author groot
- * @since 2019. 12. 20
+ * @since 2019. 12. 23
  */
 @Slf4j
 @Service
-public class StrmResourcePlayLogServiceImpl implements ResourcePlayLogService {
+public class ResourceDrmPlayLogServiceImpl implements ResourcePlayLogService {
 
     private final AmqpService amqpService;
     private final UserEventService userEventService;
     private final SourcePlayLogBuilderUtils sourcePlayLogBuilderUtils;
 
-    public StrmResourcePlayLogServiceImpl(AmqpService amqpService,
-                                          UserEventService userEventService,
-                                          SourcePlayLogBuilderUtils sourcePlayLogBuilderUtils) {
+    public ResourceDrmPlayLogServiceImpl(AmqpService amqpService,
+                                         UserEventService userEventService,
+                                         SourcePlayLogBuilderUtils sourcePlayLogBuilderUtils) {
         this.amqpService = amqpService;
         this.userEventService = userEventService;
         this.sourcePlayLogBuilderUtils = sourcePlayLogBuilderUtils;
@@ -47,27 +47,28 @@ public class StrmResourcePlayLogServiceImpl implements ResourcePlayLogService {
 
     @Override
     public SourceType shouldHandle() {
-        return SourceType.STRM;
+        return SourceType.DN;
     }
 
     @Override
     public void deliverResourcePlayLog(SourcePlayLogGMContextVo gmContextVo, ResourcePlayLogRequest request) {
         SourcePlayLog sourcePlayLog = sourcePlayLogBuilderUtils.buildBasicSourcePlayLogByTrack(gmContextVo, request);
 
-        // TODO cachedToken을 활용해서 캐시드 스트리밍 처리해야함
-
         SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder = sourcePlayLog.toBuilder();
-        log.info("[STRM TRACK 청취 로그] makeTrackListenLog START");
+
+        log.info("[DRM TRACK 청취 로그] makeTrackListenLog START");
         if (ResourceLogType.ONEMIN == ResourceLogType.fromCode(request.getLogType())) {
             sourcePlayLogBuilder = sourcePlayLogBuilderUtils.buildOneMinListenTrackLog(gmContextVo, request, sourcePlayLogBuilder);
         }
+
+        sourcePlayLogBuilder = sourcePlayLogBuilderUtils.buildDrmListenTrackLog(request, sourcePlayLogBuilder);
 
         if (YnType.Y == request.getFreeYn()) {
             sourcePlayLogBuilder.free(true);
         }
 
         amqpService.deliverSourcePlay(sourcePlayLogBuilder.build());
-        log.info("[STRM TRACK 청취로그][MQ 발송] {}", sourcePlayLogBuilder.toString());
+        log.info("[DRM TRACK 청취로그][MQ 발송] {}", sourcePlayLogBuilder.toString());
         userEventService.deliverUserEventByTrackListenLog(gmContextVo, request);
     }
 

@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2019 DREAMUS COMPANY.
  * All right reserved.
+ *
  * This software is the confidential and proprietary information of DREAMUS COMPANY.
  * You shall not disclose such Confidential Information and
  * shall use it only in accordance with the terms of the license agreement
@@ -9,12 +10,13 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl;
 
+import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
 import com.sktechx.godmusic.personal.common.domain.type.ResourceLogType;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SourcePlayLog;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.SourcePlayLogGMContextVo;
-import com.sktechx.godmusic.personal.rest.model.vo.video.ResourcePlayLogRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.play.SourcePlayLogGMContextVo;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.play.ResourcePlayLogRequest;
 import com.sktechx.godmusic.personal.rest.service.ResourcePlayLogService;
 import com.sktechx.godmusic.personal.rest.service.UserEventService;
 import com.sktechx.godmusic.personal.rest.util.SourcePlayLogBuilderUtils;
@@ -22,22 +24,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
- * 설명 : Resource 청취(재생) 로그 Service
+ * 설명 : 곡(STRM) 청취 로그 Service
  *
  * @author groot
- * @since 2019. 12. 19
+ * @since 2019. 12. 20
  */
 @Slf4j
 @Service
-public class VideoResourcePlayLogServiceImpl implements ResourcePlayLogService {
+public class ResourceStrmPlayLogServiceImpl implements ResourcePlayLogService {
 
     private final AmqpService amqpService;
     private final UserEventService userEventService;
     private final SourcePlayLogBuilderUtils sourcePlayLogBuilderUtils;
 
-    public VideoResourcePlayLogServiceImpl(AmqpService amqpService,
-                                           UserEventService userEventService,
-                                           SourcePlayLogBuilderUtils sourcePlayLogBuilderUtils) {
+    public ResourceStrmPlayLogServiceImpl(AmqpService amqpService,
+                                          UserEventService userEventService,
+                                          SourcePlayLogBuilderUtils sourcePlayLogBuilderUtils) {
         this.amqpService = amqpService;
         this.userEventService = userEventService;
         this.sourcePlayLogBuilderUtils = sourcePlayLogBuilderUtils;
@@ -45,26 +47,31 @@ public class VideoResourcePlayLogServiceImpl implements ResourcePlayLogService {
 
     @Override
     public SourceType shouldHandle() {
-        return SourceType.VIDEO_MV;
+        return SourceType.STRM;
     }
 
-    /**
-     * Resource 청취(재생) 로그
-     */
     @Override
     public void deliverResourcePlayLog(SourcePlayLogGMContextVo gmContextVo, ResourcePlayLogRequest request) {
-        SourcePlayLog sourcePlayLog = sourcePlayLogBuilderUtils.buildBasicSourcePlayLogByVideo(gmContextVo, request);
+        SourcePlayLog sourcePlayLog = sourcePlayLogBuilderUtils.buildBasicSourcePlayLogByTrack(gmContextVo, request);
 
         SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder = sourcePlayLog.toBuilder();
 
-        ResourceLogType resourceLogType = ResourceLogType.fromCode(request.getLogType());
-        if (ResourceLogType.ONEMIN == resourceLogType) {
-            sourcePlayLogBuilder = sourcePlayLogBuilderUtils.buildOneMinVideoPlayLog(request, sourcePlayLogBuilder);
+        log.info("[STRM TRACK 청취 로그] makeTrackListenLog START");
+        if (ResourceLogType.ONEMIN == ResourceLogType.fromCode(request.getLogType())) {
+            sourcePlayLogBuilder = sourcePlayLogBuilderUtils.buildOneMinListenTrackLog(gmContextVo, request, sourcePlayLogBuilder);
+        }
+
+        if (YnType.Y == request.getFreeYn()) {
+            sourcePlayLogBuilder.free(true);
         }
 
         amqpService.deliverSourcePlay(sourcePlayLogBuilder.build());
-        log.info("[RESOURCE 청취로그 MQ 발송] listen = {}", sourcePlayLogBuilder.toString());
-        userEventService.deliverUserEventByVideoPlayLog(gmContextVo, request);
+        log.info("[STRM TRACK 청취로그][MQ 발송] {}", sourcePlayLogBuilder.toString());
+
+        // playOfflineYn == N 일때만 UserEvent를 남긴다.
+        if (YnType.Y != request.getPlayOfflineYn()) {
+            userEventService.deliverUserEventByTrackListenLog(gmContextVo, request);
+        }
     }
 
 }

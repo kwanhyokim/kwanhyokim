@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2019 DREAMUS COMPANY.
  * All right reserved.
+ *
  * This software is the confidential and proprietary information of DREAMUS COMPANY.
  * You shall not disclose such Confidential Information and
  * shall use it only in accordance with the terms of the license agreement
@@ -10,14 +11,11 @@
 package com.sktechx.godmusic.personal.rest.service.video;
 
 import com.google.common.collect.Lists;
-import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.client.model.MetaVideoRequestVo;
-import com.sktechx.godmusic.personal.rest.model.dto.MostListenedTrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.MostWatchedVideoDto;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.vo.video.MostWatchedVideoVo;
 import com.sktechx.godmusic.personal.rest.model.vo.video.RangeResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
@@ -31,7 +29,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;

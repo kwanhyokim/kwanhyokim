@@ -18,7 +18,11 @@ import com.sktechx.godmusic.personal.common.amqp.domain.UserEvent;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEventTarget;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEventType;
 import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
-import com.sktechx.godmusic.personal.common.domain.type.*;
+import com.sktechx.godmusic.personal.common.domain.type.AppNameType;
+import com.sktechx.godmusic.personal.common.domain.type.BitrateType;
+import com.sktechx.godmusic.personal.common.domain.type.ResourceLogType;
+import com.sktechx.godmusic.personal.common.domain.type.SourceType;
+import com.sktechx.godmusic.personal.common.domain.type.TrackLogType;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.ResourceListen;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SettlementInfoDto;
@@ -27,22 +31,22 @@ import com.sktechx.godmusic.personal.rest.model.vo.drm.OwnerTokenClaim;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenTrackRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.SettlementToken;
-import com.sktechx.godmusic.personal.rest.model.vo.video.ResourcePlayLogRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.play.ResourcePlayLogRequest;
 import com.sktechx.godmusic.personal.rest.repository.ListenMapper;
-import com.sktechx.godmusic.personal.rest.service.DrmService;
 import com.sktechx.godmusic.personal.rest.service.ListenService;
 import com.sktechx.godmusic.personal.rest.service.McpService;
 import com.sktechx.godmusic.personal.rest.service.SettlementService;
+import com.sktechx.godmusic.personal.rest.service.TokenService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDummyDataService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
@@ -55,7 +59,6 @@ import static com.sktechx.godmusic.personal.common.domain.type.RecommendPanelCon
  *
  * @author Kobe/최훈영/SKTECHX (hunyoung.choi@sk.com)
  * @date 2018. 8. 8.
- * @time PM 7:29
  */
 @Slf4j
 @Service
@@ -77,21 +80,10 @@ public class ListenServiceImpl implements ListenService {
 	private SettlementService settlementService;
 
 	@Autowired
-	private DrmService drmService;
-
-	@Autowired
 	private McpService mcpService;
 
-	@Override
-	public void addListenHistByChannel(ListenRequest request, Long memberNo, Long characterNo) {
-		listenMapper.addListenHistByChannel(request.getListenType(), request.getListenTypeId(),
-				memberNo, characterNo);
-
-		//추천 패널의 경우 기존 추천 데이터  삭제 방지를 위한 DB 업데이트 처리
-		if(isRecommendListen(request.getListenType())){
-			recommendDummyDataService.updateRecommendDataRemovePrevent(request , characterNo);
-		}
-	}
+	@Autowired
+	private TokenService tokenService;
 
 	@Override
 	public void addPlayHistoryByResource(ResourcePlayLogRequest request,
@@ -240,10 +232,10 @@ public class ListenServiceImpl implements ListenService {
 		TrackListen.TrackListenBuilder trackListenBuilder = trackListen.toBuilder();
 
 		log.info("[TRACK 청취로그] addListenHistByTrack...");
-		if (request.getTrackLogType() == TrackLogType.ONEMIN) {
+		if (TrackLogType.ONEMIN == request.getTrackLogType()) {
 
 			SettlementToken sttToken = Optional.ofNullable(request.getSttToken())
-					.map(token -> settlementService.parseSettlementToken(token))
+					.map(token -> tokenService.parseSettlementToken(token))
 					.orElse(null);
 
 			if (sttToken != null) {
@@ -262,7 +254,7 @@ public class ListenServiceImpl implements ListenService {
 
 				SettlementInfoDto settlementInfo = settlementService.getSettlementInfo(memberNo, playType);
 
-				if (request.getFreeYn() == YnType.Y) {
+				if (YnType.Y == request.getFreeYn()) {
 					/*
 					 * 무료곡인 경우
 					 * Notice. 무료곡인 경우 MCP에 조회하여 MCP쪽 svcCd를 청취 로그의 serviceId 로 남긴다.
@@ -291,7 +283,7 @@ public class ListenServiceImpl implements ListenService {
 					log.debug("[TRACK 청취로그] 유료곡 청취 로그. trackId={}, freeYn={}, serviceId={}", trackId, request.getFreeYn(), serviceId);
 				}
 
-				if(ObjectUtils.isEmpty(serviceId)){
+				if(StringUtils.isEmpty(serviceId)){
 					log.warn("[TRACK 청취로그] Not Found serviceId. request={}", request);
 					throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
 				}
@@ -308,7 +300,7 @@ public class ListenServiceImpl implements ListenService {
 			if (StringUtils.isEmpty(request.getOwnerToken())) {
 				log.warn("OwnerToken 없음 (DRM 스트리밍)");
 			} else {
-				OwnerTokenClaim ownerToken = drmService.getOwnerTokenInfo(request.getOwnerToken());
+				OwnerTokenClaim ownerToken = tokenService.parseOwnerToken(request.getOwnerToken());
 
 				if (ObjectUtils.isEmpty(ownerToken)) {
 					log.warn("OwnerToken Parse 실패 (DRM 스트리밍)");
@@ -345,6 +337,17 @@ public class ListenServiceImpl implements ListenService {
 					.build();
 			amqpService.deliverUserEvent(userEvent);
 			log.info("[TRACK 청취로그][UserEvent MQ 발송] {}", userEvent.toString());
+		}
+	}
+
+	@Override
+	public void addListenHistByChannel(ListenRequest request, Long memberNo, Long characterNo) {
+		listenMapper.addListenHistByChannel(request.getListenType(), request.getListenTypeId(),
+				memberNo, characterNo);
+
+		//추천 패널의 경우 기존 추천 데이터  삭제 방지를 위한 DB 업데이트 처리
+		if(isRecommendListen(request.getListenType())){
+			recommendDummyDataService.updateRecommendDataRemovePrevent(request , characterNo);
 		}
 	}
 
