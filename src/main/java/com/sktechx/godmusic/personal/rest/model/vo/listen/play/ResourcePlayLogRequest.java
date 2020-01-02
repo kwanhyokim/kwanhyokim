@@ -8,7 +8,7 @@
  * you entered into with DREAMUS COMPANY.
  */
 
-package com.sktechx.godmusic.personal.rest.model.vo.video;
+package com.sktechx.godmusic.personal.rest.model.vo.listen.play;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -130,6 +130,7 @@ public class ResourcePlayLogRequest {
     @ApiModelProperty(
             name = "sessionId",
             value = "세션 아이디",
+            example = "2d78cd21-7a22-468c-96b6-19c310111da6",
             position = 11
     )
     private String sessionId;
@@ -197,6 +198,7 @@ public class ResourcePlayLogRequest {
     @ApiModelProperty(
             name = "offlineStartDtime",
             value = "오프라인 시작 일시",
+            example = "2019-11-12 12:10:10",
             position = 20
     )
     private String offlineStartDtime;
@@ -204,6 +206,7 @@ public class ResourcePlayLogRequest {
     @ApiModelProperty(
             name = "metaCacheUpdateDtime",
             value = "meta cache 업데이트 일시",
+            example = "2019-11-12 12:10:10",
             position = 21
     )
     private String metaCacheUpdateDtime;

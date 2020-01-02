@@ -1,23 +1,26 @@
+/*
+ * Copyright (c) 2019 DREAMUS COMPANY.
+ * All right reserved.
+ *
+ * This software is the confidential and proprietary information of DREAMUS COMPANY.
+ * You shall not disclose such Confidential Information and
+ * shall use it only in accordance with the terms of the license agreement
+ * you entered into with DREAMUS COMPANY.
+ */
+
 package com.sktechx.godmusic.personal.rest.service.impl;
 
 import com.sktechx.godmusic.personal.common.domain.type.BitrateType;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SettlementInfoDto;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenTrackRequest;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.SettlementToken;
-import com.sktechx.godmusic.personal.rest.model.vo.video.ResourcePlayLogRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.play.ResourcePlayLogRequest;
 import com.sktechx.godmusic.personal.rest.repository.SettlementMapper;
 import com.sktechx.godmusic.personal.rest.service.SettlementService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 /**
@@ -35,9 +38,6 @@ public class SettlementServiceImpl implements SettlementService {
     private final String FLAC_ALTERTIVE_DRM_SERVCIE_ID = "TD2";
     private final String FLAC_ALTERTIVE_MUSIC_VIDEOD_SERVCIE_ID = "TM2";
 
-    @Value("${gd.settlement.jwt.secret-key}")
-    private String JWT_SECRET_KEY;
-
     private final SettlementMapper settlementMapper;
 
     public SettlementServiceImpl(SettlementMapper settlementMapper) {
@@ -46,42 +46,19 @@ public class SettlementServiceImpl implements SettlementService {
 
     @Override
     public String getServiceCode(Long memberNo, String settlementTypeCode) {
-        return getServiceCode(this.getSettlementInfo(memberNo, settlementTypeCode));
+        SettlementInfoDto settlementInfo = this.getSettlementInfo(memberNo, settlementTypeCode);
+        return this.getServiceCode(settlementInfo);
     }
 
     @Override
     public String getServiceCodeByPrchsId(Long prchsId, String settlementTypeCode) {
-
-        return getServiceCode(settlementMapper.selectSettlementInfoByPrchsId(prchsId, settlementTypeCode));
+        SettlementInfoDto settlementInfo = settlementMapper.selectSettlementInfoByPrchsId(prchsId, settlementTypeCode);
+        return this.getServiceCode(settlementInfo);
     }
 
     @Override
     public SettlementInfoDto getSettlementInfo(Long memberNo, String settlementTypeCode) {
         return settlementMapper.selectSettlementInfo(memberNo, settlementTypeCode);
-    }
-
-    @Override
-    public SettlementToken parseSettlementToken(String sttToken) {
-        if (StringUtils.isEmpty(sttToken)) {
-            return null;
-        }
-
-        Jws<Claims> claims = Jwts.parser()
-                .setSigningKey(JWT_SECRET_KEY.getBytes(StandardCharsets.UTF_8))
-                .parseClaimsJws(sttToken);
-
-        Integer version = claims.getBody().get("version", Integer.class);
-        String serviceId = claims.getBody().get("serviceId", String.class);
-        Long purchaseId = claims.getBody().get("purchaseId", Long.class);
-        Long goodsId = claims.getBody().get("goodsId", Long.class);
-
-        log.debug("[정산 토큰(sttToken) 정보] version={}, serviceId={}, purchaseId={}, goodsId={}", version, serviceId, purchaseId, goodsId);
-        return SettlementToken.builder()
-                .version(version)
-                .serviceId(serviceId)
-                .purchaseId(purchaseId)
-                .goodsId(goodsId)
-                .build();
     }
 
     @Override
@@ -103,7 +80,7 @@ public class SettlementServiceImpl implements SettlementService {
                     return FLAC_ALTERTIVE_STREAMING_SERVCIE_ID;
                 case DN:
                     return FLAC_ALTERTIVE_DRM_SERVCIE_ID;
-                case MV:
+                case MV:    // TODO 이 MV는 무엇?
                     return FLAC_ALTERTIVE_MUSIC_VIDEOD_SERVCIE_ID;
             }
         }

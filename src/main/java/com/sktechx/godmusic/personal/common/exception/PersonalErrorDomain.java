@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2018 SK TECHX.
+ * Copyright (c) 2019 DREAMUS COMPANY.
  * All right reserved.
  *
- * This software is the confidential and proprietary information of SK TECHX.
+ * This software is the confidential and proprietary information of DREAMUS COMPANY.
  * You shall not disclose such Confidential Information and
  * shall use it only in accordance with the terms of the license agreement
- * you entered into with SK TECHX.
+ * you entered into with DREAMUS COMPANY.
  */
 
 package com.sktechx.godmusic.personal.common.exception;
@@ -47,7 +47,9 @@ public enum PersonalErrorDomain implements ErrorDomain {
 
     , NOT_FOUND_OCR_FILE(4090722, HttpStatus.CONFLICT, "OCR 파일 정보가 없습니다.", "OCR 파일 정보가 없습니다.")
     , ALREADY_UPLOAD_OCR_FILE(4090723, HttpStatus.CONFLICT, "이미 업로드 처리된 OCR파일 입니다", "이미 업로드 처리된 OCR파일 입니다")
-    , FAIL_UPLOAD_OCR_FILE(4090724, HttpStatus.CONFLICT, "OCR파일 업로드 실패", "OCR파일 업로드 실패"), OUT_OF_OCR_SERVICE(4090725, HttpStatus.CONFLICT, "서버 점검으로 인해 일시적으로 해당 기능을 사용할 수 없습니다.", "Ocr not working")
+    , FAIL_UPLOAD_OCR_FILE(4090724, HttpStatus.CONFLICT, "OCR파일 업로드 실패", "OCR파일 업로드 실패")
+    , OUT_OF_OCR_SERVICE(4090725, HttpStatus.CONFLICT, "서버 점검으로 인해 일시적으로 해당 기능을 사용할 수 없습니다.", "Ocr not working")
+    , FAIL_BULK_CACHED_STREAMING_PROCESS(4090726, HttpStatus.CONFLICT, "청취 로그 대량 전송 실패", "청취 로그 대량 전송 실패")
     ;
 
     private int code;

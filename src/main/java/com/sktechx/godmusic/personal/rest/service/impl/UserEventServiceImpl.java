@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2019 DREAMUS COMPANY.
  * All right reserved.
+ *
  * This software is the confidential and proprietary information of DREAMUS COMPANY.
  * You shall not disclose such Confidential Information and
  * shall use it only in accordance with the terms of the license agreement
@@ -15,8 +16,8 @@ import com.sktechx.godmusic.personal.common.amqp.domain.UserEventType;
 import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
 import com.sktechx.godmusic.personal.common.domain.type.ResourceLogType;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.SourcePlayLogGMContextVo;
-import com.sktechx.godmusic.personal.rest.model.vo.video.ResourcePlayLogRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.play.SourcePlayLogGMContextVo;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.play.ResourcePlayLogRequest;
 import com.sktechx.godmusic.personal.rest.service.UserEventService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,18 +39,19 @@ public class UserEventServiceImpl implements UserEventService {
     }
 
     /**
-     * 곡 청취에 따른 UserEvent
+     * 곡 청취 UserEvent
      */
     @Override
-    public void deliverUserEventByTrackListenLog(SourcePlayLogGMContextVo sourcePlayLogGMContextVo,
+    public void deliverUserEventByTrackListenLog(SourcePlayLogGMContextVo gmContextVo,
                                                  ResourcePlayLogRequest request) {
+
         UserEventType userEventType = UserEventType.fromPlayLogType(ResourceLogType.fromCode(request.getLogType()));
         if (UserEventType.UNKNOWN != userEventType) {
             UserEvent userEvent = UserEvent.newBuilder()
-                    .playChnl(sourcePlayLogGMContextVo.getPlayChnl())
+                    .playChnl(gmContextVo.getPlayChnl())
                     .event(userEventType)
-                    .memberNo(sourcePlayLogGMContextVo.getMemberNo())
-                    .charactorNo(sourcePlayLogGMContextVo.getCharacterNo())
+                    .memberNo(gmContextVo.getMemberNo())
+                    .charactorNo(gmContextVo.getCharacterNo())
                     .targetId(String.valueOf(request.getResourceId()))
                     .targetType(UserEventTarget.TRACK)
                     .sourceType(SourceType.fromCode(request.getSourceType()))
@@ -64,18 +66,19 @@ public class UserEventServiceImpl implements UserEventService {
     }
 
     /**
-     * 비디오 재생에 따른 UserEvent
+     * 비디오 재생 UserEvent
      */
     @Override
-    public void deliverUserEventByVideoPlayLog(SourcePlayLogGMContextVo sourcePlayLogGMContextVo,
+    public void deliverUserEventByVideoPlayLog(SourcePlayLogGMContextVo gmContextVo,
                                                ResourcePlayLogRequest request) {
+
         UserEventType userEventType = UserEventType.fromPlayLogType(ResourceLogType.fromCode(request.getLogType()));
         if (UserEventType.UNKNOWN != userEventType) {
             UserEvent userEvent = UserEvent.newBuilder()
-                    .playChnl(sourcePlayLogGMContextVo.getPlayChnl())
+                    .playChnl(gmContextVo.getPlayChnl())
                     .event(userEventType)
-                    .memberNo(sourcePlayLogGMContextVo.getMemberNo())
-                    .charactorNo(sourcePlayLogGMContextVo.getCharacterNo())
+                    .memberNo(gmContextVo.getMemberNo())
+                    .charactorNo(gmContextVo.getCharacterNo())
                     .targetId(String.valueOf(request.getResourceId()))
                     .targetType(UserEventTarget.VIDEO)
                     .sourceType(SourceType.fromCode(request.getSourceType()))
