@@ -189,45 +189,45 @@ public class ListenServiceImpl implements ListenService {
         }
     }
 
-    @Override
-    public void addListenHistByTrack(ListenTrackRequest param, GMContext currentContext, HttpServletRequest httpServletRequest) {
-        Long memberNo = currentContext.getMemberNo();
-        Long characterNo = currentContext.getCharacterNo();
-        Long trackId = param.getTrackId();
-        String deviceId = currentContext.getDeviceId();
-        String playChannel = AppNameType.fromCode(currentContext.getAppName()) != null ? AppNameType.fromCode(currentContext.getAppName()).getCode() : "";
-        String logType = param.getTrackLogType() != null ? param.getTrackLogType().getCode() : "";
-        String bitrate = param.getBitrate() != null ? param.getBitrate().getCode() : BitrateType.UNKNOWN.getCode();
-        String osType = param.getOsType() != null ? param.getOsType().getCode() : "";
-        String clientIp = httpServletRequest.getHeader("client_ip") != null ? httpServletRequest.getHeader("client_ip") : "";
-        String chnlType = StringUtils.isEmpty(param.getChannelType()) ? null : param.getChannelType();
-        String listenSessionId = StringUtils.isEmpty(param.getListenSessionId()) ? null : param.getListenSessionId();
-        String playType = Optional.ofNullable(param.getSourceType()).map(SourceType::getPlayType).orElse(null);
-
-        TrackListen trackListen = TrackListen.builder()
-                .playChnl(playChannel)
-                .memberNo(memberNo)
-                .characterNo(characterNo)
-                .trackId(trackId)
-                .logType(logType)
-                .bitrate(bitrate)
-                .trackTotTm(param.getTrackTotalSec())
-                .elapsedTm(param.getElapsedSec())
-                .osType(osType)
-                .dvcId(deviceId)
-                .albumId(param.getAlbumId())
-                .chnlId(param.getChannelId())
-                .chnlType(chnlType)
-                .memberRcmdId(param.getRecommendTrackId())
-                .addTm(param.getAddDateTime())
-                .sessionToken("")
-                .sourceType(param.getSourceType())
-                .free(false)
-                .timeMillis(System.currentTimeMillis())
-                .userClientIp(clientIp)
-                .ownerToken(param.getOwnerToken())
-                .listenSessionId(listenSessionId)
-                .build();
+	@Override
+	public void addListenHistByTrack(ListenTrackRequest request, GMContext currentContext, HttpServletRequest httpServletRequest) {
+		Long memberNo = currentContext.getMemberNo();
+		Long characterNo = currentContext.getCharacterNo();
+		Long trackId = request.getTrackId();
+		String deviceId = currentContext.getDeviceId();
+		String playChannel = AppNameType.fromCode(currentContext.getAppName()) != null ? AppNameType.fromCode(currentContext.getAppName()).getCode() : "";
+		String logType = request.getTrackLogType() != null ? request.getTrackLogType().getCode() : "";
+		String bitrate = request.getBitrate() != null ? request.getBitrate().getCode() : BitrateType.UNKNOWN.getCode();
+		String osType = request.getOsType() != null ? request.getOsType().getCode() : "";
+		String clientIp = extractClientIp(httpServletRequest);
+		String chnlType = StringUtils.isEmpty(request.getChannelType()) ? null : request.getChannelType();
+		String listenSessionId = StringUtils.isEmpty(request.getListenSessionId()) ? null : request.getListenSessionId();
+		String playType = Optional.ofNullable(request.getSourceType()).map(SourceType::getPlayType).orElse(null);
+		
+		TrackListen trackListen = TrackListen.builder()
+				.playChnl(playChannel)
+				.memberNo(memberNo)
+				.characterNo(characterNo)
+				.trackId(trackId)
+				.logType(logType)
+				.bitrate(bitrate)
+				.trackTotTm(request.getTrackTotalSec())
+				.elapsedTm(request.getElapsedSec())
+				.osType(osType)
+				.dvcId(deviceId)
+				.albumId(request.getAlbumId())
+				.chnlId(request.getChannelId())
+				.chnlType(chnlType)
+				.memberRcmdId(request.getRecommendTrackId())
+				.addTm(request.getAddDateTime())
+				.sessionToken("")
+				.sourceType(request.getSourceType())
+				.free(false)
+				.timeMillis(System.currentTimeMillis())
+				.userClientIp(clientIp)
+				.ownerToken(request.getOwnerToken())
+				.listenSessionId(listenSessionId)
+				.build();
 
         TrackListen.TrackListenBuilder trackListenBuilder = trackListen.toBuilder();
 
@@ -358,4 +358,44 @@ public class ListenServiceImpl implements ListenService {
                 || RC_CF_TR.getCode().equals(listenType);
     }
 
+	private String extractClientIp(HttpServletRequest request) {
+
+		String clientIpFromL4 = request.getHeader("client_ip");
+
+		if (StringUtils.isEmpty(clientIpFromL4)) {
+			clientIpFromL4 = request.getHeader("x-gm-client-ip");
+		}
+
+		return StringUtils.isEmpty(clientIpFromL4) ? "" : clientIpFromL4;
+	}
+
+	private SettlementToken parseSettlementToken(String sttToken) {
+		Jws<Claims> claims = Jwts.parser()
+				.setSigningKey(JWT_SECRET_KEY.getBytes(StandardCharsets.UTF_8))
+				.parseClaimsJws(sttToken);
+
+		Integer version = claims.getBody().get("version", Integer.class);
+		String serviceId = claims.getBody().get("serviceId", String.class);
+		Long purchaseId = claims.getBody().get("purchaseId", Long.class);
+		Long goodsId = claims.getBody().get("goodsId", Long.class);
+
+		log.debug("[정산 토큰(sttToken) 정보] version={}, serviceId={}, purchaseId={}, goodsId={}", version, serviceId, purchaseId, goodsId);
+
+		return SettlementToken.builder()
+				.version(version)
+				.serviceId(serviceId)
+				.purchaseId(purchaseId)
+				.goodsId(goodsId)
+				.build();
+	}
+
+	@Getter
+	@ToString
+	@Builder
+	static class SettlementToken {
+		Integer version;
+		String serviceId;
+		Long purchaseId;
+		Long goodsId;
+	}
 }

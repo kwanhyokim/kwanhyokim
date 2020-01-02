@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.controller.v1;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,7 @@ import com.sktechx.godmusic.lib.domain.RequestGMContext;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
@@ -65,10 +67,13 @@ public class RecommendPanelController {
 	)
     @GetMapping(value = "/home/panels")
     public CommonApiResponse<RecommendPanelResponse> recommendHomePanels(@ApiIgnore @RequestGMContext GMContext ctx){
+
+		List<Panel> panelList = recommendPanelService.createRecommendPanelList(ctx.getCharacterNo(), ctx.getOsType(), ctx.getAppVer());
+
 		return Optional.ofNullable(
-					recommendPanelService.createRecommendPanelList(ctx.getCharacterNo(), ctx.getOsType(), ctx.getAppVer())
+				panelList
 			).isPresent() ?
-				new CommonApiResponse<>(RecommendPanelResponse.builder().build())
+				new CommonApiResponse<>(RecommendPanelResponse.builder().list(panelList).build())
 				: null;
     }
 
