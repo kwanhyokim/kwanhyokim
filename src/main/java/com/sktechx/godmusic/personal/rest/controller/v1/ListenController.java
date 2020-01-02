@@ -126,11 +126,11 @@ public class ListenController {
 
         // 신규 Service로 컨버팅 작업
         resourcePlayLogResolver.findResolver(SourceType.STRM).ifPresent(service -> {
-            log.debug("[TRACK] Service={}", service.getClass().getName());
+            log.debug("[TRACK] Resolver에 의해 DI된 Service={}", service.getClass().getName());
             service.deliverResourcePlayLog(gmContext, playLogRequestParam);
         });
 
-        listenService.addListenHistByTrack(request, gmContext, httpServletRequest); // 기존
+//        listenService.addListenHistByTrack(request, gmContext, httpServletRequest); // 기존
         return CommonApiResponse.emptySuccess();
     }
 

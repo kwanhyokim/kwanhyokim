@@ -18,9 +18,11 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -225,7 +227,12 @@ public class ResourcePlayLogRequestParam {
 
     @JsonIgnore
     public String getClientIp() {
-        return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("client_ip");
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String clientIp = request.getHeader("client_ip");
+        if (StringUtils.isEmpty(clientIp)) {
+            clientIp = request.getHeader("x-gm-client-ip");
+        }
+        return StringUtils.isEmpty(clientIp) ? "" : clientIp;
     }
 
 }
