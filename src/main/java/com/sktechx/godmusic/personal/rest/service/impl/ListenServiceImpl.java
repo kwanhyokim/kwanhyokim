@@ -7,7 +7,6 @@
  * shall use it only in accordance with the terms of the license agreement
  * you entered into with DREAMUS COMPANY.
  */
-
 package com.sktechx.godmusic.personal.rest.service.impl;
 
 import com.google.common.base.Strings;
@@ -18,11 +17,7 @@ import com.sktechx.godmusic.personal.common.amqp.domain.UserEvent;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEventTarget;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEventType;
 import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
-import com.sktechx.godmusic.personal.common.domain.type.AppNameType;
-import com.sktechx.godmusic.personal.common.domain.type.BitrateType;
-import com.sktechx.godmusic.personal.common.domain.type.ResourceLogType;
-import com.sktechx.godmusic.personal.common.domain.type.SourceType;
-import com.sktechx.godmusic.personal.common.domain.type.TrackLogType;
+import com.sktechx.godmusic.personal.common.domain.type.*;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.ResourceListen;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SettlementInfoDto;
@@ -199,7 +194,7 @@ public class ListenServiceImpl implements ListenService {
 		String logType = request.getTrackLogType() != null ? request.getTrackLogType().getCode() : "";
 		String bitrate = request.getBitrate() != null ? request.getBitrate().getCode() : BitrateType.UNKNOWN.getCode();
 		String osType = request.getOsType() != null ? request.getOsType().getCode() : "";
-		String clientIp = httpServletRequest.getHeader("client_ip") != null ? httpServletRequest.getHeader("client_ip") : "";
+		String clientIp = extractClientIp(httpServletRequest);
 		String chnlType = StringUtils.isEmpty(request.getChannelType()) ? null : request.getChannelType();
 		String listenSessionId = StringUtils.isEmpty(request.getListenSessionId()) ? null : request.getListenSessionId();
 		String playType = Optional.ofNullable(request.getSourceType()).map(SourceType::getPlayType).orElse(null);
@@ -358,4 +353,34 @@ public class ListenServiceImpl implements ListenService {
 				|| RC_CF_TR.getCode().equals(listenType);
 	}
 
+	private String extractClientIp(HttpServletRequest request) {
+
+		String clientIpFromL4 = request.getHeader("client_ip");
+
+		if (StringUtils.isEmpty(clientIpFromL4)) {
+			clientIpFromL4 = request.getHeader("x-gm-client-ip");
+		}
+
+		return StringUtils.isEmpty(clientIpFromL4) ? "" : clientIpFromL4;
+	}
+
+	private SettlementToken parseSettlementToken(String sttToken) {
+		Jws<Claims> claims = Jwts.parser()
+				.setSigningKey(JWT_SECRET_KEY.getBytes(StandardCharsets.UTF_8))
+				.parseClaimsJws(sttToken);
+
+		Integer version = claims.getBody().get("version", Integer.class);
+		String serviceId = claims.getBody().get("serviceId", String.class);
+		Long purchaseId = claims.getBody().get("purchaseId", Long.class);
+		Long goodsId = claims.getBody().get("goodsId", Long.class);
+
+		log.debug("[정산 토큰(sttToken) 정보] version={}, serviceId={}, purchaseId={}, goodsId={}", version, serviceId, purchaseId, goodsId);
+
+		return SettlementToken.builder()
+				.version(version)
+				.serviceId(serviceId)
+				.purchaseId(purchaseId)
+				.goodsId(goodsId)
+				.build();
+	}
 }

@@ -17,7 +17,7 @@ public enum OsType implements CodeEnum {
 	AOS("AOS", "A","Android"),
 	IOS("IOS","I" ,"iOS"),
 	WEB("WEB", "W", "WEB"),
-	TIZEN("TIZEN", "T", "Tizen");
+	TIZEN("TIZEN", "T", "TIZEN");
 
 	private final String code;
 	private final String shortCode;
