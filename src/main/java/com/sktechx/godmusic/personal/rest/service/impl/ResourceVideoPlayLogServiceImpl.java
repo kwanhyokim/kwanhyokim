@@ -54,7 +54,7 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
     }
 
     /**
-     * 비디오 재생 로그
+     * 비디오 재생(청취) 로그 MQ 발송
      */
     @Override
     public void deliverResourcePlayLog(GMContext gmContext, ResourcePlayLogRequestParam param) {
@@ -69,9 +69,19 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
 
         amqpService.deliverSourcePlay(sourcePlayLogBuilder.build());
         log.info("[RESOURCE 청취로그 MQ 발송] listen = {}", sourcePlayLogBuilder.toString());
+    }
+
+    /**
+     * 비디오 재생(청취) UserEvent MQ 발송
+     */
+    @Override
+    public void deliverResourceUserEvent(GMContext gmContext, ResourcePlayLogRequestParam param) {
         this.deliverUserEventByVideoPlayLog(gmContext, param);
     }
 
+    /**
+     * 비디오 재생(청취)로그 기본 규격 build
+     */
     private SourcePlayLog buildBasicSourcePlayLogByVideo(GMContext gmContext, ResourcePlayLogRequestParam param) {
         return SourcePlayLog.builder()
                 .playChnl(AppNameType.parseToString(gmContext.getAppName()))
@@ -104,7 +114,7 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
     }
 
     /**
-     * 비디오 ONEMIN 청취 로그 만들기
+     * 비디오 ONEMIN 재생(청취) 로그 만들기
      */
     private SourcePlayLog.SourcePlayLogBuilder buildOneMinVideoPlayLog(ResourcePlayLogRequestParam param,
                                                                        SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
@@ -125,10 +135,9 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
     }
 
     /**
-     * 비디오 재생 UserEvent
+     * 비디오 재생(청취) UserEvent MQ에 발송
      */
     private void deliverUserEventByVideoPlayLog(GMContext gmContext, ResourcePlayLogRequestParam param) {
-
         UserEventType userEventType = UserEventType.fromPlayLogType(ResourceLogType.fromCode(param.getLogType()));
         if (UserEventType.UNKNOWN != userEventType) {
             UserEvent userEvent = UserEvent.newBuilder()

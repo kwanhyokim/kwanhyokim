@@ -45,6 +45,7 @@ public class ResourcePlayLogRequestParam {
     )
     private Long resourceId;
 
+    @NotBlank
     @ApiModelProperty(
             name = "sourceType",
             value = "소스 타입 - STRM | DN | VIDEO_MV | VIDEO_TEASER | VIDEO_SPECIAL | VIDEO_LIVE | VIDEO_INTERVIEW | VIDEO_ETC",
@@ -83,7 +84,7 @@ public class ResourcePlayLogRequestParam {
     )
     private String quality;
 
-    @Min(0)
+    @Min(1)
     @Max(value = Long.MAX_VALUE)
     @ApiModelProperty(
             name = "duration",

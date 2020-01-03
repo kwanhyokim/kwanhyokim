@@ -70,7 +70,7 @@ public class ListenController {
             requestList.forEach(request -> {
                 resourcePlayLogResolver.findResolver(SourceType.fromCode(request.getSourceType())).ifPresent(service -> {
                     log.debug("[RESOURCE] Resolver에 의해 DI된 Service={}", service.getClass().getName());
-                    service.deliverResourcePlayLog(gmContext, request);
+                    service.deliverPlayInfo(gmContext, request);
                 });
             });
 
@@ -84,15 +84,15 @@ public class ListenController {
 
     @ApiOperation(value = "Resource 청취 로그", notes = "Resource 재생(청취) (ex.영상) 로그를 MQ 로 남김")
     @PostMapping("/resource")
-    public CommonApiResponse addListenHistByResource(@Valid @RequestBody ResourcePlayLogRequestParam request) {
+    public CommonApiResponse addListenHistByResource(@Valid @RequestBody ResourcePlayLogRequestParam param) {
         GMContext gmContext = GMContext.getContext();
         Validator.loginValidate(gmContext);
-        log.debug("[RESOURCE 청취 로그] request={}", request);
+        log.debug("[RESOURCE 청취 로그] param={}", param);
 
         // Resolver 적용
-        resourcePlayLogResolver.findResolver(SourceType.fromCode(request.getSourceType())).ifPresent(service -> {
+        resourcePlayLogResolver.findResolver(SourceType.fromCode(param.getSourceType())).ifPresent(service -> {
             log.debug("[RESOURCE] Resolver에 의해 DI된 Service={}", service.getClass().getName());
-            service.deliverResourcePlayLog(gmContext, request);
+            service.deliverPlayInfo(gmContext, param);
         });
 
         return CommonApiResponse.emptySuccess();
@@ -127,7 +127,7 @@ public class ListenController {
         // 신규 Service로 컨버팅 작업
         resourcePlayLogResolver.findResolver(SourceType.STRM).ifPresent(service -> {
             log.debug("[TRACK] Resolver에 의해 DI된 Service={}", service.getClass().getName());
-            service.deliverResourcePlayLog(gmContext, playLogRequestParam);
+            service.deliverPlayInfo(gmContext, playLogRequestParam);
         });
 
 //        listenService.addListenHistByTrack(request, gmContext, httpServletRequest); // 기존

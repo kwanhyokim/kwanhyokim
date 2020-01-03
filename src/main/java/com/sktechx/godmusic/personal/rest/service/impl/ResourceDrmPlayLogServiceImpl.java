@@ -53,6 +53,9 @@ public class ResourceDrmPlayLogServiceImpl implements ResourcePlayLogService {
         return SourceType.DN;
     }
 
+    /**
+     * 곡(DRM) 청취 로그 MQ 발송
+     */
     @Override
     public void deliverResourcePlayLog(GMContext gmContext, ResourcePlayLogRequestParam param) {
         SourcePlayLog sourcePlayLog = trackListenLogService.buildBasicSourcePlayLogByTrack(gmContext, param);
@@ -70,6 +73,13 @@ public class ResourceDrmPlayLogServiceImpl implements ResourcePlayLogService {
 
         amqpService.deliverSourcePlay(sourcePlayLogBuilder.build());
         log.info("[DRM TRACK 청취로그][MQ 발송] {}", sourcePlayLogBuilder.toString());
+    }
+
+    /**
+     * 곡(DRM) 청취 UserEvent MQ 발송
+     */
+    @Override
+    public void deliverResourceUserEvent(GMContext gmContext, ResourcePlayLogRequestParam param) {
         trackListenLogService.deliverUserEventByTrackListenLog(gmContext, param);
     }
 

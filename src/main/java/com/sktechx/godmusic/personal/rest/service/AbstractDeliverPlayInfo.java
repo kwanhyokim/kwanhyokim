@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 DREAMUS COMPANY.
+ * Copyright (c) 2020 DREAMUS COMPANY.
  * All right reserved.
  *
  * This software is the confidential and proprietary information of DREAMUS COMPANY.
@@ -11,24 +11,17 @@
 package com.sktechx.godmusic.personal.rest.service;
 
 import com.sktechx.godmusic.lib.domain.GMContext;
-import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.play.ResourcePlayLogRequestParam;
 
 /**
- * 설명 : Resource 청취(재생) 로그
+ * 설명 : XXXXXXXXXXX
  *
  * @author groot
- * @since 2019. 12. 19
+ * @since 2020. 01. 03
  */
-public interface ResourcePlayLogService {
+public abstract class AbstractDeliverPlayInfo implements ResourcePlayLogService {
 
-    SourceType handleSourceType();
-
-    void deliverResourcePlayLog(GMContext gmContext, ResourcePlayLogRequestParam param);
-
-    void deliverResourceUserEvent(GMContext gmContext, ResourcePlayLogRequestParam param);
-
-    default void deliverPlayInfo(GMContext gmContext, ResourcePlayLogRequestParam param) {
+    final public void deliverPlayInfo(GMContext gmContext, ResourcePlayLogRequestParam param) {
         deliverResourcePlayLog(gmContext, param);
         deliverResourceUserEvent(gmContext, param);
     }

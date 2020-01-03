@@ -64,6 +64,9 @@ public class ResourceStrmPlayLogServiceImpl implements ResourcePlayLogService {
         return SourceType.STRM;
     }
 
+    /**
+     * 곡(STRM) 청취 로그 MQ 발송
+     */
     @Override
     public void deliverResourcePlayLog(GMContext gmContext, ResourcePlayLogRequestParam param) {
         SourcePlayLog sourcePlayLog = trackListenLogService.buildBasicSourcePlayLogByTrack(gmContext, param);
@@ -81,7 +84,13 @@ public class ResourceStrmPlayLogServiceImpl implements ResourcePlayLogService {
 
         amqpService.deliverSourcePlay(sourcePlayLogBuilder.build());
         log.info("[STRM TRACK 청취로그][MQ 발송] {}", sourcePlayLogBuilder.toString());
+    }
 
+    /**
+     * 곡(STRM) 청취 UserEvent MQ 발송
+     */
+    @Override
+    public void deliverResourceUserEvent(GMContext gmContext, ResourcePlayLogRequestParam param) {
         // playOfflineYn == N 일때만 UserEvent를 남긴다.
         if (YnType.N == param.getPlayOfflineYn()) {
             trackListenLogService.deliverUserEventByTrackListenLog(gmContext, param);
@@ -90,10 +99,9 @@ public class ResourceStrmPlayLogServiceImpl implements ResourcePlayLogService {
 
     /**
      * 곡 ONEMIN 청취 로그 만들기
-     * > cached면 cachedToken 활용
-     * > 아니면 sttToken 활용
+     * - cached면 cachedToken 활용, 아니면 sttToken 활용
      */
-    public SourcePlayLog.SourcePlayLogBuilder buildOneMinListenTrackLog(GMContext gmContext,
+    private SourcePlayLog.SourcePlayLogBuilder buildOneMinListenTrackLog(GMContext gmContext,
                                                                         ResourcePlayLogRequestParam param,
                                                                         SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
         // 캐시드 스트리밍인 경우
@@ -117,6 +125,7 @@ public class ResourceStrmPlayLogServiceImpl implements ResourcePlayLogService {
     }
 
     /**
+     * [sttToken == null일 경우]
      * 무료곡인 경우, MCP를 조회하여 MCP 쪽 svcCd를 청취 로그의 serviceId로 넘긴다.
      * (무료곡인 경우는 정산쪽의 serviceId와 MCP의 serviceId(svcCd)가 다르기 때문에)
      */

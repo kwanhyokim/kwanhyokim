@@ -124,6 +124,8 @@ public class SourcePlayLog {
     @JsonProperty("drm_service_id")
     private String drmServiceId;
 
+    // TODO cachedToken 필드 추가
+
     @JsonProperty("meta_cache_update_dtime")
     private String metaCacheUpdateDtime;
 

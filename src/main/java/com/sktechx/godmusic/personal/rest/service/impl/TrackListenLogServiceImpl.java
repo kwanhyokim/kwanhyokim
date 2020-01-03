@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
- * 설명 : XXXXXXXXXXX
+ * 설명 : 곡(STRM, DRM) 청취 로그 관련 공통 로직
  *
  * @author groot
  * @since 2020. 01. 02
@@ -39,8 +39,12 @@ public class TrackListenLogServiceImpl implements TrackListenLogService {
         this.amqpService = amqpService;
     }
 
+    /**
+     * 곡 청취로그 기본 규격 build
+     */
     @Override
     public SourcePlayLog buildBasicSourcePlayLogByTrack(GMContext gmContext, ResourcePlayLogRequestParam param) {
+        // TODO cachedToken 필드 추가
         return SourcePlayLog.builder()
                 .playChnl(AppNameType.parseToString(gmContext.getAppName()))
                 .sessionId(param.getSessionId())
@@ -74,7 +78,7 @@ public class TrackListenLogServiceImpl implements TrackListenLogService {
     }
 
     /**
-     * 곡 청취 UserEvent
+     * 곡 청취 UserEvent MQ에 발송
      */
     @Override
     public void deliverUserEventByTrackListenLog(GMContext gmContext, ResourcePlayLogRequestParam param) {
