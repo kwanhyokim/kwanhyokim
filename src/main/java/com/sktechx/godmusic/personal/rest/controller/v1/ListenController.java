@@ -67,10 +67,11 @@ public class ListenController {
         Validator.loginValidate(gmContext);
 
         try {
-            requestList.forEach(request -> {
-                resourcePlayLogResolver.findResolver(SourceType.fromCode(request.getSourceType())).ifPresent(service -> {
+            requestList.forEach(resourcePlayLogRequestParam -> {
+                resourcePlayLogResolver.findResolver(SourceType.fromCode(resourcePlayLogRequestParam.getSourceType())).ifPresent(service -> {
                     log.debug("[RESOURCE] Resolver에 의해 DI된 Service={}", service.getClass().getName());
-                    service.deliverPlayInfo(gmContext, request);
+                    service.deliverResourcePlayLog(gmContext, resourcePlayLogRequestParam);
+                    service.deliverResourceUserEvent(gmContext, resourcePlayLogRequestParam);
                 });
             });
 
@@ -92,7 +93,8 @@ public class ListenController {
         // Resolver 적용
         resourcePlayLogResolver.findResolver(SourceType.fromCode(param.getSourceType())).ifPresent(service -> {
             log.debug("[RESOURCE] Resolver에 의해 DI된 Service={}", service.getClass().getName());
-            service.deliverPlayInfo(gmContext, param);
+            service.deliverResourcePlayLog(gmContext, param);
+            service.deliverResourceUserEvent(gmContext, param);
         });
 
         return CommonApiResponse.emptySuccess();
@@ -127,7 +129,8 @@ public class ListenController {
         // 신규 Service로 컨버팅 작업
         resourcePlayLogResolver.findResolver(SourceType.STRM).ifPresent(service -> {
             log.debug("[TRACK] Resolver에 의해 DI된 Service={}", service.getClass().getName());
-            service.deliverPlayInfo(gmContext, playLogRequestParam);
+            service.deliverResourcePlayLog(gmContext, playLogRequestParam);
+            service.deliverResourceUserEvent(gmContext, playLogRequestParam);
         });
 
 //        listenService.addListenHistByTrack(request, gmContext, httpServletRequest); // 기존

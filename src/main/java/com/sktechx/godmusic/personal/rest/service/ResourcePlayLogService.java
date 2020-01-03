@@ -28,9 +28,4 @@ public interface ResourcePlayLogService {
 
     void deliverResourceUserEvent(GMContext gmContext, ResourcePlayLogRequestParam param);
 
-    default void deliverPlayInfo(GMContext gmContext, ResourcePlayLogRequestParam param) {
-        deliverResourcePlayLog(gmContext, param);
-        deliverResourceUserEvent(gmContext, param);
-    }
-
 }

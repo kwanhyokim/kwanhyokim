@@ -76,7 +76,24 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
      */
     @Override
     public void deliverResourceUserEvent(GMContext gmContext, ResourcePlayLogRequestParam param) {
-        this.deliverUserEventByVideoPlayLog(gmContext, param);
+        UserEventType userEventType = UserEventType.fromPlayLogType(ResourceLogType.fromCode(param.getLogType()));
+        if (UserEventType.UNKNOWN != userEventType) {
+            UserEvent userEvent = UserEvent.newBuilder()
+                    .playChnl(AppNameType.parseToString(gmContext.getAppName()))
+                    .event(userEventType)
+                    .memberNo(gmContext.getMemberNo())
+                    .charactorNo(gmContext.getCharacterNo())
+                    .targetId(String.valueOf(param.getResourceId()))
+                    .targetType(UserEventTarget.VIDEO)
+                    .sourceType(SourceType.fromCode(param.getSourceType()))
+                    .trackTotTm(param.getRunningTimeSecs())
+                    .elapsedTm(param.getDuration())
+                    .timeMillis(System.currentTimeMillis())
+                    .build();
+
+            amqpService.deliverUserEvent(userEvent);
+            log.info("[VIDEO 재생로그][UserEvent MQ 발송] {}", userEvent.toString());
+        }
     }
 
     /**
@@ -132,30 +149,6 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
                 .serviceId(serviceId)
                 .prchsId(sttToken.getPurchaseId())
                 .goodsId(sttToken.getGoodsId());
-    }
-
-    /**
-     * 비디오 재생(청취) UserEvent MQ에 발송
-     */
-    private void deliverUserEventByVideoPlayLog(GMContext gmContext, ResourcePlayLogRequestParam param) {
-        UserEventType userEventType = UserEventType.fromPlayLogType(ResourceLogType.fromCode(param.getLogType()));
-        if (UserEventType.UNKNOWN != userEventType) {
-            UserEvent userEvent = UserEvent.newBuilder()
-                    .playChnl(AppNameType.parseToString(gmContext.getAppName()))
-                    .event(userEventType)
-                    .memberNo(gmContext.getMemberNo())
-                    .charactorNo(gmContext.getCharacterNo())
-                    .targetId(String.valueOf(param.getResourceId()))
-                    .targetType(UserEventTarget.VIDEO)
-                    .sourceType(SourceType.fromCode(param.getSourceType()))
-                    .trackTotTm(param.getRunningTimeSecs())
-                    .elapsedTm(param.getDuration())
-                    .timeMillis(System.currentTimeMillis())
-                    .build();
-
-            amqpService.deliverUserEvent(userEvent);
-            log.info("[VIDEO 재생로그][UserEvent MQ 발송] {}", userEvent.toString());
-        }
     }
 
 }
