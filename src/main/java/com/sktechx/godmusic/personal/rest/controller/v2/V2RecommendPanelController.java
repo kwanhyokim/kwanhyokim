@@ -58,7 +58,7 @@ public class V2RecommendPanelController {
 	@ApiOperation(value = "추천 홈 패널 조회", httpMethod = "GET",response = RecommendPanelResponse.class,
 			notes = "사용자 별 홈 데이터를 조회 하는 API \r\n" +
 					"\r\n" +
-					"우선 순위 - Artist&FLO 전용 패널 > 나를 위한 FLO (3A) > 오늘의 FLO (2A) > 아티스트 FLO (2C) > 선호 장르 테마리스트 (1A’) > 운영 TPO \r\n"
+					"우선 순위 - Artist&FLO 전용 패널 > 나를 위한 새로운 발견 (3A) > 오늘의 추천 (2A) > 좋아할만한 아티스트 MIX (2C) > 선호 장르 테마리스트 (1A’) > 운영 TPO \r\n"
 	)
     @GetMapping(value = "/home/panels")
     public CommonApiResponse<RecommendPanelResponse> recommendHomePanels(
@@ -77,9 +77,9 @@ public class V2RecommendPanelController {
 
     @ApiOperation(value = "추천 패널 목록 조회 API", httpMethod = "GET",
 		    notes = "추천 패널 트랙 목록 조회 API - 추천 홈 패널 API 에서 제공하는 RecommendPanelContentType와 id 값으로 트랙 목록 조회 \r\n"
-				    + "RC_ATST_TR (아티스트 FLO)\r\n "
-				    + "RC_SML_TR (오늘의 FLO)\r\n "
-				    + "RC_CF_TR (나를 위한 FLO)" )
+				    + "RC_ATST_TR (좋아할만한 아티스트 MIX)\r\n "
+				    + "RC_SML_TR (오늘의 추천)\r\n "
+				    + "RC_CF_TR (나를 위한 새로운 발견)" )
 	@RequestMapping(value = "/panel/list", method = RequestMethod.GET)
 	public CommonApiResponse recommendPanelTrackList(
 			@ApiIgnore @RequestGMContext GMContext ctx,

@@ -83,5 +83,6 @@ spring:
     config:
       uri: http://172.21.100.210:8888
       label: master
+
 server:
   port: 8080

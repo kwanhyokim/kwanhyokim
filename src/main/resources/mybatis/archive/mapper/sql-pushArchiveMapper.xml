@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2019 DREAMUS COMPANY.
+  ~ All right reserved.
+  ~ This software is the confidential and proprietary information of DREAMUS COMPANY.
+  ~ You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with DREAMUS COMPANY.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.PushArchiveMapper" >
+    <update id="updatePushClickCount">
+        UPDATE tb_push_send_log
+        SET
+            click_cnt = click_cnt + 1,
+            update_dtime = NOW()
+        WHERE push_send_log_id = #{groupId}
+    </update>
+</mapper>
