@@ -52,6 +52,7 @@ public class ListenTrackRequest {
 	)
 	private Long trackId;
 
+	@NotNull
 	@ApiModelProperty(
 			name = "sourceType",
 			value = "요청 타입 - STRM | DN",
