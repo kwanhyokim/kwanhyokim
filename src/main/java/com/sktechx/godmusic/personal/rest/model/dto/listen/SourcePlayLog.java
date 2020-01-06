@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2019 DREAMUS COMPANY.
  * All right reserved.
+ *
  * This software is the confidential and proprietary information of DREAMUS COMPANY.
  * You shall not disclose such Confidential Information and
  * shall use it only in accordance with the terms of the license agreement
@@ -123,8 +124,6 @@ public class SourcePlayLog {
 
     @JsonProperty("drm_service_id")
     private String drmServiceId;
-
-    // TODO cachedToken 필드 추가
 
     @JsonProperty("meta_cache_update_dtime")
     private String metaCacheUpdateDtime;

@@ -12,6 +12,7 @@ package com.sktechx.godmusic.personal.rest.service.impl;
 
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.rest.model.vo.drm.OwnerTokenClaim;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.CachedToken;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.SettlementToken;
 import com.sktechx.godmusic.personal.rest.service.SettlementService;
 import com.sktechx.godmusic.personal.rest.service.TokenService;
@@ -103,6 +104,32 @@ public class TokenServiceImpl implements TokenService {
 
         } catch (Exception e) {
             log.error("Owner Token Parse 에러 : {}", e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public CachedToken parseCachedToken(String cachedToken) {
+        try {
+            // TODO KEY 변경해야함
+            Jws<Claims> claims = Jwts.parser()
+                    .setSigningKey(DRM_TOKEN_KEY.getBytes(StandardCharsets.UTF_8))
+                    .parseClaimsJws(cachedToken);
+
+            String serviceId = claims.getBody().get("svcId", String.class);
+            Long purchaseId = claims.getBody().get("prchsId", Long.class);
+            Long goodsId = claims.getBody().get("goodsId", Long.class);
+
+            log.debug("[캐시드 토큰(cachedToken) 정보] serviceId={}, purchaseId={}, goodsId={}", serviceId, purchaseId, goodsId);
+
+            return CachedToken.builder()
+                    .svdId(serviceId)
+                    .prchsId(purchaseId)
+                    .goodsId(goodsId)
+                    .build();
+
+        } catch (Exception e) {
+            log.error("cachedToken Parse Error : {}", e.getMessage());
             return null;
         }
     }

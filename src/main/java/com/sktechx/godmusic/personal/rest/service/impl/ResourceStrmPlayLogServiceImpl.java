@@ -19,6 +19,7 @@ import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SettlementInfoDto;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SourcePlayLog;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.CachedToken;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.SettlementToken;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.play.ResourcePlayLogRequestParam;
 import com.sktechx.godmusic.personal.rest.service.McpService;
@@ -102,12 +103,11 @@ public class ResourceStrmPlayLogServiceImpl implements ResourcePlayLogService {
      * - cached면 cachedToken 활용, 아니면 sttToken 활용
      */
     private SourcePlayLog.SourcePlayLogBuilder buildOneMinListenTrackLog(GMContext gmContext,
-                                                                        ResourcePlayLogRequestParam param,
-                                                                        SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
+                                                                         ResourcePlayLogRequestParam param,
+                                                                         SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
         // 캐시드 스트리밍인 경우
         if (YnType.Y == param.getPlayCacheYn()) {
-            // TODO tokenService.parseCachedToken(param.getCachedToken());
-            // TODO sttToken과 같이 토큰이 없는 경우 무료곡 체크후 MCP 찌르는 로직 태워야 함
+            return this.buildSourcePlayLogByCachedTokenAndFreeYn(param, sourcePlayLogBuilder);
         }
 
         // 캐시드 스트리밍이 아닌 경우 SttToken 활용
@@ -123,6 +123,30 @@ public class ResourceStrmPlayLogServiceImpl implements ResourcePlayLogService {
 
         // sttToken == null이면 무료곡 여부 체크 후 MCP 조회
         return this.checkFreeResourceWithAppendSttInfo(gmContext, param, sourcePlayLogBuilder);
+    }
+
+    /**
+     * 캐시드 스트리밍인 경우 무료곡 여부를 포함해서 CachedToken을 통해 데이터를 채운다.
+     */
+    private SourcePlayLog.SourcePlayLogBuilder buildSourcePlayLogByCachedTokenAndFreeYn(ResourcePlayLogRequestParam param,
+                                                                                        SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
+        CachedToken cachedToken = tokenService.parseCachedToken(param.getCachedToken());
+
+        sourcePlayLogBuilder
+                .prchsId(cachedToken.getPrchsId())
+                .goodsId(cachedToken.getGoodsId());
+
+        if (YnType.N == param.getFreeYn()) {
+            log.debug("[TRACK 청취로그] cachedToken 이용하여 serviceId 전달");
+            return sourcePlayLogBuilder
+                    .pssrlCd(cachedToken.getSvdId())
+                    .serviceId(cachedToken.getSvdId());
+
+        }
+        // TODO 캐시드인데 무료곡일 경우 새로 생기는 토큰을 까야함
+        return sourcePlayLogBuilder
+                .pssrlCd(null)
+                .serviceId(null);
     }
 
     /**

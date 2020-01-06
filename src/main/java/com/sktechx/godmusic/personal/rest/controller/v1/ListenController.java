@@ -103,37 +103,42 @@ public class ListenController {
     @ApiOperation(value = "곡 청취 로그 (기존 /v2/user/log/track POST)", notes = "곡 재생시점에 따른 재생 로그를 MQ로 남김")
     @PostMapping("/track")
     public CommonApiResponse addListenHistByTrack(HttpServletRequest httpServletRequest,
-                                                  @Valid @RequestBody ListenTrackRequest request) {
+                                                  @Valid @RequestBody ListenTrackRequest param) {
         GMContext gmContext = GMContext.getContext();
         Validator.loginValidate(gmContext);
 
         ResourcePlayLogRequestParam playLogRequestParam = ResourcePlayLogRequestParam.builder()
-                .resourceId(request.getTrackId())
-                .sourceType(request.getSourceTypeToStr())
-                .logType(request.getTrackLogTypeToStr())
-                .osType(request.getOsType())
-                .quality(request.getBitrateToStr())
-                .duration(request.getTrackTotalSec())
-                .runningTimeSecs(request.getElapsedSec())
-                .freeYn(request.getFreeYn())
-                .sessionId(request.getListenSessionId())
-                .albumId(request.getAlbumId())
-                .channelId(request.getChannelId())
-                .channelType(request.getChannelType())
-                .sttToken(request.getSttToken())
-                .ownerToken(request.getOwnerToken())
-                .recommendTrackId(request.getRecommendTrackId())
-                .addDateTime(request.getAddDateTime())
+                .resourceId(param.getTrackId())
+                .sourceType(param.getSourceTypeToStr())
+                .logType(param.getTrackLogTypeToStr())
+                .osType(param.getOsType())
+                .quality(param.getBitrateToStr())
+                .duration(param.getTrackTotalSec())
+                .runningTimeSecs(param.getElapsedSec())
+                .freeYn(param.getFreeYn())
+                .playOfflineYn(param.getPlayOfflineYn())
+                .playCacheYn(param.getPlayCacheYn())
+                .sessionId(param.getListenSessionId())
+                .albumId(param.getAlbumId())
+                .channelId(param.getChannelId())
+                .channelType(param.getChannelType())
+                .sttToken(param.getSttToken())
+                .ownerToken(param.getOwnerToken())
+                .cachedToken(param.getCachedToken())
+                .recommendTrackId(param.getRecommendTrackId())
+                .addDateTime(param.getAddDateTime())
+                .offlineStartDtime(param.getOfflineStartDtime())
+                .metaCacheUpdateDtime(param.getMetaCacheUpdateDtime())
                 .build();
+        log.debug("{}", playLogRequestParam);
 
         // 신규 Service로 컨버팅 작업
-        resourcePlayLogResolver.findResolver(SourceType.STRM).ifPresent(service -> {
+        resourcePlayLogResolver.findResolver(SourceType.fromCode(param.getSourceTypeToStr())).ifPresent(service -> {
             log.debug("[TRACK] Resolver에 의해 DI된 Service={}", service.getClass().getName());
             service.deliverResourcePlayLog(gmContext, playLogRequestParam);
             service.deliverResourceUserEvent(gmContext, playLogRequestParam);
         });
 
-//        listenService.addListenHistByTrack(request, gmContext, httpServletRequest); // 기존
         return CommonApiResponse.emptySuccess();
     }
 

@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.service;
 
 import com.sktechx.godmusic.personal.rest.model.vo.drm.OwnerTokenClaim;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.CachedToken;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.SettlementToken;
 import com.sktechx.godmusic.personal.rest.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -31,8 +33,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@ActiveProfiles("!prod")
+@ActiveProfiles("local")
 public class TokenServiceTest {
+
+    @Value("${gd.settlement.jwt.secret-key}")
+    private String JWT_SECRET_KEY;
+
+    @Value("${token.drm.owner.key}")
+    private String DRM_TOKEN_KEY;
 
     @Autowired
     private TokenService tokenService;
@@ -47,6 +55,12 @@ public class TokenServiceTest {
     public void DRM토큰_파싱_TEST() {
         OwnerTokenClaim ownerTokenClaim = tokenService.parseOwnerToken(null);
         Assert.assertNull(ownerTokenClaim);
+    }
+
+    @Test
+    public void 캐시드_TEST() {
+        CachedToken cachedToken = tokenService.parseCachedToken(null);
+        log.info("## {}", cachedToken);
     }
 
 }

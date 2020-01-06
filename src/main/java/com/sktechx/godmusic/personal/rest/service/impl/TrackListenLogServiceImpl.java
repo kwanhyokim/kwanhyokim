@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2019 DREAMUS COMPANY.
  * All right reserved.
+ *
  * This software is the confidential and proprietary information of DREAMUS COMPANY.
  * You shall not disclose such Confidential Information and
  * shall use it only in accordance with the terms of the license agreement
@@ -44,7 +45,6 @@ public class TrackListenLogServiceImpl implements TrackListenLogService {
      */
     @Override
     public SourcePlayLog buildBasicSourcePlayLogByTrack(GMContext gmContext, ResourcePlayLogRequestParam param) {
-        // TODO cachedToken 필드 추가
         return SourcePlayLog.builder()
                 .playChnl(AppNameType.parseToString(gmContext.getAppName()))
                 .sessionId(param.getSessionId())
