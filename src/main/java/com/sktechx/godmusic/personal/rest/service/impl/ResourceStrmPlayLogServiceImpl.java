@@ -107,6 +107,7 @@ public class ResourceStrmPlayLogServiceImpl implements ResourcePlayLogService {
         // 캐시드 스트리밍인 경우
         if (YnType.Y == param.getPlayCacheYn()) {
             // TODO tokenService.parseCachedToken(param.getCachedToken());
+            // TODO sttToken과 같이 토큰이 없는 경우 무료곡 체크후 MCP 찌르는 로직 태워야 함
         }
 
         // 캐시드 스트리밍이 아닌 경우 SttToken 활용
