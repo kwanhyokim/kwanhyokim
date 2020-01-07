@@ -216,6 +216,13 @@ public class ResourcePlayLogRequestParam {
     )
     private String metaCacheUpdateDtime;
 
+    @ApiModelProperty(
+            name = "freeCachedStreamingToken",
+            value = "캐시드 스트리밍 곡이 무료곡일 경우 serviceId 토큰",
+            position = 22
+    )
+    private String freeCachedStreamingToken;
+
     @JsonIgnore
     public boolean isFree() {
         return YnType.Y == freeYn;

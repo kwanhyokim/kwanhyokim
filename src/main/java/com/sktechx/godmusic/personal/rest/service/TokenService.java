@@ -12,6 +12,7 @@ package com.sktechx.godmusic.personal.rest.service;
 
 import com.sktechx.godmusic.personal.rest.model.vo.drm.OwnerTokenClaim;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.CachedToken;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.FreeCachedStreamingToken;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.SettlementToken;
 
 /**
@@ -27,5 +28,7 @@ public interface TokenService {
     OwnerTokenClaim parseOwnerToken(String ownerToken);
 
     CachedToken parseCachedToken(String cachedToken);
+
+    FreeCachedStreamingToken parseFreeCachedStreamingToken(String freeCachedStreamingToken);
 
 }

@@ -13,6 +13,7 @@ package com.sktechx.godmusic.personal.rest.service.impl;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.rest.model.vo.drm.OwnerTokenClaim;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.CachedToken;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.FreeCachedStreamingToken;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.SettlementToken;
 import com.sktechx.godmusic.personal.rest.service.SettlementService;
 import com.sktechx.godmusic.personal.rest.service.TokenService;
@@ -125,6 +126,27 @@ public class TokenServiceImpl implements TokenService {
                     .svdId(serviceId)
                     .prchsId(purchaseId)
                     .goodsId(goodsId)
+                    .build();
+
+        } catch (Exception e) {
+            log.error("cachedToken Parse Error : {}", e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public FreeCachedStreamingToken parseFreeCachedStreamingToken(String freeCachedStreamingToken) {
+        try {
+            Jws<Claims> claims = Jwts.parser()
+                    .setSigningKey(JWT_SECRET_KEY.getBytes(StandardCharsets.UTF_8))
+                    .parseClaimsJws(freeCachedStreamingToken);
+
+            String serviceId = claims.getBody().get("serviceId", String.class);
+
+            log.debug("[무료 캐시드 토큰(freeCachedStreamingToken) 정보] serviceId={}", serviceId);
+
+            return FreeCachedStreamingToken.builder()
+                    .serviceId(serviceId)
                     .build();
 
         } catch (Exception e) {

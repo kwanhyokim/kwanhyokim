@@ -20,6 +20,7 @@ import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SettlementInfoDto;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SourcePlayLog;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.CachedToken;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.FreeCachedStreamingToken;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.SettlementToken;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.play.ResourcePlayLogRequestParam;
 import com.sktechx.godmusic.personal.rest.service.McpService;
@@ -143,10 +144,11 @@ public class ResourceStrmPlayLogServiceImpl implements ResourcePlayLogService {
                     .serviceId(cachedToken.getSvdId());
 
         }
-        // TODO 캐시드인데 무료곡일 경우 새로 생기는 토큰을 까야함
+
+        FreeCachedStreamingToken freeCachedStreamingToken = tokenService.parseFreeCachedStreamingToken(param.getFreeCachedStreamingToken());
         return sourcePlayLogBuilder
-                .pssrlCd(null)
-                .serviceId(null);
+                .pssrlCd(freeCachedStreamingToken.getServiceId())
+                .serviceId(freeCachedStreamingToken.getServiceId());
     }
 
     /**

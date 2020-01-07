@@ -125,6 +125,7 @@ public class ListenController {
                 .sttToken(param.getSttToken())
                 .ownerToken(param.getOwnerToken())
                 .cachedToken(param.getCachedToken())
+                .freeCachedStreamingToken(param.getFreeCachedStreamingToken())
                 .recommendTrackId(param.getRecommendTrackId())
                 .addDateTime(param.getAddDateTime())
                 .offlineStartDtime(param.getOfflineStartDtime())
