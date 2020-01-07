@@ -122,7 +122,7 @@ public class ResourceStrmPlayLogServiceImpl implements ResourcePlayLogService {
         }
 
         // sttToken == null이면 무료곡 여부 체크 후 MCP 조회
-        return this.checkFreeResourceWithAppendSttInfo(gmContext, param, sourcePlayLogBuilder);
+        return this.checkFreeTrackWithAppendSttInfo(gmContext, param, sourcePlayLogBuilder);
     }
 
     /**
@@ -154,9 +154,9 @@ public class ResourceStrmPlayLogServiceImpl implements ResourcePlayLogService {
      * 무료곡인 경우, MCP를 조회하여 MCP 쪽 svcCd를 청취 로그의 serviceId로 넘긴다.
      * (무료곡인 경우는 정산쪽의 serviceId와 MCP의 serviceId(svcCd)가 다르기 때문에)
      */
-    private SourcePlayLog.SourcePlayLogBuilder checkFreeResourceWithAppendSttInfo(GMContext gmContext,
-                                                                                  ResourcePlayLogRequestParam param,
-                                                                                  SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
+    private SourcePlayLog.SourcePlayLogBuilder checkFreeTrackWithAppendSttInfo(GMContext gmContext,
+                                                                               ResourcePlayLogRequestParam param,
+                                                                               SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
         log.debug("[TRACK 청취로그][sttToken 없음]");
         String serviceId = null;
         Long purchaseId = null;

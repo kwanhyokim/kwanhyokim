@@ -110,7 +110,7 @@ public class SettlementServiceImpl implements SettlementService {
                     return FLAC_ALTERTIVE_STREAMING_SERVCIE_ID;
                 case DN:
                     return FLAC_ALTERTIVE_DRM_SERVCIE_ID;
-                case MV:
+                case MV:    // TODO 이 MV는 무엇?
                     return FLAC_ALTERTIVE_MUSIC_VIDEOD_SERVCIE_ID;
             }
 
