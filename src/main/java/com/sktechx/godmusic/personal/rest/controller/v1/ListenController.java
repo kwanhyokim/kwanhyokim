@@ -130,16 +130,9 @@ public class ListenController {
                 .offlineStartDtime(param.getOfflineStartDtime())
                 .metaCacheUpdateDtime(param.getMetaCacheUpdateDtime())
                 .build();
+
         log.debug("{}", playLogRequestParam);
-
-        // 신규 Service로 컨버팅 작업
-        resourcePlayLogResolver.findResolver(SourceType.fromCode(param.getSourceTypeToStr())).ifPresent(service -> {
-            log.debug("[TRACK] Resolver에 의해 DI된 Service={}", service.getClass().getName());
-            service.deliverResourcePlayLog(gmContext, playLogRequestParam);
-            service.deliverResourceUserEvent(gmContext, playLogRequestParam);
-        });
-
-        return CommonApiResponse.emptySuccess();
+        return this.addListenHistByResource(playLogRequestParam);
     }
 
     @ApiOperation(value = "채널 청취 로그 (기존 /v2/user/log/channel POST)", notes = "채널 전체 재생시 로그를 DB로 남김")

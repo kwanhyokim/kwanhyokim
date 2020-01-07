@@ -233,7 +233,7 @@ public class ResourcePlayLogRequestParam {
         if (StringUtils.isEmpty(clientIp)) {
             clientIp = request.getHeader("x-gm-client-ip");
         }
-        return StringUtils.isEmpty(clientIp) ? "" : clientIp;
+        return StringUtils.defaultIfBlank(clientIp, StringUtils.EMPTY);
     }
 
 }

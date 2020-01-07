@@ -42,7 +42,7 @@ public class TokenServiceImpl implements TokenService {
     private String JWT_SECRET_KEY;
 
     @Value("${token.drm.owner.key}")
-    private String DRM_TOKEN_KEY;
+    private String CACHED_AND_DRM_TOKEN_KEY;
 
     private final SettlementService settlementService;
 
@@ -82,7 +82,7 @@ public class TokenServiceImpl implements TokenService {
     public OwnerTokenClaim parseOwnerToken(String ownerToken) {
         try {
             Jws<Claims> jws = Jwts.parser()
-                    .setSigningKey(DRM_TOKEN_KEY.getBytes(StandardCharsets.UTF_8))
+                    .setSigningKey(CACHED_AND_DRM_TOKEN_KEY.getBytes(StandardCharsets.UTF_8))
                     .parseClaimsJws(ownerToken);
 
             Map<String, Object> claims = (Map<String, Object>) jws.getBody().get("ownerInfo");
@@ -111,9 +111,8 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public CachedToken parseCachedToken(String cachedToken) {
         try {
-            // TODO KEY 변경해야함
             Jws<Claims> claims = Jwts.parser()
-                    .setSigningKey(DRM_TOKEN_KEY.getBytes(StandardCharsets.UTF_8))
+                    .setSigningKey(CACHED_AND_DRM_TOKEN_KEY.getBytes(StandardCharsets.UTF_8))
                     .parseClaimsJws(cachedToken);
 
             String serviceId = claims.getBody().get("svcId", String.class);
