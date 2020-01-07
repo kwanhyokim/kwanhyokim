@@ -202,7 +202,7 @@ public class ListenServiceImpl implements ListenService {
 		String chnlType = StringUtils.isEmpty(param.getChannelType()) ? null : param.getChannelType();
 		String listenSessionId = StringUtils.isEmpty(param.getListenSessionId()) ? null : param.getListenSessionId();
 		String playType = Optional.ofNullable(param.getSourceType()).map(SourceType::getPlayType).orElse(null);
-		
+
 		TrackListen trackListen = TrackListen.builder()
 				.playChnl(playChannel)
 				.memberNo(memberNo)
