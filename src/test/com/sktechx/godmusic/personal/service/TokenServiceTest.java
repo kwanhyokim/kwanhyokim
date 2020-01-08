@@ -15,11 +15,9 @@ import com.sktechx.godmusic.personal.rest.model.vo.listen.CachedToken;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.SettlementToken;
 import com.sktechx.godmusic.personal.rest.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -36,30 +34,24 @@ import org.springframework.test.context.junit4.SpringRunner;
 @ActiveProfiles("local")
 public class TokenServiceTest {
 
-    @Value("${gd.settlement.jwt.secret-key}")
-    private String JWT_SECRET_KEY;
-
-    @Value("${token.drm.owner.key}")
-    private String DRM_TOKEN_KEY;
-
     @Autowired
     private TokenService tokenService;
 
     @Test
     public void 정산토큰_파싱_TEST() {
-        SettlementToken settlementToken = tokenService.parseSettlementToken(null);
-        Assert.assertNull(settlementToken);
+        SettlementToken settlementToken = tokenService.parseSettlementToken("eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vYXBpLm11c2ljLWZsby5jb20iLCJzdWIiOiIyMTAxMzAyQOqwgOyeheyekOydmOydtOyaqeq2jOygleuztCIsInZlcnNpb24iOjEsInNlcnZpY2VJZCI6Ik0xOVMwMjEyMSIsInB1cmNoYXNlSWQiOjIwMTkxNzQyLCJnb29kc0lkIjoxMTIxOTA5NTB9.f9LpZMXhkkFok_51VG1MUdTCJfB9bRbcqVOp9LgPkHY");
+        log.info("## {}", settlementToken);
     }
 
     @Test
     public void DRM토큰_파싱_TEST() {
         OwnerTokenClaim ownerTokenClaim = tokenService.parseOwnerToken(null);
-        Assert.assertNull(ownerTokenClaim);
+        log.info("## {}", ownerTokenClaim);
     }
 
     @Test
     public void 캐시드_TEST() {
-        CachedToken cachedToken = tokenService.parseCachedToken(null);
+        CachedToken cachedToken = tokenService.parseCachedToken("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdmNJZCI6MjAxOTIzMzUsInByY2hzSWQiOjIwMTkyMzM1LCJnb29kc0lkIjoxMTIyMDAxMTAsInVzZUVuZER0aW1lIjoxNTgyMDk5NTE4LCJpc3MiOiJodHRwczovL2Rldi1hcGkubXVzaWNtYXRlcy5jby5rciIsImV4cCI6MTU4MjA5OTUxOH0.ExQjNNYwzc3VrHYqSCWMhC4spJvXZQ1EpCO94nCRAgA");
         log.info("## {}", cachedToken);
     }
 

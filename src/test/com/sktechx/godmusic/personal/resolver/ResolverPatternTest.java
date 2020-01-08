@@ -37,7 +37,7 @@ public class ResolverPatternTest {
 
         String doProcess(String a);
 
-        String handleableMetaType();
+        String handleMetaType();
 
     }
 
@@ -47,7 +47,7 @@ public class ResolverPatternTest {
             return a + " : track";
         }
         @Override
-        public String handleableMetaType() {
+        public String handleMetaType() {
             return "track";
         }
     }
@@ -58,7 +58,7 @@ public class ResolverPatternTest {
             return a + " : artist";
         }
         @Override
-        public String handleableMetaType() {
+        public String handleMetaType() {
             return "artist";
         }
     }
@@ -78,7 +78,7 @@ public class ResolverPatternTest {
         private Map<String, ProcessService> mapper;
 
         public HandlerResolver(List<ProcessService> all) {
-            mapper = all.stream().collect(Collectors.toMap(ProcessService::handleableMetaType, Function.identity()));
+            mapper = all.stream().collect(Collectors.toMap(ProcessService::handleMetaType, Function.identity()));
         }
 
         public Optional<ProcessService> findResolver(String metaType) {

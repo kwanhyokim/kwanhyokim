@@ -116,14 +116,14 @@ public class TokenServiceImpl implements TokenService {
                     .setSigningKey(CACHED_AND_DRM_TOKEN_KEY.getBytes(StandardCharsets.UTF_8))
                     .parseClaimsJws(cachedToken);
 
-            String serviceId = claims.getBody().get("svcId", String.class);
+            Long serviceId = claims.getBody().get("svcId", Long.class);
             Long purchaseId = claims.getBody().get("prchsId", Long.class);
             Long goodsId = claims.getBody().get("goodsId", Long.class);
 
             log.debug("[캐시드 토큰(cachedToken) 정보] serviceId={}, purchaseId={}, goodsId={}", serviceId, purchaseId, goodsId);
 
             return CachedToken.builder()
-                    .svdId(serviceId)
+                    .svdId(String.valueOf(serviceId))
                     .prchsId(purchaseId)
                     .goodsId(goodsId)
                     .build();
