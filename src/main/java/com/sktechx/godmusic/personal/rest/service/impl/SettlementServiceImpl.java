@@ -74,13 +74,13 @@ public class SettlementServiceImpl implements SettlementService {
         }
 
         // flac 요청일 경우 대체
-        if (request.getBitrate() == BitrateType.BITRATE_FLAC16 || request.getBitrate() == BitrateType.BITRATE_FLAC24) {
+        if (BitrateType.BITRATE_FLAC16 == request.getBitrate() || BitrateType.BITRATE_FLAC24 == request.getBitrate()) {
             switch (request.getSourceType()) {
                 case STRM:
                     return FLAC_ALTERTIVE_STREAMING_SERVCIE_ID;
                 case DN:
                     return FLAC_ALTERTIVE_DRM_SERVCIE_ID;
-                case MV:    // TODO 이 MV는 무엇?
+                case MV:
                     return FLAC_ALTERTIVE_MUSIC_VIDEOD_SERVCIE_ID;
             }
         }
@@ -102,18 +102,15 @@ public class SettlementServiceImpl implements SettlementService {
 
         // flac 요청일 경우 대체
         String quality = param.getQuality();
-        if (BitrateType.BITRATE_FLAC16.getCode().equalsIgnoreCase(quality)
-                || BitrateType.BITRATE_FLAC24.getCode().equalsIgnoreCase(quality)) {
-
+        if (BitrateType.BITRATE_FLAC16.getCode().equalsIgnoreCase(quality) || BitrateType.BITRATE_FLAC24.getCode().equalsIgnoreCase(quality)) {
             switch (SourceType.fromCode(param.getSourceType())) {
                 case STRM:
                     return FLAC_ALTERTIVE_STREAMING_SERVCIE_ID;
                 case DN:
                     return FLAC_ALTERTIVE_DRM_SERVCIE_ID;
-                case MV:    // TODO 이 MV는 무엇?
+                case MV:
                     return FLAC_ALTERTIVE_MUSIC_VIDEOD_SERVCIE_ID;
             }
-
         }
         return settlementInfo.getSvcId();
     }

@@ -10,12 +10,10 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl;
 
-import com.sktechx.godmusic.personal.common.domain.type.SourceType;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.token.OwnerTokenClaim;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.token.CachedToken;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.token.FreeCachedStreamingToken;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.token.OwnerTokenClaim;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.token.SettlementToken;
-import com.sktechx.godmusic.personal.rest.service.SettlementService;
 import com.sktechx.godmusic.personal.rest.service.TokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -24,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -44,12 +41,6 @@ public class TokenServiceImpl implements TokenService {
 
     @Value("${token.drm.owner.key}")
     private String CACHED_AND_DRM_TOKEN_KEY;
-
-    private final SettlementService settlementService;
-
-    public TokenServiceImpl(SettlementService settlementService) {
-        this.settlementService = settlementService;
-    }
 
     @Override
     public SettlementToken parseSettlementToken(String sttToken) {
@@ -91,17 +82,13 @@ public class TokenServiceImpl implements TokenService {
                 return null;
             }
 
-            OwnerTokenClaim ownerTokenClaim = OwnerTokenClaim.builder()
+            return OwnerTokenClaim.builder()
                     .memberNo(Long.valueOf((Integer) claims.get("memberNo")))
                     .goodsId(Long.valueOf((Integer) claims.get("goodsId")))
                     .purchaseId(Long.valueOf((Integer) claims.get("purchaseId")))
                     .pssrlCode((String) claims.get("pssrlCode"))
                     .serviceId((String) claims.get("serviceId"))
                     .build();
-
-            // todo 2019.05월 이후 불필요 코드 이므로 아래 method와 함께 삭제 필요
-            this.addServiceIdToOwnerToken(ownerTokenClaim);
-            return ownerTokenClaim;
 
         } catch (Exception e) {
             log.error("Owner Token Parse 에러 : {}", e.getMessage());
@@ -152,17 +139,6 @@ public class TokenServiceImpl implements TokenService {
         } catch (Exception e) {
             log.error("cachedToken Parse Error : {}", e.getMessage());
             return null;
-        }
-    }
-
-    private void addServiceIdToOwnerToken(OwnerTokenClaim ownerTokenClaim) {
-        if (!ObjectUtils.isEmpty(ownerTokenClaim.getPurchaseId())
-                && StringUtils.isEmpty(ownerTokenClaim.getServiceId())) {
-
-            // todo 테스크 코드 이 로그가 찍히지 않는 걸 확인 하고 해당 메소드 삭제 처리
-            log.info("Service Id Extract, token={}", ownerTokenClaim);
-            String serviceId = settlementService.getServiceCodeByPrchsId(ownerTokenClaim.getPurchaseId(), SourceType.DN.getPlayType());
-            ownerTokenClaim.setServiceId(serviceId);
         }
     }
 
