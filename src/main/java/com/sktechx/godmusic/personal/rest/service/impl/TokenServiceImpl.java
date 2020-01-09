@@ -110,7 +110,7 @@ public class TokenServiceImpl implements TokenService {
             log.debug("[캐시드 토큰(cachedToken) 정보] serviceId={}, purchaseId={}, goodsId={}", serviceId, purchaseId, goodsId);
 
             return CachedToken.builder()
-                    .svdId(String.valueOf(serviceId))
+                    .svdId(serviceId.toString())
                     .prchsId(purchaseId)
                     .goodsId(goodsId)
                     .build();
