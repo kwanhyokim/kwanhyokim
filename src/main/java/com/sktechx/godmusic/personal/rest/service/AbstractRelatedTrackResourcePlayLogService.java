@@ -80,9 +80,7 @@ public abstract class AbstractRelatedTrackResourcePlayLogService implements Reso
     public void deliverResourceUserEvent(GMContext gmContext, ResourcePlayLogRequestParam logRequestParam) {
         // playOfflineYn == N 이고 userEvent가 존재할 때만 UserEvent를 남긴다.
         if (YnType.N == logRequestParam.getPlayOfflineYn()) {
-            this.createUserEventByTrack(gmContext, logRequestParam).ifPresent(userEvent -> {
-                amqpService.deliverUserEvent(userEvent);
-            });
+            this.createUserEventByTrack(gmContext, logRequestParam).ifPresent(amqpService::deliverUserEvent);
         }
     }
 
