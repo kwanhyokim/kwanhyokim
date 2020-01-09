@@ -1,4 +1,4 @@
-# 청취로그 로직
+# 청취로그 정산정보
 ## SourceType.STRM
 ### 일반 스트리밍의 경우
 sttToken 활용 (무료곡일 경우 MCP에서 serviceId 조회)
@@ -62,6 +62,8 @@ sourcePlayLogBuilder
     .serviceId(freeCachedStreamingToken.getServiceId());
 ```
 
+---
+
 ## SourceType.DN
 ownerToken에 의존
 ```java
@@ -72,6 +74,8 @@ sourcePlayLogBuilder
     .drmPrchsId(ownerTokenClaim.getPurchaseId())
     .drmGoodsId(ownerTokenClaim.getGoodsId());
 ```
+
+---
 
 ## SourceType.VIDEO_MV
 sttToken에 의존
