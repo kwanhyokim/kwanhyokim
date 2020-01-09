@@ -13,18 +13,17 @@ package com.sktechx.godmusic.personal.rest.service.impl;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
-import com.sktechx.godmusic.personal.common.amqp.domain.UserEvent;
 import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
 import com.sktechx.godmusic.personal.common.domain.type.ResourceLogType;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SettlementInfoDto;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SourcePlayLog;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.ResourcePlayLogRequestParam;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.token.CachedToken;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.token.FreeCachedStreamingToken;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.token.SettlementToken;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.ResourcePlayLogRequestParam;
-import com.sktechx.godmusic.personal.rest.service.AbstractResourcePlayLog;
+import com.sktechx.godmusic.personal.rest.service.AbstractRelatedTrackResourcePlayLogService;
 import com.sktechx.godmusic.personal.rest.service.McpService;
 import com.sktechx.godmusic.personal.rest.service.SettlementService;
 import com.sktechx.godmusic.personal.rest.service.TokenService;
@@ -41,9 +40,8 @@ import org.springframework.util.ObjectUtils;
  */
 @Slf4j
 @Service
-public class ResourceStrmPlayLogServiceImpl extends AbstractResourcePlayLog {
+public class ResourceStrmPlayLogServiceImpl extends AbstractRelatedTrackResourcePlayLogService {
 
-    private final AmqpService amqpService;
     private final TokenService tokenService;
     private final SettlementService settlementService;
     private final McpService mcpService;
@@ -52,7 +50,7 @@ public class ResourceStrmPlayLogServiceImpl extends AbstractResourcePlayLog {
                                           TokenService tokenService,
                                           SettlementService settlementService,
                                           McpService mcpService) {
-        this.amqpService = amqpService;
+        super(amqpService);
         this.tokenService = tokenService;
         this.settlementService = settlementService;
         this.mcpService = mcpService;
@@ -68,7 +66,7 @@ public class ResourceStrmPlayLogServiceImpl extends AbstractResourcePlayLog {
      */
     @Override
     public void deliverResourcePlayLog(GMContext gmContext, ResourcePlayLogRequestParam logRequestParam) {
-        SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder = this.createBasicSourcePlayLogBuilderByTrack(gmContext, logRequestParam);
+        SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder = this.createBasicSourcePlayLogBuilder(gmContext, logRequestParam);
 
         log.info("[STRM TRACK 청취 로그] makeTrackListenLog START");
         if (ResourceLogType.ONEMIN == ResourceLogType.fromCode(logRequestParam.getLogType())) {
@@ -81,18 +79,6 @@ public class ResourceStrmPlayLogServiceImpl extends AbstractResourcePlayLog {
 
         amqpService.deliverSourcePlay(sourcePlayLogBuilder.build());
         log.info("[STRM TRACK 청취로그][MQ 발송] {}", sourcePlayLogBuilder.toString());
-    }
-
-    /**
-     * 곡(STRM) 청취 UserEvent MQ 발송
-     */
-    @Override
-    public void deliverResourceUserEvent(GMContext gmContext, ResourcePlayLogRequestParam logRequestParam) {
-        UserEvent userEventByTrack = this.createUserEventByTrack(gmContext, logRequestParam);
-        if (null != userEventByTrack && YnType.N == logRequestParam.getPlayOfflineYn()) {
-            // playOfflineYn == N 이고 userEvent가 존재할 때만 UserEvent를 남긴다.
-            amqpService.deliverUserEvent(userEventByTrack);
-        }
     }
 
     /**

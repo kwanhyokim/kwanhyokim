@@ -24,8 +24,8 @@ public interface ResourcePlayLogService {
 
     SourceType handleSourceType();
 
-    void deliverResourcePlayLog(GMContext gmContext, ResourcePlayLogRequestParam param);
+    void deliverResourcePlayLog(GMContext gmContext, ResourcePlayLogRequestParam logRequestParam);
 
-    void deliverResourceUserEvent(GMContext gmContext, ResourcePlayLogRequestParam param);
+    void deliverResourceUserEvent(GMContext gmContext, ResourcePlayLogRequestParam logRequestParam);
 
 }

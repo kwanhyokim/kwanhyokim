@@ -73,7 +73,7 @@ public enum AppNameType implements CodeEnum {
 	}
 
 	@JsonCreator
-	public static String parseToString(String code) {
+	public static String parseFromCodeToString(String code) {
 		if (!StringUtils.isEmpty(code)) {
 			for (AppNameType type : AppNameType.values()) {
 				if (type.code.equals(code)){

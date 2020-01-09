@@ -21,8 +21,8 @@ import com.sktechx.godmusic.personal.common.domain.type.ResourceLogType;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SourcePlayLog;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.token.SettlementToken;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ResourcePlayLogRequestParam;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.token.SettlementToken;
 import com.sktechx.godmusic.personal.rest.service.ResourcePlayLogService;
 import com.sktechx.godmusic.personal.rest.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +58,7 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
      */
     @Override
     public void deliverResourcePlayLog(GMContext gmContext, ResourcePlayLogRequestParam logRequestParam) {
-        SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder = this.createBasicSourcePlayLogBuilderByVideo(gmContext, logRequestParam);
+        SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder = this.createBasicSourcePlayLogBuilder(gmContext, logRequestParam);
 
         ResourceLogType resourceLogType = ResourceLogType.fromCode(logRequestParam.getLogType());
         if (ResourceLogType.ONEMIN == resourceLogType) {
@@ -78,7 +78,7 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
 
         if (UserEventType.UNKNOWN != userEventType) {
             UserEvent userEvent = UserEvent.newBuilder()
-                    .playChnl(AppNameType.parseToString(gmContext.getAppName()))
+                    .playChnl(AppNameType.parseFromCodeToString(gmContext.getAppName()))
                     .event(userEventType)
                     .memberNo(gmContext.getMemberNo())
                     .charactorNo(gmContext.getCharacterNo())
@@ -98,10 +98,10 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
     /**
      * 비디오 재생(청취)로그 기본 규격 build
      */
-    private SourcePlayLog.SourcePlayLogBuilder createBasicSourcePlayLogBuilderByVideo(GMContext gmContext,
-                                                                                      ResourcePlayLogRequestParam logRequestParam) {
+    private SourcePlayLog.SourcePlayLogBuilder createBasicSourcePlayLogBuilder(GMContext gmContext,
+                                                                               ResourcePlayLogRequestParam logRequestParam) {
         return SourcePlayLog.builder()
-                .playChnl(AppNameType.parseToString(gmContext.getAppName()))
+                .playChnl(AppNameType.parseFromCodeToString(gmContext.getAppName()))
                 .sessionId(logRequestParam.getSessionId())
                 .timeMillis(System.currentTimeMillis())
                 .memberNo(gmContext.getMemberNo())

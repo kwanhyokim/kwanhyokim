@@ -12,14 +12,13 @@ package com.sktechx.godmusic.personal.rest.service.impl;
 
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.code.YnType;
-import com.sktechx.godmusic.personal.common.amqp.domain.UserEvent;
 import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
 import com.sktechx.godmusic.personal.common.domain.type.ResourceLogType;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SourcePlayLog;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.token.OwnerTokenClaim;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ResourcePlayLogRequestParam;
-import com.sktechx.godmusic.personal.rest.service.AbstractResourcePlayLog;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.token.OwnerTokenClaim;
+import com.sktechx.godmusic.personal.rest.service.AbstractRelatedTrackResourcePlayLogService;
 import com.sktechx.godmusic.personal.rest.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -34,13 +33,13 @@ import org.springframework.util.ObjectUtils;
  */
 @Slf4j
 @Service
-public class ResourceDrmPlayLogServiceImpl extends AbstractResourcePlayLog {
+public class ResourceDrmPlayLogServiceImpl extends AbstractRelatedTrackResourcePlayLogService {
 
-    private final AmqpService amqpService;
     private final TokenService tokenService;
 
     public ResourceDrmPlayLogServiceImpl(AmqpService amqpService,
                                          TokenService tokenService) {
+        super(amqpService);
         this.amqpService = amqpService;
         this.tokenService = tokenService;
     }
@@ -55,7 +54,7 @@ public class ResourceDrmPlayLogServiceImpl extends AbstractResourcePlayLog {
      */
     @Override
     public void deliverResourcePlayLog(GMContext gmContext, ResourcePlayLogRequestParam logRequestParam) {
-        SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder = this.createBasicSourcePlayLogBuilderByTrack(gmContext, logRequestParam);
+        SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder = this.createBasicSourcePlayLogBuilder(gmContext, logRequestParam);
 
         log.info("[DRM TRACK 청취 로그] makeTrackListenLog START");
         if (ResourceLogType.ONEMIN == ResourceLogType.fromCode(logRequestParam.getLogType())) {
@@ -68,15 +67,6 @@ public class ResourceDrmPlayLogServiceImpl extends AbstractResourcePlayLog {
 
         amqpService.deliverSourcePlay(sourcePlayLogBuilder.build());
         log.info("[DRM TRACK 청취로그][MQ 발송] {}", sourcePlayLogBuilder.toString());
-    }
-
-    /**
-     * 곡(DRM) 청취 UserEvent MQ 발송
-     */
-    @Override
-    public void deliverResourceUserEvent(GMContext gmContext, ResourcePlayLogRequestParam logRequestParam) {
-        UserEvent userEventByTrack = this.createUserEventByTrack(gmContext, logRequestParam);
-        amqpService.deliverUserEvent(userEventByTrack);
     }
 
     /**
