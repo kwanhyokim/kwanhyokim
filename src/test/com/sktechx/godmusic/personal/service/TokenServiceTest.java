@@ -10,9 +10,9 @@
 
 package com.sktechx.godmusic.personal.service;
 
-import com.sktechx.godmusic.personal.rest.model.vo.drm.OwnerTokenClaim;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.CachedToken;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.SettlementToken;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.token.OwnerTokenClaim;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.token.CachedToken;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.token.SettlementToken;
 import com.sktechx.godmusic.personal.rest.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;

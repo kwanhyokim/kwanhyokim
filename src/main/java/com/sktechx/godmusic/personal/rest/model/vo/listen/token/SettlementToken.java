@@ -8,21 +8,24 @@
  * you entered into with DREAMUS COMPANY.
  */
 
-package com.sktechx.godmusic.personal.rest.model.vo.listen;
+package com.sktechx.godmusic.personal.rest.model.vo.listen.token;
 
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
 /**
- * 설명 : 캐시드 스트리밍 곡이 무료곡일 경우 활용되는 토큰 클래스
+ * 설명 : 정산 토큰
  *
  * @author groot
- * @since 2020. 01. 07
+ * @since 2019. 12. 19
  */
 @Getter
 @ToString
 @Builder
-public class FreeCachedStreamingToken {
+public class SettlementToken {
+    private Integer version;
     private String serviceId;
+    private Long purchaseId;
+    private Long goodsId;
 }

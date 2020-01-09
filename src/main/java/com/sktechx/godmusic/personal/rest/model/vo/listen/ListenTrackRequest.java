@@ -22,11 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
@@ -246,16 +242,6 @@ public class ListenTrackRequest {
 	@JsonIgnore
 	public String getSourceTypeToStr() {
 		return Optional.ofNullable(sourceType).map(SourceType::getCode).orElse(null);
-	}
-
-	@JsonIgnore
-	public String getClientIp() {
-		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-		String clientIp = request.getHeader("client_ip");
-		if (StringUtils.isEmpty(clientIp)) {
-			clientIp = request.getHeader("x-gm-client-ip");
-		}
-		return StringUtils.isEmpty(clientIp) ? "" : clientIp;
 	}
 
 }

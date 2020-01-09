@@ -14,7 +14,7 @@ import com.sktechx.godmusic.personal.common.domain.type.BitrateType;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SettlementInfoDto;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenTrackRequest;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.play.ResourcePlayLogRequestParam;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.ResourcePlayLogRequestParam;
 import com.sktechx.godmusic.personal.rest.repository.SettlementMapper;
 import com.sktechx.godmusic.personal.rest.service.SettlementService;
 import lombok.extern.slf4j.Slf4j;

@@ -12,7 +12,7 @@ package com.sktechx.godmusic.personal.rest.service;
 
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SettlementInfoDto;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenTrackRequest;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.play.ResourcePlayLogRequestParam;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.ResourcePlayLogRequestParam;
 
 /**
  * 정산 처리를 위한 서비스

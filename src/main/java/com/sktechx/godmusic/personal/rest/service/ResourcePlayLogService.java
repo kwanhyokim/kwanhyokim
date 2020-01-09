@@ -12,7 +12,7 @@ package com.sktechx.godmusic.personal.rest.service;
 
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.play.ResourcePlayLogRequestParam;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.ResourcePlayLogRequestParam;
 
 /**
  * 설명 : Resource 청취(재생) 로그

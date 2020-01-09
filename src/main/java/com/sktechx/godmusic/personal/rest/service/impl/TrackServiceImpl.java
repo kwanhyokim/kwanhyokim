@@ -102,9 +102,9 @@ public class TrackServiceImpl implements TrackService {
 
             sqlSession.flushStatements();
             sqlSession.commit();
+
         } catch (Exception e) {
-            e.printStackTrace();
-            log.error("Track :: delete my recent track list :: Error Message", e.getMessage());
+            log.error("Track :: delete my recent track list :: Error Message", e);
             throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
         }
 

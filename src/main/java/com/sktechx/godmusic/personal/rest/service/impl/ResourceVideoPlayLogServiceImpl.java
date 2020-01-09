@@ -21,8 +21,8 @@ import com.sktechx.godmusic.personal.common.domain.type.ResourceLogType;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SourcePlayLog;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.SettlementToken;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.play.ResourcePlayLogRequestParam;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.token.SettlementToken;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.ResourcePlayLogRequestParam;
 import com.sktechx.godmusic.personal.rest.service.ResourcePlayLogService;
 import com.sktechx.godmusic.personal.rest.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
@@ -57,14 +57,12 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
      * 비디오 재생(청취) 로그 MQ 발송
      */
     @Override
-    public void deliverResourcePlayLog(GMContext gmContext, ResourcePlayLogRequestParam param) {
-        SourcePlayLog sourcePlayLog = this.buildBasicSourcePlayLogByVideo(gmContext, param);
+    public void deliverResourcePlayLog(GMContext gmContext, ResourcePlayLogRequestParam logRequestParam) {
+        SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder = this.createBasicSourcePlayLogBuilderByVideo(gmContext, logRequestParam);
 
-        SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder = sourcePlayLog.toBuilder();
-
-        ResourceLogType resourceLogType = ResourceLogType.fromCode(param.getLogType());
+        ResourceLogType resourceLogType = ResourceLogType.fromCode(logRequestParam.getLogType());
         if (ResourceLogType.ONEMIN == resourceLogType) {
-            sourcePlayLogBuilder = this.buildOneMinVideoPlayLog(param, sourcePlayLogBuilder);
+            sourcePlayLogBuilder = this.buildOneMinVideoPlayLog(logRequestParam, sourcePlayLogBuilder);
         }
 
         amqpService.deliverSourcePlay(sourcePlayLogBuilder.build());
@@ -75,19 +73,20 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
      * 비디오 재생(청취) UserEvent MQ 발송
      */
     @Override
-    public void deliverResourceUserEvent(GMContext gmContext, ResourcePlayLogRequestParam param) {
-        UserEventType userEventType = UserEventType.fromPlayLogType(ResourceLogType.fromCode(param.getLogType()));
+    public void deliverResourceUserEvent(GMContext gmContext, ResourcePlayLogRequestParam logRequestParam) {
+        UserEventType userEventType = UserEventType.fromPlayLogType(ResourceLogType.fromCode(logRequestParam.getLogType()));
+
         if (UserEventType.UNKNOWN != userEventType) {
             UserEvent userEvent = UserEvent.newBuilder()
                     .playChnl(AppNameType.parseToString(gmContext.getAppName()))
                     .event(userEventType)
                     .memberNo(gmContext.getMemberNo())
                     .charactorNo(gmContext.getCharacterNo())
-                    .targetId(String.valueOf(param.getResourceId()))
+                    .targetId(String.valueOf(logRequestParam.getResourceId()))
                     .targetType(UserEventTarget.VIDEO)
-                    .sourceType(SourceType.fromCode(param.getSourceType()))
-                    .trackTotTm(param.getRunningTimeSecs())
-                    .elapsedTm(param.getDuration())
+                    .sourceType(SourceType.fromCode(logRequestParam.getSourceType()))
+                    .trackTotTm(logRequestParam.getRunningTimeSecs())
+                    .elapsedTm(logRequestParam.getDuration())
                     .timeMillis(System.currentTimeMillis())
                     .build();
 
@@ -99,44 +98,44 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
     /**
      * 비디오 재생(청취)로그 기본 규격 build
      */
-    private SourcePlayLog buildBasicSourcePlayLogByVideo(GMContext gmContext, ResourcePlayLogRequestParam param) {
+    private SourcePlayLog.SourcePlayLogBuilder createBasicSourcePlayLogBuilderByVideo(GMContext gmContext,
+                                                                                      ResourcePlayLogRequestParam logRequestParam) {
         return SourcePlayLog.builder()
                 .playChnl(AppNameType.parseToString(gmContext.getAppName()))
-                .sessionId(param.getSessionId())
+                .sessionId(logRequestParam.getSessionId())
                 .timeMillis(System.currentTimeMillis())
                 .memberNo(gmContext.getMemberNo())
                 .characterNo(gmContext.getCharacterNo())
-                .sourceType(SourceType.fromCode(param.getSourceType()))
-                .sourceId(String.valueOf(param.getResourceId()))
-                .logType(param.getLogType())
-                .bitrate(param.getQuality())
-                .quality(param.getQuality())
-                .trackTotTm(param.getRunningTimeSecs())
-                .elapsedTm(param.getDuration())
-                .osType(param.getOsTypeToStr())
+                .sourceType(SourceType.fromCode(logRequestParam.getSourceType()))
+                .sourceId(String.valueOf(logRequestParam.getResourceId()))
+                .logType(logRequestParam.getLogType())
+                .bitrate(logRequestParam.getQuality())
+                .quality(logRequestParam.getQuality())
+                .trackTotTm(logRequestParam.getRunningTimeSecs())
+                .elapsedTm(logRequestParam.getDuration())
+                .osType(logRequestParam.getOsTypeToStr())
                 .dvcId(gmContext.getDeviceId())
-                .chnlId(param.getChannelId())
-                .chnlType(param.getChannelType())
+                .chnlId(logRequestParam.getChannelId())
+                .chnlType(logRequestParam.getChannelType())
                 .memberRcmdId(null)
-                .addTm(param.getAddDateTime())
-                .free(param.isFree())
+                .addTm(logRequestParam.getAddDateTime())
+                .free(logRequestParam.isFree())
                 .sessionToken(null)
-                .userClientIp(param.getClientIp())
+                .userClientIp(logRequestParam.getClientIp())
                 .metaCacheUpdateDtime(null)
                 .offlineStartDtime(null)
                 .playOfflineYn(null)
-                .playCacheYn(null)
-                .build();
+                .playCacheYn(null);
     }
 
     /**
      * 비디오 ONEMIN 재생(청취) 로그 만들기
      */
-    private SourcePlayLog.SourcePlayLogBuilder buildOneMinVideoPlayLog(ResourcePlayLogRequestParam param,
+    private SourcePlayLog.SourcePlayLogBuilder buildOneMinVideoPlayLog(ResourcePlayLogRequestParam logRequestParam,
                                                                        SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
-        SettlementToken sttToken = tokenService.parseSettlementToken(param.getSttToken());
+        SettlementToken sttToken = tokenService.parseSettlementToken(logRequestParam.getSttToken());
         String serviceId = sttToken.getServiceId();
-        SourceType sourceType = SourceType.fromCode(param.getSourceType());
+        SourceType sourceType = SourceType.fromCode(logRequestParam.getSourceType());
 
         if (SourceType.VIDEO_MV == sourceType && StringUtils.isEmpty(serviceId)) {
             log.warn("[1분 리소스 청취로그] 정산정보 없음");

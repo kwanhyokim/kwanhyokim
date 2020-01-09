@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 DREAMUS COMPANY.
+ * Copyright (c) 2020 DREAMUS COMPANY.
  * All right reserved.
  *
  * This software is the confidential and proprietary information of DREAMUS COMPANY.
@@ -8,7 +8,7 @@
  * you entered into with DREAMUS COMPANY.
  */
 
-package com.sktechx.godmusic.personal.rest.model.vo.listen.play;
+package com.sktechx.godmusic.personal.rest.model.vo.listen;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

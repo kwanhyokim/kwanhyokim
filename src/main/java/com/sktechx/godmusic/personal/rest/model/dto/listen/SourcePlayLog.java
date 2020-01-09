@@ -23,7 +23,7 @@ import lombok.Data;
  * @since 2019. 12. 19
  */
 @Data
-@Builder(toBuilder = true)
+@Builder
 public class SourcePlayLog {
     @JsonProperty("play_chnl")
     private String playChnl;

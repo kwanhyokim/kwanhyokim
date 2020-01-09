@@ -8,7 +8,7 @@
  * you entered into with DREAMUS COMPANY.
  */
 
-package com.sktechx.godmusic.personal.rest.model.vo.listen;
+package com.sktechx.godmusic.personal.rest.model.vo.listen.token;
 
 import lombok.Builder;
 import lombok.Getter;

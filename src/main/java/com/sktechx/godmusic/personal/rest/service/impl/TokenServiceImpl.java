@@ -11,10 +11,10 @@
 package com.sktechx.godmusic.personal.rest.service.impl;
 
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
-import com.sktechx.godmusic.personal.rest.model.vo.drm.OwnerTokenClaim;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.CachedToken;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.FreeCachedStreamingToken;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.SettlementToken;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.token.OwnerTokenClaim;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.token.CachedToken;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.token.FreeCachedStreamingToken;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.token.SettlementToken;
 import com.sktechx.godmusic.personal.rest.service.SettlementService;
 import com.sktechx.godmusic.personal.rest.service.TokenService;
 import io.jsonwebtoken.Claims;
