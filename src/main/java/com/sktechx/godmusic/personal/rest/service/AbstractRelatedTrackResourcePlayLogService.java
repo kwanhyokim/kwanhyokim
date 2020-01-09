@@ -80,7 +80,7 @@ public abstract class AbstractRelatedTrackResourcePlayLogService implements Reso
     public void deliverResourceUserEvent(GMContext gmContext, ResourcePlayLogRequestParam logRequestParam) {
         // playOfflineYn == N 이고 userEvent가 존재할 때만 UserEvent를 남긴다.
         if (YnType.N == logRequestParam.getPlayOfflineYn()) {
-            Optional.ofNullable(this.createUserEventByTrack(gmContext, logRequestParam)).ifPresent(userEvent -> {
+            this.createUserEventByTrack(gmContext, logRequestParam).ifPresent(userEvent -> {
                 amqpService.deliverUserEvent(userEvent);
             });
         }
@@ -89,23 +89,22 @@ public abstract class AbstractRelatedTrackResourcePlayLogService implements Reso
     /**
      * 곡 UserEvent 생성
      */
-    private final UserEvent createUserEventByTrack(GMContext gmContext, ResourcePlayLogRequestParam logRequestParam) {
+    private Optional<UserEvent> createUserEventByTrack(GMContext gmContext, ResourcePlayLogRequestParam logRequestParam) {
         UserEventType userEventType = UserEventType.fromPlayLogType(ResourceLogType.fromCode(logRequestParam.getLogType()));
-        if (UserEventType.UNKNOWN != userEventType) {
-            return UserEvent.newBuilder()
-                    .playChnl(AppNameType.parseFromCodeToString(gmContext.getAppName()))
-                    .event(userEventType)
-                    .memberNo(gmContext.getMemberNo())
-                    .charactorNo(gmContext.getCharacterNo())
-                    .targetId(String.valueOf(logRequestParam.getResourceId()))
-                    .targetType(UserEventTarget.TRACK)
-                    .sourceType(SourceType.fromCode(logRequestParam.getSourceType()))
-                    .trackTotTm(logRequestParam.getRunningTimeSecs())
-                    .elapsedTm(logRequestParam.getDuration())
-                    .timeMillis(System.currentTimeMillis())
-                    .build();
-        }
-        return null;
+        return UserEventType.UNKNOWN == userEventType ?
+                Optional.empty() :
+                Optional.of(UserEvent.newBuilder()
+                        .playChnl(AppNameType.parseFromCodeToString(gmContext.getAppName()))
+                        .event(userEventType)
+                        .memberNo(gmContext.getMemberNo())
+                        .charactorNo(gmContext.getCharacterNo())
+                        .targetId(String.valueOf(logRequestParam.getResourceId()))
+                        .targetType(UserEventTarget.TRACK)
+                        .sourceType(SourceType.fromCode(logRequestParam.getSourceType()))
+                        .trackTotTm(logRequestParam.getRunningTimeSecs())
+                        .elapsedTm(logRequestParam.getDuration())
+                        .timeMillis(System.currentTimeMillis())
+                        .build());
     }
 
 }
