@@ -10,12 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.service;
 
-import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenTrackRequest;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.play.ResourcePlayLogRequestParam;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by Kobe.
@@ -27,13 +22,5 @@ import javax.servlet.http.HttpServletRequest;
 public interface ListenService {
 
     void addListenHistByChannel(ListenRequest request, Long memberNo, Long characterNo);
-
-    void addListenHistByTrack(ListenTrackRequest request,
-                              GMContext currentContext,
-                              HttpServletRequest httpServletRequest);
-
-    void addPlayHistoryByResource(ResourcePlayLogRequestParam param,
-                                  GMContext currentContext,
-                                  HttpServletRequest httpServletRequest);
 
 }

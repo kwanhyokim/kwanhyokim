@@ -122,7 +122,6 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
                 .free(param.isFree())
                 .sessionToken(null)
                 .userClientIp(param.getClientIp())
-                .ownerToken(param.getOwnerToken())
                 .metaCacheUpdateDtime(null)
                 .offlineStartDtime(null)
                 .playOfflineYn(null)
