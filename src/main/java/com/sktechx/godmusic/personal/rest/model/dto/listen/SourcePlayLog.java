@@ -104,9 +104,6 @@ public class SourcePlayLog {
     @JsonProperty("user_client_ip")
     private String userClientIp;
 
-    @JsonProperty("owner_token")
-    private String ownerToken;
-
     @JsonProperty("service_id")
     private String serviceId;
 

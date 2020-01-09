@@ -69,7 +69,6 @@ public class TrackListenLogServiceImpl implements TrackListenLogService {
                 .free(param.isFree())
                 .sessionToken("")
                 .userClientIp(param.getClientIp())
-                .ownerToken(param.getOwnerToken())
                 .metaCacheUpdateDtime(param.getMetaCacheUpdateDtime())        // 캐시드 스트리밍
                 .offlineStartDtime(param.getOfflineStartDtime())              // 캐시드 스트리밍
                 .playOfflineYn(param.getPlayOfflineYn())                      // 캐시드 스트리밍

@@ -142,7 +142,6 @@ public class ResourceStrmPlayLogServiceImpl implements ResourcePlayLogService {
             return sourcePlayLogBuilder
                     .pssrlCd(cachedToken.getSvdId())
                     .serviceId(cachedToken.getSvdId());
-
         }
 
         FreeCachedStreamingToken freeCachedStreamingToken = tokenService.parseFreeCachedStreamingToken(param.getFreeCachedStreamingToken());
