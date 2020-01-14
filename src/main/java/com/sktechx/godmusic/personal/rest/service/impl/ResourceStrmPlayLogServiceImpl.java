@@ -30,7 +30,6 @@ import com.sktechx.godmusic.personal.rest.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 
 /**
  * 설명 : 곡(STRM) 청취 로그 Service
@@ -114,6 +113,10 @@ public class ResourceStrmPlayLogServiceImpl extends AbstractRelatedTrackResource
     private SourcePlayLog.SourcePlayLogBuilder buildSourcePlayLogByCachedTokenAndFreeYn(ResourcePlayLogRequestParam logRequestParam,
                                                                                         SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
         CachedToken cachedToken = tokenService.parseCachedToken(logRequestParam.getCachedToken());
+        if (null == cachedToken) {
+            log.warn("[CACHED STREAMING 청취로그] 정산 정보 조회 실패. logRequestParam={}", logRequestParam);
+            throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
+        }
 
         sourcePlayLogBuilder
                 .prchsId(cachedToken.getPrchsId())
@@ -127,6 +130,11 @@ public class ResourceStrmPlayLogServiceImpl extends AbstractRelatedTrackResource
         }
 
         FreeCachedStreamingToken freeCachedStreamingToken = tokenService.parseFreeCachedStreamingToken(logRequestParam.getFreeCachedStreamingToken());
+        if (null == freeCachedStreamingToken) {
+            log.warn("[CACHED STREAMING 청취로그] 무료곡 정산 정보 조회 실패. logRequestParam={}", logRequestParam);
+            throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
+        }
+
         return sourcePlayLogBuilder
                 .pssrlCd(freeCachedStreamingToken.getServiceId())
                 .serviceId(freeCachedStreamingToken.getServiceId());
@@ -162,7 +170,7 @@ public class ResourceStrmPlayLogServiceImpl extends AbstractRelatedTrackResource
             }
 
         } else if (YnType.N == logRequestParam.getFreeYn()) {
-            if (ObjectUtils.isEmpty(settlementInfo)) {
+            if (null == settlementInfo) {
                 log.warn("[TRACK 청취로그] 정산 정보 조회 실패. logRequestParam={}", logRequestParam);
                 throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
             }

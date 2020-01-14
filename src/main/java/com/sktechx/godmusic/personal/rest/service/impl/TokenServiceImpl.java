@@ -64,7 +64,7 @@ public class TokenServiceImpl implements TokenService {
                     .build();
 
         } catch (Exception e) {
-            log.error("sttToken Parse Error : {}", e.getMessage());
+            log.error("sttToken Parse Error", e);
             return null;
         }
     }
@@ -91,7 +91,7 @@ public class TokenServiceImpl implements TokenService {
                     .build();
 
         } catch (Exception e) {
-            log.error("Owner Token Parse 에러 : {}", e.getMessage());
+            log.error("Owner Token Parse Error", e);
             return null;
         }
     }
@@ -103,20 +103,20 @@ public class TokenServiceImpl implements TokenService {
                     .setSigningKey(CACHED_AND_DRM_TOKEN_KEY.getBytes(StandardCharsets.UTF_8))
                     .parseClaimsJws(cachedToken);
 
-            Long serviceId = claims.getBody().get("svcId", Long.class);
+            String serviceId = claims.getBody().get("svcId", String.class);
             Long purchaseId = claims.getBody().get("prchsId", Long.class);
             Long goodsId = claims.getBody().get("goodsId", Long.class);
 
             log.debug("[캐시드 토큰(cachedToken) 정보] serviceId={}, purchaseId={}, goodsId={}", serviceId, purchaseId, goodsId);
 
             return CachedToken.builder()
-                    .svdId(serviceId.toString())
+                    .svdId(serviceId)
                     .prchsId(purchaseId)
                     .goodsId(goodsId)
                     .build();
 
         } catch (Exception e) {
-            log.error("cachedToken Parse Error : {}", e.getMessage());
+            log.error("cachedToken Parse Error", e);
             return null;
         }
     }
@@ -137,7 +137,7 @@ public class TokenServiceImpl implements TokenService {
                     .build();
 
         } catch (Exception e) {
-            log.error("cachedToken Parse Error : {}", e.getMessage());
+            log.error("freeCachedStreamingToken Parse Error", e);
             return null;
         }
     }

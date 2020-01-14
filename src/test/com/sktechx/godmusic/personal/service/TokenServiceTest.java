@@ -10,17 +10,22 @@
 
 package com.sktechx.godmusic.personal.service;
 
-import com.sktechx.godmusic.personal.rest.model.vo.listen.token.OwnerTokenClaim;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.token.CachedToken;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.token.OwnerTokenClaim;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.token.SettlementToken;
 import com.sktechx.godmusic.personal.rest.service.TokenService;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * 설명 : TokenService TEST
@@ -33,6 +38,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 @ActiveProfiles("local")
 public class TokenServiceTest {
+
+    @Value("${gd.settlement.jwt.secret-key}")
+    private String JWT_SECRET_KEY;
+
+    @Value("${token.drm.owner.key}")
+    private String CACHED_AND_DRM_TOKEN_KEY;
 
     @Autowired
     private TokenService tokenService;
@@ -51,8 +62,29 @@ public class TokenServiceTest {
 
     @Test
     public void 캐시드_TEST() {
-        CachedToken cachedToken = tokenService.parseCachedToken("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdmNJZCI6MjAxOTIzMzUsInByY2hzSWQiOjIwMTkyMzM1LCJnb29kc0lkIjoxMTIyMDAxMTAsInVzZUVuZER0aW1lIjoxNTgyMDk5NTE4LCJpc3MiOiJodHRwczovL2Rldi1hcGkubXVzaWNtYXRlcy5jby5rciIsImV4cCI6MTU4MjA5OTUxOH0.ExQjNNYwzc3VrHYqSCWMhC4spJvXZQ1EpCO94nCRAgA");
-        log.info("## {}", cachedToken);
+        try {
+            String jwt = Jwts.builder()
+                    .claim("svcId", "TS1")
+                    .claim("prchsId", 20192455L)
+                    .claim("orderId", "20200113165786848")
+                    .claim("goodsId", 112200110L)
+                    .claim("useEndDtime", "20200212163609")
+                    .claim("iss", "https://dev-api.musicmates.co.kr")
+//                .claim("exp", 1582702569L)    // 성공
+                    .claim("exp", 1582L)    // 실패
+                    .signWith(
+                            SignatureAlgorithm.HS256,
+                            CACHED_AND_DRM_TOKEN_KEY.getBytes(StandardCharsets.UTF_8)
+                    )
+                    .compact();
+
+//        CachedToken cachedToken = tokenService.parseCachedToken("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdmNJZCI6IlRTMSIsInByY2hzSWQiOjIwMTkyNDUyLCJvcmRlcklkIjoiMjAyMDAxMTMxNTU3ODY4NDYiLCJnb29kc0lkIjoxMTIyMDAxMjAsInVzZUVuZER0aW1lIjoiMjAyMDAyMTIxNTUyMjMiLCJpc3MiOiJodHRwczovL2Rldi1hcGkubXVzaWNtYXRlcy5jby5rciIsImV4cCI6MTU4MjY5OTk0M30.7X0HGKLxeNXvRL08QpZkCLCIZcnup6cKZGQqyAtIUh8");
+            CachedToken cachedToken = tokenService.parseCachedToken(jwt);
+            log.info("## {}", cachedToken);
+
+        } catch (Exception e) {
+            log.error("JWT Parsing Error", e);
+        }
     }
 
 }
