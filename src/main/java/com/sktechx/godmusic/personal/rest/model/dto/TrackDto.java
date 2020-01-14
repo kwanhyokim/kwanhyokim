@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sktechx.godmusic.lib.domain.code.YnType;
+import com.sktechx.godmusic.personal.common.util.DateUtil;
 import lombok.Data;
 
 /**
@@ -60,9 +61,14 @@ public class TrackDto {
     @JsonProperty("createDateTime")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
     private Date createDtime;
+
     @JsonProperty("updateDateTime")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
     private Date updateDtime;
+
+    @JsonProperty("fileUpdateDateTime")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
+    private Date fileUpdateDateTime;
 
     @JsonProperty("renewDateTime")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
@@ -106,6 +112,14 @@ public class TrackDto {
     @JsonIgnore
     public boolean isNotDownloadable() {
         return YnType.N == this.svcDrmYn;
+    }
+
+    /**
+     * Note. fileUpdateDateTime field 는 personal-mgo 와 Feign 통신시, MyBatis 로부터 DB fetch 시에 모두 이용되는 필드이기 때문에
+     *       해당 method 를 선언하여 MyBatis 에서 데이타 맵핑시 본 setter method 를 이용하도록 선언함.
+     */
+    public void setModFileUpdateDtime(long epochSecond) {
+        this.fileUpdateDateTime = DateUtil.asDate(epochSecond);
     }
 }
 
