@@ -89,7 +89,7 @@ public class ResourceStrmPlayLogServiceImpl extends AbstractRelatedTrackResource
                                                                          SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
         // 캐시드 스트리밍인 경우
         if (YnType.Y == logRequestParam.getPlayCacheYn()) {
-            return this.buildSourcePlayLogByCachedTokenAndFreeYn(logRequestParam, sourcePlayLogBuilder);
+            return this.buildSourcePlayLogByCachedTokenAndFreeYn(gmContext, logRequestParam, sourcePlayLogBuilder);
         }
 
         // 캐시드 스트리밍이 아닌 경우 SttToken 활용
@@ -110,34 +110,52 @@ public class ResourceStrmPlayLogServiceImpl extends AbstractRelatedTrackResource
     /**
      * 캐시드 스트리밍인 경우 무료곡 여부를 포함해서 CachedToken을 통해 데이터를 채운다.
      */
-    private SourcePlayLog.SourcePlayLogBuilder buildSourcePlayLogByCachedTokenAndFreeYn(ResourcePlayLogRequestParam logRequestParam,
+    private SourcePlayLog.SourcePlayLogBuilder buildSourcePlayLogByCachedTokenAndFreeYn(GMContext gmContext,
+                                                                                        ResourcePlayLogRequestParam logRequestParam,
                                                                                         SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
         CachedToken cachedToken = tokenService.parseCachedToken(logRequestParam.getCachedToken());
         if (null == cachedToken) {
-            log.warn("[CACHED STREAMING 청취로그] 정산 정보 조회 실패. logRequestParam={}", logRequestParam);
+            log.warn("[CACHED STREAMING 청취로그] 정산 정보 조회 실패. memberNo={}, trackId={}, sessionId={}, playCacheYn={}, offlineStartDtime={}, metaCacheUpdateDtime={}",
+                    gmContext.getMemberNo(),
+                    logRequestParam.getResourceId(),
+                    logRequestParam.getSessionId(),
+                    logRequestParam.getPlayCacheYn(),
+                    logRequestParam.getOfflineStartDtime(),
+                    logRequestParam.getMetaCacheUpdateDtime()
+            );
             throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
         }
 
+        // 정산 기본 정보 채우기
         sourcePlayLogBuilder
                 .prchsId(cachedToken.getPrchsId())
                 .goodsId(cachedToken.getGoodsId());
 
-        if (YnType.N == logRequestParam.getFreeYn()) {
+        String freeCachedStreamingToken = logRequestParam.getFreeCachedStreamingToken();
+        if (StringUtils.isEmpty(freeCachedStreamingToken)) {
+            // 무료곡이 아닌 경우 (freeCachedStreamingToken이 없을 때)
             log.debug("[TRACK 청취로그] cachedToken 이용하여 serviceId 전달");
             return sourcePlayLogBuilder
                     .pssrlCd(cachedToken.getSvdId())
                     .serviceId(cachedToken.getSvdId());
         }
 
-        FreeCachedStreamingToken freeCachedStreamingToken = tokenService.parseFreeCachedStreamingToken(logRequestParam.getFreeCachedStreamingToken());
-        if (null == freeCachedStreamingToken) {
-            log.warn("[CACHED STREAMING 청취로그] 무료곡 정산 정보 조회 실패. logRequestParam={}", logRequestParam);
+        FreeCachedStreamingToken parseFreeCachedStreamingToken = tokenService.parseFreeCachedStreamingToken(freeCachedStreamingToken);
+        if (null == parseFreeCachedStreamingToken) {
+            log.warn("[CACHED STREAMING 청취로그] 정산 정보 조회 실패. memberNo={}, trackId={}, sessionId={}, playCacheYn={}, offlineStartDtime={}, metaCacheUpdateDtime={}",
+                    gmContext.getMemberNo(),
+                    logRequestParam.getResourceId(),
+                    logRequestParam.getSessionId(),
+                    logRequestParam.getPlayCacheYn(),
+                    logRequestParam.getOfflineStartDtime(),
+                    logRequestParam.getMetaCacheUpdateDtime()
+            );
             throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
         }
 
         return sourcePlayLogBuilder
-                .pssrlCd(freeCachedStreamingToken.getServiceId())
-                .serviceId(freeCachedStreamingToken.getServiceId());
+                .pssrlCd(parseFreeCachedStreamingToken.getServiceId())
+                .serviceId(parseFreeCachedStreamingToken.getServiceId());
     }
 
     /**
