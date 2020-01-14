@@ -610,4 +610,8 @@ public class DateUtil {
 	public static LocalDateTime asLocalDateTime(Date date) {
 		return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
 	}
+
+	public static Date asDate(long epochSecond) {
+		return Date.from(Instant.ofEpochSecond(epochSecond).atZone(ZoneId.of("Asia/Seoul")).toInstant());
+	}
 }

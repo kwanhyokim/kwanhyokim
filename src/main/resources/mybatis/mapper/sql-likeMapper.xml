@@ -91,6 +91,7 @@
              , IF(A.title_yn = 'Y', 'Y', 'N')                                          AS titleYn
              , A.create_dtime
              , A.update_dtime
+             , A.mod_file_update_dtime
              , E.album_img_size                                                        AS size
              , E.album_img_url                                                         AS url
              , 'Y'                                                                     AS likeYn
@@ -117,6 +118,7 @@
                   , t2.title_yn
                   , t2.create_dtime
                   , t2.update_dtime
+                  , t2.mod_file_update_dtime
                   , t2.streaming_premium_yn
                   , t2.adult_auth_need_track_yn
                   , t2.pps_yn
