@@ -23,7 +23,7 @@ import lombok.ToString;
 @Getter
 @ToString
 @Builder
-public class CachedToken {
+public class CachedStreamingToken {
     private String svdId;
     private Long prchsId;
     private Long goodsId;

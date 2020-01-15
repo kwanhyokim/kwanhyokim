@@ -67,10 +67,10 @@ public abstract class AbstractRelatedTrackResourcePlayLogService implements Reso
                 .free(logRequestParam.isFree())
                 .sessionToken("")
                 .userClientIp(logRequestParam.getClientIp())
-                .metaCacheUpdateDtime(logRequestParam.getMetaCacheUpdateDtime())        // 캐시드 스트리밍
-                .offlineStartDtime(logRequestParam.getOfflineStartDtime())              // 캐시드 스트리밍
-                .playOfflineYn(logRequestParam.getPlayOfflineYn())                      // 캐시드 스트리밍
-                .playCacheYn(logRequestParam.getPlayCacheYn());                         // 캐시드 스트리밍
+                .metaCacheUpdateDtime(logRequestParam.getMetaCachedUpdateDtime())           // 캐시드 스트리밍
+                .offlineStartDtime(logRequestParam.getOfflineStartDtime())                  // 캐시드 스트리밍
+                .playOfflineYn(logRequestParam.getPlayOfflineYn())                          // 캐시드 스트리밍
+                .playCacheYn(logRequestParam.getPlayCachedYn());                            // 캐시드 스트리밍
     }
 
     /**

@@ -20,7 +20,7 @@ import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SettlementInfoDto;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SourcePlayLog;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ResourcePlayLogRequestParam;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.token.CachedToken;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.token.CachedStreamingToken;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.token.FreeCachedStreamingToken;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.token.SettlementToken;
 import com.sktechx.godmusic.personal.rest.service.AbstractRelatedTrackResourcePlayLogService;
@@ -88,7 +88,7 @@ public class ResourceStrmPlayLogServiceImpl extends AbstractRelatedTrackResource
                                                                          ResourcePlayLogRequestParam logRequestParam,
                                                                          SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
         // 캐시드 스트리밍인 경우
-        if (YnType.Y == logRequestParam.getPlayCacheYn()) {
+        if (YnType.Y == logRequestParam.getPlayCachedYn()) {
             return this.buildSourcePlayLogByCachedTokenAndFreeYn(gmContext, logRequestParam, sourcePlayLogBuilder);
         }
 
@@ -113,31 +113,31 @@ public class ResourceStrmPlayLogServiceImpl extends AbstractRelatedTrackResource
     private SourcePlayLog.SourcePlayLogBuilder buildSourcePlayLogByCachedTokenAndFreeYn(GMContext gmContext,
                                                                                         ResourcePlayLogRequestParam logRequestParam,
                                                                                         SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
-        CachedToken cachedToken = tokenService.parseCachedToken(logRequestParam.getCachedToken());
-        if (null == cachedToken) {
+        CachedStreamingToken cachedStreamingToken = tokenService.parseCachedStreamingToken(logRequestParam.getCachedStreamingToken());
+        if (null == cachedStreamingToken) {
             log.warn("[CACHED STREAMING 청취로그] 정산 정보 조회 실패. memberNo={}, trackId={}, sessionId={}, playCacheYn={}, offlineStartDtime={}, metaCacheUpdateDtime={}",
                     gmContext.getMemberNo(),
                     logRequestParam.getResourceId(),
                     logRequestParam.getSessionId(),
-                    logRequestParam.getPlayCacheYn(),
+                    logRequestParam.getPlayCachedYn(),
                     logRequestParam.getOfflineStartDtime(),
-                    logRequestParam.getMetaCacheUpdateDtime()
+                    logRequestParam.getMetaCachedUpdateDtime()
             );
             throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
         }
 
         // 정산 기본 정보 채우기
         sourcePlayLogBuilder
-                .prchsId(cachedToken.getPrchsId())
-                .goodsId(cachedToken.getGoodsId());
+                .prchsId(cachedStreamingToken.getPrchsId())
+                .goodsId(cachedStreamingToken.getGoodsId());
 
         String freeCachedStreamingToken = logRequestParam.getFreeCachedStreamingToken();
         if (StringUtils.isEmpty(freeCachedStreamingToken)) {
             // 무료곡이 아닌 경우 (freeCachedStreamingToken이 없을 때)
-            log.debug("[TRACK 청취로그] cachedToken 이용하여 serviceId 전달");
+            log.debug("[TRACK 청취로그] cachedStreamingToken을 이용하여 serviceId 전달");
             return sourcePlayLogBuilder
-                    .pssrlCd(cachedToken.getSvdId())
-                    .serviceId(cachedToken.getSvdId());
+                    .pssrlCd(cachedStreamingToken.getSvdId())
+                    .serviceId(cachedStreamingToken.getSvdId());
         }
 
         FreeCachedStreamingToken parseFreeCachedStreamingToken = tokenService.parseFreeCachedStreamingToken(freeCachedStreamingToken);
@@ -146,9 +146,9 @@ public class ResourceStrmPlayLogServiceImpl extends AbstractRelatedTrackResource
                     gmContext.getMemberNo(),
                     logRequestParam.getResourceId(),
                     logRequestParam.getSessionId(),
-                    logRequestParam.getPlayCacheYn(),
+                    logRequestParam.getPlayCachedYn(),
                     logRequestParam.getOfflineStartDtime(),
-                    logRequestParam.getMetaCacheUpdateDtime()
+                    logRequestParam.getMetaCachedUpdateDtime()
             );
             throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
         }

@@ -10,7 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl;
 
-import com.sktechx.godmusic.personal.rest.model.vo.listen.token.CachedToken;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.token.CachedStreamingToken;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.token.FreeCachedStreamingToken;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.token.OwnerTokenClaim;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.token.SettlementToken;
@@ -97,7 +97,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public CachedToken parseCachedToken(String cachedToken) {
+    public CachedStreamingToken parseCachedStreamingToken(String cachedToken) {
         try {
             Jws<Claims> claims = Jwts.parser()
                     .setSigningKey(CACHED_AND_DRM_TOKEN_KEY.getBytes(StandardCharsets.UTF_8))
@@ -107,16 +107,16 @@ public class TokenServiceImpl implements TokenService {
             Long purchaseId = claims.getBody().get("prchsId", Long.class);
             Long goodsId = claims.getBody().get("goodsId", Long.class);
 
-            log.debug("[캐시드 토큰(cachedToken) 정보] serviceId={}, purchaseId={}, goodsId={}", serviceId, purchaseId, goodsId);
+            log.debug("[캐시드 스트리밍 토큰(cachedStreamingToken) 정보] serviceId={}, purchaseId={}, goodsId={}", serviceId, purchaseId, goodsId);
 
-            return CachedToken.builder()
+            return CachedStreamingToken.builder()
                     .svdId(serviceId)
                     .prchsId(purchaseId)
                     .goodsId(goodsId)
                     .build();
 
         } catch (Exception e) {
-            log.error("cachedToken Parse Error", e);
+            log.error("cachedStreamingToken Parse Error", e);
             return null;
         }
     }

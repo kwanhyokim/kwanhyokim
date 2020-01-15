@@ -125,12 +125,12 @@ public class ResourcePlayLogRequestParam {
 
     @JsonProperty(defaultValue = "N")
     @ApiModelProperty(
-            name = "playCacheYn",
-            value = "Cache 여부(Y, N)",
+            name = "playCachedYn",
+            value = "Cached 여부(Y, N)",
             example = "N",
             position = 10
     )
-    private YnType playCacheYn;
+    private YnType playCachedYn;
 
     @ApiModelProperty(
             name = "sessionId",
@@ -148,11 +148,11 @@ public class ResourcePlayLogRequestParam {
     private String sttToken;
 
     @ApiModelProperty(
-            name = "cachedToken",
+            name = "cachedStreamingToken",
             value = "캐시드 스트리밍 토큰",
             position = 13
     )
-    private String cachedToken;
+    private String cachedStreamingToken;
 
     @ApiModelProperty(
             name = "ownerToken",
@@ -209,12 +209,12 @@ public class ResourcePlayLogRequestParam {
     private String offlineStartDtime;
 
     @ApiModelProperty(
-            name = "metaCacheUpdateDtime",
-            value = "meta cache 업데이트 일시",
+            name = "metaCachedUpdateDtime",
+            value = "meta cached 업데이트 일시",
             example = "2019-11-12 12:10:10",
             position = 21
     )
-    private String metaCacheUpdateDtime;
+    private String metaCachedUpdateDtime;
 
     @ApiModelProperty(
             name = "freeCachedStreamingToken",

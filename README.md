@@ -43,21 +43,21 @@ sourcePlayLogBuilder
 ```
 
 ### 캐시드 스트리밍의 경우
-cachedToken에 의존 (옵션: freeCachedStreamingToken)
-* 캐시드 스트리밍이고, 무료곡이 아닐 경우 (cachedToken만 활용)
+cachedStreamingToken에 의존 (옵션: freeCachedStreamingToken)
+* 캐시드 스트리밍이고, 무료곡이 아닐 경우 (cachedStreamingToken만 활용)
 ```java
 sourcePlayLogBuilder
-    .prchsId(cachedToken.getPrchsId())
-    .goodsId(cachedToken.getGoodsId())
-    .pssrlCd(cachedToken.getSvdId())
-    .serviceId(cachedToken.getSvdId());
+    .prchsId(cachedStreamingToken.getPrchsId())
+    .goodsId(cachedStreamingToken.getGoodsId())
+    .pssrlCd(cachedStreamingToken.getSvdId())
+    .serviceId(cachedStreamingToken.getSvdId());
 ```
 
-* 캐시드 스트리밍이고, 무료곡일 경우 (cachedToken, freeCachedStreamingToken 활용)
+* 캐시드 스트리밍이고, 무료곡일 경우 (cachedStreamingToken, freeCachedStreamingToken 활용)
 ```java
 sourcePlayLogBuilder
-    .prchsId(cachedToken.getPrchsId())
-    .goodsId(cachedToken.getGoodsId())
+    .prchsId(cachedStreamingToken.getPrchsId())
+    .goodsId(cachedStreamingToken.getGoodsId())
     .pssrlCd(freeCachedStreamingToken.getServiceId())
     .serviceId(freeCachedStreamingToken.getServiceId());
 ```
