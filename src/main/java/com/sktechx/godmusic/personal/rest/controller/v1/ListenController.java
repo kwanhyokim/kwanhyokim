@@ -118,19 +118,19 @@ public class ListenController {
                 .runningTimeSecs(listenTrackRequest.getElapsedSec())
                 .freeYn(listenTrackRequest.getFreeYn())
                 .playOfflineYn(listenTrackRequest.getPlayOfflineYn())
-                .playCachedYn(listenTrackRequest.getPlayCacheYn())
+                .playCachedYn(listenTrackRequest.getPlayCachedYn())
                 .sessionId(listenTrackRequest.getListenSessionId())
                 .albumId(listenTrackRequest.getAlbumId())
                 .channelId(listenTrackRequest.getChannelId())
                 .channelType(listenTrackRequest.getChannelType())
                 .sttToken(listenTrackRequest.getSttToken())
                 .ownerToken(listenTrackRequest.getOwnerToken())
-                .cachedStreamingToken(listenTrackRequest.getCachedToken())
+                .cachedStreamingToken(listenTrackRequest.getCachedStreamingToken())
                 .freeCachedStreamingToken(listenTrackRequest.getFreeCachedStreamingToken())
                 .recommendTrackId(listenTrackRequest.getRecommendTrackId())
                 .addDateTime(listenTrackRequest.getAddDateTime())
                 .offlineStartDtime(listenTrackRequest.getOfflineStartDtime())
-                .metaCachedUpdateDtime(listenTrackRequest.getMetaCacheUpdateDtime())
+                .metaCachedUpdateDtime(listenTrackRequest.getMetaCachedUpdateDtime())
                 .build();
 
         log.debug("{}", playLogRequestParam);
