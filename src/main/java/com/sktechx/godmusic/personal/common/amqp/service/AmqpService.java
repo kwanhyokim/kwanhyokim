@@ -27,7 +27,7 @@ public interface AmqpService {
 	 * 청취 로그 전달
 	 * @param message
 	 */
-	public	void		deliverTrackListen(Object message);
+	public	void		deliverSourcePlay(Object message);
 	
 	/**
 	 * 사용자 이벤트 전달
