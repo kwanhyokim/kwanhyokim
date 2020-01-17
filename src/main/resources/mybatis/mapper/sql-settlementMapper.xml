@@ -33,6 +33,9 @@
             AND c.category_type1 = #{playType}
             AND a.tmbrship_apply_yn = c.tmbrship_apply_yn
             AND a.goods_status = 'INUSE'
+            AND c.apply_end_dtime > now()
+            ORDER BY c.apply_end_dtime
+            LIMIT 1
 	</select>
     
     <select id="selectSettlementInfoByPrchsId" parameterType="map"
@@ -52,6 +55,9 @@
             a.prchs_id = #{prchsId}
             AND c.category_type1 = #{playType}
             AND a.tmbrship_apply_yn = c.tmbrship_apply_yn
+            AND c.apply_end_dtime > now()
+            ORDER BY c.apply_end_dtime
+            LIMIT 1
 	</select>
  
 </mapper>
