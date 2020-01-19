@@ -97,7 +97,7 @@ public class ListenTrackRequest {
 	private Long elapsedSec;
 
 	@NotNull
-	@Min(1)
+	@Min(0)
 	@ApiModelProperty(
 			name = "trackTotalSec",
 			value = "트랙 전체 길이(초단위), 못 구할 시 0 입력",
