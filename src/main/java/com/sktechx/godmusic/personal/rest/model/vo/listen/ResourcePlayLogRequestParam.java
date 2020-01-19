@@ -84,7 +84,7 @@ public class ResourcePlayLogRequestParam {
     )
     private String quality;
 
-    @Min(1)
+    @Min(0)
     @Max(value = Long.MAX_VALUE)
     @ApiModelProperty(
             name = "duration",
