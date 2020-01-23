@@ -10,12 +10,10 @@
 
 package com.sktechx.godmusic.personal.service;
 
-import com.sktechx.godmusic.personal.rest.model.vo.listen.token.CachedToken;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.token.CachedStreamingToken;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.token.OwnerTokenClaim;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.token.SettlementToken;
 import com.sktechx.godmusic.personal.rest.service.TokenService;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,8 +22,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.nio.charset.StandardCharsets;
 
 /**
  * 설명 : TokenService TEST
@@ -49,21 +45,21 @@ public class TokenServiceTest {
     private TokenService tokenService;
 
     @Test
-    public void 정산토큰_파싱_TEST() {
+    public void sttToken_Parsing_TEST() {
         SettlementToken settlementToken = tokenService.parseSettlementToken("eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vYXBpLm11c2ljLWZsby5jb20iLCJzdWIiOiIyMTAxMzAyQOqwgOyeheyekOydmOydtOyaqeq2jOygleuztCIsInZlcnNpb24iOjEsInNlcnZpY2VJZCI6Ik0xOVMwMjEyMSIsInB1cmNoYXNlSWQiOjIwMTkxNzQyLCJnb29kc0lkIjoxMTIxOTA5NTB9.f9LpZMXhkkFok_51VG1MUdTCJfB9bRbcqVOp9LgPkHY");
         log.info("## {}", settlementToken);
     }
 
     @Test
-    public void DRM토큰_파싱_TEST() {
+    public void ownerToken_DRM_Parsing_TEST() {
         OwnerTokenClaim ownerTokenClaim = tokenService.parseOwnerToken(null);
         log.info("## {}", ownerTokenClaim);
     }
 
     @Test
-    public void 캐시드_TEST() {
+    public void cachedStreamingToken_Parsing_TEST() {
         try {
-            String jwt = Jwts.builder()
+            /*String jwt = Jwts.builder()
                     .claim("svcId", "TS1")
                     .claim("prchsId", 20192455L)
                     .claim("orderId", "20200113165786848")
@@ -76,11 +72,10 @@ public class TokenServiceTest {
                             SignatureAlgorithm.HS256,
                             CACHED_AND_DRM_TOKEN_KEY.getBytes(StandardCharsets.UTF_8)
                     )
-                    .compact();
+                    .compact();*/
 
-//        CachedToken cachedToken = tokenService.parseCachedToken("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdmNJZCI6IlRTMSIsInByY2hzSWQiOjIwMTkyNDUyLCJvcmRlcklkIjoiMjAyMDAxMTMxNTU3ODY4NDYiLCJnb29kc0lkIjoxMTIyMDAxMjAsInVzZUVuZER0aW1lIjoiMjAyMDAyMTIxNTUyMjMiLCJpc3MiOiJodHRwczovL2Rldi1hcGkubXVzaWNtYXRlcy5jby5rciIsImV4cCI6MTU4MjY5OTk0M30.7X0HGKLxeNXvRL08QpZkCLCIZcnup6cKZGQqyAtIUh8");
-            CachedToken cachedToken = tokenService.parseCachedToken(jwt);
-            log.info("## {}", cachedToken);
+            CachedStreamingToken cachedStreamingToken = tokenService.parseCachedStreamingToken("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdmNJZCI6IlIyMEMwMjAwMyIsInByY2hzSWQiOjIwMTkyNDUwLCJvcmRlcklkIjoiMjAyMDAxMTMxMDU3ODY4NDUiLCJnb29kc0lkIjoxMTIyMDAxMjAsInVzZUVuZER0aW1lIjoiMjAyMDAyMTIxMDU0NTQiLCJpc3MiOiJodHRwczovL2Rldi1hcGkubXVzaWNtYXRlcy5jby5rciIsImV4cCI6MTU4MjY4MjA5NH0.pHmTLE9V9Sv_F21ZQHs-nl4SBLTUOh2nTg9v7GTHTXk");
+            log.info("## {}", cachedStreamingToken);
 
         } catch (Exception e) {
             log.error("JWT Parsing Error", e);
