@@ -256,11 +256,10 @@
                             INNER JOIN tb_aflo_character b ON a.character_no = b.character_no
                                 AND b.expire_dtime >= NOW()
                                 AND a.character_no = #{characterNo}
-                            INNER JOIN tb_aflo c ON b.sale_vas_id = c.sale_vas_id
+                            INNER JOIN tb_aflo c ON b.vas_id = c.vas_id
                                 AND c.del_yn = 'N'
                                 AND NOW() BETWEEN c.svc_start_dtime AND c.svc_end_dtime
-                            INNER JOIN tb_aflo d
-                            INNER JOIN tb_aflo_artist e ON d.aflo_id = e.aflo_id AND d.del_yn = 'N'
+                            INNER JOIN tb_aflo_artist e ON c.aflo_id = e.aflo_id
                             INNER JOIN tb_aflo_chnl f ON e.aflo_artist_id = f.aflo_artist_id
                             INNER JOIN tb_chnl g ON f.chnl_id = g.chnl_id
                             INNER JOIN tb_chnl_img h ON g.chnl_id = h.chnl_id
