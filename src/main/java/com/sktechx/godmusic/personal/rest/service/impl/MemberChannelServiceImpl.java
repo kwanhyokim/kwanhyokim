@@ -13,6 +13,7 @@
 package com.sktechx.godmusic.personal.rest.service.impl;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
@@ -20,6 +21,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.sktechx.godmusic.personal.common.util.DateUtil;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.logging.log4j.util.Strings;
@@ -382,8 +384,11 @@ public class MemberChannelServiceImpl implements MemberChannelService {
         // displayYn이 N인 경우는 로드되지 않게 하기 위함.
         List<TrackDto> trackDtoList = getTrackList(trackIdList);
 
-        if(!ObjectUtils.isEmpty(trackDtoList)){
-            for(TrackDto trackDto : trackDtoList){
+        if (!ObjectUtils.isEmpty(trackDtoList)) {
+
+            Date now = DateUtil.asDate(LocalDateTime.now().withNano(0));
+
+            for (TrackDto trackDto : trackDtoList) {
                 try{
 
                     if (trackDto.isNotStreamable() && trackDto.isNotDownloadable()) {
@@ -391,7 +396,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
                         continue;
                     }
 
-                    memberChannelTrackMapper.insertTrackMemberChannel(memberChannelId, trackDto.getTrackId(), viewPriority.getAndIncrement());
+                    memberChannelTrackMapper.insertTrackMemberChannel(memberChannelId, trackDto.getTrackId(), viewPriority.getAndIncrement(), now);
                     successfulIdList.add(trackDto.getTrackId());
 
                     // 사용자 이벤트 전송
