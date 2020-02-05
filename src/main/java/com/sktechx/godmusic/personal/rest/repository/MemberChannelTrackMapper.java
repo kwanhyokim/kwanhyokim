@@ -17,6 +17,7 @@ import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -39,7 +40,7 @@ public interface MemberChannelTrackMapper {
 
     int selectMaxTrackViewPriority(@Param("channelId")Long memberChannelId);
 
-    int insertTrackMemberChannel(@Param("channelId")Long memberChannelId, @Param("trackId")Long trackId, @Param("viewPriority")Integer viewPriority);
+    int insertTrackMemberChannel(@Param("channelId")Long memberChannelId, @Param("trackId")Long trackId, @Param("viewPriority")Integer viewPriority, @Param("nowDate") Date nowDate);
 
     List<Long> selectMemberChannelTrackIdList(@Param("memberNo")Long memberNo, @Param("characterNo") Long characterNo, @Param("channelId")Long memberChannelId);
 
