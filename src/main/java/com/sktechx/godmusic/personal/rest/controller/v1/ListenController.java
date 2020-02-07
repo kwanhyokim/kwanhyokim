@@ -131,6 +131,7 @@ public class ListenController {
                 .addDateTime(listenTrackRequest.getAddDateTime())
                 .offlineStartDtime(listenTrackRequest.getOfflineStartDtime())
                 .metaCachedUpdateDtime(listenTrackRequest.getMetaCachedUpdateDtime())
+                .traceType(listenTrackRequest.getTraceType())
                 .build();
 
         log.debug("{}", playLogRequestParam);

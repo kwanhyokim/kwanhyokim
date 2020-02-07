@@ -125,7 +125,9 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
                 .metaCacheUpdateDtime(null)
                 .offlineStartDtime(null)
                 .playOfflineYn(null)
-                .playCacheYn(null);
+                .playCacheYn(null)
+                .traceType(logRequestParam.getTraceType())
+                .appVersion(gmContext.getAppVer());
     }
 
     /**

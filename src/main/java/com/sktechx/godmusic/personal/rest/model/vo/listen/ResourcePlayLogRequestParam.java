@@ -223,6 +223,13 @@ public class ResourcePlayLogRequestParam {
     )
     private String freeCachedStreamingToken;
 
+    @ApiModelProperty(
+            name = "traceType",
+            value = "재생목록에 담긴 화면(경로)",
+            position = 23
+    )
+    private String traceType;
+
     @JsonIgnore
     public boolean isFree() {
         return YnType.Y == freeYn;
