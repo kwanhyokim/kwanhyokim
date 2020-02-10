@@ -133,4 +133,10 @@ public class SourcePlayLog {
 
     @JsonProperty("play_cache_yn")
     private YnType playCacheYn;
+
+    @JsonProperty("trace_type")
+    private String traceType;
+
+    @JsonProperty("app_version")
+    private String appVersion;
 }

@@ -70,7 +70,9 @@ public abstract class AbstractRelatedTrackResourcePlayLogService implements Reso
                 .metaCacheUpdateDtime(logRequestParam.getMetaCachedUpdateDtime())           // 캐시드 스트리밍
                 .offlineStartDtime(logRequestParam.getOfflineStartDtime())                  // 캐시드 스트리밍
                 .playOfflineYn(logRequestParam.getPlayOfflineYn())                          // 캐시드 스트리밍
-                .playCacheYn(logRequestParam.getPlayCachedYn());                            // 캐시드 스트리밍
+                .playCacheYn(logRequestParam.getPlayCachedYn())                             // 캐시드 스트리밍
+                .traceType(logRequestParam.getTraceType())
+                .appVersion(gmContext.getAppVer());
     }
 
     /**

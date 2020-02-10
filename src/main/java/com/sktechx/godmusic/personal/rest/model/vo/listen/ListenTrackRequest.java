@@ -225,6 +225,13 @@ public class ListenTrackRequest {
 	)
 	private String freeCachedStreamingToken;
 
+	@ApiModelProperty(
+			name = "traceType",
+			value = "재생목록에 담긴 화면(경로)",
+			position = 23
+	)
+	private String traceType;
+
 	@JsonIgnore
 	public String getTrackLogTypeToStr() {
 		return Optional.ofNullable(trackLogType)
