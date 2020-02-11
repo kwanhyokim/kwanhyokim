@@ -28,6 +28,7 @@ public enum SourceType implements CodeEnum {
 	STRM("STRM", "스트리밍", "ST"),
 	DN("DN", "다운로드", "DL"),
 	MV("MV", "뮤직비디오", "MV"),
+	VIDEO("VIDEO", "영상", "LS"),
 	VIDEO_MV("VIDEO_MV", "뮤직비디오", "LS"),
 	VIDEO_TEASER("VIDEO_TEASER", "티저", "LS"),
 	VIDEO_SPECIAL("VIDEO_SPECIAL", "영상심의등급을 못받은 티져", "LS"),

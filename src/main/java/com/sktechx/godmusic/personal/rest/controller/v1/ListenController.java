@@ -63,7 +63,7 @@ public class ListenController {
     @ApiOperation(value = "Resource Bulk 청취 로그", notes = "Resource 재생(청취) Bulk로 받는 api (For Cached Streaming)")
     @PostMapping("/resource/list")
     public CommonApiResponse addBulkCachedListenHistByResource(
-            @RequestBody @Size(min = 1, max = 1000) List<ResourcePlayLogRequestParam> logRequestParamList) {
+            @Valid @RequestBody @Size(min = 1, max = 1000) List<ResourcePlayLogRequestParam> logRequestParamList) {
         GMContext gmContext = GMContext.getContext();
         Validator.loginValidate(gmContext);
 
@@ -91,8 +91,17 @@ public class ListenController {
         Validator.loginValidate(gmContext);
         log.debug("[RESOURCE 청취 로그] logRequestParam={}", logRequestParam);
 
+        String requestSourceType = logRequestParam.getSourceType();
+        if (requestSourceType.startsWith("VIDEO") || "MV".equals(requestSourceType)) {
+            resourcePlayLogResolver.findResolver(SourceType.VIDEO).ifPresent(service -> {
+                log.debug("[VIDEO] Resolver에 의해 DI된 Service={}", service.getClass().getName());
+                service.deliverResourcePlayLog(gmContext, logRequestParam);
+                service.deliverResourceUserEvent(gmContext, logRequestParam);
+            });
+        }
+
         // Resolver 적용
-        resourcePlayLogResolver.findResolver(SourceType.fromCode(logRequestParam.getSourceType())).ifPresent(service -> {
+        resourcePlayLogResolver.findResolver(SourceType.fromCode(requestSourceType)).ifPresent(service -> {
             log.debug("[RESOURCE] Resolver에 의해 DI된 Service={}", service.getClass().getName());
             service.deliverResourcePlayLog(gmContext, logRequestParam);
             service.deliverResourceUserEvent(gmContext, logRequestParam);

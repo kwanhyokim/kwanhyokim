@@ -50,7 +50,7 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
 
     @Override
     public SourceType handleSourceType() {
-        return SourceType.VIDEO_MV;
+        return SourceType.VIDEO;
     }
 
     /**
@@ -136,7 +136,16 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
     private SourcePlayLog.SourcePlayLogBuilder buildOneMinVideoPlayLog(ResourcePlayLogRequestParam logRequestParam,
                                                                        SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
         SettlementToken sttToken = tokenService.parseSettlementToken(logRequestParam.getSttToken());
-        String serviceId = sttToken.getServiceId();
+        String serviceId = null;
+        Long purchaseId = null;
+        Long goodsId = null;
+
+        if (null != sttToken) {
+            serviceId = sttToken.getServiceId();
+            purchaseId = sttToken.getPurchaseId();
+            goodsId = sttToken.getGoodsId();
+        }
+
         SourceType sourceType = SourceType.fromCode(logRequestParam.getSourceType());
 
         if (SourceType.VIDEO_MV == sourceType && StringUtils.isEmpty(serviceId)) {
@@ -147,8 +156,8 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
         return sourcePlayLogBuilder
                 .pssrlCd(serviceId)
                 .serviceId(serviceId)
-                .prchsId(sttToken.getPurchaseId())
-                .goodsId(sttToken.getGoodsId());
+                .prchsId(purchaseId)
+                .goodsId(goodsId);
     }
 
 }
