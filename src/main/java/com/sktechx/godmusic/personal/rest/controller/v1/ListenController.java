@@ -33,8 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 import java.util.List;
 
 /**
@@ -64,10 +62,10 @@ public class ListenController {
     @ApiOperation(value = "Resource Bulk 청취 로그", notes = "Resource 재생(청취) Bulk로 받는 api (For Cached Streaming)")
     @PostMapping("/resource/list")
     public CommonApiResponse addBulkCachedListenHistByResource(
-            @NotEmpty(message = "반드시 값이 존재해야 합니다.")
-            @RequestBody @Size(min = 1, max = 1000) List<@Valid ResourcePlayLogRequestParam> logRequestParamList) {
+            @RequestBody List<ResourcePlayLogRequestParam> logRequestParamList) {
         GMContext gmContext = GMContext.getContext();
         Validator.loginValidate(gmContext);
+        Validator.bulkResourcePlayLogRequestParamValidate(logRequestParamList);
 
         try {
             logRequestParamList.forEach(logRequestParam -> {
@@ -96,7 +94,7 @@ public class ListenController {
         String requestSourceType = logRequestParam.getSourceType();
         if (requestSourceType.startsWith("VIDEO") || "MV".equals(requestSourceType)) {
             resourcePlayLogResolver.findResolver(SourceType.VIDEO).ifPresent(service -> {
-                log.debug("[VIDEO] Resolver에 의해 DI된 Service={}", service.getClass().getName());
+                log.debug("[VIDEO RESOURCE] Resolver에 의해 DI된 Service={}", service.getClass().getName());
                 service.deliverResourcePlayLog(gmContext, logRequestParam);
                 service.deliverResourceUserEvent(gmContext, logRequestParam);
             });
