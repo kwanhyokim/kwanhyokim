@@ -36,4 +36,7 @@ public interface StreamClient {
             @RequestParam(name = "osType", required = false) String osType,
             @RequestParam(name = "svcCd", required = false) String serviceCode,
             @RequestParam(name = "svcType", required = false) String serviceType);
+
+    @GetMapping("/stream/v1/ping")
+    CommonApiResponse<Void> ping();
 }

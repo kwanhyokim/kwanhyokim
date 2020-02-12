@@ -37,4 +37,7 @@ public interface MemberClient {
 
     @GetMapping("/member/v1/members/characters/{characterNo}")
     CommonApiResponse<CharacterDto> getCharacter(@PathVariable("characterNo") Long characterNo);
+
+    @GetMapping("/member/v1/ping")
+    CommonApiResponse<Void> ping();
 }

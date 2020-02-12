@@ -67,5 +67,8 @@ public interface MetaClient {
     @GetMapping("/meta/internal/videos/{videoId}")
     CommonApiResponse<VideoVo> getVideo(@PathVariable("videoId") Long videoId);
 
+    @GetMapping("/meta/v1/ping")
+    CommonApiResponse<Void> ping();
+
 
 }

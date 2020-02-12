@@ -35,6 +35,12 @@ public class StreamClientFallbackFactory implements FallbackFactory<StreamClient
                 log.warn("Failed to retrieve OnetimeURL infomation from streamClient@streamClientFallback - {}", throwable.getMessage());
                 return null;
             }
+
+            @Override
+            public CommonApiResponse<Void> ping() {
+                log.warn("[WARM-UP] ... 스트림 Ping 호출 실패, message={}", throwable.getMessage());
+                return null;
+            }
         };
     }
 }

@@ -81,6 +81,12 @@ public class MetaClientFallbackFactory implements FallbackFactory<MetaClient>{
                 log.warn("Failed to retrieve videoInfo from metaClient@MetaClientFallback - {}", throwable.getMessage());
                 return null;
             }
+
+            @Override
+            public CommonApiResponse<Void> ping() {
+                log.warn("[WARM-UP] ... 메타 Ping 호출 실패. message={}", throwable.getMessage());
+                return null;
+            }
         };
     }
 }
