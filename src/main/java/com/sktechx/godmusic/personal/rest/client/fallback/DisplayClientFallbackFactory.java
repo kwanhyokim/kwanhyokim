@@ -28,12 +28,19 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class DisplayClientFallbackFactory implements FallbackFactory<DisplayClient>{
+
     @Override
     public DisplayClient create(Throwable e) {
         return new DisplayClient(){
             @Override
             public CommonApiResponse<ChannelListResponse> getOperationTpoList(){
                 log.error(e.getMessage());
+                return null;
+            }
+
+            @Override
+            public CommonApiResponse<Void> ping() {
+                log.warn("[WARM-UP] ... DISPLAY Ping 호출 실패, message={}", e.getMessage());
                 return null;
             }
 

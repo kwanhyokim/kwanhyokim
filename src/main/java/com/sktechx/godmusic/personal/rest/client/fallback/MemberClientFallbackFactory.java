@@ -43,6 +43,12 @@ public class MemberClientFallbackFactory implements FallbackFactory<MemberClient
                 log.error("member-api call error. message={}, trace={}", e.getMessage(), e.getStackTrace());
                 return null;
             }
+
+            @Override
+            public CommonApiResponse<Void> ping() {
+                log.warn("[WARM-UP] ... 멤버 Ping 호출 실패, message={}", e.getMessage());
+                return null;
+            }
         };
     }
 }

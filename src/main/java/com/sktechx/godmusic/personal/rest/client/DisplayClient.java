@@ -29,4 +29,7 @@ public interface DisplayClient {
 
     @GetMapping(value = "/display/v1/home/operationTpo")
     CommonApiResponse<ChannelListResponse> getOperationTpoList();
+
+    @GetMapping("/display/v1/ping")
+    CommonApiResponse<Void> ping();
 }
