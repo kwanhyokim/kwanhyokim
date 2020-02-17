@@ -119,7 +119,9 @@ public class TrackDto {
      *       해당 method 를 선언하여 MyBatis 에서 데이타 맵핑시 본 setter method 를 이용하도록 선언함.
      */
     public void setModFileUpdateDtime(long epochSecond) {
-        this.fileUpdateDateTime = DateUtil.asDate(epochSecond);
+        if(epochSecond > 0) {
+            this.fileUpdateDateTime = DateUtil.asDate(epochSecond);
+        }
     }
 }
 
