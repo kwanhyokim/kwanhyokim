@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl;
 
+import com.google.common.base.Strings;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
@@ -93,7 +94,11 @@ public class ResourceStrmPlayLogServiceImpl extends AbstractRelatedTrackResource
         }
 
         // 캐시드 스트리밍이 아닌 경우 SttToken 활용
-        SettlementToken sttToken = tokenService.parseSettlementToken(logRequestParam.getSttToken());
+        SettlementToken sttToken = null;
+        if (!Strings.isNullOrEmpty(logRequestParam.getSttToken())) {
+            sttToken = tokenService.parseSettlementToken(logRequestParam.getSttToken());
+        }
+
         if (null != sttToken) {
             log.debug("[TRACK 청취로그] sttToken 이용하여 serviceId 전달");
             return sourcePlayLogBuilder

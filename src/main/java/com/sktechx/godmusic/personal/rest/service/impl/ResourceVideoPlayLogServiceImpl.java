@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl;
 
+import com.google.common.base.Strings;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEvent;
@@ -135,7 +136,12 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
      */
     private SourcePlayLog.SourcePlayLogBuilder buildOneMinVideoPlayLog(ResourcePlayLogRequestParam logRequestParam,
                                                                        SourcePlayLog.SourcePlayLogBuilder sourcePlayLogBuilder) {
-        SettlementToken sttToken = tokenService.parseSettlementToken(logRequestParam.getSttToken());
+
+        SettlementToken sttToken = null;
+        if (!Strings.isNullOrEmpty(logRequestParam.getSttToken())) {
+            sttToken = tokenService.parseSettlementToken(logRequestParam.getSttToken());
+        }
+
         String serviceId = null;
         Long purchaseId = null;
         Long goodsId = null;

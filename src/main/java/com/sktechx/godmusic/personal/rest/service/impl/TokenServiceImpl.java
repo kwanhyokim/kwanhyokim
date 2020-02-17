@@ -26,6 +26,8 @@ import org.springframework.util.ObjectUtils;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * 설명 : Token 관련 Service (sttToken, ownerToken, cachedToken 등)
  *
@@ -44,6 +46,8 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public SettlementToken parseSettlementToken(String sttToken) {
+        requireNonNull(sttToken);
+
         try {
             Jws<Claims> claims = Jwts.parser()
                     .setSigningKey(JWT_SECRET_KEY.getBytes(StandardCharsets.UTF_8))
