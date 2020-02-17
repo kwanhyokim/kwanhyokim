@@ -21,20 +21,21 @@ import com.sktechx.godmusic.lib.mybatis.code.CodeEnumTypeHandler;
  * @since on 2018. 7. 9..
  */
 public enum MemberType implements CodeEnum {
-	ID("IDM", "ID 회원"),
-	MDN("MDN", "MDN 회원"),
-	TID("TID", "TID 회원"),
-	NAVER("NAVER", "NAVER 회원"),
-	KAKAO("KAKAO", "KAKAO 회원"),
-	;
+    ID("IDM", "ID 회원"),
+    MDN("MDN", "MDN 회원"),
+    TID("TID", "TID 회원"),
+    NAVER("NAVER", "NAVER 회원"),
+    KAKAO("KAKAO", "KAKAO 회원"),
+    APPLEID("APPLEID", "APPLEID 회원"),
+    ;
 
-	private final String code;
-	private final String value;
+    private final String code;
+    private final String value;
 
-	MemberType(String code, String value) {
-		this.code = code;
-		this.value = value;
-	}
+    MemberType(String code, String value) {
+        this.code = code;
+        this.value = value;
+    }
 
 	@MappedTypes(MemberType.class)
 	public static class TypeHandler extends CodeEnumTypeHandler<MemberType> {

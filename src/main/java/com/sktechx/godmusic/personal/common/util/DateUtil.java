@@ -1,10 +1,5 @@
 package com.sktechx.godmusic.personal.common.util;
 
-import org.apache.commons.lang.time.DateUtils;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
@@ -14,6 +9,11 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.apache.commons.lang.time.DateUtils;
 
 /**
  * Created by Kobe.
@@ -62,7 +62,7 @@ public class DateUtil {
 	public static Date getDateOffsetDay(int offsetDay) {
 		Calendar cal = Calendar.getInstance(timeZone, Locale.KOREAN);
 
-		cal.add(cal.DATE, offsetDay);
+		cal.add(Calendar.DATE, offsetDay);
 		return cal.getTime();
 	}
 
@@ -609,5 +609,9 @@ public class DateUtil {
 
 	public static LocalDateTime asLocalDateTime(Date date) {
 		return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+	}
+
+	public static Date asDate(Long epochSecond) {
+		return Date.from(Instant.ofEpochSecond(epochSecond).atZone(ZoneId.of("Asia/Seoul")).toInstant());
 	}
 }

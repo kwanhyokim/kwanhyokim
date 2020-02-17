@@ -1,85 +1,160 @@
+/*
+ * Copyright (c) 2019 DREAMUS COMPANY.
+ * All right reserved.
+ *
+ * This software is the confidential and proprietary information of DREAMUS COMPANY.
+ * You shall not disclose such Confidential Information and
+ * shall use it only in accordance with the terms of the license agreement
+ * you entered into with DREAMUS COMPANY.
+ */
+
 package com.sktechx.godmusic.personal.rest.controller.v1;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
-import com.sktechx.godmusic.lib.domain.RequestGMContext;
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
+import com.sktechx.godmusic.personal.common.domain.type.SourceType;
+import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
+import com.sktechx.godmusic.personal.common.resolver.ResourcePlayLogResolver;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenTrackRequest;
-import com.sktechx.godmusic.personal.rest.model.vo.video.ResourcePlayLogRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.ResourcePlayLogRequestParam;
 import com.sktechx.godmusic.personal.rest.service.ListenService;
 import com.sktechx.godmusic.personal.rest.validate.Validator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.List;
 
 /**
- * Created by Kobe.
+ * 청취 로그 관련 Controller
  *
  * @author Kobe/최훈영/SKTECHX (hunyoung.choi@sk.com)
- * @date 2018. 8. 8.
- * @time PM 7:15
+ * @author Daniel
+ * @author Groot
  */
+@SuppressWarnings("rawtypes")
 @Slf4j
-@Api(basePath = "personal/v1/listen", value = "청취", description = "청취 API")
+@Api(tags = "청취 API", value = "personal/v1/listen")
 @RestController
 @RequestMapping(Naming.serviceCode + "/v1/listen")
+@Validated
 public class ListenController {
-	@Autowired
-	ListenService listenService;
 
-	@ApiOperation(value = "채널 청취 로그 by Kobe ( 기존 /v2/user/log/channel POST )"
-			, httpMethod = "POST", notes = "채널 전체 재생시 로그를 DB 로 남김")
-	@PostMapping("/channel")
-	public CommonApiResponse addListenHistByChannel(
-			@RequestBody ListenRequest request
-	) {
-		GMContext currentContext = GMContext.getContext();
+    private final ListenService listenService;
+    private final ResourcePlayLogResolver resourcePlayLogResolver;
 
-		Validator.loginValidate(currentContext);
+    public ListenController(ListenService listenService,
+                            ResourcePlayLogResolver resourcePlayLogResolver) {
+        this.listenService = listenService;
+        this.resourcePlayLogResolver = resourcePlayLogResolver;
+    }
 
-		listenService.addListenHistByChannel(request, currentContext.getMemberNo(), currentContext.getCharacterNo());
-		return CommonApiResponse.emptySuccess();
-	}
+    @ApiOperation(value = "Resource Bulk 청취 로그", notes = "Resource 재생(청취) Bulk로 받는 api (For Cached Streaming)")
+    @PostMapping("/resource/list")
+    public CommonApiResponse addBulkCachedListenHistByResource(
+            @RequestBody List<ResourcePlayLogRequestParam> logRequestParamList) {
+        GMContext gmContext = GMContext.getContext();
+        Validator.loginValidate(gmContext);
+        Validator.bulkResourcePlayLogRequestParamValidate(logRequestParamList);
 
-	@ApiOperation(value = "곡 청취 로그 by Kobe ( 기존 /v2/user/log/track POST )"
-			, httpMethod = "POST", notes = "곡 재생시점에 따른 재생 로그를 MQ 로 남김")
-	@PostMapping("/track")
-	public CommonApiResponse addListenHistByTrack(
-			HttpServletRequest httpServletRequest,
-			@RequestBody ListenTrackRequest request
-	) {
-		GMContext currentContext = GMContext.getContext();
+        try {
+            logRequestParamList.forEach(logRequestParam -> {
+                resourcePlayLogResolver.findResolver(SourceType.fromCode(logRequestParam.getSourceType())).ifPresent(service -> {
+                    log.debug("[RESOURCE] Resolver에 의해 DI된 Service={}", service.getClass().getName());
+                    service.deliverResourcePlayLog(gmContext, logRequestParam);
+                    service.deliverResourceUserEvent(gmContext, logRequestParam);
+                });
+            });
 
-		Validator.loginValidate(currentContext);
+        } catch (Exception e) {
+            log.error("Bulk Cached Streaming Log Fail", e);
+            throw new CommonBusinessException(PersonalErrorDomain.FAIL_BULK_CACHED_STREAMING_PROCESS);
+        }
 
-		listenService.addListenHistByTrack(request, currentContext, httpServletRequest);
-		return CommonApiResponse.emptySuccess();
-	}
+        return CommonApiResponse.emptySuccess();
+    }
 
-	/**
-	 * Resource Play 로그 기록
-	 */
-	@ApiOperation(value = "RESOUCE 청취 로그", httpMethod = "POST", notes = "RESOURCE 재생(ex.영상) 로그를 MQ 로 남김")
-	@PostMapping("/resource")
-	public CommonApiResponse recordWatchedVideoHistory(
-			@ApiIgnore @RequestGMContext GMContext context,
-			@Valid @RequestBody ResourcePlayLogRequest logRequest,
-			HttpServletRequest httpServletRequest) {
+    @ApiOperation(value = "Resource 청취 로그", notes = "Resource 재생(청취) (ex.영상) 로그를 MQ 로 남김")
+    @PostMapping("/resource")
+    public CommonApiResponse addListenHistByResource(@Valid @RequestBody ResourcePlayLogRequestParam logRequestParam) {
+        GMContext gmContext = GMContext.getContext();
+        Validator.loginValidate(gmContext);
+        log.debug("[RESOURCE 청취 로그] logRequestParam={}", logRequestParam);
 
-		GMContext currentContext = GMContext.getContext();
-		Validator.loginValidate(context);
-		log.debug("[RESOUCE 청취 로그] request={}", logRequest);
+        String requestSourceType = logRequestParam.getSourceType();
+        if (requestSourceType.startsWith("VIDEO") || "MV".equals(requestSourceType)) {
+            resourcePlayLogResolver.findResolver(SourceType.VIDEO).ifPresent(service -> {
+                log.debug("[VIDEO RESOURCE] Resolver에 의해 DI된 Service={}", service.getClass().getName());
+                service.deliverResourcePlayLog(gmContext, logRequestParam);
+                service.deliverResourceUserEvent(gmContext, logRequestParam);
+            });
+        }
 
-		listenService.addPlayHistoryByResource(logRequest, currentContext, httpServletRequest);
+        // Resolver 적용
+        resourcePlayLogResolver.findResolver(SourceType.fromCode(requestSourceType)).ifPresent(service -> {
+            log.debug("[RESOURCE] Resolver에 의해 DI된 Service={}", service.getClass().getName());
+            service.deliverResourcePlayLog(gmContext, logRequestParam);
+            service.deliverResourceUserEvent(gmContext, logRequestParam);
+        });
 
-		return CommonApiResponse.emptySuccess();
-	}
+        return CommonApiResponse.emptySuccess();
+    }
+
+    @ApiOperation(value = "곡 청취 로그 (기존 /v2/user/log/track POST)", notes = "곡 재생시점에 따른 재생 로그를 MQ로 남김")
+    @PostMapping("/track")
+    public CommonApiResponse addListenHistByTrack(HttpServletRequest httpServletRequest,
+                                                  @Valid @RequestBody ListenTrackRequest listenTrackRequest) {
+        GMContext gmContext = GMContext.getContext();
+        Validator.loginValidate(gmContext);
+
+        ResourcePlayLogRequestParam playLogRequestParam = ResourcePlayLogRequestParam.builder()
+                .resourceId(listenTrackRequest.getTrackId())
+                .sourceType(listenTrackRequest.getSourceTypeToStr())
+                .logType(listenTrackRequest.getTrackLogTypeToStr())
+                .osType(listenTrackRequest.getOsType())
+                .quality(listenTrackRequest.getBitrateToStr())
+                .duration(listenTrackRequest.getTrackTotalSec())
+                .runningTimeSecs(listenTrackRequest.getElapsedSec())
+                .freeYn(listenTrackRequest.getFreeYn())
+                .playOfflineYn(listenTrackRequest.getPlayOfflineYn())
+                .playCachedYn(listenTrackRequest.getPlayCachedYn())
+                .sessionId(listenTrackRequest.getListenSessionId())
+                .albumId(listenTrackRequest.getAlbumId())
+                .channelId(listenTrackRequest.getChannelId())
+                .channelType(listenTrackRequest.getChannelType())
+                .sttToken(listenTrackRequest.getSttToken())
+                .ownerToken(listenTrackRequest.getOwnerToken())
+                .cachedStreamingToken(listenTrackRequest.getCachedStreamingToken())
+                .freeCachedStreamingToken(listenTrackRequest.getFreeCachedStreamingToken())
+                .recommendTrackId(listenTrackRequest.getRecommendTrackId())
+                .addDateTime(listenTrackRequest.getAddDateTime())
+                .offlineStartDtime(listenTrackRequest.getOfflineStartDtime())
+                .metaCachedUpdateDtime(listenTrackRequest.getMetaCachedUpdateDtime())
+                .traceType(listenTrackRequest.getTraceType())
+                .build();
+
+        log.debug("{}", playLogRequestParam);
+        return this.addListenHistByResource(playLogRequestParam);
+    }
+
+    @ApiOperation(value = "채널 청취 로그 (기존 /v2/user/log/channel POST)", notes = "채널 전체 재생시 로그를 DB로 남김")
+    @PostMapping("/channel")
+    public CommonApiResponse addListenHistByChannel(@RequestBody ListenRequest channelListenRequest) {
+        GMContext gmContext = GMContext.getContext();
+        Validator.loginValidate(gmContext);
+
+        listenService.addListenHistByChannel(channelListenRequest, gmContext.getMemberNo(), gmContext.getCharacterNo());
+        return CommonApiResponse.emptySuccess();
+    }
 
 }

@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 public class BaseNineEventConfig {
 
     @Component
-    @Profile("dev")
+    @Profile({"local", "dev"})
     public static class BaseNineEventDevConfig implements EventConfig {
 
         @Override

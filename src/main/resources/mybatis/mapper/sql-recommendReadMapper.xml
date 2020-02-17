@@ -68,12 +68,11 @@
                     AND b.expire_dtime >= NOW()
                     AND a.character_no = #{characterNo}
                     AND a.character_type = 'AFLO'
-                INNER JOIN tb_aflo c ON b.sale_vas_id = c.sale_vas_id
+                INNER JOIN tb_aflo c ON b.vas_id = c.vas_id
                     AND c.del_yn = 'N'
                     AND NOW() BETWEEN c.svc_start_dtime AND c.svc_end_dtime
-                INNER JOIN tb_aflo d
-                INNER JOIN tb_aflo_artist e ON d.aflo_id = e.aflo_id
-                    AND d.del_yn = 'N'
+                INNER JOIN tb_aflo_artist e ON c.aflo_id = e.aflo_id
+                    AND c.del_yn = 'N'
                 INNER JOIN tb_aflo_chnl f ON e.aflo_artist_id = f.aflo_artist_id
                 INNER JOIN tb_chnl g ON f.chnl_id = g.chnl_id
                     AND g.chnl_type = 'AFLO'
@@ -185,6 +184,7 @@
             rcmmd_track_rank_table.svc_streaming_yn,
             rcmmd_track_rank_table.svc_drm_yn,
             rcmmd_track_rank_table.free_yn,
+            rcmmd_tracK_rank_table.mod_file_update_dtime AS fileUpdateDateTime,
             d.artist_id,
             d.artist_nm,
             a.album_id,
@@ -217,7 +217,8 @@
                 rcmmd_track_table.trackCount,
                 rcmmd_track_table.svc_streaming_yn,
                 rcmmd_track_table.svc_drm_yn,
-                rcmmd_track_table.free_yn
+                rcmmd_track_table.free_yn,
+                rcmmd_track_table.mod_file_update_dtime
             FROM
             (
                 -- 3. rcmmd_track_table start
@@ -240,7 +241,8 @@
                     c.update_dtime,
                     c.svc_streaming_yn,
                     c.svc_drm_yn,
-                    c.free_yn
+                    c.free_yn,
+                    c.mod_file_update_dtime
                 FROM
                 (
                     -- 2. rcmmd_img_table start
@@ -362,6 +364,7 @@
             rcmmd_track_rank_table.svc_streaming_yn,
             rcmmd_track_rank_table.svc_drm_yn,
             rcmmd_track_rank_table.free_yn,
+            rcmmd_track_rank_table.mod_file_update_dtime AS fileUpdateDateTime,
             d.artist_id,
             d.artist_nm,
             a.album_id,
@@ -394,7 +397,8 @@
                 rcmmd_track_table.trackCount,
                 rcmmd_track_table.svc_streaming_yn,
                 rcmmd_track_table.svc_drm_yn,
-                rcmmd_track_table.free_yn
+                rcmmd_track_table.free_yn,
+                rcmmd_track_table.mod_file_update_dtime
               FROM
                 (
                     -- 3. rcmmd_track_table start
@@ -417,7 +421,8 @@
                         c.update_dtime,
                         c.svc_streaming_yn,
                         c.svc_drm_yn,
-                        c.free_yn
+                        c.free_yn,
+                        c.mod_file_update_dtime
                     FROM
                     (
                         -- 2. rcmmd_img_table start
@@ -523,6 +528,7 @@
             rcmmd_track_rank_table.svc_streaming_yn,
             rcmmd_track_rank_table.svc_drm_yn,
             rcmmd_track_rank_table.free_yn,
+            rcmmd_track_rank_table.mod_file_update_dtime AS fileUpdateDateTime,
             d.artist_id,
             d.artist_nm,
             a.album_id,
@@ -555,7 +561,8 @@
                 rcmmd_track_table.rcmmdCreateDtime,
                 rcmmd_track_table.svc_streaming_yn,
                 rcmmd_track_table.svc_drm_yn,
-                rcmmd_track_table.free_yn
+                rcmmd_track_table.free_yn,
+                rcmmd_track_table.mod_file_update_dtime
             FROM
             (
                 SELECT
@@ -578,7 +585,8 @@
                     c.update_dtime,
                     c.svc_streaming_yn,
                     c.svc_drm_yn,
-                    c.free_yn
+                    c.free_yn,
+                    c.mod_file_update_dtime
                 FROM
                 (
                     -- 2. rcmmd_img_table start
@@ -1040,6 +1048,7 @@
             rcmmd_track_rank_table.svc_streaming_yn,
             rcmmd_track_rank_table.svc_drm_yn,
             rcmmd_track_rank_table.free_yn,
+            rcmmd_track_rank_table.mod_file_update_dtime AS fileUpdateDateTime,
             d.artist_id,
             d.artist_nm,
             a.album_id,
@@ -1071,7 +1080,8 @@
                 rcmmd_track_table.rcmmdCreateDtime,
                 rcmmd_track_table.svc_streaming_yn,
                 rcmmd_track_table.svc_drm_yn,
-                rcmmd_track_table.free_yn
+                rcmmd_track_table.free_yn,
+                rcmmd_track_table.mod_file_update_dtime
             FROM
                 (
                 SELECT
@@ -1094,7 +1104,8 @@
                     c.update_dtime,
                     c.svc_streaming_yn,
                     c.svc_drm_yn,
-                    c.free_yn
+                    c.free_yn,
+                    c.mod_file_update_dtime
                 FROM
                     (
                     -- 2. rcmmd_img_table start
@@ -1187,6 +1198,7 @@
             rcmmd_track_rank_table.svc_streaming_yn,
             rcmmd_track_rank_table.svc_drm_yn,
             rcmmd_track_rank_table.free_yn,
+            rcmmd_track_rank_table.mod_file_update_dtime,
             d.artist_id,
             d.artist_nm,
             a.album_id,
@@ -1221,7 +1233,8 @@
                 rcmmd_track_table.seedTrackNm,
                 rcmmd_track_table.svc_streaming_yn,
                 rcmmd_track_table.svc_drm_yn,
-                rcmmd_track_table.free_yn
+                rcmmd_track_table.free_yn,
+                rcmmd_track_table.mod_file_update_dtime
             FROM
                 (
                 -- 3. rcmmd_track_table start
@@ -1246,7 +1259,8 @@
                     c.update_dtime,
                     c.svc_streaming_yn,
                     c.svc_drm_yn,
-                    c.free_yn
+                    c.free_yn,
+                    c.mod_file_update_dtime
                 FROM
                 (
                 -- 2. rcmmd_img_table start

@@ -1,19 +1,17 @@
 /*
+ * Copyright (c) 2019 DREAMUS COMPANY.
+ * All right reserved.
  *
- *  * Copyright (c) 2018 SK TECHX.
- *  * All right reserved.
- *  *
- *  * This software is the confidential and proprietary information of SK TECHX.
- *  * You shall not disclose such Confidential Information and
- *  * shall use it only in accordance with the terms of the license agreement
- *  * you entered into with SK TECHX.
- *
+ * This software is the confidential and proprietary information of DREAMUS COMPANY.
+ * You shall not disclose such Confidential Information and
+ * shall use it only in accordance with the terms of the license agreement
+ * you entered into with DREAMUS COMPANY.
  */
 
 package com.sktechx.godmusic.personal.common.amqp.domain;
 
+import com.sktechx.godmusic.personal.common.domain.type.ResourceLogType;
 import com.sktechx.godmusic.personal.common.domain.type.TrackLogType;
-import com.sktechx.godmusic.personal.rest.model.vo.video.ResourcePlayLogRequest;
 
 /**
  * 설명 : XXXXXXXXX
@@ -22,7 +20,6 @@ import com.sktechx.godmusic.personal.rest.model.vo.video.ResourcePlayLogRequest;
  * @date 2018. 3. 26.
  *
  */
-
 public enum UserEventType {
 	UNKNOWN,
 	LIKE,
@@ -47,7 +44,7 @@ public enum UserEventType {
 		return UNKNOWN;
 	}
 
-	public final static UserEventType fromPlayLogType(ResourcePlayLogRequest.LogType logType)	{
+	public final static UserEventType fromPlayLogType(ResourceLogType logType)	{
 		if( logType == null )
 			return UNKNOWN;
 
