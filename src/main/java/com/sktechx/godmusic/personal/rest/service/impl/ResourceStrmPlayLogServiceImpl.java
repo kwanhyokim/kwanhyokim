@@ -181,7 +181,7 @@ public class ResourceStrmPlayLogServiceImpl extends AbstractRelatedTrackResource
         String bitrate = logRequestParam.getQuality();
         String osType = logRequestParam.getOsTypeToStr();
 
-        SettlementInfoDto settlementInfo = settlementService.getSettlementInfo(gmContext.getMemberNo(), sourceType);
+        SettlementInfoDto settlementInfo = settlementService.getSettlementInfo(gmContext.getMemberNo(), "ST");
 
         if (YnType.Y == logRequestParam.getFreeYn()) {
             serviceId = mcpService.getServiceCodeFromMCP(trackId, bitrate, osType);
