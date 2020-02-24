@@ -98,6 +98,7 @@ public class ListenController {
                 service.deliverResourcePlayLog(gmContext, logRequestParam);
                 service.deliverResourceUserEvent(gmContext, logRequestParam);
             });
+            return CommonApiResponse.emptySuccess();
         }
 
         boolean isExist = resourcePlayLogResolver.findResolver(SourceType.fromCode(requestSourceType)).isPresent();
