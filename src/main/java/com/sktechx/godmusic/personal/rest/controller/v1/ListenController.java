@@ -100,6 +100,11 @@ public class ListenController {
             });
         }
 
+        boolean isExist = resourcePlayLogResolver.findResolver(SourceType.fromCode(requestSourceType)).isPresent();
+        if (!isExist) {
+            log.warn("NOTEXIST {}", requestSourceType);
+        }
+
         // Resolver 적용
         resourcePlayLogResolver.findResolver(SourceType.fromCode(requestSourceType)).ifPresent(service -> {
             log.debug("[RESOURCE] Resolver에 의해 DI된 Service={}", service.getClass().getName());
