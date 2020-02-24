@@ -102,7 +102,7 @@ public class ListenController {
 
         boolean isExist = resourcePlayLogResolver.findResolver(SourceType.fromCode(requestSourceType)).isPresent();
         if (!isExist) {
-            log.warn("NOTEXIST {}", requestSourceType);
+            log.warn("NOTEXIST {}", logRequestParam);
         }
 
         // Resolver 적용
