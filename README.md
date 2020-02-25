@@ -11,7 +11,7 @@ sourcePlayLogBuilder
     .goodsId(sttToken.getGoodsId());
 ```
 
-* sttToken == null 이고, 무료곡일 경우 (memberNo와 sourceType으로 <code>settlementInfo(정산 정보)</code>를 조회(tb_prchs_pass)
+* sttToken == null 이고, 무료곡일 경우 (memberNo와 SourceType.playType으로 <code>settlementInfo(정산 정보)</code>를 조회(tb_prchs_pass)
 ```java
 #Case1 settlementInfo != null
 sourcePlayLogBuilder
@@ -28,7 +28,7 @@ sourcePlayLogBuilder
     .goodsId(null);
 ```
 
-* sttToken == null 이고, 무료곡이 아닐 경우 (memberNo와 sourceType으로 <code>settlementInfo(정산 정보)</code>를 조회(tb_prchs_pass)
+* sttToken == null 이고, 무료곡이 아닐 경우 (memberNo와 SourceType.playType으로 <code>settlementInfo(정산 정보)</code>를 조회(tb_prchs_pass)
 ```java
 #Case1 settlementInfo == null
 정산 정보 조회 실패 예외 발생
