@@ -194,7 +194,7 @@ public class ResourceStrmPlayLogServiceImpl extends AbstractRelatedTrackResource
         } else {
 
             if (null == settlementInfo) {
-                log.warn("[TRACK 청취로그] 정산 정보 조회 실패. {}", logRequestParam);
+                log.warn("[TRACK 청취로그] settlementInfo 정산 정보 조회 실패. {}", logRequestParam);
                 throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
             }
 
