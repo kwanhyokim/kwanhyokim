@@ -13,54 +13,56 @@ import org.apache.ibatis.type.MappedTypes;
  * @time AM 10:37
  */
 public enum OsType implements CodeEnum {
-	ALL("ALL","ALL", "ALL"),
-	AOS("AOS", "A","Android"),
-	IOS("IOS","I" ,"iOS"),
-	WEB("WEB", "W", "WEB"),
-	TIZEN("TIZEN", "T", "TIZEN");
+    ALL("ALL", "ALL", "ALL"),
+    AOS("AOS", "A", "Android"),
+    IOS("IOS", "I", "iOS"),
+    WEB("WEB", "W", "WEB"),
+    TIZEN("TIZEN", "T", "Tizen"),
+    GOOGLE_DEVICE("GOOGLE_DEVICE", "G", "Google_Device");
 
-	private final String code;
-	private final String shortCode;
-	private final String value;
+    private final String code;
+    private final String shortCode;
+    private final String value;
 
-	OsType(String code,String shortCode ,  String value) {
-		this.code = code;
-		this.shortCode = shortCode;
-		this.value = value;
-	}
+    OsType(String code, String shortCode, String value) {
+        this.code = code;
+        this.shortCode = shortCode;
+        this.value = value;
+    }
 
-	@MappedTypes(OsType.class)
-	public static class TypeHandler extends CodeEnumTypeHandler<OsType> {
-		public TypeHandler() {
-			super(OsType.class);
-		}
-	}
+    @MappedTypes(OsType.class)
+    public static class TypeHandler extends CodeEnumTypeHandler<OsType> {
+        public TypeHandler() {
+            super(OsType.class);
+        }
+    }
 
-	@Override
-	@JsonValue
-	public String getCode() {
-		return code;
-	}
+    @Override
+    @JsonValue
+    public String getCode() {
+        return code;
+    }
 
-	@Override
-	public CodeEnum getDefault() {
-		return null;
-	}
+    @Override
+    public CodeEnum getDefault() {
+        return null;
+    }
 
-	public String getValue() {
-		return value;
-	}
-	public String getShortCode() {
-		return shortCode;
-	}
+    public String getValue() {
+        return value;
+    }
 
-	public static OsType fromCode(String code) {
-		for (OsType type : OsType.values()) {
-			if (type.getCode().equals(code)){
-				return type;
-			}
-		}
+    public String getShortCode() {
+        return shortCode;
+    }
 
-		return OsType.AOS;
-	}
+    public static OsType fromCode(String code) {
+        for (OsType type : OsType.values()) {
+            if (type.getCode().equals(code)) {
+                return type;
+            }
+        }
+
+        return OsType.AOS;
+    }
 }
