@@ -74,10 +74,19 @@ public class TrackMongoServiceImpl implements TrackService {
 
     }
 
+    /**
+     * 2020.03.19
+     * Notice. 몽고 2차 도입으로 인해 최근들은 곡 삭제 API는 Personal-Mgo 로 이관 및 직접 서비스 함
+     *         데이타 싱크를 위해서 Personal-Mgo -> Personal 로 Feign 통신 하도록 변경 됨
+     *         따라서 해당 호출 로직 주석 처리 함. 항후 이슈 없을 경우 메소드 삭제 처리
+     */
     @Override
     public void deleteMyRecentTrackList(Long memberNo, Long characterNo, List<Long> trackIds) {
-        mongoRedisService.executeService(
-                () -> personalMongoClient.deleteRecentListenTrack(memberNo, characterNo, ListenDeleteTrackRequest.builder().trackIds(trackIds).build())
-        );
+
+        log.warn("[최근들은곡][삭제] Personal -> PersonalMgo 호출 발생. characterNo ={}", characterNo);
+//        mongoRedisService.executeService(
+//                () -> personalMongoClient.deleteRecentListenTrack(memberNo, characterNo, ListenDeleteTrackRequest.builder().trackIds(trackIds).build())
+//        );
+
     }
 }
