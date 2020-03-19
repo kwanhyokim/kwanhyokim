@@ -97,44 +97,71 @@ public class LikeMongoServiceImpl implements LikeService {
         );
     }
 
+    /**
+     * 2020.03.19
+     * Notice. 몽고 2차 도입으로 인해 좋아요 추가 API는 Personal-Mgo 로 이관 및 직접 서비스 함
+     *         데이타 싱크를 위해서 Personal-Mgo -> Personal 로 Feign 통신 하도록 변경 됨
+     *         따라서 해당 호출 로직 주석 처리 함. 항후 이슈 없을 경우 메소드 삭제 처리
+     */
     @Override
     public void addLike(LikeRequest request, Long characterNo) {
-        mongoRedisService.executeService(
-            () -> {
-                if (request.typeIsTrackArtistAlbum()) {
-                    personalMongoClient.appendLike(characterNo, request);
-                }
-                else {
-                    log.info("This {} likeType is not supported to the personal-mgo-api", request.getLikeType());
-                }
-            }
-        );
+
+        log.warn("[좋아요][추가] Personal -> Personal Mgo 호출 발생. characterNo = {}", characterNo);
+
+//        mongoRedisService.executeService(
+//            () -> {
+//                if (request.typeIsTrackArtistAlbum()) {
+//                    personalMongoClient.appendLike(characterNo, request);
+//                }
+//                else {
+//                    log.info("This {} likeType is not supported to the personal-mgo-api", request.getLikeType());
+//                }
+//            }
+//        );
     }
 
+    /**
+     * 2020.03.19
+     * Notice. 몽고 2차 도입으로 인해 좋아요 삭제 API는 Personal-Mgo 로 이관 및 직접 서비스 함
+     *         데이타 싱크를 위해서 Personal-Mgo -> Personal 로 Feign 통신 하도록 변경 됨
+     *         따라서 해당 호출 로직 주석 처리 함. 항후 이슈 없을 경우 메소드 삭제 처리
+     */
     @Override
     public void deleteLike(LikeTypeIdListRequest request, Long characterNo) {
-        mongoRedisService.executeService(
-            () -> {
-                if (LikeRequest.LikeType.contains(request.getLikeType())) {
-                    personalMongoClient.deleteLikes(characterNo, request);
-                } else {
-                    log.info("This {} likeType is not supported to the personal-mgo-api", request.getLikeType());
-                }
-            }
-        );
+
+        log.warn("[좋아요][삭제] Personal -> Personal Mgo 호출 발생. characterNo = {}", characterNo);
+
+//        mongoRedisService.executeService(
+//            () -> {
+//                if (LikeRequest.LikeType.contains(request.getLikeType())) {
+//                    personalMongoClient.deleteLikes(characterNo, request);
+//                } else {
+//                    log.info("This {} likeType is not supported to the personal-mgo-api", request.getLikeType());
+//                }
+//            }
+//        );
     }
 
+    /**
+     * 2020.03.19
+     * Notice. 몽고 2차 도입으로 인해 좋아요 순서 변경 API는 Personal-Mgo 로 이관 및 직접 서비스 함
+     *         데이타 싱크를 위해서 Personal-Mgo -> Personal 로 Feign 통신 하도록 변경 됨
+     *         따라서 해당 호출 로직 주석 처리 함. 항후 이슈 없을 경우 메소드 삭제 처리
+     */
     @Override
     public void updateLike(LikeTypeIdListRequest request, Long characterNo) {
-        mongoRedisService.executeService(
-            () -> {
-                if (LikeRequest.LikeType.contains(request.getLikeType())) {
-                    personalMongoClient.sortLikes(characterNo, request);
-                } else {
-                    log.info("This {} likeType is not supported to the personal-mgo-api", request.getLikeType());
-                }
-            }
-        );
+
+        log.warn("[좋아요][노출순서변경] Personal -> Personal Mgo 호출 발생. characterNo = {}", characterNo);
+
+//        mongoRedisService.executeService(
+//            () -> {
+//                if (LikeRequest.LikeType.contains(request.getLikeType())) {
+//                    personalMongoClient.sortLikes(characterNo, request);
+//                } else {
+//                    log.info("This {} likeType is not supported to the personal-mgo-api", request.getLikeType());
+//                }
+//            }
+//        );
     }
 
     @Override
