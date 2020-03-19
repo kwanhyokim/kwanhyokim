@@ -19,6 +19,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 import com.sktechx.godmusic.personal.rest.service.LikeService;
 import com.sktechx.godmusic.personal.rest.validate.Validator;
 import io.swagger.annotations.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +35,7 @@ import javax.validation.Valid;
  * @date 2018. 7. 31.
  * @time PM 3:19
  */
+@Slf4j
 @Api(basePath = "personal/v1/like", value = "좋아요", description = "좋아요 API")
 @RestController
 @RequestMapping(Naming.serviceCode + "/v1/like")
@@ -166,7 +168,11 @@ public class LikeController {
 
 		Long characterNo = context.getCharacterNo();
 
-		likeMongoService.addLike(request, characterNo);
+		/*
+		 * 몽고 2차 도입으로 persoanl-mgo 호출 로직 제거
+		 */
+		// likeMongoService.addLike(request, characterNo);
+
 		likeService.addLike(request, characterNo);
 
 		return CommonApiResponse.emptySuccess();
@@ -185,7 +191,11 @@ public class LikeController {
 		Validator.loginValidate(context);
 		Long characterNo = context.getCharacterNo();
 
-		likeMongoService.deleteLike(request, characterNo);
+		/*
+		 * 몽고 2차 도입으로 persoanl-mgo 호출 로직 제거
+		 */
+		// likeMongoService.deleteLike(request, characterNo);
+
 		likeService.deleteLike(request, characterNo);
 
 		return CommonApiResponse.emptySuccess();
@@ -203,7 +213,11 @@ public class LikeController {
 		Validator.loginValidate(context);
 		Long characterNo = context.getCharacterNo();
 
-		likeMongoService.updateLike(request, characterNo);
+		/*
+		 * 몽고 2차 도입으로 persoanl-mgo 호출 로직 제거
+		 */
+		// likeMongoService.updateLike(request, characterNo);
+
 		likeService.updateLike(request, characterNo);
 
 		return CommonApiResponse.emptySuccess();

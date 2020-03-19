@@ -106,10 +106,10 @@ public class TrackController {
         Long memberNo = context.getMemberNo();
         Long characterNo = context.getCharacterNo();
 
-        // MongoDB 에서 삭제
-        trackMongoService.deleteMyRecentTrackList(memberNo, characterNo, listenDeleteTrackRequest.getTrackIds());
-
-        // MySQLDB 에서 삭제
+        /*
+         * 몽고 2차 도입으로 personal-mgo 호출 제거
+         */
+        // trackMongoService.deleteMyRecentTrackList(memberNo, characterNo, listenDeleteTrackRequest.getTrackIds());
         trackService.deleteMyRecentTrackList(memberNo, characterNo, listenDeleteTrackRequest.getTrackIds());
 
         return CommonApiResponse.emptySuccess();
