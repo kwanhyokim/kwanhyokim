@@ -16,6 +16,7 @@ import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDetailListResponseDto;
 import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDetailResponseDto;
+import com.sktechx.godmusic.personal.rest.model.vo.badge.NewBadgeCheckVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(Naming.serviceCode + "/v1/badge")
 public class BadgeController {
 
-    // TODO 캐릭터명은 노출하지 않는다.
+    // 캐릭터명은 노출하지 않는다.
 
     @ApiOperation(value = "캐릭터별 배지 전체 리스트 조회(획득 + 미획득)")
     @GetMapping("/list/all")
@@ -66,18 +67,24 @@ public class BadgeController {
         GMContext gmContext = GMContext.getContext();
         Long characterNo = gmContext.getCharacterNo();
         OsType osType = gmContext.getOsType();
-
-        // TODO tb_badge_issue update 로직 (confirmYn, osType, confirmDtime, updateDtime)
+        // TODO tb_badge_issue update 로직 (os_type, confirm_dtime, update_dtime)
         return CommonApiResponse.emptySuccess();
     }
 
-    @ApiOperation(value = "캐릭터별 New 배지 리스트 조회")
+    @ApiOperation(value = "New 배지 리스트 조회")
     @GetMapping("/list/new")
     public CommonApiResponse<BadgeDetailListResponseDto> getNewBadgeList() {
         Long characterNo = GMContext.getContext().getCharacterNo();
-
-        // TODO confirmYn != Y인 배지 리스트 조회 (배지 생성일 30일이 넘지 않은 것만 해당)
+        // TODO confirm_dtime == null인 배지 리스트 조회 (배지 생성일 30일이 넘지 않은 것만 해당)
         return new CommonApiResponse<>(new BadgeDetailListResponseDto());
+    }
+
+    @ApiOperation(value = "New 배지 존재 여부 체크 (빈번한 호출용)")
+    @GetMapping("/check/new")
+    public CommonApiResponse<NewBadgeCheckVo> checkNewBadgeExist() {
+        Long characterNo = GMContext.getContext().getCharacterNo();
+        // TODO confirm_dtime == null인 배지가 하나라도 있으면 true (배지 생성일 30일이 넘지 않은 것만 해당)
+        return new CommonApiResponse<>(new NewBadgeCheckVo());
     }
 
 }
