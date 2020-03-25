@@ -8,13 +8,13 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel;
-
-import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+package com.sktechx.godmusic.personal.rest.service.recommend.panel;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 
 /**
  * 설명 : 추천 단계별 패널 우선 순위

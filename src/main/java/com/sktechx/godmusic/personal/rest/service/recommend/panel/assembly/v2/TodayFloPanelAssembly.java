@@ -8,13 +8,13 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2;
+package com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.v2;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.rest.model.dto.AlbumDto;
@@ -24,6 +24,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.PreferSimilarTrackPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
+import com.sktechx.godmusic.personal.rest.service.recommend.RecommendReadService;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelSignAssembly;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,6 +42,9 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
 public class TodayFloPanelAssembly extends PanelSignAssembly {
 
     public TodayFloPanelAssembly(){}
+
+    @Autowired
+    private RecommendReadService recommendReadService;
 
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
@@ -64,39 +68,49 @@ public class TodayFloPanelAssembly extends PanelSignAssembly {
             final List<Panel> panelList,
             int panelLimitSize) {
 
-        List<RecommendTrackDto> similarTrackList =
-                recommendReadMapper.selectRecommendSimilarTrackListByCharacterNo(personalPhaseMeta.getCharacterNo(), panelLimitSize,
-                        SIMILAR_TRACK_LIMIT_SIZE, personalPhaseMeta.getOsType());
+        Optional.ofNullable(
+                        recommendReadService.getRecommendTodayFloListWithTrackByCharacterNo(
+                                personalPhaseMeta.getCharacterNo(),
+                                panelLimitSize,
+                                SIMILAR_TRACK_LIMIT_SIZE,
+                                personalPhaseMeta.getOsType())
+        )
+        .ifPresent(
+                similarTrackList -> {
+                    List<RecommendTrackDto> currentSimilarTrackList =
+                    similarTrackList.stream()
+                            .filter(similarTrack -> similarTrack.getTrackCount() >= SIMILAR_TRACK_DISP_STANDARD_COUNT)
+                            .sorted(Comparator.comparing(RecommendTrackDto::getRcmmdCreateDtime).reversed())
+                            .limit(panelLimitSize).collect(Collectors.toList());
 
-        if(!CollectionUtils.isEmpty(similarTrackList)){
-            similarTrackList
-                    .stream()
-                    .filter(Objects::nonNull)
-                    .sorted(Comparator.comparing(RecommendTrackDto::getRcmmdCreateDtime).reversed())
-                    .forEach(similarTrack ->{
-                        try {
-                            if(similarTrack.getTrackCount() >= SIMILAR_TRACK_DISP_STANDARD_COUNT){
-                                PreferSimilarTrackPanel panel = (PreferSimilarTrackPanel) createSimilarTrackPanel (personalPhaseMeta, similarTrack);
+                    currentSimilarTrackList
+                            .forEach(similarTrack -> {
+                                try {
+                                    PreferSimilarTrackPanel panel = (PreferSimilarTrackPanel) createSimilarTrackPanel(
+                                            personalPhaseMeta, similarTrack);
+                                    List<TrackDto> trackDtoList = Optional
+                                            .ofNullable(panel.getContent().getTrackList())
+                                            .orElseGet(Collections::emptyList);
 
-                                List<TrackDto> trackDtoList = Optional.ofNullable(panel.getContent().getTrackList()).orElseGet(
-                                        Collections::emptyList);
-                                List<List<ImageInfo>> imageInfosList = trackDtoList.stream().map(TrackDto::getAlbum).map(AlbumDto::getImgList).distinct().limit(3).collect(
-                                        Collectors.toList());
+                                    List<List<ImageInfo>> imageInfosList = trackDtoList.stream()
+                                            .map(TrackDto::getAlbum).map(AlbumDto::getImgList)
+                                            .distinct().limit(3).collect(Collectors.toList());
 
-                                if(imageInfosList.size() == 3) {
-                                    for (int i = 0; i < imageInfosList.size(); i++) {
-                                        TrackDto trackDto = trackDtoList.get(i);
-                                        trackDto.getAlbum().setImgList(imageInfosList.get(i));
+                                    if (imageInfosList.size() == 3) {
+                                        for (int i = 0; i < imageInfosList.size(); i++) {
+                                            TrackDto trackDto = trackDtoList.get(i);
+                                            trackDto.getAlbum().setImgList(imageInfosList.get(i));
+                                        }
                                     }
-                                }
 
-                                panelList.add(panel);
-                            }
-                        } catch (Exception e) {
-                            log.error("appendSimilarTrackPanelList error : {}", e.getMessage());
-                        }
-                    });
-        }
+                                    panelList.add(panel);
+
+                                } catch (Exception e) {
+                                    log.error("appendSimilarTrackPanelList error : {}", e.getMessage());
+                                }
+                            });
+                }
+        );
     }
 
     @Override

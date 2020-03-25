@@ -16,6 +16,7 @@ import java.util.List;
 import com.sktechx.godmusic.personal.rest.model.dto.ServiceGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -24,6 +25,8 @@ import lombok.Data;
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 19.
  */
+
+@Builder
 @Data
 public class RecommendTrackDto {
     private Long characterNo;
@@ -32,11 +35,9 @@ public class RecommendTrackDto {
     private Long svcGenreId;
     private Long rcmmdId;
     private Integer dispSn;
-    private Date rcmmdCreateDtime;
     private Date rcmmdUpdateDtime;
 
     private List<TrackDto> trackList;
-    private int trackCount;
 
     private ServiceGenreDto svcGenreDto;
 
@@ -51,4 +52,11 @@ public class RecommendTrackDto {
         this.imgList = imgList;
     }
 
+    public int getTrackCount(){
+        return this.trackList == null ? 0 : this.trackList.size();
+    }
+
+    public Date getRcmmdCreateDtime(){
+        return this.dispStdStartDt;
+    }
 }

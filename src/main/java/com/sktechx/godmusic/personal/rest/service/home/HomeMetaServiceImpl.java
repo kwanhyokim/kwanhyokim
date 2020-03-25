@@ -8,7 +8,7 @@
  * you entered into with Dreamus Company.
  */
 
-package com.sktechx.godmusic.personal.rest.service.impl;
+package com.sktechx.godmusic.personal.rest.service.home;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -22,7 +22,6 @@ import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import com.sktechx.godmusic.personal.rest.repository.CharacterPreferGenreMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
-import com.sktechx.godmusic.personal.rest.service.HomeMetaService;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.RCMMD_CF_TRACK_DISP_STANDARD_COUNT;
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.SIMILAR_TRACK_DISP_STANDARD_COUNT;
@@ -60,7 +59,13 @@ public class HomeMetaServiceImpl implements HomeMetaService {
 
     @Async
     @Override
-    public CompletableFuture<List<PersonalPanel>> getPersonalRecommendPanelMeta(Long characterNo, Boolean checkDispEndDate) {
-        return CompletableFuture.completedFuture(recommendReadMapper.selectPersonalRecommendPanelMeta(characterNo, SIMILAR_TRACK_DISP_STANDARD_COUNT , RCMMD_CF_TRACK_DISP_STANDARD_COUNT, checkDispEndDate));
+    public CompletableFuture<List<PersonalPanel>> getPersonalRecommendPanelMeta(Long characterNo, Boolean checkDispEndDt) {
+        return CompletableFuture.completedFuture(
+                recommendReadMapper.selectPersonalRecommendPanelMeta(characterNo,
+                        SIMILAR_TRACK_DISP_STANDARD_COUNT,
+                        RCMMD_CF_TRACK_DISP_STANDARD_COUNT,
+                        checkDispEndDt
+                )
+        );
     }
 }

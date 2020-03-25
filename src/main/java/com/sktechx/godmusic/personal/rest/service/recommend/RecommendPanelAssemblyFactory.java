@@ -8,7 +8,7 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.service.impl.recommend;
+package com.sktechx.godmusic.personal.rest.service.recommend;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -17,11 +17,11 @@ import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
-import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.GuestPhasePanelAssembly;
-import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.ListenPhasePanelAssembly;
-import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.RecommendPhasePanelAssembly;
-import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.VisitPhasePanelAssembly;
-import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2.*;
+import com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.GuestPhasePanelAssembly;
+import com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.ListenPhasePanelAssembly;
+import com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.RecommendPhasePanelAssembly;
+import com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.VisitPhasePanelAssembly;
+import com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.v2.*;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 
 /**

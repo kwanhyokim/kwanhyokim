@@ -17,7 +17,6 @@ import org.apache.ibatis.annotations.Param;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.mybatis.annotation.ReadOnlyMapper;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
@@ -81,12 +80,12 @@ public interface RecommendReadMapper {
     List<SimilarTrackDto> selectSimilarTrackListByIdList(@Param("trackIds") List<Long> trackIds);
 
 
-    String selectRecommendPanelInfoBgImageUrl(@Param("recommendPanelContentType") RecommendPanelContentType recommendPanelContentType
+    String selectRecommendPanelInfoBgImageUrl(@Param("recommendPanelContentType") String recommendPanelContentType
             , @Param("rcmmdId") Long rcmmdId
             , @Param("osType") OsType osType
             , @Param("dispSn") int dispSn);
 
-    RecommendGenreVo selectRecommendGenreByRcmmdId(@Param("rcmmdId") Long rcmmdId);
+    RecommendForMeDto selectRecommendGenreByRcmmdId(@Param("rcmmdId") Long rcmmdId);
 
     RecommendDuplicateCountDto selectSimilarTrackPanelBetweenDuplicateCount(@Param("characterNo") Long characterNo);
     RecommendDuplicateCountDto selectPreferGenreSimilarTrackPanelBetweenDuplicateCount(@Param("characterNo") Long characterNo);

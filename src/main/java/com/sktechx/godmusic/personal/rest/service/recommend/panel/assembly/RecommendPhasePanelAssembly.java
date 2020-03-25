@@ -8,7 +8,7 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly;
+package com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -13,9 +13,7 @@ package com.sktechx.godmusic.personal.rest.service.recommend;
 import java.util.List;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.header.RecommendPanelHeaderVo;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
@@ -33,18 +31,9 @@ public interface RecommendPanelService {
 
 	RecommendPanelResponse createRecommendV2PanelList(Long characterNo, OsType osType, String appVer);
 
-    // added by bob 2018.08.01
-    // edited by bob 2018.08.02
-    ListDto<List<RecommendPanelTrackDto>>getRecommendPanelPopularTrackList(Long characterNo, Long rcmmdArtistId);
-    ListDto<List<RecommendPanelTrackDto>>getRecommendPanelSimilarTrackList(Long characterNo, Long rcmmdTrackId);
-    ListDto<List<RecommendPanelTrackDto>> getRecommendPanelGenreTrackList(Long characterNo, Long rcmmdGenreId);
-    ListDto<List<RecommendPanelTrackDto>>getRecommendPanelCfTrackList(Long characterNo, Long rcmmdMforuId);
-
-	ListDto<List<RecommendPanelTrackDto>> getRecommendPanelTrackList(Long characterNo, RecommendPanelContentType recommendPanelType, Long panelContentId);
-
-	// added by bob 2018.08.16
-	RecommendPanelHeaderVo getRecommendPanelInfo(Long characterNo,RecommendPanelContentType recommendPanelContentType, Long panelContentId, OsType osType, String appVer);
-
+	ListDto<List<RecommendPanelTrackDto>> getRecommendPanelTrackList(
+			Long characterNo, String recommendPanelType, Long panelContentId
+	);
 
 	// 홈패널 기본 이미지
 	List<ImageInfo> getRecommendPanelDefaultImageList(OsType osType);
@@ -53,6 +42,6 @@ public interface RecommendPanelService {
 
 	void addPreferGenrePanel(Long characterNo);
 
-	List<Panel> getRecommendPanelList(Long characterNo, RecommendPanelContentType recommendPanelType, OsType osType);
+	List<Panel> getRecommendPanelList(Long characterNo, String recommendPanelType, OsType osType);
 
 }

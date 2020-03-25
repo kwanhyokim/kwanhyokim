@@ -10,7 +10,7 @@
  *
  */
 
-package com.sktechx.godmusic.personal.rest.service.impl.recommend;
+package com.sktechx.godmusic.personal.rest.service.recommend;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +22,6 @@ import com.sktechx.godmusic.personal.common.domain.type.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageManagementDto;
 import com.sktechx.godmusic.personal.rest.repository.RecommendImageManagementMapper;
-import com.sktechx.godmusic.personal.rest.service.recommend.RecommendImageManagementService;
 import lombok.extern.slf4j.Slf4j;
 
 /**
