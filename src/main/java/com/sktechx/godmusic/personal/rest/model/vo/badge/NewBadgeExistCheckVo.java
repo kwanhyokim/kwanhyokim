@@ -11,6 +11,6 @@ import lombok.ToString;
  */
 @Getter
 @ToString
-public class NewBadgeCheckVo {
+public class NewBadgeExistCheckVo {
     private boolean isExistNewBadge = true;
 }

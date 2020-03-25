@@ -16,7 +16,7 @@ import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDetailListResponseDto;
 import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDetailResponseDto;
-import com.sktechx.godmusic.personal.rest.model.vo.badge.NewBadgeCheckVo;
+import com.sktechx.godmusic.personal.rest.model.vo.badge.NewBadgeExistCheckVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -81,10 +81,10 @@ public class BadgeController {
 
     @ApiOperation(value = "New 배지 존재 여부 체크 (빈번한 호출용)")
     @GetMapping("/check/new")
-    public CommonApiResponse<NewBadgeCheckVo> checkNewBadgeExist() {
+    public CommonApiResponse<NewBadgeExistCheckVo> checkNewBadgeExist() {
         Long characterNo = GMContext.getContext().getCharacterNo();
         // TODO confirm_dtime == null인 배지가 하나라도 있으면 true (배지 생성일 30일이 넘지 않은 것만 해당)
-        return new CommonApiResponse<>(new NewBadgeCheckVo());
+        return new CommonApiResponse<>(new NewBadgeExistCheckVo());
     }
 
 }
