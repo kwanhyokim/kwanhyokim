@@ -20,6 +20,8 @@ import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.RequestGMContext;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
+import com.sktechx.godmusic.personal.rest.client.MetaClient;
+import com.sktechx.godmusic.personal.rest.model.dto.PlayListDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
@@ -43,9 +45,14 @@ import springfox.documentation.annotations.ApiIgnore;
 public class RecommendPanelController {
     private final RecommendPanelService recommendPanelService;
     private final PersonalRecommendPhaseService personalRecommendPhaseService;
-	public RecommendPanelController(RecommendPanelService recommendPanelService, PersonalRecommendPhaseService personalRecommendPhaseService) {
+    private final MetaClient metaClient;
+
+	public RecommendPanelController(RecommendPanelService recommendPanelService,
+			PersonalRecommendPhaseService personalRecommendPhaseService,
+			MetaClient metaClient) {
 		this.recommendPanelService = recommendPanelService;
 		this.personalRecommendPhaseService = personalRecommendPhaseService;
+		this.metaClient = metaClient;
 	}
 
 	@ApiOperation(value = "추천 개인화 정보 조회 ( New )", httpMethod = "GET" , hidden = true)
@@ -123,6 +130,22 @@ public class RecommendPanelController {
 		recommendPanelService.addPreferGenrePanel(currentContext.getCharacterNo());
 
 		return CommonApiResponse.emptySuccess();
+	}
+
+	@ApiOperation(value = "추천 개인화 차트 조회 ( New )", httpMethod = "GET" , hidden = true)
+	@GetMapping("/chart/{chartId}")
+	public CommonApiResponse<PlayListDto> getRecommendChart(
+			@ApiIgnore @RequestGMContext GMContext ctx,
+			@PathVariable("chartId") Long chartId,
+			@RequestParam("mixYn") String mixYn
+	){
+
+		PlayListDto playListDto = metaClient.chart(chartId).getData();
+
+		playListDto.setDescription("취향인 곡이 없어 일반 순위가 표시됩니다.");
+
+		return new CommonApiResponse<>(playListDto);
+
 	}
 
 }

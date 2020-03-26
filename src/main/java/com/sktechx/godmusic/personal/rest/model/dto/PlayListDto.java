@@ -54,6 +54,8 @@ public class PlayListDto {
 
 	private Integer renewTrackCnt;
 
+	private String description;
+
 	@JsonProperty("renewTrackCount")
 	public Integer getRenewTrackCnt() {
 		return this.renewYn == YnType.N ? 0 : renewTrackCnt;
