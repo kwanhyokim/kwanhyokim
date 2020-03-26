@@ -13,4 +13,8 @@ import lombok.ToString;
 @ToString
 public class NewBadgeExistCheckVo {
     private boolean isExistNewBadge = true;
+
+    public NewBadgeExistCheckVo(boolean isExistNewBadge) {
+        this.isExistNewBadge = isExistNewBadge;
+    }
 }

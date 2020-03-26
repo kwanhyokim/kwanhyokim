@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2020 DREAMUS COMPANY.
+  ~ All right reserved.
+  ~
+  ~ This software is the confidential and proprietary information of DREAMUS COMPANY.
+  ~ You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with DREAMUS COMPANY.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.BadgeIssueMapper">
+
+    <resultMap id="badgeIssueDetail" type="com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeIssueDto"
+               autoMapping="true">
+        <id property="badgeIssuId" column="badge_issu_id"/>
+
+        <association property="badgeDto" javaType="com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDto">
+            <id property="badgeId" column="badge_id"/>
+            <result property="badgeNm" column="badge_nm"/>
+            <result property="badgeDesc" column="badge_desc"/>
+            <result property="issuAfImgUrl" column="badge_af_img_url"/>
+            <result property="useYn" column="use_yn"/>
+        </association>
+
+        <association property="badgeTypeDto" javaType="com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeTypeDto">
+            <id property="badgeTypeId" column="badge_type_id"/>
+            <result property="badgeType" column="badge_type"/>
+            <result property="badgeUiType" column="badge_ui_type"/>
+            <result property="backgroundRgbValue" column="backgroud_rgb_value"/>
+        </association>
+    </resultMap>
+
+    <select id="findByBadgeIssueId" resultMap="badgeIssueDetail">
+        SELECT  a.badge_issu_id,
+                a.badge_id,
+                a.issu_type,
+                a.issu_type_id,
+                a.issu_dtime,
+                a.listen_cnt,
+                a.confrm_dtime,
+                a.confrm_dvc_os_type,
+                a.create_dtime,
+                a.update_dtime,
+                b.badge_nm,
+                b.badge_desc,
+                b.issu_af_img_url,
+                b.use_yn,
+                c.badge_type,
+                c.badge_ui_type,
+                c.background_rgb_value
+        FROM    tb_badge_issue a
+        JOIN    tb_badge b ON a.badge_id = b.badge_id
+        JOIN    tb_badge_type c ON b.badge_type_id = c.badge_type_id
+        WHERE   a.badge_issu_id = #{badgeIssueId}
+    </select>
+
+    <select id="findBadgeIssueByCharacterNo"
+            resultType="com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeIssueDto">
+        SELECT  a.badge_issu_id,
+                a.issu_dtime
+        FROM    tb_badge_issue a
+        WHERE   a.character_no = #{characterNo}
+        AND     a.confrm_dtime IS NULL
+    </select>
+
+</mapper>
