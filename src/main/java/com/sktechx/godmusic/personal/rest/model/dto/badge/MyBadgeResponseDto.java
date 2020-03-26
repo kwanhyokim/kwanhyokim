@@ -24,9 +24,12 @@ import lombok.ToString;
 public class MyBadgeResponseDto {
     private Long badgeIssueId;
     private String title;
+    private String badgeImgUrl;
 
-    public MyBadgeResponseDto(Long badgeIssueId, String title) {
+
+    public MyBadgeResponseDto(Long badgeIssueId, String title, String badgeImgUrl) {
         this.badgeIssueId = badgeIssueId;
         this.title = title;
+        this.badgeImgUrl = badgeImgUrl;
     }
 }

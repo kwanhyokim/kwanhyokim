@@ -59,16 +59,16 @@ public class BadgeController {
         // TODO 배지 전체 조회 로직 (획득 + 미획독 포함) - 아직 UI 미확정
 
         // FIXME Mock 데이터
-        MyBadgeResponseDto myBadge1 = new MyBadgeResponseDto(1L, "이 곡의 VIP");
-        MyBadgeResponseDto myBadge2 = new MyBadgeResponseDto(2L, "이 곡의 서포터");
-        MyBadgeResponseDto myBadge3 = new MyBadgeResponseDto(3L, "좋아요 걸음마");
+        MyBadgeResponseDto myBadge1 = new MyBadgeResponseDto(1L, "이 곡의 VIP", "https://w7.pngwing.com/pngs/855/469/png-transparent-gold-medal-logo-medal-gold-icon-golden-atmosphere-medal-golden-frame-atmosphere-decorative-thumbnail.png");
+        MyBadgeResponseDto myBadge2 = new MyBadgeResponseDto(2L, "이 곡의 서포터", "https://w7.pngwing.com/pngs/855/469/png-transparent-gold-medal-logo-medal-gold-icon-golden-atmosphere-medal-golden-frame-atmosphere-decorative-thumbnail.png");
+        MyBadgeResponseDto myBadge3 = new MyBadgeResponseDto(3L, "좋아요 걸음마", "https://w7.pngwing.com/pngs/855/469/png-transparent-gold-medal-logo-medal-gold-icon-golden-atmosphere-medal-golden-frame-atmosphere-decorative-thumbnail.png");
         List<MyBadgeResponseDto> myBadgeList = Arrays.asList(myBadge1, myBadge2, myBadge3);
 
-        ChallengeBadgeResponseDto challengeBadge1 = new ChallengeBadgeResponseDto(1L, "장르주의자");
-        ChallengeBadgeResponseDto challengeBadge2 = new ChallengeBadgeResponseDto(2L, "박애주의자");
-        ChallengeBadgeResponseDto challengeBadge3 = new ChallengeBadgeResponseDto(3L, "DJ 10");
-        ChallengeBadgeResponseDto challengeBadge4 = new ChallengeBadgeResponseDto(4L, "DJ 30");
-        ChallengeBadgeResponseDto challengeBadge5 = new ChallengeBadgeResponseDto(5L, "DJ 50");
+        ChallengeBadgeResponseDto challengeBadge1 = new ChallengeBadgeResponseDto("장르주의자", "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQll7p-Xy3WaTHuDRvYRjA1ocUm6WVXNuGTD7m7SY_2D1qryP8l");
+        ChallengeBadgeResponseDto challengeBadge2 = new ChallengeBadgeResponseDto("박애주의자", "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQll7p-Xy3WaTHuDRvYRjA1ocUm6WVXNuGTD7m7SY_2D1qryP8l");
+        ChallengeBadgeResponseDto challengeBadge3 = new ChallengeBadgeResponseDto("DJ 10", "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQll7p-Xy3WaTHuDRvYRjA1ocUm6WVXNuGTD7m7SY_2D1qryP8l");
+        ChallengeBadgeResponseDto challengeBadge4 = new ChallengeBadgeResponseDto("DJ 30", "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQll7p-Xy3WaTHuDRvYRjA1ocUm6WVXNuGTD7m7SY_2D1qryP8l");
+        ChallengeBadgeResponseDto challengeBadge5 = new ChallengeBadgeResponseDto("DJ 50", "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQll7p-Xy3WaTHuDRvYRjA1ocUm6WVXNuGTD7m7SY_2D1qryP8l");
         List<ChallengeBadgeResponseDto> challengeBadgeList = Arrays.asList(
                 challengeBadge1,
                 challengeBadge2,
@@ -97,7 +97,8 @@ public class BadgeController {
         subImgList.add(new ImageInfo(1000L, "https://cdn.music-flo.com/image/album/096/371/02/04/402371096_5cb421cc.jpg?1555309005714/dims/resize/1000x1000/quality/90"));
         BadgeDetailResponseDto badgeDetail1 = new BadgeDetailResponseDto(
                 29L,
-                "이 곡의 VIP (UI Type-A)",
+                "A",
+                "이 곡의 VIP",
                 "XXX님은 어제 999회 재생으로 이 곡을 들은 사람 중 제일 많이 들었어요.",
                 "https://w7.pngwing.com/pngs/855/469/png-transparent-gold-medal-logo-medal-gold-icon-golden-atmosphere-medal-golden-frame-atmosphere-decorative-thumbnail.png",
                 "Spring Song",
@@ -108,10 +109,11 @@ public class BadgeController {
 
         BadgeDetailResponseDto badgeDetail2 = new BadgeDetailResponseDto(
                 30L,
-                "알앤비 장르주의자 (UI Type-B)",
+                "B",
+                "알앤비 장르주의자",
                 "알앤비 장르를 좋아하는 FLO의 1%에요.",
                 "https://w7.pngwing.com/pngs/855/469/png-transparent-gold-medal-logo-medal-gold-icon-golden-atmosphere-medal-golden-frame-atmosphere-decorative-thumbnail.png",
-                "비어있는 필드면 아예 내리지 말까요? (UI Type-B일 때)",
+                null,
                 null,
                 null,
                 "2020-03-26"
@@ -138,6 +140,7 @@ public class BadgeController {
         subImgList.add(new ImageInfo(1000L, "https://cdn.music-flo.com/image/album/096/371/02/04/402371096_5cb421cc.jpg?1555309005714/dims/resize/1000x1000/quality/90"));
         BadgeDetailResponseDto badgeDetail1 = new BadgeDetailResponseDto(
                 29L,
+                "A",
                 "이 곡의 VIP",
                 "XXX님은 어제 999회 재생으로 이 곡을 들은 사람 중 제일 많이 들었어요.",
                 "https://w7.pngwing.com/pngs/855/469/png-transparent-gold-medal-logo-medal-gold-icon-golden-atmosphere-medal-golden-frame-atmosphere-decorative-thumbnail.png",

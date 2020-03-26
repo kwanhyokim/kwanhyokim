@@ -22,11 +22,11 @@ import lombok.ToString;
 @Getter
 @ToString
 public class ChallengeBadgeResponseDto {
-    private Long badgeId;
     private String title;
+    private String badgeImgUrl;
 
-    public ChallengeBadgeResponseDto(Long badgeId, String title) {
-        this.badgeId = badgeId;
+    public ChallengeBadgeResponseDto(String title, String badgeImgUrl) {
         this.title = title;
+        this.badgeImgUrl = badgeImgUrl;
     }
 }
