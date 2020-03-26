@@ -132,7 +132,8 @@ public class RecommendPanelController {
 		return CommonApiResponse.emptySuccess();
 	}
 
-	@ApiOperation(value = "추천 개인화 차트 조회 ( New )", httpMethod = "GET" , hidden = true)
+	@ApiOperation(value = "추천 개인화 차트 조회 ( New )", httpMethod = "GET",
+			notes="사용자 개인화 차트 조회(개인화 차트가 없는 경우, 기존 실시간/키즈 차트 제공)")
 	@GetMapping("/chart/{chartId}")
 	public CommonApiResponse<PlayListDto> getRecommendChart(
 			@ApiIgnore @RequestGMContext GMContext ctx,
