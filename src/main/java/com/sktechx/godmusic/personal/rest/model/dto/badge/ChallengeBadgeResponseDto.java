@@ -13,20 +13,20 @@ package com.sktechx.godmusic.personal.rest.model.dto.badge;
 import lombok.Getter;
 import lombok.ToString;
 
-import java.util.List;
-
 /**
- * 설명 : XXXXXXXXXXX
+ * 설명 : 도전 중인 배지 response DTO
  *
  * @author Groot(조민국) / dev.mingood@sk.com
- * @since 2020. 03. 24
+ * @since 2020. 03. 26
  */
 @Getter
 @ToString
-public class BadgeDetailListResponseDto {
-    private List<BadgeDetailResponseDto> newBadgeList;
+public class ChallengeBadgeResponseDto {
+    private Long badgeId;
+    private String title;
 
-    public BadgeDetailListResponseDto(List<BadgeDetailResponseDto> newBadgeList) {
-        this.newBadgeList = newBadgeList;
+    public ChallengeBadgeResponseDto(Long badgeId, String title) {
+        this.badgeId = badgeId;
+        this.title = title;
     }
 }
