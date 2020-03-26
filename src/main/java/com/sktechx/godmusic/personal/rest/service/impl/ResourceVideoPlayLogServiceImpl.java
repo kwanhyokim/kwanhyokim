@@ -67,7 +67,7 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
         }
 
         amqpService.deliverSourcePlay(sourcePlayLogBuilder.build());
-        log.info("[RESOURCE 청취로그 MQ 발송] listen = {}", sourcePlayLogBuilder.toString());
+        log.info("[VIDEO 청취로그 MQ 발송] {}", sourcePlayLogBuilder.toString());
     }
 
     /**
@@ -92,7 +92,7 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
                     .build();
 
             amqpService.deliverUserEvent(userEvent);
-            log.info("[VIDEO 재생로그][UserEvent MQ 발송] {}", userEvent.toString());
+            log.info("[VIDEO 청취로그][UserEvent MQ 발송] {}", userEvent.toString());
         }
     }
 
@@ -154,8 +154,10 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
 
         SourceType sourceType = SourceType.fromCode(logRequestParam.getSourceType());
 
-        if (SourceType.VIDEO_MV == sourceType && StringUtils.isEmpty(serviceId)) {
-            log.warn("[1분 리소스 청취로그] 정산정보 없음");
+        if ((SourceType.VIDEO_MV == sourceType || SourceType.VIDEO_LIVE == sourceType)
+                && StringUtils.isEmpty(serviceId)) {
+
+            log.warn("[1분 {} 청취로그] 정산정보 없음", sourceType);
             throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
         }
 

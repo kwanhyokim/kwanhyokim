@@ -9,19 +9,12 @@
 
 package com.sktechx.godmusic.personal.rest.service.mongo;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.personal.common.domain.ListResponse;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.vo.like.*;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenDeleteTrackRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendUpdateRequest;
 import com.sktechx.godmusic.personal.rest.service.LikeService;
 import com.sktechx.godmusic.personal.rest.service.TrackService;
 import feign.hystrix.FallbackFactory;
@@ -170,6 +163,16 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
             }
 
 
+            @Override
+            public CommonApiResponse<Long> updateRecommendDelTargetYn(Long characterNo,
+                    String rcmmdType, Long rcmmdId, RecommendUpdateRequest request) {
+
+                log.warn("{}@updateRecommendDelTargetYn-fallback, message={}, params={},{}",
+                        characterNo, throwable.getMessage(),
+                        rcmmdType, rcmmdId
+                );
+                return new CommonApiResponse<>(null);
+            }
         };
     }
 }

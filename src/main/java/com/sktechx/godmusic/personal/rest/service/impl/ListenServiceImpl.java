@@ -10,13 +10,16 @@
 
 package com.sktechx.godmusic.personal.rest.service.impl;
 
-import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
-import com.sktechx.godmusic.personal.rest.repository.ListenMapper;
-import com.sktechx.godmusic.personal.rest.service.ListenService;
-import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDummyDataService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendUpdateRequest;
+import com.sktechx.godmusic.personal.rest.repository.ListenMapper;
+import com.sktechx.godmusic.personal.rest.service.ListenService;
+import com.sktechx.godmusic.personal.rest.service.mongo.PersonalMongoClient;
+import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDummyDataService;
+import lombok.extern.slf4j.Slf4j;
 
 import static com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType.*;
 
@@ -36,6 +39,9 @@ public class ListenServiceImpl implements ListenService {
     @Autowired
     private RecommendDummyDataService recommendDummyDataService;
 
+    @Autowired
+    private PersonalMongoClient personalMongoClient;
+
     @Override
     public void addListenHistByChannel(ListenRequest param, Long memberNo, Long characterNo) {
         listenMapper.addListenHistByChannel(param.getListenType(), param.getListenTypeId(),
@@ -44,6 +50,12 @@ public class ListenServiceImpl implements ListenService {
         //추천 패널의 경우 기존 추천 데이터  삭제 방지를 위한 DB 업데이트 처리
         if (isRecommendListen(param.getListenType())) {
             recommendDummyDataService.updateRecommendDataRemovePrevent(param, characterNo);
+
+            // mongo
+            personalMongoClient.updateRecommendDelTargetYn(
+                    characterNo, param.getListenType(), param.getListenTypeId(),
+                    RecommendUpdateRequest.builder().delTargetYn("N").build()
+            );
         }
     }
 

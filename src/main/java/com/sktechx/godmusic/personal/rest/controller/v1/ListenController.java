@@ -70,7 +70,6 @@ public class ListenController {
         try {
             logRequestParamList.forEach(logRequestParam -> {
                 resourcePlayLogResolver.findResolver(SourceType.fromCode(logRequestParam.getSourceType())).ifPresent(service -> {
-                    log.debug("[RESOURCE] Resolver에 의해 DI된 Service={}", service.getClass().getName());
                     service.deliverResourcePlayLog(gmContext, logRequestParam);
                     service.deliverResourceUserEvent(gmContext, logRequestParam);
                 });
@@ -94,15 +93,19 @@ public class ListenController {
         String requestSourceType = logRequestParam.getSourceType();
         if (requestSourceType.startsWith("VIDEO") || "MV".equals(requestSourceType)) {
             resourcePlayLogResolver.findResolver(SourceType.VIDEO).ifPresent(service -> {
-                log.debug("[VIDEO RESOURCE] Resolver에 의해 DI된 Service={}", service.getClass().getName());
                 service.deliverResourcePlayLog(gmContext, logRequestParam);
                 service.deliverResourceUserEvent(gmContext, logRequestParam);
             });
+            return CommonApiResponse.emptySuccess();
+        }
+
+        boolean isExist = resourcePlayLogResolver.findResolver(SourceType.fromCode(requestSourceType)).isPresent();
+        if (!isExist) {
+            log.warn("NOTEXIST {}", logRequestParam);
         }
 
         // Resolver 적용
         resourcePlayLogResolver.findResolver(SourceType.fromCode(requestSourceType)).ifPresent(service -> {
-            log.debug("[RESOURCE] Resolver에 의해 DI된 Service={}", service.getClass().getName());
             service.deliverResourcePlayLog(gmContext, logRequestParam);
             service.deliverResourceUserEvent(gmContext, logRequestParam);
         });
@@ -123,8 +126,8 @@ public class ListenController {
                 .logType(listenTrackRequest.getTrackLogTypeToStr())
                 .osType(listenTrackRequest.getOsType())
                 .quality(listenTrackRequest.getBitrateToStr())
-                .duration(listenTrackRequest.getTrackTotalSec())
-                .runningTimeSecs(listenTrackRequest.getElapsedSec())
+                .duration(listenTrackRequest.getElapsedSec())
+                .runningTimeSecs(listenTrackRequest.getTrackTotalSec())
                 .freeYn(listenTrackRequest.getFreeYn())
                 .playOfflineYn(listenTrackRequest.getPlayOfflineYn())
                 .playCachedYn(listenTrackRequest.getPlayCachedYn())

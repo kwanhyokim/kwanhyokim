@@ -9,8 +9,6 @@
 
 package com.sktechx.godmusic.personal.rest.service.mongo;
 
-import java.util.List;
-
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +18,7 @@ import com.sktechx.godmusic.personal.common.domain.ListResponse;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.vo.like.*;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenDeleteTrackRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendUpdateRequest;
 
 /**
  * 설명 :
@@ -165,5 +164,13 @@ public interface PersonalMongoClient {
     @GetMapping("/personal-mgo/v1/recommends/RC_SML_TR?includeTrackYn=Y")
     CommonApiResponse<ListDto<List<RecommendTrackDto>>> getRecommendTodayFloListWithTrackByCharacterNo(
             @RequestHeader(name = "x-gm-fallback-cno") Long characterNo);
+
+
+    @PutMapping("/personal-mgo/internal/recommends/{rcmmdType}/{rcmmdId}")
+    CommonApiResponse<Long> updateRecommendDelTargetYn(
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
+            @PathVariable(name="rcmmdType") String rcmmdType,
+            @PathVariable(name="rcmmdId") Long rcmmdId,
+            @RequestBody RecommendUpdateRequest request);
 
 }

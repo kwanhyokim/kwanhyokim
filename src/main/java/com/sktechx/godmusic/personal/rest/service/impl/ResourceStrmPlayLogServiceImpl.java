@@ -176,12 +176,11 @@ public class ResourceStrmPlayLogServiceImpl extends AbstractRelatedTrackResource
         Long purchaseId = null;
         Long goodsId = null;
 
-        String sourceType = logRequestParam.getSourceType();
         Long trackId = logRequestParam.getResourceId();
         String bitrate = logRequestParam.getQuality();
         String osType = logRequestParam.getOsTypeToStr();
 
-        SettlementInfoDto settlementInfo = settlementService.getSettlementInfo(gmContext.getMemberNo(), sourceType);
+        SettlementInfoDto settlementInfo = settlementService.getSettlementInfo(gmContext.getMemberNo(), "ST");
 
         if (YnType.Y == logRequestParam.getFreeYn()) {
             serviceId = mcpService.getServiceCodeFromMCP(trackId, bitrate, osType);
@@ -192,9 +191,10 @@ public class ResourceStrmPlayLogServiceImpl extends AbstractRelatedTrackResource
                 goodsId = settlementInfo.getGoodsId();
             }
 
-        } else if (YnType.N == logRequestParam.getFreeYn()) {
+        } else {
+
             if (null == settlementInfo) {
-                log.warn("[TRACK 청취로그] 정산 정보 조회 실패. logRequestParam={}", logRequestParam);
+                log.warn("[TRACK 청취로그] settlementInfo 정산 정보 조회 실패. {}", logRequestParam);
                 throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
             }
 
@@ -205,7 +205,7 @@ public class ResourceStrmPlayLogServiceImpl extends AbstractRelatedTrackResource
         }
 
         if (StringUtils.isEmpty(serviceId)) {
-            log.warn("[TRACK 청취로그] Not Found serviceId. logRequestParam={}", logRequestParam);
+            log.warn("[TRACK 청취로그] Not Found serviceId. {}", logRequestParam);
             throw new CommonBusinessException(PersonalErrorDomain.USER_PSSRL_NOT_FOUND);
         }
 
