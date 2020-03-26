@@ -15,7 +15,6 @@ import java.util.List;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
-import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 
@@ -34,9 +33,6 @@ public interface RecommendPanelService {
 	ListDto<List<RecommendPanelTrackDto>> getRecommendPanelTrackList(
 			Long characterNo, String recommendPanelType, Long panelContentId
 	);
-
-	// 홈패널 기본 이미지
-	List<ImageInfo> getRecommendPanelDefaultImageList(OsType osType);
 
 	void addPreferArtistPanel(Long characterNo);
 

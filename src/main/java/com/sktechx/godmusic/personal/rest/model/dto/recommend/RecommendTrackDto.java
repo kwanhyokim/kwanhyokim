@@ -35,6 +35,8 @@ public class RecommendTrackDto {
     private Long svcGenreId;
     private Long rcmmdId;
     private Integer dispSn;
+
+    private Date rcmmdCreateDtime;
     private Date rcmmdUpdateDtime;
 
     private List<TrackDto> trackList;
@@ -56,7 +58,4 @@ public class RecommendTrackDto {
         return this.trackList == null ? 0 : this.trackList.size();
     }
 
-    public Date getRcmmdCreateDtime(){
-        return this.dispStdStartDt;
-    }
 }

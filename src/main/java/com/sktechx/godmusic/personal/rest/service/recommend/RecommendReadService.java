@@ -14,6 +14,7 @@ import java.util.List;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 
 /**
  * 설명 : XXXXXXXXX
@@ -24,9 +25,20 @@ import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 
 public interface RecommendReadService {
 
-    RecommendForMeDto getRecommendFormeFlo(Long characterNo, Long rcmmdMforuId);
+    RecommendForMeDto getRecommendForMeFlo(Long characterNo, Long rcmmdMforuId);
     RecommendSimilarTrackDto getRecommendTodayFlo(Long characterNo, Long rcmmdSimilarTrackId);
     RecommendArtistDto getRecommendArtistFlo(Long characterNo, Long rcmmdArtistId);
+
+    List<RecommendForMeDto> getRecommendForMeFloListByCharacterNo(Long characterNo);
+    List<RecommendSimilarTrackDto> getRecommendTodayFloListByCharacterNo(Long characterNo);
+    List<RecommendArtistDto> getRecommendArtistFloListByCharacterNo(Long characterNo);
+
+    List<RecommendTrackDto> getRecommendForMeFloListWithTrackByCharacterNo(
+            Long characterNo,
+            int panelMaxSize,
+            int trackMaxSize,
+            OsType osType
+    );
 
     List<RecommendTrackDto> getRecommendTodayFloListWithTrackByCharacterNo(
             Long characterNo,
@@ -35,9 +47,30 @@ public interface RecommendReadService {
             OsType osType
     );
 
-    List<RecommendPanelTrackDto> getRecommendTodayFloTrackListByCharacterNoAndRcmmdId(
+    List<RecommendTrackDto> getRecommendArtistFloListWithTrackByCharacterNo(
             Long characterNo,
-            Long rcmmdId
+            int panelMaxSize,
+            int trackMaxSize,
+            OsType osType
     );
+
+    List<RecommendPanelTrackDto> getRecommendForMeFloTrackListByCharacterNoAndRcmmdId(
+            Long characterNo, Long rcmmdId
+    );
+
+    List<RecommendPanelTrackDto> getRecommendArtistFloTrackListByCharacterNoAndRcmmdId(
+            Long characterNo, Long rcmmdId
+    );
+
+    List<RecommendPanelTrackDto> getRecommendTodayFloTrackListByCharacterNoAndRcmmdId(
+            Long characterNo, Long rcmmdId
+    );
+
+    List<RecommendPanelTrackDto> getRecommendByRealtimeTrackListByCharacterNoAndRcmmdId(
+            Long characterNo, Long rcmmdId
+    );
+
+    List<ImageInfo> getRecommendPanelDefaultImageList(OsType osType);
+
 
 }

@@ -29,7 +29,6 @@ import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.header.RecommendPanelHeaderVo;
 import com.sktechx.godmusic.personal.rest.repository.ArtistMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
-import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 
 /**
  * 설명 : XXXXXXXXX
@@ -40,9 +39,6 @@ import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecomm
 
 @Service("recommendPanelHeaderService")
 public class RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderService{
-
-    @Autowired
-    private PersonalRecommendPhaseService personalRecommendPhaseService;
 
     @Autowired
     private RecommendPanelService recommendPanelService;
@@ -200,7 +196,7 @@ public class RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderServ
                             Optional.ofNullable(
                                     recommendReadMapper.selectRecommendPanelInfoBgImageUrl(recommendPanelContentType, panelContentId, osType , (dispSn == 0 ? 1 : dispSn))
                             ).orElse(
-                                    recommendPanelService.getRecommendPanelDefaultImageList(osType).get(0).getUrl()
+                                    recommendReadService.getRecommendPanelDefaultImageList(osType).get(0).getUrl()
                             )
 
                     );

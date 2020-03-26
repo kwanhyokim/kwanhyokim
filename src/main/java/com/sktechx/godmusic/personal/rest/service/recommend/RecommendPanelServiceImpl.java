@@ -13,38 +13,35 @@ package com.sktechx.godmusic.personal.rest.service.recommend;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javax.annotation.PostConstruct;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
-import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.mybatis.autoconfigure.MyBatisDatasourceConfig;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
-import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.common.domain.type.ArtistType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
-import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
-import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
-import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.v2.AfloPanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
@@ -63,8 +60,6 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
     private final SqlSessionTemplate sqlSessionTemplate;
 
-    private final TrackMapper trackMapper;
-
     private final PersonalRecommendPhaseService personalRecommendPhaseService;
 
     private final RecommendPanelAssemblyFactory recommendPanelAssemblyFactory;
@@ -72,41 +67,48 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     private final RecommendMapper recommendMapper;
     private final RecommendReadMapper recommendReadMapper;
 
-    private final RedisService redisService;
-
-    private final MetaClient metaClient;
-
     private final AfloPanelAssembly afloPanelAssembly;
 
     @Value("${personal.prefer.artist.panel.addPreferArtistPanel.instrumentalTrackRegexPattern}")
     private String instrumentalTrackRegexPattern;
 
-    private final RecommendReadService recommendReadService;
+    private RecommendReadService recommendReadService;
+
+    private final RecommendReadService mongoRecommendReadService;
+
+    private final RedisService redisService;
 
     @Autowired
     public RecommendPanelServiceImpl(
             AfloPanelAssembly afloPanelAssembly,
-            MetaClient metaClient,
-            RedisService redisService,
             RecommendReadMapper recommendReadMapper,
             RecommendMapper recommendMapper,
             RecommendPanelAssemblyFactory recommendPanelAssemblyFactory,
             PersonalRecommendPhaseService personalRecommendPhaseService,
-            TrackMapper trackMapper,
             SqlSessionTemplate sqlSessionTemplate,
-            RecommendReadService recommendReadService
+            @Qualifier("recommendReadService") RecommendReadService recommendReadService,
+            @Qualifier("mongoRecommendReadService")RecommendReadService mongoRecommendReadService,
+            RedisService redisService
     ) {
 
         this.afloPanelAssembly = afloPanelAssembly;
-        this.metaClient = metaClient;
-        this.redisService = redisService;
         this.recommendReadMapper = recommendReadMapper;
         this.recommendMapper = recommendMapper;
         this.recommendPanelAssemblyFactory = recommendPanelAssemblyFactory;
         this.personalRecommendPhaseService = personalRecommendPhaseService;
-        this.trackMapper = trackMapper;
         this.sqlSessionTemplate = sqlSessionTemplate;
         this.recommendReadService = recommendReadService;
+        this.mongoRecommendReadService = mongoRecommendReadService;
+        this.redisService = redisService;
+    }
+
+    @PostConstruct
+    public void init(){
+        String useMongoYn = redisService.getWithPrefix("godmusic.personal.usemongo", String.class);
+
+        if("Y".equals(useMongoYn)) {
+            this.recommendReadService = mongoRecommendReadService;
+        }
     }
 
     @Override
@@ -149,6 +151,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
         return panelList;
     }
+
     @Override
     public RecommendPanelResponse createRecommendV2PanelList(Long characterNo, OsType osType, String appVer) {
 
@@ -196,93 +199,47 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         ).build();
     }
 
-    private ListDto<List<RecommendPanelTrackDto>> getRecommendPanelPopularTrackList(
-            Long characterNo, Long rcmmdArtistId) {
-        return getTrackList(trackMapper.selectRecommendPanelPopularTrackList(characterNo, rcmmdArtistId));
-    }
-    private ListDto<List<RecommendPanelTrackDto>> getRecommendPanelSimilarTrackList(
-            Long characterNo, Long rcmmdTrackId) {
-
-        return getTrackList(trackMapper.selectRecommendPanelSimilarTrackList(characterNo, rcmmdTrackId));
-    }
-    private ListDto<List<RecommendPanelTrackDto>> getRecommendPanelGenreTrackList(Long characterNo,
-            Long rcmmdGenreId) {
-        return getTrackList(trackMapper.selectRecommendPanelGenreTrackList(characterNo, rcmmdGenreId));
-    }
-    private ListDto<List<RecommendPanelTrackDto>> getRecommendPanelCfTrackList(Long characterNo,
-            Long rcmmdMforuId) {
-        return getTrackList(trackMapper.selectRecommendPanelCfTrackList(characterNo, rcmmdMforuId));
-    }
-
     @Override
-    public ListDto<List<RecommendPanelTrackDto>> getRecommendPanelTrackList(Long characterNo, String recommendPanelContentType, Long panelContentId) {
+    public ListDto<List<RecommendPanelTrackDto>> getRecommendPanelTrackList(
+            Long characterNo, String recommendPanelContentType, Long panelContentId) {
 
-        ListDto<List<RecommendPanelTrackDto>> trackList = null;
+        ListDto<List<RecommendPanelTrackDto>> listDto = null;
 
         switch (recommendPanelContentType){
-            // 아티스트
+            // 아티스트 FLO
             case "RC_ATST_TR":
-                trackList = getRecommendPanelPopularTrackList(characterNo, panelContentId);
+                listDto = new ListDto<>(
+                        recommendReadService.getRecommendArtistFloTrackListByCharacterNoAndRcmmdId(
+                                characterNo, panelContentId
+                        )
+                );
                 break;
-            // 선호 유사
+            // 오늘의 FLO
             case "RC_SML_TR":
-                trackList = getRecommendPanelSimilarTrackList(characterNo, panelContentId);
+                listDto = new ListDto<>(
+                        recommendReadService.getRecommendTodayFloTrackListByCharacterNoAndRcmmdId(
+                                characterNo, panelContentId
+                        )
+                );
                 break;
-            // 유사 장르
+            //
             case "RC_GR_TR":
-                trackList = getRecommendPanelGenreTrackList(characterNo, panelContentId);
-                break;
-            // 추천
+                listDto = new ListDto<>(
+                        recommendReadService.getRecommendByRealtimeTrackListByCharacterNoAndRcmmdId(
+                                characterNo, panelContentId
+                        )
+                );
+            // 나를 위한 FLO
             case "RC_CF_TR":
-                trackList = getRecommendPanelCfTrackList(characterNo, panelContentId);
+                listDto = new ListDto<>(
+                        recommendReadService.getRecommendForMeFloTrackListByCharacterNoAndRcmmdId(
+                                characterNo, panelContentId
+                        )
+                );
                 break;
         }
 
-        return trackList;
-    }
-
-    public List<ImageInfo> getRecommendPanelDefaultImageList(OsType osType){
-
-        List<ImageInfo> imgList = null;
-
-        try{
-
-            imgList = redisService.getListWithPrefix(RedisKeyConstant.RECOMMEND_PANEL_DEFAULT_IMGLIST_KEY,ImageInfo.class);
-        }catch(Exception e){
-            log.error("getRecommendPanelDefaultImageList error : {}",e.getMessage());
-        }finally {
-            if(CollectionUtils.isEmpty(imgList)){
-                imgList = recommendReadMapper.selectRecommendPanelDefaultImageList();
-                if(!CollectionUtils.isEmpty(imgList)){
-                    int recommendPanelDefaultImageExpiredSec = 3600;
-                    redisService.setWithPrefix(RedisKeyConstant.RECOMMEND_PANEL_DEFAULT_IMGLIST_KEY, imgList,
-                            recommendPanelDefaultImageExpiredSec);
-                }
-            }
-        }
-
-        if(!CollectionUtils.isEmpty(imgList)){
-            Collections.shuffle(imgList);
-
-            return Collections.singletonList(
-                    imgList.stream().filter(imageInfo -> osType.equals(imageInfo.getOsType()))
-                            .findFirst().orElse(null));
-        }
-        return null;
-    }
-
-    private ListDto<List<RecommendPanelTrackDto>> getTrackList(List<Long> trackIdList){
-
-        if(CollectionUtils.isEmpty(trackIdList)){
-            return null;
-        }
-
-        // feign 으로 변경
-        // edited by Bob 2018.09.05
-        CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>> response = metaClient.recommendPanelTracks(trackIdList.toArray(new Long[0]));
-
-        return response.getData();
-
+        return listDto;
     }
 
     @Override

@@ -9,6 +9,14 @@
 
 package com.sktechx.godmusic.personal.rest.service.mongo;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.personal.common.domain.ListResponse;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;

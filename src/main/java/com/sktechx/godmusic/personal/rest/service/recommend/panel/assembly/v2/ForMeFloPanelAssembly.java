@@ -85,9 +85,13 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
             final List<Panel> panelList) {
 
         List<RecommendTrackDto> recommendCfTrackList =
-                Optional.ofNullable(recommendReadMapper.selectRecommendCfTrackListByCharacterNo(personalPhaseMeta.getCharacterNo(),
-                        4, RCMMD_CF_TRACK_LIMIT_SIZE, personalPhaseMeta.getOsType()))
-                .orElseGet(Collections::emptyList);
+                recommendReadService.getRecommendForMeFloListWithTrackByCharacterNo(
+                        personalPhaseMeta.getCharacterNo(),
+                        4,
+                        RCMMD_CF_TRACK_LIMIT_SIZE,
+                        personalPhaseMeta.getOsType()
+                )
+                ;
 
         for(RecommendTrackDto recommendTrackDto :
                 recommendCfTrackList

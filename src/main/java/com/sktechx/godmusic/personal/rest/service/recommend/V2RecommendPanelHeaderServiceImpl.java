@@ -122,7 +122,7 @@ public class V2RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderSe
             PersonalPhaseMeta personalPhaseMeta, int trackCount) {
 
         RecommendForMeDto recommendForMeDto =
-                recommendReadService.getRecommendFormeFlo(
+                recommendReadService.getRecommendForMeFlo(
                         panelContentId, personalPhaseMeta.getCharacterNo());
 
         Date dispStdStartDt = new Date();
@@ -267,7 +267,7 @@ public class V2RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderSe
                             Optional.ofNullable(
                                     recommendReadMapper.selectRecommendPanelInfoBgImageUrl(recommendPanelContentType, panelContentId, osType , (dispSn == 0 ? 1 : dispSn))
                             ).orElse(
-                                    recommendPanelService.getRecommendPanelDefaultImageList(osType).get(0).getUrl()
+                                    recommendReadService.getRecommendPanelDefaultImageList(osType).get(0).getUrl()
                             )
 
                     );

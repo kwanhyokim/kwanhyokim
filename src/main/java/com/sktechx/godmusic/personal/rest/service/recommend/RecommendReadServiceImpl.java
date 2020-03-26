@@ -10,28 +10,36 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
+import com.sktechx.godmusic.lib.redis.service.RedisService;
+import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
+import com.sktechx.godmusic.personal.common.util.DateUtil;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
 import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
 import com.sktechx.godmusic.personal.rest.service.mongo.PersonalMongoClient;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * 설명 : XXXXXXXXX
+ * 설명 : 추천 데이터 MySql 조회 서비스
  *
  * @author 김관효(Kwanhyo Kim)/서버개발팀/DreamusCompany(kwanhyo.kim@sk.com)
  * @date 2020-03-12
  */
 
+@Slf4j
 @Service("recommendReadService")
 public class RecommendReadServiceImpl implements RecommendReadService {
 
@@ -43,46 +51,64 @@ public class RecommendReadServiceImpl implements RecommendReadService {
 
     private final MetaClient metaClient;
 
+    private final RedisService redisService;
+
     public RecommendReadServiceImpl(PersonalMongoClient personalMongoClient,
             RecommendReadMapper recommendReadMapper,
             TrackMapper trackMapper,
-            MetaClient metaClient) {
+            MetaClient metaClient,
+            RedisService redisService) {
         this.personalMongoClient = personalMongoClient;
         this.recommendReadMapper = recommendReadMapper;
         this.trackMapper = trackMapper;
         this.metaClient = metaClient;
+        this.redisService = redisService;
     }
 
     @Override
-    public RecommendForMeDto getRecommendFormeFlo(Long characterNo, Long rcmmdMforuId) {
-
-//        return Optional.ofNullable(
-//                personalMongoClient.getRecommendFormeFlo(rcmmdMforuId, characterNo)
-//                        .getData()
-//        ).orElseGet(
-//                () -> recommendReadMapper.selectRecommendGenreByRcmmdId(rcmmdMforuId)
-//        );
-
+    public RecommendForMeDto getRecommendForMeFlo(Long characterNo, Long rcmmdMforuId) {
         return recommendReadMapper.selectRecommendGenreByRcmmdId(rcmmdMforuId);
     }
 
     @Override
     public RecommendSimilarTrackDto getRecommendTodayFlo(Long characterNo,
             Long rcmmdSimilarTrackId) {
-        return Optional.ofNullable(
-                personalMongoClient.getRecommendTodayFlo(rcmmdSimilarTrackId, characterNo)
-                        .getData()
-        ).orElseGet(
-                () -> recommendReadMapper.selectRecommendSimilarTrack(rcmmdSimilarTrackId)
-        );
+        return recommendReadMapper.selectRecommendSimilarTrack(rcmmdSimilarTrackId);
     }
     @Override
     public RecommendArtistDto getRecommendArtistFlo(Long characterNo, Long rcmmdArtistId) {
-//        return Optional.ofNullable(
-//                personalMongoClient.getRecommendArtistFlo(rcmmdArtistId, characterNo).getData()
-//        ).orElseGet( () -> recommendReadMapper.selectRecommendArtistById(rcmmdArtistId));
-
         return recommendReadMapper.selectRecommendArtistById(rcmmdArtistId);
+    }
+    @Override
+    public List<RecommendForMeDto> getRecommendForMeFloListByCharacterNo(Long characterNo) {
+        return null;
+    }
+    @Override
+    public List<RecommendSimilarTrackDto> getRecommendTodayFloListByCharacterNo(Long characterNo) {
+        return null;
+    }
+    @Override
+    public List<RecommendArtistDto> getRecommendArtistFloListByCharacterNo(Long characterNo) {
+        return recommendReadMapper.selectRecommendArtistByCharacterNo(
+                characterNo,
+                DateUtil.dateToString(
+                        Optional.of(
+                                recommendReadMapper.selectRecommendArtistMostRecentDispDateByCharacterNo(characterNo)
+                        ).get()
+                        , "yyyyMMdd")
+
+        );
+    }
+    @Override
+    public List<RecommendTrackDto> getRecommendForMeFloListWithTrackByCharacterNo(Long characterNo,
+            int panelMaxSize, int trackMaxSize, OsType osType) {
+        return Optional.ofNullable(
+                recommendReadMapper.selectRecommendCfTrackListByCharacterNo(
+                        characterNo,
+                        panelMaxSize,
+                        trackMaxSize,
+                        osType)
+        ).orElseGet(Collections::emptyList);
     }
 
     @Override
@@ -104,24 +130,95 @@ public class RecommendReadServiceImpl implements RecommendReadService {
             ));
     }
     @Override
-    public List<RecommendPanelTrackDto> getRecommendTodayFloTrackListByCharacterNoAndRcmmdId(Long characterNo,
-            Long rcmmdId) {
+    public List<RecommendTrackDto> getRecommendArtistFloListWithTrackByCharacterNo(Long characterNo,
+            int panelMaxSize, int trackMaxSize, OsType osType) {
+        return null;
+    }
 
-        return Optional.ofNullable(
-                personalMongoClient.getRecommendTrackListByRcmmdTypeAndRcmmdId("RC_SML_TR", rcmmdId, characterNo, 50)
-                .getData()
-        ).orElseGet( () -> {
+    @Override
+    public List<RecommendPanelTrackDto> getRecommendForMeFloTrackListByCharacterNoAndRcmmdId(
+            Long characterNo, Long rcmmdId) {
 
-            List<Long> trackIdList =
-                    Optional.ofNullable(
-                            trackMapper.selectRecommendPanelSimilarTrackList(characterNo, rcmmdId)
-                    ).orElseThrow( () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
+        return getTrackList(
+                Optional.ofNullable(
+                        trackMapper.selectRecommendPanelCfTrackList(characterNo, rcmmdId)
+                ).orElseThrow( () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA))
+        );
+    }
 
-            CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>> response =
-                    metaClient.recommendPanelTracks(trackIdList.toArray(new Long[0]));
+    @Override
+    public List<RecommendPanelTrackDto> getRecommendTodayFloTrackListByCharacterNoAndRcmmdId(
+            Long characterNo, Long rcmmdId) {
 
+        return getTrackList(
+                Optional.ofNullable(
+                        trackMapper.selectRecommendPanelSimilarTrackList(characterNo, rcmmdId)
+                ).orElseThrow( () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA))
+        );
+    }
+    @Override
+    public List<RecommendPanelTrackDto> getRecommendByRealtimeTrackListByCharacterNoAndRcmmdId(
+            Long characterNo, Long rcmmdId) {
+
+        return getTrackList(
+                Optional.ofNullable(
+                        trackMapper.selectRecommendPanelGenreTrackList(characterNo, rcmmdId)
+                ).orElseThrow( () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA))
+        );
+    }
+
+    @Override
+    public List<RecommendPanelTrackDto> getRecommendArtistFloTrackListByCharacterNoAndRcmmdId(
+            Long characterNo, Long rcmmdId) {
+        return getTrackList(
+                Optional.ofNullable(
+                        trackMapper.selectRecommendPanelPopularTrackList(characterNo, rcmmdId)
+                ).orElseThrow( () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA))
+        );
+    }
+
+    public List<ImageInfo> getRecommendPanelDefaultImageList(OsType osType){
+
+        List<ImageInfo> imgList = null;
+
+        try{
+            imgList = redisService.getListWithPrefix(RedisKeyConstant.RECOMMEND_PANEL_DEFAULT_IMGLIST_KEY,ImageInfo.class);
+        }catch(Exception e){
+            log.error("getRecommendPanelDefaultImageList error : {}",e.getMessage());
+        }finally {
+            if(CollectionUtils.isEmpty(imgList)){
+                imgList = recommendReadMapper.selectRecommendPanelDefaultImageList();
+                if(!CollectionUtils.isEmpty(imgList)){
+                    int recommendPanelDefaultImageExpiredSec = 3600;
+                    redisService.setWithPrefix(RedisKeyConstant.RECOMMEND_PANEL_DEFAULT_IMGLIST_KEY, imgList,
+                            recommendPanelDefaultImageExpiredSec);
+                }
+            }
+        }
+
+        if(!CollectionUtils.isEmpty(imgList)){
+            Collections.shuffle(imgList);
+
+            return Collections.singletonList(
+                    imgList.stream().filter(imageInfo -> osType.equals(imageInfo.getOsType()))
+                            .findFirst().orElse(null));
+        }
+        return null;
+    }
+
+    private List<RecommendPanelTrackDto> getTrackList(List<Long> trackIdList){
+
+        if(CollectionUtils.isEmpty(trackIdList)){
+            return null;
+        }
+
+        CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>> response = metaClient.recommendPanelTracks(trackIdList.toArray(new Long[0]));
+
+        if("2000000".equals(response.getCode()) && response.getData() != null) {
             return response.getData().getList();
-        });
+        }
+
+        return null;
     }
 
 }
