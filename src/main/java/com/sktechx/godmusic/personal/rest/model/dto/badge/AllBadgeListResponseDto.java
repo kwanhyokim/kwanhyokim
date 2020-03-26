@@ -16,17 +16,20 @@ import lombok.ToString;
 import java.util.List;
 
 /**
- * 설명 : XXXXXXXXXXX
+ * 설명 : 모든 배지 리스트 (내가 모은 + 도전 중인) response DTO
  *
  * @author Groot(조민국) / dev.mingood@sk.com
- * @since 2020. 03. 24
+ * @since 2020. 03. 26
  */
 @Getter
 @ToString
-public class BadgeDetailListResponseDto {
-    private List<BadgeDetailResponseDto> newBadgeList;
+public class AllBadgeListResponseDto {
+    private List<MyBadgeResponseDto> myBadgeList;
+    private List<ChallengeBadgeResponseDto> challengeBadgeList;
 
-    public BadgeDetailListResponseDto(List<BadgeDetailResponseDto> newBadgeList) {
-        this.newBadgeList = newBadgeList;
+    public AllBadgeListResponseDto(List<MyBadgeResponseDto> myBadgeList,
+                                   List<ChallengeBadgeResponseDto> challengeBadgeList) {
+        this.myBadgeList = myBadgeList;
+        this.challengeBadgeList = challengeBadgeList;
     }
 }

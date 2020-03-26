@@ -47,14 +47,18 @@ public class BadgeDetailResponseDto {
 
 //    private Integer listenCount = 999;
 
-    public List<ImageInfo> getSubImgList() {
-        List<ImageInfo> list = new ArrayList<>();
-        list.add(new ImageInfo(75L, "https://cdn.music-flo.com/image/album/096/371/02/04/402371096_5cb421cc.jpg?1555309005714/dims/resize/75x75/quality/90"));
-        list.add(new ImageInfo(140L, "https://cdn.music-flo.com/image/album/096/371/02/04/402371096_5cb421cc.jpg?1555309005714/dims/resize/140x140/quality/90"));
-        list.add(new ImageInfo(200L, "https://cdn.music-flo.com/image/album/096/371/02/04/402371096_5cb421cc.jpg?1555309005714/dims/resize/200x200/quality/90"));
-        list.add(new ImageInfo(350L, "https://cdn.music-flo.com/image/album/096/371/02/04/402371096_5cb421cc.jpg?1555309005714/dims/resize/350x350/quality/90"));
-        list.add(new ImageInfo(500L, "https://cdn.music-flo.com/image/album/096/371/02/04/402371096_5cb421cc.jpg?1555309005714/dims/resize/500x500/quality/90"));
-        list.add(new ImageInfo(1000L, "https://cdn.music-flo.com/image/album/096/371/02/04/402371096_5cb421cc.jpg?1555309005714/dims/resize/1000x1000/quality/90"));
-        return list;
+    public BadgeDetailResponseDto(Long badgeIssueId,
+                                  String title, String description, String badgeImgUrl,
+                                  String subTitle1, String subTitle2,
+                                  List<ImageInfo> subImgList,
+                                  String issueDtime) {
+        this.badgeIssueId = badgeIssueId;
+        this.title = title;
+        this.description = description;
+        this.badgeImgUrl = badgeImgUrl;
+        this.subTitle1 = subTitle1;
+        this.subTitle2 = subTitle2;
+        this.subImgList = subImgList;
+        this.issueDtime = issueDtime;
     }
 }
