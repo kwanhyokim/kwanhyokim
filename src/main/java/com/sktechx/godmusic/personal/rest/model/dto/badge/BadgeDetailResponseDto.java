@@ -10,11 +10,12 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto.badge;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import lombok.Getter;
 import lombok.ToString;
 
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,7 +27,7 @@ import java.util.List;
 @Getter
 @ToString
 public class BadgeDetailResponseDto {
-    private Long badgeIssueId;
+    private int badgeIssueId;
 
     // App UI Type
     private String uiType;
@@ -46,20 +47,35 @@ public class BadgeDetailResponseDto {
     private List<ImageInfo> subImgList;
 
     // 배지 획득 날짜
-    private String issueDtime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd", timezone = "Asia/Seoul")
+    private Date issueDtime;
 
-//    private Integer listenCount;
+    public BadgeDetailResponseDto(BadgeIssueDto entity) {
+        this.badgeIssueId = entity.getBadgeIssuId();
+        this.uiType = entity.getBadgeTypeDto().getBadgeUiType();
+        this.title = entity.getBadgeDto().getBadgeNm();
+        this.description = entity.getBadgeDto().getBadgeDesc();
+        this.badgeImgUrl = entity.getBadgeDto().getIssuAfImgUrl();
+        this.issueDtime = entity.getIssuDtime();
+    }
 
-
-    public BadgeDetailResponseDto(Long badgeIssueId, String uiType, String title, String description, String badgeImgUrl, String subTitle1, String subTitle2, List<ImageInfo> subImgList, String issueDtime) {
-        this.badgeIssueId = badgeIssueId;
+    public void setUiType(String uiType) {
         this.uiType = uiType;
-        this.title = title;
+    }
+
+    public void setDescription(String description) {
         this.description = description;
-        this.badgeImgUrl = badgeImgUrl;
+    }
+
+    public void setSubTitle1(String subTitle1) {
         this.subTitle1 = subTitle1;
+    }
+
+    public void setSubTitle2(String subTitle2) {
         this.subTitle2 = subTitle2;
+    }
+
+    public void setSubImgList(List<ImageInfo> subImgList) {
         this.subImgList = subImgList;
-        this.issueDtime = issueDtime;
     }
 }

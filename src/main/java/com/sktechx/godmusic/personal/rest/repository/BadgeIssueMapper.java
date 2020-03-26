@@ -1,0 +1,32 @@
+/*
+ * Copyright (c) 2020 DREAMUS COMPANY.
+ * All right reserved.
+ *
+ * This software is the confidential and proprietary information of DREAMUS COMPANY.
+ * You shall not disclose such Confidential Information and
+ * shall use it only in accordance with the terms of the license agreement
+ * you entered into with DREAMUS COMPANY.
+ */
+
+package com.sktechx.godmusic.personal.rest.repository;
+
+import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
+import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeIssueDto;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+/**
+ * 설명 : 칭찬(배지) 관련 mapper
+ *
+ * @author Groot(조민국) / dev.mingood@sk.com
+ * @since 2020. 03. 26
+ */
+@BaseMapper
+public interface BadgeIssueMapper {
+
+    BadgeIssueDto findByBadgeIssueId(@Param("badgeIssueId") int badgeIssueId);
+
+    List<BadgeIssueDto> findBadgeIssueByCharacterNo(@Param("characterNo") Long characterNo);
+
+}

@@ -19,8 +19,8 @@ import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDetailListRespons
 import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDetailResponseDto;
 import com.sktechx.godmusic.personal.rest.model.dto.badge.ChallengeBadgeResponseDto;
 import com.sktechx.godmusic.personal.rest.model.dto.badge.MyBadgeResponseDto;
-import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.badge.NewBadgeExistCheckVo;
+import com.sktechx.godmusic.personal.rest.service.badge.BadgeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +49,7 @@ import java.util.List;
 @RequestMapping(Naming.serviceCode + "/v1/badge")
 public class BadgeController {
 
-    // 캐릭터명은 노출하지 않는다.
+    private final BadgeService badgeService;
 
     @ApiOperation(value = "캐릭터별 배지 전체 리스트 조회(획득 + 미획득)")
     @GetMapping("/list/all")
@@ -87,70 +87,13 @@ public class BadgeController {
 
         // TODO confirm_dtime == null인 배지 리스트 조회 (배지 생성일 30일이 넘지 않은 것만 해당)
 
-        // FIXME Mock 데이터
-        List<ImageInfo> subImgList = new ArrayList<>();
-        subImgList.add(new ImageInfo(75L, "https://cdn.music-flo.com/image/album/096/371/02/04/402371096_5cb421cc.jpg?1555309005714/dims/resize/75x75/quality/90"));
-        subImgList.add(new ImageInfo(140L, "https://cdn.music-flo.com/image/album/096/371/02/04/402371096_5cb421cc.jpg?1555309005714/dims/resize/140x140/quality/90"));
-        subImgList.add(new ImageInfo(200L, "https://cdn.music-flo.com/image/album/096/371/02/04/402371096_5cb421cc.jpg?1555309005714/dims/resize/200x200/quality/90"));
-        subImgList.add(new ImageInfo(350L, "https://cdn.music-flo.com/image/album/096/371/02/04/402371096_5cb421cc.jpg?1555309005714/dims/resize/350x350/quality/90"));
-        subImgList.add(new ImageInfo(500L, "https://cdn.music-flo.com/image/album/096/371/02/04/402371096_5cb421cc.jpg?1555309005714/dims/resize/500x500/quality/90"));
-        subImgList.add(new ImageInfo(1000L, "https://cdn.music-flo.com/image/album/096/371/02/04/402371096_5cb421cc.jpg?1555309005714/dims/resize/1000x1000/quality/90"));
-        BadgeDetailResponseDto badgeDetail1 = new BadgeDetailResponseDto(
-                29L,
-                "A",
-                "이 곡의 VIP",
-                "XXX님은 어제 999회 재생으로 이 곡을 들은 사람 중 제일 많이 들었어요.",
-                "https://w7.pngwing.com/pngs/855/469/png-transparent-gold-medal-logo-medal-gold-icon-golden-atmosphere-medal-golden-frame-atmosphere-decorative-thumbnail.png",
-                "Spring Song",
-                "나얼",
-                subImgList,
-                "2020-03-23"
-        );
-
-        BadgeDetailResponseDto badgeDetail2 = new BadgeDetailResponseDto(
-                30L,
-                "B",
-                "알앤비 장르주의자",
-                "알앤비 장르를 좋아하는 FLO의 1%에요.",
-                "https://w7.pngwing.com/pngs/855/469/png-transparent-gold-medal-logo-medal-gold-icon-golden-atmosphere-medal-golden-frame-atmosphere-decorative-thumbnail.png",
-                null,
-                null,
-                null,
-                "2020-03-26"
-        );
-
-        List<BadgeDetailResponseDto> badgeDetailList = Arrays.asList(badgeDetail1, badgeDetail2);
-        return new CommonApiResponse<>(new BadgeDetailListResponseDto(badgeDetailList));
+        return new CommonApiResponse<>(new BadgeDetailListResponseDto(new ArrayList<>()));
     }
 
     @ApiOperation(value = "배지 상세 조회")
     @GetMapping("/{badgeIssueId}")
-    public CommonApiResponse<BadgeDetailResponseDto> getBadgeDetail(@PathVariable("badgeIssueId") String badgeIssueId) {
-        Long characterNo = GMContext.getContext().getCharacterNo();
-
-        // TODO 배지 개별 조회 로직
-
-        // FIXME Mock 데이터
-        List<ImageInfo> subImgList = new ArrayList<>();
-        subImgList.add(new ImageInfo(75L, "https://cdn.music-flo.com/image/album/096/371/02/04/402371096_5cb421cc.jpg?1555309005714/dims/resize/75x75/quality/90"));
-        subImgList.add(new ImageInfo(140L, "https://cdn.music-flo.com/image/album/096/371/02/04/402371096_5cb421cc.jpg?1555309005714/dims/resize/140x140/quality/90"));
-        subImgList.add(new ImageInfo(200L, "https://cdn.music-flo.com/image/album/096/371/02/04/402371096_5cb421cc.jpg?1555309005714/dims/resize/200x200/quality/90"));
-        subImgList.add(new ImageInfo(350L, "https://cdn.music-flo.com/image/album/096/371/02/04/402371096_5cb421cc.jpg?1555309005714/dims/resize/350x350/quality/90"));
-        subImgList.add(new ImageInfo(500L, "https://cdn.music-flo.com/image/album/096/371/02/04/402371096_5cb421cc.jpg?1555309005714/dims/resize/500x500/quality/90"));
-        subImgList.add(new ImageInfo(1000L, "https://cdn.music-flo.com/image/album/096/371/02/04/402371096_5cb421cc.jpg?1555309005714/dims/resize/1000x1000/quality/90"));
-        BadgeDetailResponseDto badgeDetail1 = new BadgeDetailResponseDto(
-                29L,
-                "A",
-                "이 곡의 VIP",
-                "XXX님은 어제 999회 재생으로 이 곡을 들은 사람 중 제일 많이 들었어요.",
-                "https://w7.pngwing.com/pngs/855/469/png-transparent-gold-medal-logo-medal-gold-icon-golden-atmosphere-medal-golden-frame-atmosphere-decorative-thumbnail.png",
-                "Spring Song",
-                "나얼",
-                subImgList,
-                "2020-03-23"
-        );
-
-        return new CommonApiResponse<>(badgeDetail1);
+    public CommonApiResponse<BadgeDetailResponseDto> getBadgeDetail(@PathVariable("badgeIssueId") int badgeIssueId) {
+        return new CommonApiResponse<>(badgeService.getBadgeDetailResponseDtoByBadgeIssueId(badgeIssueId));
     }
 
     @ApiOperation(value = "배지 확인")
@@ -168,11 +111,11 @@ public class BadgeController {
     @ApiOperation(value = "New 배지 존재 여부 체크 (빈번한 호출용)")
     @GetMapping("/check/new")
     public CommonApiResponse<NewBadgeExistCheckVo> checkNewBadgeExist() {
-        Long characterNo = GMContext.getContext().getCharacterNo();
-
-        // TODO confirm_dtime == null인 배지가 하나라도 있으면 true (배지 생성일 30일이 넘지 않은 것만 해당)
-
-        return new CommonApiResponse<>(new NewBadgeExistCheckVo());
+//        Long characterNo = GMContext.getContext().getCharacterNo();
+        Long characterNo = 2101302L;
+        log.debug("### characterNo={}", characterNo);
+        // TODO 날짜 계산 확인하기 (30일)
+        return new CommonApiResponse<>(badgeService.getNewBadgeExistCheckVoByCharacterNo(characterNo));
     }
 
 }
