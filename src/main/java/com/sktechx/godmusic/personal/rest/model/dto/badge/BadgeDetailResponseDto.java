@@ -26,33 +26,34 @@ import java.util.List;
 @Getter
 @ToString
 public class BadgeDetailResponseDto {
-    private Long badgeIssueId = 29L;
+    private Long badgeIssueId;
+
+    // App UI Type
+    private String uiType;
 
     // 배지 이름 (장르주의자의 경우 장르명까지 배지 이름에 포함됨)
-    private String title = "이 곡의 VIP";
+    private String title;
     // 배지 내용
-    private String description = "XXX님은 어제 999회 재생으로 이 곡을 들은 사람 중 제일 많이 들었어요.";
+    private String description;
     // 배지 이미지
-    private String badgeImgUrl = "https://w7.pngwing.com/pngs/855/469/png-transparent-gold-medal-logo-medal-gold-icon-golden-atmosphere-medal-golden-frame-atmosphere-decorative-thumbnail.png";
+    private String badgeImgUrl;
 
     // 부가 노출 텍스트 ex) 곡명, 아티스트명
-    private String subTitle1 = "Spring Song";
-    private String subTitle2 = "나얼";
+    private String subTitle1;
+    private String subTitle2;
 
     // 서브이미지 ex) 앨범 이미지
     private List<ImageInfo> subImgList;
 
     // 배지 획득 날짜
-    private String issueDtime = "2020-03-23";
+    private String issueDtime;
 
-//    private Integer listenCount = 999;
+//    private Integer listenCount;
 
-    public BadgeDetailResponseDto(Long badgeIssueId,
-                                  String title, String description, String badgeImgUrl,
-                                  String subTitle1, String subTitle2,
-                                  List<ImageInfo> subImgList,
-                                  String issueDtime) {
+
+    public BadgeDetailResponseDto(Long badgeIssueId, String uiType, String title, String description, String badgeImgUrl, String subTitle1, String subTitle2, List<ImageInfo> subImgList, String issueDtime) {
         this.badgeIssueId = badgeIssueId;
+        this.uiType = uiType;
         this.title = title;
         this.description = description;
         this.badgeImgUrl = badgeImgUrl;
