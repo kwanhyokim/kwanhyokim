@@ -22,14 +22,23 @@ import lombok.ToString;
 @Getter
 @ToString
 public class MyBadgeResponseDto {
-    private Long badgeIssueId;
+    private int badgeIssueId;
     private String title;
     private String badgeImgUrl;
 
+    private String badgeType;
 
-    public MyBadgeResponseDto(Long badgeIssueId, String title, String badgeImgUrl) {
+    // TODO 추후 삭제
+    public MyBadgeResponseDto(int badgeIssueId, String title, String badgeImgUrl) {
         this.badgeIssueId = badgeIssueId;
         this.title = title;
         this.badgeImgUrl = badgeImgUrl;
+    }
+
+    public MyBadgeResponseDto(BadgeIssueDto entity) {
+        this.badgeIssueId = entity.getBadgeIssuId();
+        this.title = entity.getBadgeDto().getBadgeNm();
+        this.badgeImgUrl = entity.getBadgeDto().getIssuAfImgUrl();
+        this.badgeType = entity.getBadgeTypeDto().getBadgeType();
     }
 }
