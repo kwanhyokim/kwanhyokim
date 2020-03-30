@@ -48,41 +48,45 @@ public class BadgeServiceImpl implements BadgeService {
         String badgeType = badgeIssueDto.getBadgeTypeDto().getBadgeType();
         switch (badgeType) {
             case "BA01":
-                TrackDto vipTrackDto = metaClient.track(Long.valueOf(badgeIssueDto.getIssuTypeId())).getData();
                 badgeDetailResponseDto.setDescription(
                         String.format(badgeDetailResponseDto.getDescription(), badgeIssueDto.getListenCnt())
                 );
-                badgeDetailResponseDto.setSubTitle1(vipTrackDto.getTrackNm());
-                badgeDetailResponseDto.setSubTitle2(vipTrackDto.getArtist().getArtistName());
-                badgeDetailResponseDto.setSubImgList(vipTrackDto.getAlbum().getImgList());
+                return this.appendToBadgeDetailResponseDtoByTrack(badgeIssueDto, badgeDetailResponseDto);
 
-                // 미권리곡일 경우
-                if (YnType.Y != vipTrackDto.getSvcStreamingYn() && YnType.Y != vipTrackDto.getSvcDrmYn()) {
-                    badgeDetailResponseDto.setUiType("B");
-                }
-                return badgeDetailResponseDto;
             case "BA02":
-                TrackDto supporterTrackDto = metaClient.track(Long.valueOf(badgeIssueDto.getIssuTypeId())).getData();
-                badgeDetailResponseDto.setSubTitle1(supporterTrackDto.getTrackNm());
-                badgeDetailResponseDto.setSubTitle2(supporterTrackDto.getArtist().getArtistName());
-                badgeDetailResponseDto.setSubImgList(supporterTrackDto.getAlbum().getImgList());
+                return this.appendToBadgeDetailResponseDtoByTrack(badgeIssueDto, badgeDetailResponseDto);
 
-                // 미권리곡일 경우
-                if (YnType.Y != supporterTrackDto.getSvcStreamingYn() && YnType.Y != supporterTrackDto.getSvcDrmYn()) {
-                    badgeDetailResponseDto.setUiType("B");
-                }
-                return badgeDetailResponseDto;
             default:
                 return badgeDetailResponseDto;
         }
     }
 
+    /**
+     * BA01, BA02 일 경우
+     */
+    private BadgeDetailResponseDto appendToBadgeDetailResponseDtoByTrack(BadgeIssueDto badgeIssueDto,
+                                                                         BadgeDetailResponseDto badgeDetailResponseDto) {
+        TrackDto trackDto = metaClient.track(Long.valueOf(badgeIssueDto.getIssuTypeId())).getData();
+        badgeDetailResponseDto.setSubTitle1(trackDto.getTrackNm());
+        badgeDetailResponseDto.setSubTitle2(trackDto.getArtist().getArtistName());
+        badgeDetailResponseDto.setSubImgList(trackDto.getAlbum().getImgList());
+
+        // 미권리곡일 경우
+        if (YnType.Y != trackDto.getSvcStreamingYn() && YnType.Y != trackDto.getSvcDrmYn()) {
+            badgeDetailResponseDto.setUiType("B");
+        }
+        return badgeDetailResponseDto;
+    }
+
+    /**
+     * New 배지가 있는지 체크
+     */
     @Override
     public NewBadgeExistCheckVo getNewBadgeExistCheckVoByCharacterNo(Long characterNo) {
         List<BadgeIssueDto> badgeIssueList = badgeIssueMapper.findBadgeIssueByCharacterNo(characterNo);
         Date now = new Date();
+
         for (BadgeIssueDto badgeIssue : badgeIssueList) {
-            log.debug("### badgeIssue={}", badgeIssue);
             int afterDays = DateUtil.getAfterDays(now, badgeIssue.getIssuDtime());
             log.debug("### afterDays={}", afterDays);
             if (afterDays <= 30) {

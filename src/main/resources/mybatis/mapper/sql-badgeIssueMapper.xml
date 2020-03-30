@@ -20,9 +20,10 @@
 
         <association property="badgeDto" javaType="com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDto">
             <id property="badgeId" column="badge_id"/>
+            <result property="badgeCd" column="badge_cd"/>
             <result property="badgeNm" column="badge_nm"/>
             <result property="badgeDesc" column="badge_desc"/>
-            <result property="issuAfImgUrl" column="badge_af_img_url"/>
+            <result property="issuAfImgUrl" column="issu_af_img_url"/>
             <result property="useYn" column="use_yn"/>
         </association>
 
