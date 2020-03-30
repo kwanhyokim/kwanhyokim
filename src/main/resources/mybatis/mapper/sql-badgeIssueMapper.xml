@@ -34,7 +34,7 @@
             <result property="backgroundRgbValue" column="backgroud_rgb_value"/>
         </association>
     </resultMap>
-
+    
     <select id="findByBadgeIssueId" resultMap="badgeIssueDetail">
         SELECT  a.badge_issu_id,
                 a.badge_id,
@@ -51,6 +51,7 @@
         JOIN    tb_badge b ON a.badge_id = b.badge_id
         JOIN    tb_badge_type c ON b.badge_type_id = c.badge_type_id
         WHERE   a.badge_issu_id = #{badgeIssueId}
+        AND     b.use_yn = 'Y'
     </select>
 
     <select id="findBadgeIssueByCharacterNo"
@@ -58,8 +59,10 @@
         SELECT  a.badge_issu_id,
                 a.issu_dtime
         FROM    tb_badge_issue a
+        JOIN    tb_badge b ON a.badge_id = b.badge_id
         WHERE   a.character_no = #{characterNo}
         AND     a.confrm_dtime IS NULL
+        AND     b.use_yn = 'Y'
     </select>
 
     <update id="updateConfirmDtimeAndOsType">
@@ -89,6 +92,20 @@
         JOIN    tb_badge_type c ON b.badge_type_id = c.badge_type_id
         WHERE   a.character_no = #{characterNo}
         AND     a.confrm_dtime IS NULL
+        AND     b.use_yn = 'Y'
+        ORDER BY    a.create_dtime DESC
+    </select>
+
+    <select id="findAllMyReceivedBadgeList" resultMap="badgeIssueDetail">
+        SELECT  a.badge_issu_id,
+                a.badge_nm
+                a.issu_af_img_url,
+                c.badge_type
+        FROM    tb_badge_issue a
+        JOIN    tb_badge b ON a.badge_id = b.badge_id
+        JOIN    tb_badge_type c ON b.badge_type_id = c.badge_type_id
+        WHERE   a.character_no = #{characterNo}
+        AND     b.use_yn = 'Y'
         ORDER BY    a.create_dtime DESC
     </select>
 

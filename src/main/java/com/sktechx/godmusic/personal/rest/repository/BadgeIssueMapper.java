@@ -36,4 +36,6 @@ public interface BadgeIssueMapper {
 
     List<BadgeIssueDto> findAllNewBadgeList(@Param("characterNo") Long characterNo);
 
+    List<BadgeIssueDto> findAllMyReceivedBadgeList(@Param("characterNo") Long characterNo);
+
 }

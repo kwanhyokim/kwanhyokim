@@ -17,16 +17,21 @@ import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDetailResponseDto;
 import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeIssueDto;
+import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeTypeDto;
+import com.sktechx.godmusic.personal.rest.model.dto.badge.ChallengeBadgeResponseDto;
+import com.sktechx.godmusic.personal.rest.model.dto.badge.MyBadgeResponseDto;
 import com.sktechx.godmusic.personal.rest.model.vo.badge.NewBadgeExistCheckVo;
 import com.sktechx.godmusic.personal.rest.repository.BadgeIssueMapper;
+import com.sktechx.godmusic.personal.rest.repository.BadgeTypeMapper;
 import com.sktechx.godmusic.personal.rest.service.badge.BadgeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 설명 : XXXXXXXXXXX
@@ -40,6 +45,7 @@ import java.util.List;
 public class BadgeServiceImpl implements BadgeService {
 
     private final MetaClient metaClient;
+    private final BadgeTypeMapper badgeTypeMapper;
     private final BadgeIssueMapper badgeIssueMapper;
 
     /**
@@ -95,7 +101,6 @@ public class BadgeServiceImpl implements BadgeService {
         Date now = new Date();
         for (BadgeIssueDto badgeIssue : badgeIssueList) {
             int afterDays = DateUtil.getAfterDays(now, badgeIssue.getIssuDtime());
-            log.debug("### afterDays={}", afterDays);
             if (afterDays <= 30) {
                 return new NewBadgeExistCheckVo(true);
             }
@@ -116,17 +121,41 @@ public class BadgeServiceImpl implements BadgeService {
      */
     @Override
     public List<BadgeDetailResponseDto> getAllNewBadgeList(Long characterNo) {
-        List<BadgeDetailResponseDto> resultNewBadgeList = new ArrayList<>();
         List<BadgeIssueDto> allNewBadgeList = badgeIssueMapper.findAllNewBadgeList(characterNo);
-
         Date now = new Date();
-        for (BadgeIssueDto badgeIssue : allNewBadgeList) {
-            int afterDays = DateUtil.getAfterDays(now, badgeIssue.getIssuDtime());
-            if (afterDays <= 30) {
-                resultNewBadgeList.add(new BadgeDetailResponseDto(badgeIssue));
-            }
-        }
-        return resultNewBadgeList;
+
+        return allNewBadgeList.stream()
+                .filter(badgeIssue -> DateUtil.getAfterDays(now, badgeIssue.getIssuDtime()) <= 30)
+                .map(BadgeDetailResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 획득한 배지 목록 조회
+     */
+    @Override
+    public List<MyBadgeResponseDto> getAllMyReceivedBadgeList(Long characterNo) {
+        List<BadgeIssueDto> allMyReceivedBadgeList = badgeIssueMapper.findAllMyReceivedBadgeList(characterNo);
+        return allMyReceivedBadgeList.stream()
+                .map(MyBadgeResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 도전 중인 배지 목록 조회
+     */
+    @Override
+    public List<ChallengeBadgeResponseDto> getAllMyChallengeBadgeList(Long characterNo,
+                                                                      List<MyBadgeResponseDto> myBadgeResponseDtoList) {
+        List<BadgeTypeDto> badgeTypeDtoList = badgeTypeMapper.findAllBadgeType();
+        Set<String> receivedBadgeTypeSet = myBadgeResponseDtoList.stream()
+                .map(MyBadgeResponseDto::getBadgeType)
+                .collect(Collectors.toSet());
+
+        return badgeTypeDtoList.stream()
+                .filter(badgeTypeDto -> !receivedBadgeTypeSet.contains(badgeTypeDto.getBadgeType()))
+                .map(ChallengeBadgeResponseDto::new)
+                .collect(Collectors.toList());
     }
 
 }
