@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.service.badge.impl;
 
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -40,6 +42,11 @@ public class BadgeServiceImpl implements BadgeService {
     private final MetaClient metaClient;
     private final BadgeIssueMapper badgeIssueMapper;
 
+    /**
+     * 배지 개별 상세 조회
+     *
+     * @return
+     */
     @Override
     public BadgeDetailResponseDto getBadgeDetailResponseDtoByBadgeIssueId(int badgeIssueId) {
         BadgeIssueDto badgeIssueDto = badgeIssueMapper.findByBadgeIssueId(badgeIssueId);
@@ -84,8 +91,8 @@ public class BadgeServiceImpl implements BadgeService {
     @Override
     public NewBadgeExistCheckVo getNewBadgeExistCheckVoByCharacterNo(Long characterNo) {
         List<BadgeIssueDto> badgeIssueList = badgeIssueMapper.findBadgeIssueByCharacterNo(characterNo);
-        Date now = new Date();
 
+        Date now = new Date();
         for (BadgeIssueDto badgeIssue : badgeIssueList) {
             int afterDays = DateUtil.getAfterDays(now, badgeIssue.getIssuDtime());
             log.debug("### afterDays={}", afterDays);
@@ -94,6 +101,32 @@ public class BadgeServiceImpl implements BadgeService {
             }
         }
         return new NewBadgeExistCheckVo(false);
+    }
+
+    /**
+     * 배지 확인 처리
+     */
+    @Override
+    public void userBadgeConfirm(int badgeIssueId, Long characterNo, OsType osType) {
+        badgeIssueMapper.updateConfirmDtimeAndOsType(badgeIssueId, characterNo, osType);
+    }
+
+    /**
+     * New 배지 리스트 조회
+     */
+    @Override
+    public List<BadgeDetailResponseDto> getAllNewBadgeList(Long characterNo) {
+        List<BadgeDetailResponseDto> resultNewBadgeList = new ArrayList<>();
+        List<BadgeIssueDto> allNewBadgeList = badgeIssueMapper.findAllNewBadgeList(characterNo);
+
+        Date now = new Date();
+        for (BadgeIssueDto badgeIssue : allNewBadgeList) {
+            int afterDays = DateUtil.getAfterDays(now, badgeIssue.getIssuDtime());
+            if (afterDays <= 30) {
+                resultNewBadgeList.add(new BadgeDetailResponseDto(badgeIssue));
+            }
+        }
+        return resultNewBadgeList;
     }
 
 }

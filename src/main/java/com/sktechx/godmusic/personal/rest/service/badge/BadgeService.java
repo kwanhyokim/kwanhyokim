@@ -10,8 +10,11 @@
 
 package com.sktechx.godmusic.personal.rest.service.badge;
 
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDetailResponseDto;
 import com.sktechx.godmusic.personal.rest.model.vo.badge.NewBadgeExistCheckVo;
+
+import java.util.List;
 
 /**
  * 설명 : XXXXXXXXXXX
@@ -24,5 +27,9 @@ public interface BadgeService {
     BadgeDetailResponseDto getBadgeDetailResponseDtoByBadgeIssueId(int badgeIssueId);
 
     NewBadgeExistCheckVo getNewBadgeExistCheckVoByCharacterNo(Long characterNo);
+
+    void userBadgeConfirm(int badgeIssueId, Long characterNo, OsType osType);
+
+    List<BadgeDetailResponseDto> getAllNewBadgeList(Long characterNo);
 
 }

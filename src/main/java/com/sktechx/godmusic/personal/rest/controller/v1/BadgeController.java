@@ -32,7 +32,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -56,7 +55,7 @@ public class BadgeController {
     public CommonApiResponse<AllBadgeListResponseDto> getBadgeList() {
         Long characterNo = GMContext.getContext().getCharacterNo();
 
-        // TODO 배지 전체 조회 로직 (획득 + 미획독 포함) - 아직 UI 미확정
+        // TODO 배지 전체 조회 로직 (획득 + 미획득 포함) - 아직 UI 미확정
 
         // FIXME Mock 데이터
         MyBadgeResponseDto myBadge1 = new MyBadgeResponseDto(1L, "이 곡의 VIP", "https://w7.pngwing.com/pngs/855/469/png-transparent-gold-medal-logo-medal-gold-icon-golden-atmosphere-medal-golden-frame-atmosphere-decorative-thumbnail.png");
@@ -84,10 +83,8 @@ public class BadgeController {
     @GetMapping("/list/new")
     public CommonApiResponse<BadgeDetailListResponseDto> getNewBadgeList() {
         Long characterNo = GMContext.getContext().getCharacterNo();
-
-        // TODO confirm_dtime == null인 배지 리스트 조회 (배지 생성일 30일이 넘지 않은 것만 해당)
-
-        return new CommonApiResponse<>(new BadgeDetailListResponseDto(new ArrayList<>()));
+        List<BadgeDetailResponseDto> allNewBadgeList = badgeService.getAllNewBadgeList(characterNo);
+        return new CommonApiResponse<>(new BadgeDetailListResponseDto(allNewBadgeList));
     }
 
     @ApiOperation(value = "배지 상세 조회")
@@ -98,13 +95,12 @@ public class BadgeController {
 
     @ApiOperation(value = "배지 확인")
     @PutMapping("/confirm")
-    private CommonApiResponse<?> confirmMyNewBadge(@RequestParam("badgeIssueId") String badgeIssueId) {
+    private CommonApiResponse<?> confirmMyNewBadge(@RequestParam("badgeIssueId") int badgeIssueId) {
         GMContext gmContext = GMContext.getContext();
         Long characterNo = gmContext.getCharacterNo();
         OsType osType = gmContext.getOsType();
 
-        // TODO tb_badge_issue update 로직 (os_type, confirm_dtime, update_dtime)
-
+        badgeService.userBadgeConfirm(badgeIssueId, characterNo, osType);
         return CommonApiResponse.emptySuccess();
     }
 

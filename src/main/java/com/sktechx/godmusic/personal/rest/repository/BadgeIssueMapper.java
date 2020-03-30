@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.repository;
 
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
 import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeIssueDto;
 import org.apache.ibatis.annotations.Param;
@@ -28,5 +29,11 @@ public interface BadgeIssueMapper {
     BadgeIssueDto findByBadgeIssueId(@Param("badgeIssueId") int badgeIssueId);
 
     List<BadgeIssueDto> findBadgeIssueByCharacterNo(@Param("characterNo") Long characterNo);
+
+    void updateConfirmDtimeAndOsType(@Param("badgeIssueId") int badgeIssueId,
+                                     @Param("characterNo") Long characterNo,
+                                     @Param("osType") OsType osType);
+
+    List<BadgeIssueDto> findAllNewBadgeList(@Param("characterNo") Long characterNo);
 
 }
