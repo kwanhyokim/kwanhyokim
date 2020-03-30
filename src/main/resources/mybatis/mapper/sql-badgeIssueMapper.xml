@@ -40,17 +40,11 @@
                 a.badge_id,
                 a.issu_type,
                 a.issu_type_id,
-                a.issu_dtime,
                 a.listen_cnt,
-                a.confrm_dtime,
-                a.confrm_dvc_os_type,
-                a.create_dtime,
-                a.update_dtime,
                 b.badge_nm,
                 b.badge_desc,
                 b.issu_af_img_url,
                 b.use_yn,
-                c.badge_type,
                 c.badge_ui_type,
                 c.background_rgb_value
         FROM    tb_badge_issue a
@@ -66,6 +60,36 @@
         FROM    tb_badge_issue a
         WHERE   a.character_no = #{characterNo}
         AND     a.confrm_dtime IS NULL
+    </select>
+
+    <update id="updateConfirmDtimeAndOsType">
+        UPDATE  tb_badge_issue
+        SET
+            confrm_dtime = NOW(),
+            confrm_dvc_os_type = #{osType},
+            update_dtime = NOW()
+        WHERE   badge_issu_id = #{badgeIssueId}
+        AND     character_no = #{characterNo}
+    </update>
+    
+    <select id="findAllNewBadgeList" resultMap="badgeIssueDetail">
+        SELECT  a.badge_issu_id,
+                a.badge_id,
+                a.issu_type,
+                a.issu_type_id,
+                a.listen_cnt,
+                b.badge_nm,
+                b.badge_desc,
+                b.issu_af_img_url,
+                b.use_yn,
+                c.badge_ui_type,
+                c.background_rgb_value
+        FROM    tb_badge_issue a
+        JOIN    tb_badge b ON a.badge_id = b.badge_id
+        JOIN    tb_badge_type c ON b.badge_type_id = c.badge_type_id
+        WHERE   a.character_no = #{characterNo}
+        AND     a.confrm_dtime IS NULL
+        ORDER BY    a.create_dtime DESC
     </select>
 
 </mapper>
