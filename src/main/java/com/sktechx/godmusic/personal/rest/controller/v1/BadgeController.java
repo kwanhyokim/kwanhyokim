@@ -111,10 +111,8 @@ public class BadgeController {
     @ApiOperation(value = "New 배지 존재 여부 체크 (빈번한 호출용)")
     @GetMapping("/check/new")
     public CommonApiResponse<NewBadgeExistCheckVo> checkNewBadgeExist() {
-//        Long characterNo = GMContext.getContext().getCharacterNo();
-        Long characterNo = 2101302L;
+        Long characterNo = GMContext.getContext().getCharacterNo();
         log.debug("### characterNo={}", characterNo);
-        // TODO 날짜 계산 확인하기 (30일)
         return new CommonApiResponse<>(badgeService.getNewBadgeExistCheckVoByCharacterNo(characterNo));
     }
 

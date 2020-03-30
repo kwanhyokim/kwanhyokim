@@ -25,6 +25,7 @@ import lombok.ToString;
 public class BadgeDto {
     private int badgeId;
     private int badgeTypeId;
+    private String badgeCd;
 
     private String badgeNm;
     private String badgeDesc;
