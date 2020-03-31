@@ -16,7 +16,8 @@
 
     <select id="findAllBadgeType" resultType="com.sktechx.godmusic.personal.rest.domain.badge.BadgeTypeDto">
         SELECT  a.badge_type_nm,
-                a.issu_bf_img_url
+                a.issu_bf_img_url,
+                a.background_rgb_value
         FROM    tb_badge_type a
         WHERE   a.use_yn = 'Y'
         ORDER BY a.disp_sn
