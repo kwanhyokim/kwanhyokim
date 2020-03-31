@@ -100,9 +100,17 @@
 
     <select id="findAllReceivedBadgeListByCharacterNo" resultMap="badgeIssueDetail">
         SELECT  a.badge_issu_id,
+                a.badge_id,
+                a.issu_type,
+                a.issu_type_id,
+                a.listen_cnt,
                 b.badge_nm,
+                b.badge_desc,
                 b.issu_af_img_url,
-                c.badge_type
+                b.use_yn,
+                c.badge_type,
+                c.badge_ui_type,
+                c.background_rgb_value
         FROM    tb_badge_issue a
         JOIN    tb_badge b ON a.badge_id = b.badge_id
         JOIN    tb_badge_type c ON b.badge_type_id = c.badge_type_id
