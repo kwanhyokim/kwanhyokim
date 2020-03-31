@@ -18,8 +18,8 @@
         SELECT  a.badge_type_nm,
                 a.issu_bf_img_url
         FROM    tb_badge_type a
-        ORDER BY a.disp_sn
         WHERE   a.use_yn = 'Y'
+        ORDER BY a.disp_sn
     </select>
 
 </mapper>
