@@ -31,7 +31,7 @@
             <id property="badgeTypeId" column="badge_type_id"/>
             <result property="badgeType" column="badge_type"/>
             <result property="badgeUiType" column="badge_ui_type"/>
-            <result property="backgroundRgbValue" column="backgroud_rgb_value"/>
+            <result property="backgroundRgbValue" column="background_rgb_value"/>
         </association>
     </resultMap>
     
