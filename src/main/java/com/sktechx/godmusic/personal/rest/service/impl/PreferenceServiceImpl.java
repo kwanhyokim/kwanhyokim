@@ -43,7 +43,6 @@ import com.sktechx.godmusic.personal.rest.model.vo.preference.PreferenceSimilarA
 import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 import com.sktechx.godmusic.personal.rest.repository.*;
 import com.sktechx.godmusic.personal.rest.service.PreferenceService;
-import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2.PreferArtistVideoPanelAssembly;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.*;
@@ -71,9 +70,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     @Autowired
     RedisService redisService;
-
-    @Autowired
-    private PreferArtistVideoPanelAssembly preferArtistVideoPanelAssembly;
 
     @Autowired
     private PreferenceMapper preferenceMapper;

@@ -29,7 +29,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase
 import com.sktechx.godmusic.personal.rest.repository.*;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import com.sktechx.godmusic.personal.rest.service.ChartService;
-import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
+import com.sktechx.godmusic.personal.rest.service.recommend.RecommendReadService;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.POPULAR_CHNL_TRACK_LIMIT_SIZE;
@@ -50,7 +50,7 @@ public abstract class PanelAssembly {
 
     @Autowired
     @Lazy
-    protected RecommendPanelService recommendPanelService;
+    protected RecommendReadService recommendReadService;
 
     @Autowired
     protected ChannelMapper channelMapper;
@@ -105,7 +105,7 @@ public abstract class PanelAssembly {
 
     protected List<ImageInfo> getDefaultBgImageList(final List<ImageInfo> imgList , OsType osType){
         if(CollectionUtils.isEmpty(imgList)){
-            return recommendPanelService.getRecommendPanelDefaultImageList(osType);
+            return recommendReadService.getRecommendPanelDefaultImageList(osType);
         }else{
             return imgList;
         }

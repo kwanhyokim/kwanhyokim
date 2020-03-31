@@ -8,7 +8,7 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.service.impl.recommend.phase;
+package com.sktechx.godmusic.personal.rest.service.recommend.phase;
 
 import java.sql.Timestamp;
 import java.time.*;
@@ -23,7 +23,6 @@ import org.springframework.util.ObjectUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
-import com.sktechx.godmusic.lib.utils.ComparableVersion;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
@@ -40,10 +39,9 @@ import com.sktechx.godmusic.personal.rest.repository.AfloMapper;
 import com.sktechx.godmusic.personal.rest.repository.ChannelMapper;
 import com.sktechx.godmusic.personal.rest.repository.CharacterPreferGenreMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
-import com.sktechx.godmusic.personal.rest.service.HomeMetaService;
-import com.sktechx.godmusic.personal.rest.service.impl.recommend.RecommendPanelAssemblyFactory;
+import com.sktechx.godmusic.personal.rest.service.home.HomeMetaService;
+import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelAssemblyFactory;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
-import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
@@ -79,20 +77,12 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
     private ChannelMapper channelMapper;
 
     @Override
-    public PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType, String appVer) {
-
-        if( ObjectUtils.isEmpty(appVer) || new ComparableVersion(appVer).compareTo(new ComparableVersion("4.6.0")) < 0 ) {
-            return getPersonalRecommendPhaseMetaWithOption(characterNo, osType, true);
-        }else{
-            return getPersonalRecommendPhaseMetaWithOption(characterNo, osType, false);
-        }
-    }
-    @Override
     public void clearPersonalRecommendPhaseMetaCache(Long characterNo) {
         redisService.delWithPrefix(String.format(PERSONAL_RECOMMEND_PHASE_KEY, characterNo));
     }
 
-    private PersonalPhaseMeta getPersonalRecommendPhaseMetaWithOption(Long characterNo , OsType osType, Boolean checkDispEndDate){
+    @Override
+    public PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType, String appVer) {
 
         if(characterNo == null){
             return getGuestPhaseMeta(osType);
@@ -149,7 +139,7 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
             //선호 장르 리스트
             CompletableFuture<List<CharacterPreferGenreDto>> futureCharacterPreferGenreList = homeMetaService.getCharacterPreferGenreList(characterNo);
             CompletableFuture<List<CharacterPreferDispDto>> futureCharacterPreferDispList = homeMetaService.getCharacterPreferDispList(characterNo);
-            CompletableFuture<List<PersonalPanel>> futureRcmmdPanelList = homeMetaService.getPersonalRecommendPanelMeta(characterNo, checkDispEndDate);
+            CompletableFuture<List<PersonalPanel>> futureRcmmdPanelList = homeMetaService.getPersonalRecommendPanelMeta(characterNo, false);
 
             CompletableFuture.allOf(futureCharacterPreferGenreList, futureCharacterPreferDispList, futureRcmmdPanelList);
 

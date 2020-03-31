@@ -8,7 +8,7 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.service.impl.recommend;
+package com.sktechx.godmusic.personal.rest.service.recommend;
 
 import java.util.List;
 
@@ -22,8 +22,6 @@ import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendV2DummyDataRequest;
 import com.sktechx.godmusic.personal.rest.repository.RecommendDummyDataMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
-import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDummyDataService;
-import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -63,7 +61,7 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
                 }
             }
         }catch(Exception e){
-            log.error("Recommend :: updateRecommendDataPrevent :: Error Message {}",e.getMessage());
+            log.error("recommend :: updateRecommendDataPrevent :: Error Message {}",e.getMessage());
         }
     }
 
@@ -77,10 +75,11 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
             case "RC_CF_TR":
                 svcGenreIdList = recommendDummyDataMapper.selectRandomSvcGenreId(recommendV2DummyDataRequest.getPanelCount());
                 for( int i = 0 ; i < recommendV2DummyDataRequest.getPanelCount() ; i++){
-                    RecommendTrackDto recommendTrackDto = new RecommendTrackDto();
-                    recommendTrackDto.setCharacterNo(characterNo);
-                    recommendTrackDto.setDispSn(i+1);
-                    recommendTrackDto.setSvcGenreId(svcGenreIdList.get(i));
+                    RecommendTrackDto recommendTrackDto = RecommendTrackDto.builder()
+                            .characterNo(characterNo)
+                            .dispSn(i+1)
+                            .svcGenreId(svcGenreIdList.get(i))
+                            .build();
                     recommendDummyDataMapper.insertRcmmdMforuData(recommendTrackDto);
                     recommendDummyDataMapper.insertRcmmdMforuSubData( recommendTrackDto.getRcmmdId());
                 }
@@ -89,10 +88,11 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
             case "RC_SML_TR":
 //                svcGenreIdList = recommendDummyDataMapper.selectRandomSvcGenreId(recommendV2DummyDataRequest.getPanelCount());
                 for( int i = 0 ; i < recommendV2DummyDataRequest.getPanelCount() ; i++){
-                    RecommendTrackDto recommendTrackDto = new RecommendTrackDto();
-                    recommendTrackDto.setCharacterNo(characterNo);
-                    recommendTrackDto.setDispSn(i+1);
-                    recommendTrackDto.setSvcGenreId(0L);
+                    RecommendTrackDto recommendTrackDto = RecommendTrackDto.builder()
+                            .characterNo(characterNo)
+                            .dispSn(i+1)
+                            .svcGenreId(0L)
+                            .build();
                     recommendDummyDataMapper.insertRcmmdSimilarTrackData(recommendTrackDto);
                     recommendDummyDataMapper.insertRcmmdSimilarTrackSubData( recommendTrackDto.getRcmmdId());
                 }

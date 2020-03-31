@@ -8,7 +8,7 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2;
+package com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.v2;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,7 +30,6 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.TPOChannelPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
-import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelNonSignAssembly;
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,15 +45,11 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
 @Service("operationTpoPanelAssembly")
 public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
 
-    public OperationTpoPanelAssembly(DisplayClient displayClient,
-            RecommendReadMapper recommendReadMapper){
+    public OperationTpoPanelAssembly(DisplayClient displayClient){
         this.displayClient = displayClient;
-        this.recommendReadMapper = recommendReadMapper;
     }
 
     private final DisplayClient displayClient;
-
-    private final RecommendReadMapper recommendReadMapper;
 
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {

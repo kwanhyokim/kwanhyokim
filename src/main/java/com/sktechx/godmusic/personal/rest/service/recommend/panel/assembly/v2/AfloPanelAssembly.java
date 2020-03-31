@@ -8,7 +8,7 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2;
+package com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.v2;
 
 import java.util.*;
 import java.util.stream.Collectors;

@@ -8,7 +8,7 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly;
+package com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
@@ -74,7 +74,7 @@ public class VisitPhasePanelAssembly extends PanelSignAssembly {
     }
 
     private boolean isDefaultPanelAppend(int panelSize){
-        return PREFER_GENRE_POPULAR_CHNL_LIST_SIZE > panelSize ? true : false;
+        return PREFER_GENRE_POPULAR_CHNL_LIST_SIZE > panelSize;
     }
 
 }

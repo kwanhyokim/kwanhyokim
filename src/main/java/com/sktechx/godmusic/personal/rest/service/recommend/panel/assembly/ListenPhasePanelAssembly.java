@@ -8,7 +8,7 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly;
+package com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,15 +83,15 @@ public class ListenPhasePanelAssembly extends PanelSignAssembly {
 
     }
     private boolean isAppendSimilarTrackPanel(int panelListSize){
-        return PREFER_GENRE_SIMILAR_PANEL_SIZE > panelListSize ? true : false ;
+        return PREFER_GENRE_SIMILAR_PANEL_SIZE > panelListSize;
     }
 
     private boolean isAppendPreferGenreChannelPanel(int panelListSize){
-        return ( SIMILAR_TRACK_PANEL_SIZE+ LISTEN_MOOD_POPULAR_PANEL_SIZE ) > panelListSize ? true : false ;
+        return (SIMILAR_TRACK_PANEL_SIZE + LISTEN_MOOD_POPULAR_PANEL_SIZE) > panelListSize;
     }
 
     private boolean isAppendDefaultPanel(int panelListSize){
-        return ( SIMILAR_TRACK_PANEL_SIZE+ LISTEN_MOOD_POPULAR_PANEL_SIZE )  > panelListSize ? true : false;
+        return (SIMILAR_TRACK_PANEL_SIZE + LISTEN_MOOD_POPULAR_PANEL_SIZE) > panelListSize;
     }
 
 }

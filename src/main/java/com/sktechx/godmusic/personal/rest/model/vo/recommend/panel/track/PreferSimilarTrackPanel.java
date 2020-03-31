@@ -38,7 +38,7 @@ public class PreferSimilarTrackPanel extends TrackPanel {
                 SIMILAR_TRACK_PANEL_TITLE ,
                 SIMILAR_TRACK_PANEL_SUB_TITLE,
                 SIMILAR_TRACK_PANEL_TITLE,
-                neverRecommdnTrackNull(recommendTrackDto) ,
+                recommendTrackDto,
                 bgImgList
         );
 

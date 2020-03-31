@@ -8,7 +8,7 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2;
+package com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.v2;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -85,9 +85,13 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
             final List<Panel> panelList) {
 
         List<RecommendTrackDto> recommendCfTrackList =
-                Optional.ofNullable(recommendReadMapper.selectRecommendCfTrackListByCharacterNo(personalPhaseMeta.getCharacterNo(),
-                        4, RCMMD_CF_TRACK_LIMIT_SIZE, personalPhaseMeta.getOsType()))
-                .orElseGet(Collections::emptyList);
+                recommendReadService.getRecommendForMeFloListWithTrackByCharacterNo(
+                        personalPhaseMeta.getCharacterNo(),
+                        4,
+                        RCMMD_CF_TRACK_LIMIT_SIZE,
+                        personalPhaseMeta.getOsType()
+                )
+                ;
 
         for(RecommendTrackDto recommendTrackDto :
                 recommendCfTrackList

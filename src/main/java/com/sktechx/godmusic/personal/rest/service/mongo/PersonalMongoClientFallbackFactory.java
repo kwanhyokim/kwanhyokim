@@ -9,6 +9,8 @@
 
 package com.sktechx.godmusic.personal.rest.service.mongo;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.personal.common.domain.ListResponse;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.vo.like.*;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenDeleteTrackRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendUpdateRequest;
@@ -125,6 +128,49 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
                 log.warn("{}@deleteLikes-fallback, message={}", characterNo, throwable.getMessage());
                 return new CommonApiResponse<>(null);
             }
+
+            @Override
+            public CommonApiResponse<List<RecommendPanelTrackDto>> getRecommendTrackListByRcmmdTypeAndRcmmdId(
+                    String rcmmdType, Long rcmmdId, Long characterNo, int size) {
+                log.warn("{}@getRecommendTrackListByRcmmdTypeAndRcmmdId-fallback, message={}", characterNo, throwable.getMessage());
+                return new CommonApiResponse<>(null);
+            }
+
+            @Override
+            public CommonApiResponse<RecommendArtistDto> getRecommendArtistFlo(Long rcmmdId,
+                    Long characterNo) {
+                log.warn("{}@getRecommendArtistFlo-fallback, message={}", characterNo, throwable.getMessage());
+                return new CommonApiResponse<>(null);
+            }
+
+            @Override
+            public CommonApiResponse<RecommendForMeDto> getRecommendFormeFlo(Long rcmmdId,
+                    Long characterNo) {
+                log.warn("{}@getRecommendFormeFlo-fallback, message={}", characterNo, throwable.getMessage());
+                return new CommonApiResponse<>(null);
+            }
+
+            @Override
+            public CommonApiResponse<RecommendSimilarTrackDto> getRecommendTodayFlo(Long rcmmdId,
+                    Long characterNo) {
+                log.warn("{}@getRecommendTodayFlo-fallback, message={}", characterNo, throwable.getMessage());
+                return new CommonApiResponse<>(null);
+            }
+
+            @Override
+            public CommonApiResponse<ListDto<List<RecommendSimilarTrackDto>>> getRecommendTodayFloListByCharacterNo(
+                    Long characterNo) {
+                log.warn("{}@getRecommendTodayFloListByCharacterNo-fallback, message={}", characterNo, throwable.getMessage());
+                return new CommonApiResponse<>(null);
+            }
+            @Override
+            public CommonApiResponse<ListDto<List<RecommendTrackDto>>> getRecommendTodayFloListWithTrackByCharacterNo(
+                    Long characterNo) {
+                log.warn("{}@getRecommendTodayFloListWithTrackByCharacterNo-fallback, message={}", characterNo, throwable.getMessage());
+                return new CommonApiResponse<>(null);
+            }
+
+
             @Override
             public CommonApiResponse<Long> updateRecommendDelTargetYn(Long characterNo,
                     String rcmmdType, Long rcmmdId, RecommendUpdateRequest request) {

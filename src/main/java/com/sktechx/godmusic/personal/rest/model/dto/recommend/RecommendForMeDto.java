@@ -5,7 +5,7 @@ import java.util.Date;
 import lombok.Data;
 
 @Data
-public class RecommendGenreVo {
+public class RecommendForMeDto {
     private String svcGenreNm;
     private Date dispStdStartDt;
     private Date createDtime;

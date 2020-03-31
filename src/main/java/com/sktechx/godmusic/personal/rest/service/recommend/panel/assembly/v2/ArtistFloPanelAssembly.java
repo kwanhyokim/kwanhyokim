@@ -8,7 +8,7 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2;
+package com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.v2;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.CreateStdType;
 import com.sktechx.godmusic.personal.common.util.BooleanComparator;
-import com.sktechx.godmusic.personal.common.util.DateUtil;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
@@ -62,18 +61,10 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
 
     @Override
     protected void appendPreferArtistPopularTrackPanel(final PersonalPhaseMeta personalPhaseMeta, final List<Panel> panelList) {
-
-        List<RecommendArtistDto> recommendArtistDtoList = recommendReadMapper.selectRecommendArtistByCharacterNo(
-
-                personalPhaseMeta.getCharacterNo(),
-
-                DateUtil.dateToString(
-                        Optional.of(
-                                recommendReadMapper.selectRecommendArtistMostRecentDispDateByCharacterNo(personalPhaseMeta.getCharacterNo())
-                        ).get()
-                        , "yyyyMMdd")
-
-        );
+        List<RecommendArtistDto> recommendArtistDtoList =
+                recommendReadService.getRecommendArtistFloListByCharacterNo(
+                        personalPhaseMeta.getCharacterNo()
+                );
 
         Stream.concat(
             Optional.ofNullable(recommendArtistDtoList).orElseGet(Collections::emptyList).stream()

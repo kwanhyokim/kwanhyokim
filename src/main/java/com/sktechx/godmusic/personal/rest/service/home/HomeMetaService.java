@@ -1,4 +1,4 @@
-package com.sktechx.godmusic.personal.rest.service;
+package com.sktechx.godmusic.personal.rest.service.home;
 
 /*
  * Copyright (c) 2019 DreamusCompany
