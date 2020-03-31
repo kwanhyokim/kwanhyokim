@@ -100,7 +100,7 @@
 
     <select id="findAllReceivedBadgeListByCharacterNo" resultMap="badgeIssueDetail">
         SELECT  a.badge_issu_id,
-                a.badge_nm,
+                b.badge_nm,
                 b.issu_af_img_url,
                 c.badge_type
         FROM    tb_badge_issue a
