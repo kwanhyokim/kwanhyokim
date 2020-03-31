@@ -45,6 +45,7 @@
                 b.badge_desc,
                 b.issu_af_img_url,
                 b.use_yn,
+                c.badge_type,
                 c.badge_ui_type,
                 c.background_rgb_value
         FROM    tb_badge_issue a
@@ -85,6 +86,7 @@
                 b.badge_desc,
                 b.issu_af_img_url,
                 b.use_yn,
+                c.badge_type,
                 c.badge_ui_type,
                 c.background_rgb_value
         FROM    tb_badge_issue a
@@ -99,7 +101,7 @@
     <select id="findAllReceivedBadgeListByCharacterNo" resultMap="badgeIssueDetail">
         SELECT  a.badge_issu_id,
                 a.badge_nm
-                a.issu_af_img_url,
+                b.issu_af_img_url,
                 c.badge_type
         FROM    tb_badge_issue a
         JOIN    tb_badge b ON a.badge_id = b.badge_id
