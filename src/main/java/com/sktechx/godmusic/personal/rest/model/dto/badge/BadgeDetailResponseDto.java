@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.model.dto.badge;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sktechx.godmusic.personal.rest.domain.badge.BadgeIssueDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import lombok.Getter;
@@ -33,12 +34,14 @@ public class BadgeDetailResponseDto {
     // App UI Type
     private String uiType;
 
-    // 배지 이름 (장르주의자의 경우 장르명까지 배지 이름에 포함됨)
+    // 배지 이름
     private String title;
     // 배지 내용
     private String description;
     // 배지 이미지
     private String badgeImgUrl;
+    // 배지 배경 컬러 코드
+    private String bgColorCode;
 
     // 부가 노출 텍스트 ex) 곡명, 아티스트명
     private String subTitle1;
@@ -51,12 +54,17 @@ public class BadgeDetailResponseDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd", timezone = "Asia/Seoul")
     private Date issueDtime;
 
+    @JsonIgnore
+    private String badgeType;
+
     public BadgeDetailResponseDto(BadgeIssueDto badgeIssue) {
         this.badgeIssueId = badgeIssue.getBadgeIssuId();
         this.uiType = badgeIssue.getBadgeTypeDto().getBadgeUiType();
         this.title = badgeIssue.getBadgeDto().getBadgeNm();
         this.description = badgeIssue.getBadgeDto().getBadgeDesc();
         this.badgeImgUrl = badgeIssue.getBadgeDto().getIssuAfImgUrl();
+        this.bgColorCode = badgeIssue.getBadgeTypeDto().getBackgroundRgbValue();
+        this.badgeType = badgeIssue.getBadgeTypeDto().getBadgeType();
         this.issueDtime = badgeIssue.getIssuDtime();
     }
 

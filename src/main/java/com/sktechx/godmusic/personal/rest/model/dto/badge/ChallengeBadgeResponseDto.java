@@ -25,15 +25,11 @@ import lombok.ToString;
 public class ChallengeBadgeResponseDto {
     private String title;
     private String badgeImgUrl;
-
-    // TODO 추후 삭제
-    public ChallengeBadgeResponseDto(String title, String badgeImgUrl) {
-        this.title = title;
-        this.badgeImgUrl = badgeImgUrl;
-    }
+    private String bgColorCode;
 
     public ChallengeBadgeResponseDto(BadgeTypeDto badgeTypeDto) {
         this.title = badgeTypeDto.getBadgeTypeNm();
         this.badgeImgUrl = badgeTypeDto.getIssuBfImgUrl();
+        this.bgColorCode = badgeTypeDto.getBackgroundRgbValue();
     }
 }

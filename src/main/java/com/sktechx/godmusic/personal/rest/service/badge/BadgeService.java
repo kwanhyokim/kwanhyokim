@@ -13,7 +13,6 @@ package com.sktechx.godmusic.personal.rest.service.badge;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDetailResponseDto;
 import com.sktechx.godmusic.personal.rest.model.dto.badge.ChallengeBadgeResponseDto;
-import com.sktechx.godmusic.personal.rest.model.dto.badge.ReceivedBadgeResponseDto;
 import com.sktechx.godmusic.personal.rest.model.vo.badge.NewBadgeExistCheckVo;
 
 import java.util.List;
@@ -34,9 +33,9 @@ public interface BadgeService {
 
     List<BadgeDetailResponseDto> getAllNewBadgeList(Long characterNo);
 
-    List<ReceivedBadgeResponseDto> getAllReceivedBadgeList(Long characterNo);
+    List<BadgeDetailResponseDto> getAllReceivedBadgeList(Long characterNo);
 
     List<ChallengeBadgeResponseDto> getAllChallengeBadgeList(Long characterNo,
-                                                             List<ReceivedBadgeResponseDto> receivedBadgeList);
+                                                             List<BadgeDetailResponseDto> receivedBadgeList);
 
 }

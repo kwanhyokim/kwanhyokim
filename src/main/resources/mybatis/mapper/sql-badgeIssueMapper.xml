@@ -54,7 +54,7 @@
         AND     b.use_yn = 'Y'
     </select>
 
-    <select id="findBadgeIssueByCharacterNo"
+    <select id="findAllBadgeIssueDtimeByCharacterNo"
             resultType="com.sktechx.godmusic.personal.rest.domain.badge.BadgeIssueDto">
         SELECT  a.badge_issu_id,
                 a.issu_dtime
@@ -75,7 +75,7 @@
         AND     character_no = #{characterNo}
     </update>
     
-    <select id="findAllNewBadgeList" resultMap="badgeIssueDetail">
+    <select id="findAllNewBadgeListByCharacterNo" resultMap="badgeIssueDetail">
         SELECT  a.badge_issu_id,
                 a.badge_id,
                 a.issu_type,
@@ -96,7 +96,7 @@
         ORDER BY    a.create_dtime DESC
     </select>
 
-    <select id="findAllReceivedBadgeList" resultMap="badgeIssueDetail">
+    <select id="findAllReceivedBadgeListByCharacterNo" resultMap="badgeIssueDetail">
         SELECT  a.badge_issu_id,
                 a.badge_nm
                 a.issu_af_img_url,
