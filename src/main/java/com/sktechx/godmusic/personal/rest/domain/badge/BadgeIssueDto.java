@@ -8,7 +8,7 @@
  * you entered into with DREAMUS COMPANY.
  */
 
-package com.sktechx.godmusic.personal.rest.model.dto.badge;
+package com.sktechx.godmusic.personal.rest.domain.badge;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;

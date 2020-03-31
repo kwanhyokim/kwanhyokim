@@ -24,10 +24,10 @@ import java.util.List;
 @Getter
 @ToString
 public class AllBadgeListResponseDto {
-    private List<MyBadgeResponseDto> receivedBadgeList;
+    private List<ReceivedBadgeResponseDto> receivedBadgeList;
     private List<ChallengeBadgeResponseDto> challengeBadgeList;
 
-    public AllBadgeListResponseDto(List<MyBadgeResponseDto> receivedBadgeList,
+    public AllBadgeListResponseDto(List<ReceivedBadgeResponseDto> receivedBadgeList,
                                    List<ChallengeBadgeResponseDto> challengeBadgeList) {
         this.receivedBadgeList = receivedBadgeList;
         this.challengeBadgeList = challengeBadgeList;

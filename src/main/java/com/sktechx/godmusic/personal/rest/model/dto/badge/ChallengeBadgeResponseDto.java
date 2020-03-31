@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto.badge;
 
+import com.sktechx.godmusic.personal.rest.domain.badge.BadgeTypeDto;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -31,8 +32,8 @@ public class ChallengeBadgeResponseDto {
         this.badgeImgUrl = badgeImgUrl;
     }
 
-    public ChallengeBadgeResponseDto(BadgeTypeDto entity) {
-        this.title = entity.getBadgeTypeNm();
-        this.badgeImgUrl = entity.getIssuBfImgUrl();
+    public ChallengeBadgeResponseDto(BadgeTypeDto badgeTypeDto) {
+        this.title = badgeTypeDto.getBadgeTypeNm();
+        this.badgeImgUrl = badgeTypeDto.getIssuBfImgUrl();
     }
 }

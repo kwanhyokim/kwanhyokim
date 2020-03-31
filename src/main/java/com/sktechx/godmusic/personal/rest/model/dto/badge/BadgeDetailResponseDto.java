@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.model.dto.badge;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.sktechx.godmusic.personal.rest.domain.badge.BadgeIssueDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import lombok.Getter;
 import lombok.ToString;
@@ -50,13 +51,13 @@ public class BadgeDetailResponseDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd", timezone = "Asia/Seoul")
     private Date issueDtime;
 
-    public BadgeDetailResponseDto(BadgeIssueDto entity) {
-        this.badgeIssueId = entity.getBadgeIssuId();
-        this.uiType = entity.getBadgeTypeDto().getBadgeUiType();
-        this.title = entity.getBadgeDto().getBadgeNm();
-        this.description = entity.getBadgeDto().getBadgeDesc();
-        this.badgeImgUrl = entity.getBadgeDto().getIssuAfImgUrl();
-        this.issueDtime = entity.getIssuDtime();
+    public BadgeDetailResponseDto(BadgeIssueDto badgeIssue) {
+        this.badgeIssueId = badgeIssue.getBadgeIssuId();
+        this.uiType = badgeIssue.getBadgeTypeDto().getBadgeUiType();
+        this.title = badgeIssue.getBadgeDto().getBadgeNm();
+        this.description = badgeIssue.getBadgeDto().getBadgeDesc();
+        this.badgeImgUrl = badgeIssue.getBadgeDto().getIssuAfImgUrl();
+        this.issueDtime = badgeIssue.getIssuDtime();
     }
 
     public void setUiType(String uiType) {
