@@ -16,10 +16,10 @@ import com.sktechx.godmusic.personal.common.util.DateUtil;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDetailResponseDto;
-import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeIssueDto;
-import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeTypeDto;
+import com.sktechx.godmusic.personal.rest.domain.badge.BadgeIssueDto;
+import com.sktechx.godmusic.personal.rest.domain.badge.BadgeTypeDto;
 import com.sktechx.godmusic.personal.rest.model.dto.badge.ChallengeBadgeResponseDto;
-import com.sktechx.godmusic.personal.rest.model.dto.badge.MyBadgeResponseDto;
+import com.sktechx.godmusic.personal.rest.model.dto.badge.ReceivedBadgeResponseDto;
 import com.sktechx.godmusic.personal.rest.model.vo.badge.NewBadgeExistCheckVo;
 import com.sktechx.godmusic.personal.rest.repository.BadgeIssueMapper;
 import com.sktechx.godmusic.personal.rest.repository.BadgeTypeMapper;
@@ -134,10 +134,10 @@ public class BadgeServiceImpl implements BadgeService {
      * 획득한 배지 목록 조회
      */
     @Override
-    public List<MyBadgeResponseDto> getAllMyReceivedBadgeList(Long characterNo) {
-        List<BadgeIssueDto> allMyReceivedBadgeList = badgeIssueMapper.findAllMyReceivedBadgeList(characterNo);
+    public List<ReceivedBadgeResponseDto> getAllReceivedBadgeList(Long characterNo) {
+        List<BadgeIssueDto> allMyReceivedBadgeList = badgeIssueMapper.findAllReceivedBadgeList(characterNo);
         return allMyReceivedBadgeList.stream()
-                .map(MyBadgeResponseDto::new)
+                .map(ReceivedBadgeResponseDto::new)
                 .collect(Collectors.toList());
     }
 
@@ -145,11 +145,11 @@ public class BadgeServiceImpl implements BadgeService {
      * 도전 중인 배지 목록 조회
      */
     @Override
-    public List<ChallengeBadgeResponseDto> getAllMyChallengeBadgeList(Long characterNo,
-                                                                      List<MyBadgeResponseDto> myBadgeResponseDtoList) {
+    public List<ChallengeBadgeResponseDto> getAllChallengeBadgeList(Long characterNo,
+                                                                    List<ReceivedBadgeResponseDto> receivedBadgeList) {
         List<BadgeTypeDto> badgeTypeDtoList = badgeTypeMapper.findAllBadgeType();
-        Set<String> receivedBadgeTypeSet = myBadgeResponseDtoList.stream()
-                .map(MyBadgeResponseDto::getBadgeType)
+        Set<String> receivedBadgeTypeSet = receivedBadgeList.stream()
+                .map(ReceivedBadgeResponseDto::getBadgeType)
                 .collect(Collectors.toSet());
 
         return badgeTypeDtoList.stream()

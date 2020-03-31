@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto.badge;
 
+import com.sktechx.godmusic.personal.rest.domain.badge.BadgeIssueDto;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -21,7 +22,7 @@ import lombok.ToString;
  */
 @Getter
 @ToString
-public class MyBadgeResponseDto {
+public class ReceivedBadgeResponseDto {
     private int badgeIssueId;
     private String title;
     private String badgeImgUrl;
@@ -29,16 +30,16 @@ public class MyBadgeResponseDto {
     private String badgeType;
 
     // TODO 추후 삭제
-    public MyBadgeResponseDto(int badgeIssueId, String title, String badgeImgUrl) {
+    public ReceivedBadgeResponseDto(int badgeIssueId, String title, String badgeImgUrl) {
         this.badgeIssueId = badgeIssueId;
         this.title = title;
         this.badgeImgUrl = badgeImgUrl;
     }
 
-    public MyBadgeResponseDto(BadgeIssueDto entity) {
-        this.badgeIssueId = entity.getBadgeIssuId();
-        this.title = entity.getBadgeDto().getBadgeNm();
-        this.badgeImgUrl = entity.getBadgeDto().getIssuAfImgUrl();
-        this.badgeType = entity.getBadgeTypeDto().getBadgeType();
+    public ReceivedBadgeResponseDto(BadgeIssueDto badgeIssue) {
+        this.badgeIssueId = badgeIssue.getBadgeIssuId();
+        this.title = badgeIssue.getBadgeDto().getBadgeNm();
+        this.badgeImgUrl = badgeIssue.getBadgeDto().getIssuAfImgUrl();
+        this.badgeType = badgeIssue.getBadgeTypeDto().getBadgeType();
     }
 }
