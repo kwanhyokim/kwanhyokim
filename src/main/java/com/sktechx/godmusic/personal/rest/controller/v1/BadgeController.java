@@ -18,7 +18,6 @@ import com.sktechx.godmusic.personal.rest.model.dto.badge.AllBadgeListResponseDt
 import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDetailListResponseDto;
 import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDetailResponseDto;
 import com.sktechx.godmusic.personal.rest.model.dto.badge.ChallengeBadgeResponseDto;
-import com.sktechx.godmusic.personal.rest.model.dto.badge.ReceivedBadgeResponseDto;
 import com.sktechx.godmusic.personal.rest.model.vo.badge.NewBadgeExistCheckVo;
 import com.sktechx.godmusic.personal.rest.service.badge.BadgeService;
 import io.swagger.annotations.Api;
@@ -54,8 +53,9 @@ public class BadgeController {
     public CommonApiResponse<AllBadgeListResponseDto> getBadgeList() {
         Long characterNo = GMContext.getContext().getCharacterNo();
 
-        List<ReceivedBadgeResponseDto> allReceivedBadgeList = badgeService.getAllReceivedBadgeList(characterNo);
+        List<BadgeDetailResponseDto> allReceivedBadgeList = badgeService.getAllReceivedBadgeList(characterNo);
         List<ChallengeBadgeResponseDto> allChallengeBadgeList = badgeService.getAllChallengeBadgeList(characterNo, allReceivedBadgeList);
+
         return new CommonApiResponse<>(new AllBadgeListResponseDto(allReceivedBadgeList, allChallengeBadgeList));
     }
 

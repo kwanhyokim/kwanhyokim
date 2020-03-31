@@ -28,14 +28,14 @@ public interface BadgeIssueMapper {
 
     BadgeIssueDto findByBadgeIssueId(@Param("badgeIssueId") int badgeIssueId);
 
-    List<BadgeIssueDto> findBadgeIssueByCharacterNo(@Param("characterNo") Long characterNo);
+    List<BadgeIssueDto> findAllBadgeIssueDtimeByCharacterNo(@Param("characterNo") Long characterNo);
 
     void updateConfirmDtimeAndOsType(@Param("badgeIssueId") int badgeIssueId,
                                      @Param("characterNo") Long characterNo,
                                      @Param("osType") OsType osType);
 
-    List<BadgeIssueDto> findAllNewBadgeList(@Param("characterNo") Long characterNo);
+    List<BadgeIssueDto> findAllNewBadgeListByCharacterNo(@Param("characterNo") Long characterNo);
 
-    List<BadgeIssueDto> findAllReceivedBadgeList(@Param("characterNo") Long characterNo);
+    List<BadgeIssueDto> findAllReceivedBadgeListByCharacterNo(@Param("characterNo") Long characterNo);
 
 }

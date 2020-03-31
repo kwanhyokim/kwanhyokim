@@ -14,12 +14,11 @@ import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
-import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
-import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDetailResponseDto;
 import com.sktechx.godmusic.personal.rest.domain.badge.BadgeIssueDto;
 import com.sktechx.godmusic.personal.rest.domain.badge.BadgeTypeDto;
+import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
+import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDetailResponseDto;
 import com.sktechx.godmusic.personal.rest.model.dto.badge.ChallengeBadgeResponseDto;
-import com.sktechx.godmusic.personal.rest.model.dto.badge.ReceivedBadgeResponseDto;
 import com.sktechx.godmusic.personal.rest.model.vo.badge.NewBadgeExistCheckVo;
 import com.sktechx.godmusic.personal.rest.repository.BadgeIssueMapper;
 import com.sktechx.godmusic.personal.rest.repository.BadgeTypeMapper;
@@ -50,24 +49,31 @@ public class BadgeServiceImpl implements BadgeService {
 
     /**
      * 배지 개별 상세 조회
-     *
-     * @return
      */
     @Override
     public BadgeDetailResponseDto getBadgeDetailResponseDtoByBadgeIssueId(int badgeIssueId) {
         BadgeIssueDto badgeIssueDto = badgeIssueMapper.findByBadgeIssueId(badgeIssueId);
         BadgeDetailResponseDto badgeDetailResponseDto = new BadgeDetailResponseDto(badgeIssueDto);
+        return this.appendIssueTargetInfoByBadgeType(badgeIssueDto, badgeDetailResponseDto);
+    }
 
+    /**
+     * BadgeType별 IssueTargetType에 따른 values 덧붙이기 (현재는 BA01, BA02만 해당)
+     */
+    private BadgeDetailResponseDto appendIssueTargetInfoByBadgeType(BadgeIssueDto badgeIssueDto,
+                                                                    BadgeDetailResponseDto badgeDetailResponseDto) {
         String badgeType = badgeIssueDto.getBadgeTypeDto().getBadgeType();
         switch (badgeType) {
             case "BA01":
+                this.appendTrackIssueTargetTypeInfo(badgeIssueDto.getIssuTypeId(), badgeDetailResponseDto);
                 badgeDetailResponseDto.setDescription(
                         String.format(badgeDetailResponseDto.getDescription(), badgeIssueDto.getListenCnt())
                 );
-                return this.appendToBadgeDetailResponseDtoByTrack(badgeIssueDto, badgeDetailResponseDto);
+                return badgeDetailResponseDto;
 
             case "BA02":
-                return this.appendToBadgeDetailResponseDtoByTrack(badgeIssueDto, badgeDetailResponseDto);
+                this.appendTrackIssueTargetTypeInfo(badgeIssueDto.getIssuTypeId(), badgeDetailResponseDto);
+                return badgeDetailResponseDto;
 
             default:
                 return badgeDetailResponseDto;
@@ -75,20 +81,18 @@ public class BadgeServiceImpl implements BadgeService {
     }
 
     /**
-     * BA01, BA02 일 경우
+     * IssueTargetType이 Track인 경우 value 덧붙이기
      */
-    private BadgeDetailResponseDto appendToBadgeDetailResponseDtoByTrack(BadgeIssueDto badgeIssueDto,
-                                                                         BadgeDetailResponseDto badgeDetailResponseDto) {
-        TrackDto trackDto = metaClient.track(Long.valueOf(badgeIssueDto.getIssuTypeId())).getData();
-        badgeDetailResponseDto.setSubTitle1(trackDto.getTrackNm());
-        badgeDetailResponseDto.setSubTitle2(trackDto.getArtist().getArtistName());
-        badgeDetailResponseDto.setSubImgList(trackDto.getAlbum().getImgList());
+    private void appendTrackIssueTargetTypeInfo(String issueTypeId, BadgeDetailResponseDto badgeDetailResponseDto) {
+        TrackDto floTrack = metaClient.track(Long.valueOf(issueTypeId)).getData();
+        badgeDetailResponseDto.setSubTitle1(floTrack.getTrackNm());
+        badgeDetailResponseDto.setSubTitle2(floTrack.getArtist().getArtistName());
+        badgeDetailResponseDto.setSubImgList(floTrack.getAlbum().getImgList());
 
         // 미권리곡일 경우
-        if (YnType.Y != trackDto.getSvcStreamingYn() && YnType.Y != trackDto.getSvcDrmYn()) {
+        if (YnType.Y != floTrack.getSvcStreamingYn() && YnType.Y != floTrack.getSvcDrmYn()) {
             badgeDetailResponseDto.setUiType("B");
         }
-        return badgeDetailResponseDto;
     }
 
     /**
@@ -96,7 +100,7 @@ public class BadgeServiceImpl implements BadgeService {
      */
     @Override
     public NewBadgeExistCheckVo getNewBadgeExistCheckVoByCharacterNo(Long characterNo) {
-        List<BadgeIssueDto> badgeIssueList = badgeIssueMapper.findBadgeIssueByCharacterNo(characterNo);
+        List<BadgeIssueDto> badgeIssueList = badgeIssueMapper.findAllBadgeIssueDtimeByCharacterNo(characterNo);
 
         Date now = new Date();
         for (BadgeIssueDto badgeIssue : badgeIssueList) {
@@ -121,12 +125,15 @@ public class BadgeServiceImpl implements BadgeService {
      */
     @Override
     public List<BadgeDetailResponseDto> getAllNewBadgeList(Long characterNo) {
-        List<BadgeIssueDto> allNewBadgeList = badgeIssueMapper.findAllNewBadgeList(characterNo);
         Date now = new Date();
 
-        return allNewBadgeList.stream()
+        return badgeIssueMapper.findAllNewBadgeListByCharacterNo(characterNo)
+                .stream()
                 .filter(badgeIssue -> DateUtil.getAfterDays(now, badgeIssue.getIssuDtime()) <= 30)
-                .map(BadgeDetailResponseDto::new)
+                .map(badgeIssueDto -> {
+                    BadgeDetailResponseDto badgeDetailResponseDto = new BadgeDetailResponseDto(badgeIssueDto);
+                    return this.appendIssueTargetInfoByBadgeType(badgeIssueDto, badgeDetailResponseDto);
+                })
                 .collect(Collectors.toList());
     }
 
@@ -134,10 +141,13 @@ public class BadgeServiceImpl implements BadgeService {
      * 획득한 배지 목록 조회
      */
     @Override
-    public List<ReceivedBadgeResponseDto> getAllReceivedBadgeList(Long characterNo) {
-        List<BadgeIssueDto> allMyReceivedBadgeList = badgeIssueMapper.findAllReceivedBadgeList(characterNo);
-        return allMyReceivedBadgeList.stream()
-                .map(ReceivedBadgeResponseDto::new)
+    public List<BadgeDetailResponseDto> getAllReceivedBadgeList(Long characterNo) {
+        return badgeIssueMapper.findAllReceivedBadgeListByCharacterNo(characterNo)
+                .stream()
+                .map(badgeIssueDto -> {
+                    BadgeDetailResponseDto badgeDetailResponseDto = new BadgeDetailResponseDto(badgeIssueDto);
+                    return this.appendIssueTargetInfoByBadgeType(badgeIssueDto, badgeDetailResponseDto);
+                })
                 .collect(Collectors.toList());
     }
 
@@ -146,10 +156,10 @@ public class BadgeServiceImpl implements BadgeService {
      */
     @Override
     public List<ChallengeBadgeResponseDto> getAllChallengeBadgeList(Long characterNo,
-                                                                    List<ReceivedBadgeResponseDto> receivedBadgeList) {
+                                                                    List<BadgeDetailResponseDto> receivedBadgeList) {
         List<BadgeTypeDto> badgeTypeDtoList = badgeTypeMapper.findAllBadgeType();
         Set<String> receivedBadgeTypeSet = receivedBadgeList.stream()
-                .map(ReceivedBadgeResponseDto::getBadgeType)
+                .map(BadgeDetailResponseDto::getBadgeType)
                 .collect(Collectors.toSet());
 
         return badgeTypeDtoList.stream()
