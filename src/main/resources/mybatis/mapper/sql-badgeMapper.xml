@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2020 DREAMUS COMPANY.
+  ~ All right reserved.
+  ~
+  ~ This software is the confidential and proprietary information of DREAMUS COMPANY.
+  ~ You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with DREAMUS COMPANY.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.BadgeMapper">
+
+    <select id="findAll" resultType="com.sktechx.godmusic.personal.rest.domain.badge.BadgeDto">
+        SELECT  a.badge_id,
+                a.badge_nm
+        FROM    tb_badge a
+    </select>
+
+</mapper>
