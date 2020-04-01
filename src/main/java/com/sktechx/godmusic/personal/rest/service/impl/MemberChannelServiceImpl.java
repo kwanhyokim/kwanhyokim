@@ -139,9 +139,12 @@ public class MemberChannelServiceImpl implements MemberChannelService {
         }
 
         MemberChannelDto memberChannelDto = getMemberChannel(memberNo, characterNo, memberChannelId);
-        if (memberChannelDto.getPinType() != null) {
-            list = list.stream().sorted(Comparator.comparing(TrackDto::getTrackSn)).collect(Collectors.toList());
-        }
+
+        // Note. pinTpype 이 존재하는 채널에도 곡을 추가할 수 있기 때문에
+        //       일반채널과 동일하게 update_dtime_desc + track_sn_asc 로 정렬하도록 한다.
+        // if (memberChannelDto.getPinType() != null) {
+        //    list = list.stream().sorted(Comparator.comparing(TrackDto::getTrackSn)).collect(Collectors.toList());
+        // }
 
         long totalCount = memberChannelTrackMapper.selectMemberChannelTrackListCount(memberNo, characterNo, memberChannelId);
 
