@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
@@ -38,9 +37,13 @@ public class BadgeTestController {
      * 배지 테스트 데이터 index 페이지
      */
     @GetMapping("/index")
-    public String testBadge(Model model) {
+    public String testBadge(Model model,
+                            @RequestParam(value = "successMsg", required = false) String successMsg,
+                            @RequestParam(value = "errorMsg", required = false) String errorMsg) {
         List<BadgeDto> badgeList = badgeMapper.findAll();
         model.addAttribute("badgeList", badgeList);
+        model.addAttribute("successMsg" ,successMsg);
+        model.addAttribute("errorMsg", errorMsg);
         return "testBadgeIndex";
     }
 
@@ -59,16 +62,15 @@ public class BadgeTestController {
      * 배지 테스트 데이터 생성
      */
     @PostMapping("/save")
-    public String testReceivedBadge(RedirectAttributes redirectAttributes,
-                                    @RequestParam("characterNo") String characterNo,
+    public String testReceivedBadge(@RequestParam("characterNo") String characterNo,
                                     @RequestParam("badgeId") int badgeId) {
         int badgeTypeId = badgeMapper.findByBadgeId(badgeId);
         String badgeType = badgeTypeMapper.findByBadgeTypeId(badgeTypeId);
         Long characterNoParseLong = Long.valueOf(characterNo);
 
         if (null != badgeIssueMapper.findByCharacterNoAndBadgeId(characterNoParseLong, badgeId)) {
-            redirectAttributes.addFlashAttribute("errorMsg", "이미 해당 캐릭터에 해당 배지가 존재합니다.");
-            return "redirect:/personal/test/badge/index";
+            String errorMsg = "FAIL - The badge already exists.";
+            return "redirect:/personal/test/badge/index?errorMsg=" + errorMsg;
         }
 
         switch (badgeType) {
@@ -94,8 +96,8 @@ public class BadgeTestController {
                 break;
         }
 
-        redirectAttributes.addFlashAttribute("successMsg", "배지가 획득되었습니다.");
-        return "redirect:/personal/test/badge/index";
+        String successMsg = "SUCCESS - Got a badge.";
+        return "redirect:/personal/test/badge/index?successMsg=" + successMsg;
     }
 
     @GetMapping("/delete")

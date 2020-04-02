@@ -141,6 +141,9 @@
             <if test="listenCnt != 0">
                 #{listenCnt},
             </if>
+            <if test="listenCnt == 0">
+                null,
+            </if>
             NOW(),
             NOW()
         )
