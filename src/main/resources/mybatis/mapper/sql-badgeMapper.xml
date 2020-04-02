@@ -20,4 +20,10 @@
         FROM    tb_badge a
     </select>
 
+    <select id="findByBadgeId" resultType="int">
+        SELECT  badge_type_id
+        FROM    tb_badge
+        WHERE   badge_id = #{badgeId}
+    </select>
+
 </mapper>
