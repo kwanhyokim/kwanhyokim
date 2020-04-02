@@ -34,7 +34,7 @@
             <result property="backgroundRgbValue" column="background_rgb_value"/>
         </association>
     </resultMap>
-    
+
     <select id="findByBadgeIssueId" resultMap="badgeIssueDetail">
         SELECT  a.badge_issu_id,
                 a.badge_id,
@@ -76,7 +76,7 @@
         WHERE   badge_issu_id = #{badgeIssueId}
         AND     character_no = #{characterNo}
     </update>
-    
+
     <select id="findAllNewBadgeListByCharacterNo" resultMap="badgeIssueDetail">
         SELECT  a.badge_issu_id,
                 a.badge_id,
@@ -121,5 +121,41 @@
         AND     b.use_yn = 'Y'
         ORDER BY    a.create_dtime DESC
     </select>
+
+    <insert id="testSaveBadgeIssue">
+        INSERT INTO tb_badge_issue (
+            character_no,
+            badge_id,
+            issu_type,
+            issu_type_id,
+            issu_dtime,
+            listen_cnt,
+            update_dtime,
+            create_dtime
+        ) VALUES (
+            #{characterNo},
+            #{badgeId},
+            #{issueType},
+            #{issueTypeId},
+            NOW(),
+            <if test="listenCnt != 0">
+                #{listenCnt},
+            </if>
+            NOW(),
+            NOW()
+        )
+    </insert>
+
+    <select id="findByCharacterNoAndBadgeId" resultType="com.sktechx.godmusic.personal.rest.domain.badge.BadgeIssueDto">
+        SELECT  badge_issu_id
+        FROM    tb_badge_issue
+        WHERE   character_no = #{characterNo}
+        AND     badge_id = #{badgeId}
+    </select>
+
+    <delete id="testDeleteByBadgeIssueId">
+        DELETE FROM tb_badge_issue
+        WHERE   badge_issu_id = #{badgeIssueId}
+    </delete>
 
 </mapper>

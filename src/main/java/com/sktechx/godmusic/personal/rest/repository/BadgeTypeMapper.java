@@ -26,4 +26,6 @@ public interface BadgeTypeMapper {
 
     List<BadgeTypeDto> findAllBadgeType();
 
+    String findByBadgeTypeId(int badgeTypeId);
+
 }

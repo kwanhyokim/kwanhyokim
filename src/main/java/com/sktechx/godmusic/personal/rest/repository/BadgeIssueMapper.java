@@ -38,4 +38,15 @@ public interface BadgeIssueMapper {
 
     List<BadgeIssueDto> findAllReceivedBadgeListByCharacterNo(@Param("characterNo") Long characterNo);
 
+    void testSaveBadgeIssue(@Param("characterNo") Long characterNo,
+                            @Param("badgeId") int badgeId,
+                            @Param("issueType") String issueType,
+                            @Param("issueTypeId") String issueTypeId,
+                            @Param("listenCnt") int listenCnt);
+
+    BadgeIssueDto findByCharacterNoAndBadgeId(@Param("characterNo") Long characterNo,
+                                              @Param("badgeId") int badgeId);
+
+    void testDeleteByBadgeIssueId(@Param("badgeIssueId") int badgeIssueId);
+
 }

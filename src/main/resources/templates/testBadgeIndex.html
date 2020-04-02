@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,target-densitydpi=medium-dpi">
+    <meta http-equiv="Expires" content="-1"/>
+    <meta http-equiv="Pragma" content="no-store, no-cache"/>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+            integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
+
+    <title>배지 테스트 데이터 Page</title>
+
+    <style>
+        @import url(//fonts.googleapis.com/earlyaccess/nanumgothic.css);
+
+        * {
+            font-family: "Nanum Gothic";
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <nav class="navbar navbar-light bg-light">
+        <span class="navbar-brand mb-0 h1">이곳은 칭찬(배지) 테스트 데이터 관리 페이지입니다.</span>
+    </nav>
+
+    <div class="alert alert-success" role="alert">
+        <h4 class="alert-heading">제공 기능</h4>
+        <hr>
+        <p>* 캐릭터 번호로 보유한 배지 리스트 조회</p>
+        <p>* 보유한 배지 삭제 (배지 리스트 조회 화면에서 가능합니다.)</p>
+        <p>* 배지 획득</p>
+        <hr>
+        <p class="mb-0 text-right">Developed By Groot</p>
+    </div>
+
+    <hr/>
+    <hr/>
+    <hr/>
+
+    <div class="card">
+        <div class="card-header">
+            해당 캐릭터가 획득한 배지 조회 기능
+        </div>
+        <div class="card-body">
+            <form action="/personal/test/badge/all" method="get">
+                <div class="form-group row">
+                    <label for="characterNo-received" class="col-sm-2 col-form-label">캐릭터 번호</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="characterNo-received" name="characterNo"
+                               placeholder="캐릭터 번호를 입력하세요." required="required"/>
+                    </div>
+                </div>
+
+                <div>
+                    <button class="btn btn-outline-primary btn-sm" type="submit">획득한 배지 조회</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <hr/>
+    <hr/>
+    <hr/>
+
+    <div class="card">
+        <div class="card-header">
+            해당 캐릭터에 특정 배지 추가하기
+        </div>
+        <div class="card-body">
+            <form action="/personal/test/badge/save" method="post">
+                <div class="form-group row">
+                    <label for="characterNo" class="col-sm-2 col-form-label">캐릭터 번호</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="characterNo" name="characterNo"
+                               placeholder="캐릭터 번호를 입력하세요." required="required"/>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="badge" class="col-sm-2 col-form-label">배지 선택</label>
+                    <div class="col-sm-4">
+                        <select class="form-control" id="badge" name="badgeId">
+                            <option th:each="badge : ${badgeList}"
+                                    th:value="${badge.badgeId}"
+                                    th:text="${badge.badgeNm}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <button class="btn btn-outline-primary btn-sm" type="submit">저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <hr/>
+
+    <div>
+        <div class="alert alert-danger" role="alert" th:if="${errorMsg} != null" th:text="${errorMsg}"></div>
+        <div class="alert alert-success" role="alert" th:if="${successMsg} != null" th:text="${successMsg}"></div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -24,4 +24,10 @@
         ORDER BY a.disp_sn
     </select>
 
+    <select id="findByBadgeTypeId" resultType="string">
+        SELECT  badge_type
+        FROM    tb_badge_type
+        WHERE   badge_type_id = #{badgeTypeId}
+    </select>
+
 </mapper>

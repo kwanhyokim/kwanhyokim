@@ -16,4 +16,6 @@ public interface BadgeMapper {
 
     List<BadgeDto> findAll();
 
+    int findByBadgeId(int badgeId);
+
 }
