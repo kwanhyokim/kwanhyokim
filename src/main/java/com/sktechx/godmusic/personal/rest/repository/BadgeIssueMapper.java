@@ -26,7 +26,8 @@ import java.util.List;
 @BaseMapper
 public interface BadgeIssueMapper {
 
-    BadgeIssueDto findByBadgeIssueId(@Param("badgeIssueId") int badgeIssueId);
+    BadgeIssueDto findByCharacterNoAndBadgeIssueId(@Param("characterNo") Long characterNo,
+                                                   @Param("badgeIssueId") int badgeIssueId);
 
     List<BadgeIssueDto> findAllBadgeIssueDtimeByCharacterNo(@Param("characterNo") Long characterNo);
 
