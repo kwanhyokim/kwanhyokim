@@ -152,6 +152,12 @@ public class RecommendPanelController {
 
 		playListDto.setDescription("취향인 곡이 없어 일반 순위가 표시됩니다.");
 
+		if("Y".equals(mixYn)) {
+			playListDto.setMixStatusMsg("인기 순서의 일반 FLO 차트로 변경했습니다.");
+		}else{
+			playListDto.setMixStatusMsg("FLO 차트를 내 취향 순서로 변경했습니다.");
+		}
+
 		return new CommonApiResponse<>(playListDto);
 
 	}
