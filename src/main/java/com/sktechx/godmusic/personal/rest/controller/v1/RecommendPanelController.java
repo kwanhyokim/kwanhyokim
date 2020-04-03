@@ -143,6 +143,13 @@ public class RecommendPanelController {
 
 		PlayListDto playListDto = metaClient.chart(chartId).getData();
 
+		if(chartId == 1) {
+			playListDto.setName("FLO 차트 내 취향 MIX");
+		}else {
+			playListDto.setName("키즈 차트 내 취향 MIX");
+		}
+
+
 		playListDto.setDescription("취향인 곡이 없어 일반 순위가 표시됩니다.");
 
 		return new CommonApiResponse<>(playListDto);
