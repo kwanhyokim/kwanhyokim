@@ -77,7 +77,7 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
 
         mergePanelList(panelList, myPanelList, chartPanelList, 6);
 
-        sort(personalPhaseMeta , panelList);
+//        sort(personalPhaseMeta , panelList);
 
     }
 

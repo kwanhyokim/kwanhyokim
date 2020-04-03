@@ -136,6 +136,8 @@ public abstract class PanelAssembly {
                     chartPanel.getContent().setType(RecommendPanelContentType.PRI_CHART);
                 }
 
+                log.info("XXXXXXXXX {}", chartPanel);
+
                 return chartPanel;
             }catch(Exception e){
                 log.error("create chart panel failed.");
@@ -173,12 +175,19 @@ public abstract class PanelAssembly {
         Optional<Panel> liveChartPanel = Optional.ofNullable(chartPanelList)
                 .orElseGet(Collections::emptyList)
                 .stream()
-                .filter(panel -> RecommendPanelType.LIVE_CHART.equals(panel.getType()))
+                .filter(
+                        panel ->
+                                RecommendPanelType.LIVE_CHART.equals(panel.getType()) ||
+                                        RecommendPanelType.PRI_LIVE_CHART.equals(panel.getType())
+                )
                 .findFirst();
         Optional<Panel> kidsChartPanel = Optional.ofNullable(chartPanelList)
                 .orElseGet(Collections::emptyList)
                 .stream()
-                .filter(panel -> RecommendPanelType.KIDS_CHART.equals(panel.getType()))
+                .filter(
+                        panel -> RecommendPanelType.KIDS_CHART.equals(panel.getType()) ||
+                                RecommendPanelType.PRI_KIDS_CHART.equals(panel.getType())
+                )
                 .findFirst();
 
         if(liveChartPanel.isPresent()){
