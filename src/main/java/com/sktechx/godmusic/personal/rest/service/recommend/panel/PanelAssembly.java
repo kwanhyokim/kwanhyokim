@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.util.CollectionUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
@@ -122,7 +123,20 @@ public abstract class PanelAssembly {
         }
         if(chart != null){
             try{
-                return new ChartPanel(recommendPanelType, chart, getDefaultBgImageList(chart.getImgList(),osType));
+                ChartPanel chartPanel = new ChartPanel(recommendPanelType, chart,
+                        getDefaultBgImageList(chart.getImgList(), osType));
+
+                if(RecommendPanelType.LIVE_CHART.equals(recommendPanelType)){
+                    chartPanel.setType(RecommendPanelType.PRI_LIVE_CHART);
+                    chartPanel.setPriChartTitle("FLO 차트 내 취향 MIX");
+                    chartPanel.getContent().setType(RecommendPanelContentType.PRI_CHART);
+                }else {
+                    chartPanel.setType(RecommendPanelType.PRI_KIDS_CHART);
+                    chartPanel.setPriChartTitle("KIDS 차트 내 취향 MIX");
+                    chartPanel.getContent().setType(RecommendPanelContentType.PRI_CHART);
+                }
+
+                return chartPanel;
             }catch(Exception e){
                 log.error("create chart panel failed.");
             }

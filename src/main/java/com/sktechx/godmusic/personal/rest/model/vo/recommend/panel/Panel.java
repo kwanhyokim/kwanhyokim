@@ -10,6 +10,8 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -27,8 +29,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
 
 /**
  * 설명 : 추천 패널
@@ -80,6 +80,10 @@ public abstract class Panel {
     @ApiModelProperty(required = true, value = "시드 트랙 정보")
     @JsonProperty("seedGenre")
     protected SeedGenreVo seedGenreVo;
+
+    @Getter
+    @Setter
+    protected String priChartTitle;
 
 
     public Integer getPanelOrderSn(PersonalPhaseType personalPhaseType){
