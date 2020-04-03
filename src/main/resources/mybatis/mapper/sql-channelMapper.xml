@@ -599,6 +599,35 @@
               ON c.prefer_disp_id = d.img_content_id )
 
            UNION ALL
+        ( SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
+                 a.listen_type,
+                 a.listen_type_id,
+                 b.chart_nm AS content_title,
+                 b.music_content_cnt AS track_count,
+                 a.last_listen_dtime,
+                 d.img_size,
+                 d.img_url AS url
+            FROM ( SELECT listen_type, listen_type_id, last_listen_dtime
+                     FROM tb_member_last_listen_hist
+                    WHERE member_no = #{memberNo}
+                      AND character_no = #{characterNo}
+                      AND listen_type = 'CHART'
+                    ORDER BY last_listen_dtime DESC
+                    LIMIT 300 ) a
+            JOIN ( SELECT chart_id, chart_nm, music_content_cnt
+                     FROM tb_chart
+                    WHERE (svc_content_type,chart_type) = ('ALL', 'NOTABLE')
+                      AND music_content_type = 'TRACK' ) b
+              ON a.listen_type_id = b.chart_id
+              AND a.listen_type = 'CHART'
+            JOIN ( SELECT img_content_id, img_size, img_url, create_dtime
+                     FROM tb_img_mang
+                    WHERE img_content_type = 'DISP'
+                      AND img_disp_type = 'RCT_DTL'
+                      AND os_type IN ('ALL', #{osType})
+                      AND shortcut_type = 'NOTABLE') d )
+
+           UNION ALL
 
         ( SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
                  a.listen_type,
