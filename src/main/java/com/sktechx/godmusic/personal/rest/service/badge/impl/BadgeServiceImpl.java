@@ -51,8 +51,8 @@ public class BadgeServiceImpl implements BadgeService {
      * 배지 개별 상세 조회
      */
     @Override
-    public BadgeDetailResponseDto getBadgeDetailResponseDtoByBadgeIssueId(int badgeIssueId) {
-        BadgeIssueDto badgeIssueDto = badgeIssueMapper.findByBadgeIssueId(badgeIssueId);
+    public BadgeDetailResponseDto getBadgeDetailResponseDtoByBadgeIssueId(Long characterNo, int badgeIssueId) {
+        BadgeIssueDto badgeIssueDto = badgeIssueMapper.findByCharacterNoAndBadgeIssueId(characterNo, badgeIssueId);
         BadgeDetailResponseDto badgeDetailResponseDto = new BadgeDetailResponseDto(badgeIssueDto);
         return this.appendIssueTargetInfoByBadgeType(badgeIssueDto, badgeDetailResponseDto);
     }

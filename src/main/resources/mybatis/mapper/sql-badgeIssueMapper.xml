@@ -35,7 +35,7 @@
         </association>
     </resultMap>
 
-    <select id="findByBadgeIssueId" resultMap="badgeIssueDetail">
+    <select id="findByCharacterNoAndBadgeIssueId" resultMap="badgeIssueDetail">
         SELECT  a.badge_issu_id,
                 a.badge_id,
                 a.issu_type,
@@ -53,6 +53,7 @@
         JOIN    tb_badge b ON a.badge_id = b.badge_id
         JOIN    tb_badge_type c ON b.badge_type_id = c.badge_type_id
         WHERE   a.badge_issu_id = #{badgeIssueId}
+        AND     a.character_no = #{characterNo}
         AND     b.use_yn = 'Y'
     </select>
 

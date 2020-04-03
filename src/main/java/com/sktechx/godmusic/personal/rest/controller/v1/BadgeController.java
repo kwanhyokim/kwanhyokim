@@ -70,7 +70,8 @@ public class BadgeController {
     @ApiOperation(value = "배지 상세 조회")
     @GetMapping("/{badgeIssueId}")
     public CommonApiResponse<BadgeDetailResponseDto> getBadgeDetail(@PathVariable("badgeIssueId") int badgeIssueId) {
-        return new CommonApiResponse<>(badgeService.getBadgeDetailResponseDtoByBadgeIssueId(badgeIssueId));
+        Long characterNo = GMContext.getContext().getCharacterNo();
+        return new CommonApiResponse<>(badgeService.getBadgeDetailResponseDtoByBadgeIssueId(characterNo, badgeIssueId));
     }
 
     @ApiOperation(value = "배지 확인")

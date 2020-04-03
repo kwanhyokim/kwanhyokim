@@ -25,7 +25,7 @@ import java.util.List;
  */
 public interface BadgeService {
 
-    BadgeDetailResponseDto getBadgeDetailResponseDtoByBadgeIssueId(int badgeIssueId);
+    BadgeDetailResponseDto getBadgeDetailResponseDtoByBadgeIssueId(Long characterNo, int badgeIssueId);
 
     NewBadgeExistCheckVo getNewBadgeExistCheckVoByCharacterNo(Long characterNo);
 
