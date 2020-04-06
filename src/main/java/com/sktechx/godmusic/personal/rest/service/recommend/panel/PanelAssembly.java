@@ -26,6 +26,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.PopularChannelPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.chart.ChartPanel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.ChartTitle;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.repository.*;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
@@ -128,11 +129,22 @@ public abstract class PanelAssembly {
 
                 if(RecommendPanelType.LIVE_CHART.equals(recommendPanelType)){
                     chartPanel.setType(RecommendPanelType.PRI_LIVE_CHART);
-                    chartPanel.setPriChartTitle("FLO 차트 내 취향 MIX");
+                    chartPanel.setPriChartTitle(
+                            ChartTitle.builder()
+                                    .prefix("FLO 차트")
+                                    .suffix("내 취향 MIX")
+                                    .build()
+                    );
+
                     chartPanel.getContent().setType(RecommendPanelContentType.PRI_CHART);
                 }else {
                     chartPanel.setType(RecommendPanelType.PRI_KIDS_CHART);
-                    chartPanel.setPriChartTitle("KIDS 차트 내 취향 MIX");
+                    chartPanel.setPriChartTitle(
+                            ChartTitle.builder()
+                                    .prefix("KIDS 차트")
+                                    .suffix("내 취향 MIX")
+                                    .build()
+                    );
                     chartPanel.getContent().setType(RecommendPanelContentType.PRI_CHART);
                 }
 
