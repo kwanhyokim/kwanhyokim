@@ -40,6 +40,8 @@ public class BadgeDetailResponseDto {
     private String description;
     // 배지 이미지
     private String badgeImgUrl;
+    // 배지 상세 팝업 이미지
+    private String popupImgUrl;
     // 배지 배경 컬러 코드
     private String bgColorCode;
 
@@ -63,6 +65,7 @@ public class BadgeDetailResponseDto {
         this.title = badgeIssue.getBadgeDto().getBadgeNm();
         this.description = badgeIssue.getBadgeDto().getBadgeDesc();
         this.badgeImgUrl = badgeIssue.getBadgeDto().getIssuAfImgUrl();
+        this.popupImgUrl = badgeIssue.getBadgeDto().getPopupImgUrl();
         this.bgColorCode = badgeIssue.getBadgeTypeDto().getBackgroundRgbValue();
         this.badgeType = badgeIssue.getBadgeTypeDto().getBadgeType();
         this.issueDtime = badgeIssue.getIssuDtime();

@@ -30,7 +30,7 @@ public class BadgeDto {
     private String badgeNm;
     private String badgeDesc;
     private String issuConditionDesc;
-    private String issuBfImgUrl;
+    private String popupImgUrl;
     private String issuAfImgUrl;
     private YnType useYn;
     private int dispSn;
