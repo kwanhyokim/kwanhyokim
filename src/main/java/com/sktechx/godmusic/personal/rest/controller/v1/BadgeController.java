@@ -52,6 +52,7 @@ public class BadgeController {
     @GetMapping("/list/all")
     public CommonApiResponse<AllBadgeListResponseDto> getBadgeList() {
         Long characterNo = GMContext.getContext().getCharacterNo();
+//        Long characterNo = 190526002003230690L;
 
         List<BadgeDetailResponseDto> allReceivedBadgeList = badgeService.getAllReceivedBadgeList(characterNo);
         List<ChallengeBadgeResponseDto> allChallengeBadgeList = badgeService.getAllChallengeBadgeList(characterNo, allReceivedBadgeList);
@@ -63,6 +64,7 @@ public class BadgeController {
     @GetMapping("/list/new")
     public CommonApiResponse<BadgeDetailListResponseDto> getNewBadgeList() {
         Long characterNo = GMContext.getContext().getCharacterNo();
+//        Long characterNo = 190526002003230690L;
         List<BadgeDetailResponseDto> allNewBadgeList = badgeService.getAllNewBadgeList(characterNo);
         return new CommonApiResponse<>(new BadgeDetailListResponseDto(allNewBadgeList));
     }
@@ -71,6 +73,7 @@ public class BadgeController {
     @GetMapping("/{badgeIssueId}")
     public CommonApiResponse<BadgeDetailResponseDto> getBadgeDetail(@PathVariable("badgeIssueId") int badgeIssueId) {
         Long characterNo = GMContext.getContext().getCharacterNo();
+//        Long characterNo = 190526002003230690L;
         return new CommonApiResponse<>(badgeService.getBadgeDetailResponseDtoByBadgeIssueId(characterNo, badgeIssueId));
     }
 
@@ -80,6 +83,7 @@ public class BadgeController {
         GMContext gmContext = GMContext.getContext();
         Long characterNo = gmContext.getCharacterNo();
         OsType osType = gmContext.getOsType();
+//        Long characterNo = 190526002003230690L;
 
         badgeService.userBadgeConfirm(badgeIssueId, characterNo, osType);
         return CommonApiResponse.emptySuccess();
@@ -89,6 +93,7 @@ public class BadgeController {
     @GetMapping("/check/new")
     public CommonApiResponse<NewBadgeExistCheckVo> checkNewBadgeExist() {
         Long characterNo = GMContext.getContext().getCharacterNo();
+//        Long characterNo = 190526002003230690L;
         return new CommonApiResponse<>(badgeService.getNewBadgeExistCheckVoByCharacterNo(characterNo));
     }
 

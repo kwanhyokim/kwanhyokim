@@ -23,6 +23,7 @@
             <result property="badgeCd" column="badge_cd"/>
             <result property="badgeNm" column="badge_nm"/>
             <result property="badgeDesc" column="badge_desc"/>
+            <result property="popupImgUrl" column="popup_img_url"/>
             <result property="issuAfImgUrl" column="issu_af_img_url"/>
             <result property="useYn" column="use_yn"/>
         </association>
@@ -45,6 +46,7 @@
                 b.badge_nm,
                 b.badge_desc,
                 b.issu_af_img_url,
+                b.popup_img_url,
                 b.use_yn,
                 c.badge_type,
                 c.badge_ui_type,
@@ -88,6 +90,7 @@
                 b.badge_nm,
                 b.badge_desc,
                 b.issu_af_img_url,
+                b.popup_img_url,
                 b.use_yn,
                 c.badge_type,
                 c.badge_ui_type,
@@ -111,6 +114,7 @@
                 b.badge_nm,
                 b.badge_desc,
                 b.issu_af_img_url,
+                b.popup_img_url,
                 b.use_yn,
                 c.badge_type,
                 c.badge_ui_type,

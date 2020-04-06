@@ -34,5 +34,4 @@ public class BadgeTypeDto {
     private YnType useYn;
     private int dispSn;
     private String issuBfImgUrl;
-    private String issuAfImgUrl;
 }
