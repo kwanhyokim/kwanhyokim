@@ -232,6 +232,13 @@ public class ListenTrackRequest {
 	)
 	private String traceType;
 
+	@ApiModelProperty(
+			name = "buildNumber",
+			value = "",
+			position = 24
+	)
+	private String buildNumber;
+
 	@JsonIgnore
 	public String getTrackLogTypeToStr() {
 		return Optional.ofNullable(trackLogType)
