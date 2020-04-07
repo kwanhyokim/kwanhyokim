@@ -10,10 +10,11 @@
 
 package com.sktechx.godmusic.personal.common.domain.type;
 
+import org.apache.ibatis.type.MappedTypes;
+
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnum;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnumTypeHandler;
-import org.apache.ibatis.type.MappedTypes;
 
 /**
  *  * 설명 : 차트  타입
@@ -27,6 +28,7 @@ public enum ChartType implements CodeEnum {
     , DAILY("DAILY" , "일간")
     , WEEKLY("WEEKLY", "주간")
     , MONTHLY("MONTHLY" , "월간")
+    , NOTABLE("NOTABLE", "주목할만한 차트")
     ;
     private final String code;
     private final String value;
