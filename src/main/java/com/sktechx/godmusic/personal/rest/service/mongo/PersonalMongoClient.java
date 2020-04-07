@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.personal.common.domain.ListResponse;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.vo.like.*;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenDeleteTrackRequest;
@@ -167,7 +168,14 @@ public interface PersonalMongoClient {
     CommonApiResponse<ListDto<List<RecommendTrackDto>>> getRecommendTodayFloListWithTrackByCharacterNo(
             @RequestHeader(name = "x-gm-fallback-cno") Long characterNo);
 
-
+    /**
+     * 추천 데이터의 삭제 여부 플래그 변경
+     * @param characterNo
+     * @param rcmmdType
+     * @param rcmmdId
+     * @param request
+     * @return
+     */
     @PutMapping("/personal-mgo/internal/recommends/{rcmmdType}/{rcmmdId}")
     CommonApiResponse<Long> updateRecommendDelTargetYn(
             @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
@@ -175,4 +183,8 @@ public interface PersonalMongoClient {
             @PathVariable(name="rcmmdId") Long rcmmdId,
             @RequestBody RecommendUpdateRequest request);
 
+    @GetMapping("/personal-mgo/internal/recommends/chart/{chartId}")
+    CommonApiResponse<ChartTrackDto> getRecommendChart(
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
+            @PathVariable(name="chartId") Long chartId);
 }

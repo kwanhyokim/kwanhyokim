@@ -12,15 +12,16 @@
 
 package com.sktechx.godmusic.personal.rest.repository;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
 import com.sktechx.godmusic.lib.redis.annotation.RedisCacheable;
 import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendChartPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
-import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 /**
  * 설명 :
@@ -30,10 +31,6 @@ import java.util.List;
  */
 @BaseMapper
 public interface ChartMapper {
-//    ChartDto selectPreferDispChart(@Param("svcContentType") SvcContentType svcContentType,
-//                                   @Param("chartType") ChartType chartType ,
-//                                   @Param("osType") OsType osType ,
-//                                   @Param("trackLimitSize") int trackLimitSize);
 
     ChartDto selectPreferDispChart(@Param("chartPanelType") RecommendChartPanelType recommendChartPanelType,
                                    @Param("osType") OsType osType ,
@@ -43,5 +40,10 @@ public interface ChartMapper {
     List<ChartDto> selectChartListByDefaultGenre();
 
     List<ChartDto> selectChartListByPreferGenre(@Param("characterNo") Long characterNo);
+
+    ChartDto selectPreferDisp(
+            @Param("chartId") Long chartId,
+            @Param("osType") OsType osType);
+
 
 }

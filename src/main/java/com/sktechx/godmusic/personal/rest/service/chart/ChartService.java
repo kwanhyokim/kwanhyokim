@@ -8,11 +8,12 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.service;
+package com.sktechx.godmusic.personal.rest.service.chart;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendChartPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartMetaDto;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
 
 /**
  * 설명 : 차트 서비스
@@ -23,4 +24,6 @@ import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 public interface ChartService {
     ChartDto getRealTimeTrackChart( OsType osType, int trackLimitSize);
     ChartDto getKidsChart(OsType osType, int trackLimitSize);
+
+    ChartTrackDto getChartWithTrackList(Long chartId, OsType osType, int trackLimitSize);
 }

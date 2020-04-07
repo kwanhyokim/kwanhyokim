@@ -30,8 +30,9 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.ChartTit
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.repository.*;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
-import com.sktechx.godmusic.personal.rest.service.ChartService;
+import com.sktechx.godmusic.personal.rest.service.chart.ChartService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendReadService;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.POPULAR_CHNL_TRACK_LIMIT_SIZE;
@@ -66,6 +67,9 @@ public abstract class PanelAssembly {
     protected ChartMapper chartMapper;
     @Autowired
     protected CharacterPreferGenreMapper characterPreferGenreMapper;
+
+    @Setter
+    public String appVersion;
 
     public abstract List<Panel> assembleRecommendPanel(PersonalPhaseMeta personalPhaseMeta) throws Exception;
     protected abstract List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta);

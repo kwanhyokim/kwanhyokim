@@ -38,6 +38,6 @@ public interface RecommendPanelService {
 
 	void addPreferGenrePanel(Long characterNo);
 
-	List<Panel> getRecommendPanelList(Long characterNo, String recommendPanelType, OsType osType);
+	List<Panel> getRecommendPanelList(Long characterNo, String recommendPanelType, OsType osType, String appVersion);
 
 }

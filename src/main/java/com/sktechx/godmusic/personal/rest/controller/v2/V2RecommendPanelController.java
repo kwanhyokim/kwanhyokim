@@ -95,7 +95,8 @@ public class V2RecommendPanelController {
 						recommendPanelService.getRecommendPanelList(
 								ctx.getCharacterNo(),
 								recommendPanelContentType,
-								ctx.getOsType()
+								ctx.getOsType(),
+								ctx.getAppVer()
 						)
 				).orElseThrow( () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA))
 
@@ -114,9 +115,15 @@ public class V2RecommendPanelController {
 
 		return new CommonApiResponse<>(
 				RecommendPanelListResponse.builder()
-					.forMePanelList(recommendPanelService.getRecommendPanelList(characterNo, "RC_CF_TR", ctx.getOsType()))
-					.todayFloPanelList(recommendPanelService.getRecommendPanelList(characterNo, "RC_SML_TR", ctx.getOsType()))
-					.artistFloPanelList(recommendPanelService.getRecommendPanelList(characterNo, "RC_ATST_TR", ctx.getOsType()))
+					.forMePanelList(
+							recommendPanelService.getRecommendPanelList(
+									characterNo, "RC_CF_TR", ctx.getOsType(), ctx.getAppVer()))
+					.todayFloPanelList(
+							recommendPanelService.getRecommendPanelList(
+									characterNo, "RC_SML_TR", ctx.getOsType(), ctx.getAppVer()))
+					.artistFloPanelList(
+							recommendPanelService.getRecommendPanelList(
+									characterNo, "RC_ATST_TR", ctx.getOsType(), ctx.getAppVer()))
 				.build());
 	}
 

@@ -18,6 +18,7 @@ import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.client.model.MetaVideoRequestVo;
 import com.sktechx.godmusic.personal.rest.model.dto.*;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
@@ -86,6 +87,13 @@ public class MetaClientFallbackFactory implements FallbackFactory<MetaClient>{
             public CommonApiResponse<Void> ping() {
                 log.warn("[WARM-UP] ... 메타 Ping 호출 실패. message={}", throwable.getMessage());
                 return null;
+            }
+            @Override
+            public CommonApiResponse<ChartTrackDto> getChartWithTrackList(Long chartId) {
+                log.warn("{}@getRecommendChart-fallback, message={}",
+                        chartId, throwable.getMessage()
+                );
+                return new CommonApiResponse<>(null);
             }
         };
     }

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.google.common.primitives.Ints;
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
-import com.sktechx.godmusic.lib.domain.CommonConstant;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.RequestGMContext;
 import com.sktechx.godmusic.lib.domain.code.OsType;
@@ -140,13 +139,14 @@ public class ChannelController {
     @ApiOperation(value = "AFLO 테마 리스트 ")
     @GetMapping("/afloChnl/list")
     public CommonApiResponse recommendPanelTrackList(
-            @ApiIgnore @RequestGMContext GMContext ctx,
-            @RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType
+            @ApiIgnore @RequestGMContext GMContext ctx
     ){
 
         Long characterNo = ctx.getCharacterNo();
         List<Panel> recommendPanelList = recommendPanelService.getRecommendPanelList(
-                characterNo, "AFLO", ctx.getOsType()
+                characterNo, "AFLO",
+                ctx.getOsType(),
+                ctx.getAppVer()
         );
 
         return new CommonApiResponse<>(new ListDto<>(recommendPanelList));

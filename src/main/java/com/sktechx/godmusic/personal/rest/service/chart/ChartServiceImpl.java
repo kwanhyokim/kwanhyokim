@@ -8,28 +8,37 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.service.impl;
+package com.sktechx.godmusic.personal.rest.service.chart;
 
-import com.sktechx.godmusic.lib.domain.code.OsType;
-import com.sktechx.godmusic.lib.redis.service.RedisService;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendChartPanelType;
-import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
-import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
-import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
-import com.sktechx.godmusic.personal.rest.service.ChartService;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.*;
-import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
+import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
+import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
+import com.sktechx.godmusic.lib.redis.service.RedisService;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendChartPanelType;
+import com.sktechx.godmusic.personal.rest.client.MetaClient;
+import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
+import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
+import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartVo;
+import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
+import lombok.extern.slf4j.Slf4j;
+
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.KIDS_CHART_EXPIRED_SECONDS;
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.REALTIME_CHART_EXPIRED_SECONDS;
+import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.KIDS_CHART_KEY;
+import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.REALTIME_CHART_KEY;
 /**
  * 설명 : 각종 차트 서비스
  *
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 23.
  */
-@Service
+@Service("chartService")
 @Slf4j
 public class ChartServiceImpl implements ChartService {
 
@@ -39,6 +48,9 @@ public class ChartServiceImpl implements ChartService {
 
     @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private MetaClient metaClient;
 
     @Override
     public ChartDto getRealTimeTrackChart(OsType osType, int trackLimitSize) {
@@ -81,5 +93,21 @@ public class ChartServiceImpl implements ChartService {
             }
         }
         return kidsTrackChart;
+    }
+    @Override
+    public ChartTrackDto getChartWithTrackList(Long chartId, OsType osType, int trackLimitSize) {
+
+        ChartTrackDto chartTrackDto =
+            Optional.ofNullable(
+                metaClient.getChartWithTrackList(chartId).getData()
+            ).orElseThrow(
+                () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA)
+            );
+
+        ChartDto chartDto = chartMapper.selectPreferDisp(chartId, osType);
+
+        ChartVo chartVo = ChartVo.from(chartDto, chartTrackDto);
+
+        return null;
     }
 }

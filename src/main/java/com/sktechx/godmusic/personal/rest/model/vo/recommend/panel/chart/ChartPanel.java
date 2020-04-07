@@ -50,6 +50,7 @@ public class ChartPanel extends Panel {
         this.imgList = bgImgList;
         this.title = chart.getChartNm();
         this.subTitle = getBasedOnUpdate(chart , this.type);
+        this.decorateTitle = chart.getChartDispNm();
         this.content = PanelContentVo.builder()
                 .id(chart.getChartId())
 

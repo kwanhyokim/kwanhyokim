@@ -28,6 +28,7 @@ import com.sktechx.godmusic.personal.rest.model.dto.TasteMixDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
+import com.sktechx.godmusic.personal.rest.service.chart.ChartService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelHeaderService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
@@ -53,16 +54,23 @@ public class RecommendPanelController {
     private final RecommendPanelHeaderService recommendPanelHeaderService;
     private final RecommendPanelHeaderService v2RecommendPanelHeaderService;
 
+    private final ChartService chartService;
+	private final ChartService mongoChartService;
+
 	public RecommendPanelController(
 			@Qualifier("recommendPanelService") RecommendPanelService recommendPanelService,
 			PersonalRecommendPhaseService personalRecommendPhaseService,
 			@Qualifier("recommendPanelHeaderService") RecommendPanelHeaderService recommendPanelHeaderService,
-			@Qualifier("v2RecommendPanelHeaderService") RecommendPanelHeaderService v2RecommendPanelHeaderService
+			@Qualifier("v2RecommendPanelHeaderService") RecommendPanelHeaderService v2RecommendPanelHeaderService,
+			@Qualifier("chartService")ChartService chartService,
+			@Qualifier("mongoChartService")ChartService mongoChartService
 	) {
 		this.recommendPanelService = recommendPanelService;
 		this.personalRecommendPhaseService = personalRecommendPhaseService;
 		this.recommendPanelHeaderService = recommendPanelHeaderService;
 		this.v2RecommendPanelHeaderService = v2RecommendPanelHeaderService;
+		this.chartService = chartService;
+		this.mongoChartService = mongoChartService;
 	}
 
 	@ApiOperation(value = "추천 개인화 정보 조회 ( New )", httpMethod = "GET" , hidden = true)
@@ -153,13 +161,15 @@ public class RecommendPanelController {
 	@ApiOperation(value = "추천 개인화 차트 조회 ( New )", httpMethod = "GET",
 			notes="사용자 개인화 차트 조회(개인화 차트가 없는 경우, 기존 실시간/키즈 차트 제공)")
 	@GetMapping("/chart/{chartId}")
-	public CommonApiResponse<PlayListDto> getRecommendChart(
+	public CommonApiResponse<ChartMetaDto> getRecommendChart(
 			@ApiIgnore @RequestGMContext GMContext ctx,
 			@PathVariable("chartId") Long chartId,
 			@RequestParam("mixYn") String mixYn
 	){
 
-		PlayListDto playListDto = metaClient.chart(chartId).getData();
+		return new CommonApiResponse<>(
+				(new ComparableVersion(ctx.getAppVer()).compareTo(new ComparableVersion("5.0.0")) < 0
+				|| "N".equals(mixYn)
 
 		if(chartId == 1) {
 			playListDto.setName("FLO 차트 내 취향 MIX");

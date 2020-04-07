@@ -162,6 +162,9 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         try{
             personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType, appVer);
             panelAssembly = recommendPanelAssemblyFactory.getV2RecommendPanelAssembly(personalPhaseMeta);
+
+            panelAssembly.setAppVersion(appVer);
+
             recommendPanelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
 
         }catch(CommonBusinessException cbex){
@@ -396,14 +399,16 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
     @Override
     public List<Panel> getRecommendPanelList(Long characterNo,
-            String recommendPanelType, OsType osType) {
+            String recommendPanelType, OsType osType, String appVersion) {
+
+        PanelAssembly panelAssembly = recommendPanelAssemblyFactory
+                .getV2RecommendPanelAssembly(RecommendPanelContentType.fromCode(recommendPanelType));
+        panelAssembly.setAppVersion(appVersion);
 
         try {
 
             return Optional.ofNullable(
-                    recommendPanelAssemblyFactory
-                            .getV2RecommendPanelAssembly(RecommendPanelContentType.fromCode(recommendPanelType))
-                            .getRecommendPanelList(characterNo, osType)
+                    panelAssembly.getRecommendPanelList(characterNo, osType)
             )
                     .orElseGet(Collections::emptyList)
                     .stream()
