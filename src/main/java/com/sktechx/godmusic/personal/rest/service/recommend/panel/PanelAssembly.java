@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.util.CollectionUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
@@ -25,6 +26,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.PopularChannelPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.chart.ChartPanel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.ChartTitle;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.repository.*;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
@@ -122,7 +124,33 @@ public abstract class PanelAssembly {
         }
         if(chart != null){
             try{
-                return new ChartPanel(recommendPanelType, chart, getDefaultBgImageList(chart.getImgList(),osType));
+                ChartPanel chartPanel = new ChartPanel(recommendPanelType, chart,
+                        getDefaultBgImageList(chart.getImgList(), osType));
+
+                if(RecommendPanelType.LIVE_CHART.equals(recommendPanelType)){
+                    chartPanel.setType(RecommendPanelType.PRI_LIVE_CHART);
+                    chartPanel.setPriChartTitle(
+                            ChartTitle.builder()
+                                    .prefix("FLO 차트")
+                                    .suffix("내 취향 MIX")
+                                    .build()
+                    );
+
+                    chartPanel.getContent().setType(RecommendPanelContentType.PRI_CHART);
+                }else {
+                    chartPanel.setType(RecommendPanelType.PRI_KIDS_CHART);
+                    chartPanel.setPriChartTitle(
+                            ChartTitle.builder()
+                                    .prefix("KIDS 차트")
+                                    .suffix("내 취향 MIX")
+                                    .build()
+                    );
+                    chartPanel.getContent().setType(RecommendPanelContentType.PRI_CHART);
+                }
+
+                log.info("XXXXXXXXX {}", chartPanel);
+
+                return chartPanel;
             }catch(Exception e){
                 log.error("create chart panel failed.");
             }
@@ -159,12 +187,19 @@ public abstract class PanelAssembly {
         Optional<Panel> liveChartPanel = Optional.ofNullable(chartPanelList)
                 .orElseGet(Collections::emptyList)
                 .stream()
-                .filter(panel -> RecommendPanelType.LIVE_CHART.equals(panel.getType()))
+                .filter(
+                        panel ->
+                                RecommendPanelType.LIVE_CHART.equals(panel.getType()) ||
+                                        RecommendPanelType.PRI_LIVE_CHART.equals(panel.getType())
+                )
                 .findFirst();
         Optional<Panel> kidsChartPanel = Optional.ofNullable(chartPanelList)
                 .orElseGet(Collections::emptyList)
                 .stream()
-                .filter(panel -> RecommendPanelType.KIDS_CHART.equals(panel.getType()))
+                .filter(
+                        panel -> RecommendPanelType.KIDS_CHART.equals(panel.getType()) ||
+                                RecommendPanelType.PRI_KIDS_CHART.equals(panel.getType())
+                )
                 .findFirst();
 
         if(liveChartPanel.isPresent()){

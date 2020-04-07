@@ -19,8 +19,12 @@ import org.springframework.web.bind.annotation.*;
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.RequestGMContext;
-import com.sktechx.godmusic.lib.utils.ComparableVersion;
+import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
+import com.sktechx.godmusic.personal.rest.client.MetaClient;
+import com.sktechx.godmusic.personal.rest.model.dto.PlayListDto;
+import com.sktechx.godmusic.personal.rest.model.dto.TasteMixDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
@@ -157,7 +161,21 @@ public class RecommendPanelController {
 
 		PlayListDto playListDto = metaClient.chart(chartId).getData();
 
-		playListDto.setDescription("취향인 곡이 없어 일반 순위가 표시됩니다.");
+		if(chartId == 1) {
+			playListDto.setName("FLO 차트 내 취향 MIX");
+		}else {
+			playListDto.setName("키즈 차트 내 취향 MIX");
+		}
+
+		playListDto.setTasteMix(TasteMixDto.builder()
+				.mixYn(YnType.Y)
+				.status("not_mixed")
+				.descriptionMessage("취향인 곡이 없어 일반 순위가 표시됩니다.")
+				.displayMessage(
+						"Y".equals(mixYn) ? "인기 순서의 일반 FLO 차트로 변경했습니다." : "FLO 차트를 내 취향 순서로 변경했습니다."
+				)
+
+				.build());
 
 		return new CommonApiResponse<>(playListDto);
 

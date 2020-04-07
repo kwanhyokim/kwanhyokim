@@ -81,7 +81,6 @@ public abstract class Panel {
     @JsonProperty("seedGenre")
     protected SeedGenreVo seedGenreVo;
 
-
     public Integer getPanelOrderSn(PersonalPhaseType personalPhaseType){
         return PanelOrderSnService.getPanelOrderSn(personalPhaseType, this.type);
     }
