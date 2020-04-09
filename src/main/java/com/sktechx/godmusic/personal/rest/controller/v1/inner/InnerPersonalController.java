@@ -1,7 +1,7 @@
 package com.sktechx.godmusic.personal.rest.controller.v1.inner;
 
+import com.sktechx.godmusic.personal.rest.model.vo.aflo.NewMigrateAFloCharacterRes;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
@@ -34,23 +34,27 @@ public class InnerPersonalController {
     @Autowired
     private PersonalRecommendPhaseService personalRecommendPhaseService;
 
-    @ApiOperation(value = "개인 정보 좋아요"
-            , httpMethod = "POST", notes = "타입별 좋아요 추가")
+    @ApiOperation(value = "aflo 캐릭터 복사"
+            , httpMethod = "POST", notes = "aflo 캐릭터 복사")
     @PostMapping("/migrate-aflo")
     public CommonApiResponse migrateAFloCharacter(@RequestBody MigrateAFloCharacterRequest request) {
-
-        if(!ObjectUtils.isEmpty(request)){
-            aFloService.migrateAFloCharacter(request.getMemberNo(), request.getFromCharacterNo(), request.getToCharacterNo());
-        }
-
+        aFloService.migrateAFloCharacter(request.getMemberNo(), request.getFromCharacterNo(), request.getToCharacterNo());
         return CommonApiResponse.emptySuccess();
     }
 
-    @ApiOperation(value = "추천 개인화 정보 조회 ( New )", httpMethod = "GET" , hidden = true)
+    @ApiOperation(value = "aflo 캐릭터 복사"
+            , httpMethod = "POST", notes = "aflo 캐릭터 복사")
+    @PostMapping("/new-migrate-aflo")
+    public CommonApiResponse<NewMigrateAFloCharacterRes> newMigrateAFloCharacter(@RequestBody MigrateAFloCharacterRequest request) {
+        NewMigrateAFloCharacterRes response = aFloService.migrateAFloCharacter(request.getMemberNo(), request.getFromCharacterNo(), request.getToCharacterNo());
+        return new CommonApiResponse(response);
+    }
+
+    @ApiOperation(value = "추천 개인화 정보 조회 ( New )", httpMethod = "GET", hidden = true)
     @GetMapping(value = "/phase/meta")
-    public CommonApiResponse<PersonalPhaseMeta> personalPhaseMeta(@ApiIgnore @RequestGMContext GMContext ctx){
+    public CommonApiResponse<PersonalPhaseMeta> personalPhaseMeta(@ApiIgnore @RequestGMContext GMContext ctx) {
         // APP Version 체크로 personalmeta의 추천 패널 disp end date 사용 여부를 조절..
-        return new CommonApiResponse<>(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(ctx.getCharacterNo(),ctx.getOsType(), ctx.getAppVer()));
+        return new CommonApiResponse<>(personalRecommendPhaseService.getPersonalRecommendPhaseMeta(ctx.getCharacterNo(), ctx.getOsType(), ctx.getAppVer()));
     }
 
     @ApiOperation(value = "홈 캐쉬 삭제")
