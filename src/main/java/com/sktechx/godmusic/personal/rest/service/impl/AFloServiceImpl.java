@@ -2,6 +2,7 @@ package com.sktechx.godmusic.personal.rest.service.impl;
 
 import com.sktechx.godmusic.personal.rest.model.dto.AlbumDto;
 import com.sktechx.godmusic.personal.rest.model.dto.MemberChannelDto;
+import com.sktechx.godmusic.personal.rest.model.vo.aflo.NewMigrateAFloCharacterRes;
 import com.sktechx.godmusic.personal.rest.repository.LikeMapper;
 import com.sktechx.godmusic.personal.rest.repository.MemberChannelMapper;
 import com.sktechx.godmusic.personal.rest.repository.MemberChannelTrackMapper;
@@ -30,16 +31,18 @@ public class AFloServiceImpl implements AFloService {
 
     @Override
     @Transactional
-    public void migrateAFloCharacter(Long memberNo, Long fromCharacterNo, Long toCharacterNo){
+    public NewMigrateAFloCharacterRes migrateAFloCharacter(Long memberNo, Long fromCharacterNo, Long toCharacterNo) {
+
+        NewMigrateAFloCharacterRes response = new NewMigrateAFloCharacterRes();
 
         // 아티스트 좋아요
         int likeCount = likeMapper.countLikeByCharacterNo(toCharacterNo);
-        if( likeCount == 0 )
+        if (likeCount == 0)
             likeMapper.insertSelectLike(fromCharacterNo, toCharacterNo);
 
         // my chnl
         int chnlCount = memberChannelMapper.countMemberChannelIdList(memberNo, toCharacterNo);
-        if( chnlCount == 0){
+        if (chnlCount == 0) {
             List<Long> chnlIdList = memberChannelMapper.selectLimitedMemberChannelIdList(memberNo, fromCharacterNo);
 
             if(!ObjectUtils.isEmpty(chnlIdList)){
@@ -55,14 +58,18 @@ public class AFloServiceImpl implements AFloService {
                             .channelPlayTime(item.getChannelPlayTime())
                             .build();
 
-                    if(!ObjectUtils.isEmpty(item.getAlbum())){
+                    if (!ObjectUtils.isEmpty(item.getAlbum())) {
                         memberChannelDto.setAlbum(AlbumDto.builder().albumId(item.getAlbum().getAlbumId()).build());
                     }
                     memberChannelMapper.insertMemberChannel(memberNo, toCharacterNo, memberChannelDto);
                     memberChannelTrackMapper.insertSelectMemberChannelTrack(item.getMemberChannelId(), memberChannelDto.getMemberChannelId());
+                    response.getCopyChnlHistoryList().add(NewMigrateAFloCharacterRes.CopyChnlHistory.builder()
+                            .fromChnlId(item.getMemberChannelId())
+                            .toChnlId(memberChannelDto.getMemberChannelId())
+                            .build());
                 });
             }
-
         }
+        return response;
     }
 }
