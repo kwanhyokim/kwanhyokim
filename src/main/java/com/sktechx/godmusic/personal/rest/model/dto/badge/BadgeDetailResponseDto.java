@@ -13,6 +13,7 @@ package com.sktechx.godmusic.personal.rest.model.dto.badge;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sktechx.godmusic.personal.rest.domain.badge.BadgeIssueDto;
+import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import lombok.Getter;
 import lombok.ToString;
@@ -58,6 +59,12 @@ public class BadgeDetailResponseDto {
 
     @JsonIgnore
     private String badgeType;
+    @JsonIgnore
+    private String defaultDescription;
+    @JsonIgnore
+    private String defaultImgUrl;
+    @JsonIgnore
+    private String defaultPopupImgUrl;
 
     public BadgeDetailResponseDto(BadgeIssueDto badgeIssue) {
         this.badgeIssueId = badgeIssue.getBadgeIssuId();
@@ -69,25 +76,26 @@ public class BadgeDetailResponseDto {
         this.bgColorCode = badgeIssue.getBadgeTypeDto().getBackgroundRgbValue();
         this.badgeType = badgeIssue.getBadgeTypeDto().getBadgeType();
         this.issueDtime = badgeIssue.getIssuDtime();
+
+        this.defaultDescription = badgeIssue.getBadgeDto().getDefaultDesc();
+        this.defaultImgUrl = badgeIssue.getBadgeDto().getDefaultImgUrl();
+        this.defaultPopupImgUrl = badgeIssue.getBadgeDto().getDefaultPopupImgUrl();
     }
 
-    public void setUiType(String uiType) {
-        this.uiType = uiType;
+    public void nonRightTrackCase(BadgeIssueDto badgeIssueDto) {
+        this.uiType = "B";
+        this.description = badgeIssueDto.getBadgeDto().getDefaultDesc();
+        this.badgeImgUrl = badgeIssueDto.getBadgeDto().getDefaultImgUrl();
+        this.popupImgUrl = badgeIssueDto.getBadgeDto().getDefaultPopupImgUrl();
+    }
+
+    public void hasRightTrackCase(TrackDto floTrack) {
+        this.subTitle1 = floTrack.getTrackNm();
+        this.subTitle2 = floTrack.getArtist().getArtistName();
+        this.subImgList = floTrack.getAlbum().getImgList();
     }
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public void setSubTitle1(String subTitle1) {
-        this.subTitle1 = subTitle1;
-    }
-
-    public void setSubTitle2(String subTitle2) {
-        this.subTitle2 = subTitle2;
-    }
-
-    public void setSubImgList(List<ImageInfo> subImgList) {
-        this.subImgList = subImgList;
     }
 }
