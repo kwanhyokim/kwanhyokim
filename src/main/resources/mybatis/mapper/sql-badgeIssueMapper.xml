@@ -23,6 +23,9 @@
             <result property="badgeCd" column="badge_cd"/>
             <result property="badgeNm" column="badge_nm"/>
             <result property="badgeDesc" column="badge_desc"/>
+            <result property="defaultDesc" column="default_desc"/>
+            <result property="defaultImgUrl" column="default_img_url"/>
+            <result property="defaultPopupImgUrl" column="default_popup_img_url"/>
             <result property="popupImgUrl" column="popup_img_url"/>
             <result property="issuAfImgUrl" column="issu_af_img_url"/>
             <result property="useYn" column="use_yn"/>
@@ -45,6 +48,9 @@
                 a.issu_dtime,
                 b.badge_nm,
                 b.badge_desc,
+                b.default_desc,
+                b.default_img_url,
+                b.default_popup_img_url,
                 b.issu_af_img_url,
                 b.popup_img_url,
                 b.use_yn,
@@ -89,6 +95,9 @@
                 a.issu_dtime,
                 b.badge_nm,
                 b.badge_desc,
+                b.default_desc,
+                b.default_img_url,
+                b.default_popup_img_url,
                 b.issu_af_img_url,
                 b.popup_img_url,
                 b.use_yn,
@@ -113,6 +122,9 @@
                 a.issu_dtime,
                 b.badge_nm,
                 b.badge_desc,
+                b.default_desc,
+                b.default_img_url,
+                b.default_popup_img_url,
                 b.issu_af_img_url,
                 b.popup_img_url,
                 b.use_yn,

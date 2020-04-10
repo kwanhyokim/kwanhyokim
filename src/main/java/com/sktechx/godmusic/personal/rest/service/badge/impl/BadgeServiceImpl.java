@@ -65,14 +65,15 @@ public class BadgeServiceImpl implements BadgeService {
         String badgeType = badgeIssueDto.getBadgeTypeDto().getBadgeType();
         switch (badgeType) {
             case "BA01":
-                this.appendTrackIssueTargetTypeInfo(badgeIssueDto.getIssuTypeId(), badgeDetailResponseDto);
                 badgeDetailResponseDto.setDescription(
                         String.format(badgeDetailResponseDto.getDescription(), badgeIssueDto.getListenCnt())
                 );
+                this.appendTrackIssueTargetTypeInfo(badgeIssueDto, badgeDetailResponseDto);
+                log.debug("### BA01 {}", badgeDetailResponseDto);
                 return badgeDetailResponseDto;
 
             case "BA02":
-                this.appendTrackIssueTargetTypeInfo(badgeIssueDto.getIssuTypeId(), badgeDetailResponseDto);
+                this.appendTrackIssueTargetTypeInfo(badgeIssueDto, badgeDetailResponseDto);
                 return badgeDetailResponseDto;
 
             default:
@@ -83,16 +84,22 @@ public class BadgeServiceImpl implements BadgeService {
     /**
      * IssueTargetType이 Track인 경우 value 덧붙이기
      */
-    private void appendTrackIssueTargetTypeInfo(String issueTypeId, BadgeDetailResponseDto badgeDetailResponseDto) {
-        TrackDto floTrack = metaClient.track(Long.valueOf(issueTypeId)).getData();
-        badgeDetailResponseDto.setSubTitle1(floTrack.getTrackNm());
-        badgeDetailResponseDto.setSubTitle2(floTrack.getArtist().getArtistName());
-        badgeDetailResponseDto.setSubImgList(floTrack.getAlbum().getImgList());
+    private void appendTrackIssueTargetTypeInfo(BadgeIssueDto badgeIssueDto,
+                                                BadgeDetailResponseDto badgeDetailResponseDto) {
+
+        TrackDto floTrack = metaClient.track(Long.valueOf(badgeIssueDto.getIssuTypeId())).getData();
 
         // 미권리곡일 경우
-        if (YnType.Y != floTrack.getSvcStreamingYn() && YnType.Y != floTrack.getSvcDrmYn()) {
-            badgeDetailResponseDto.setUiType("B");
+        if (null == floTrack ||
+                YnType.Y != floTrack.getSvcStreamingYn() && YnType.Y != floTrack.getSvcDrmYn()) {
+
+            log.debug("### BadgeDto {}", badgeIssueDto.getBadgeDto());
+            badgeDetailResponseDto.nonRightTrackCase(badgeIssueDto);
+
+        } else {
+            badgeDetailResponseDto.hasRightTrackCase(floTrack);
         }
+
     }
 
     /**

@@ -26,12 +26,17 @@ public class BadgeDto {
     private int badgeId;
     private int badgeTypeId;
     private String badgeCd;
-
     private String badgeNm;
+
     private String badgeDesc;
     private String issuConditionDesc;
+
+    private String defaultDesc;
+    private String defaultImgUrl;
+    private String defaultPopupImgUrl;
     private String popupImgUrl;
     private String issuAfImgUrl;
+
     private YnType useYn;
     private int dispSn;
 }
