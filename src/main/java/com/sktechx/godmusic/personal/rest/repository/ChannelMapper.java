@@ -39,9 +39,22 @@ public interface ChannelMapper {
     List<PreferGenrePopularChnlListDto> selectAllPreferGenrePopularChannelIdList();
     List<MoodPopularChnlListDto> selectAllMoodPopularChannelIdList();
 
-    List<LastListenHistoryDto> selectLastListenHistory(@Param("memberNo") Long memberNo, @Param("characterNo") Long characterNo, @Param("osType") OsType osType);
-    List<LastListenHistoryDto> selectLastListenHistoryByChannel(@Param("memberNo") Long memberNo, @Param("characterNo") Long characterNo, @Param("osType") OsType osType,
-            @Param("exceptFlacChnl") Boolean exceptFlacChnl, @Param("exceptAfloChnl") Boolean exceptAfloChnl);
+    List<LastListenHistoryDto> selectLastListenHistory(@Param("memberNo") Long memberNo,
+                                                       @Param("characterNo") Long characterNo,
+                                                       @Param("osType") OsType osType);
+
+    List<LastListenHistoryDto> selectLastListenHistoryByChannel(@Param("memberNo") Long memberNo,
+                                                                @Param("characterNo") Long characterNo,
+                                                                @Param("osType") OsType osType,
+                                                                @Param("exceptFlacChnl") Boolean exceptFlacChnl,
+                                                                @Param("exceptAfloChnl") Boolean exceptAfloChnl);
+
+    /**
+     * 최근 감상한 리스트 목록 조회 - 내취향 MIX FLO, KIDS 개인화 차트
+     */
+    List<LastListenHistoryDto> selectLastListenHistoryWithPrivateChart(@Param("memberNo") Long memberNo,
+                                                                       @Param("characterNo") Long characterNo,
+                                                                       @Param("osType") OsType osType);
 
     ChnlDto selectChannelById(@Param("channelId") Long channelId);
 
@@ -50,5 +63,4 @@ public interface ChannelMapper {
     ChnlDto selectFlacChannel();
 
     List<ChnlDto> selectAfloChannelList(@Param("characterNo") Long characterNo);
-
 }

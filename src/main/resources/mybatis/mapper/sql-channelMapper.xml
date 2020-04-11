@@ -912,6 +912,39 @@
         </if>
     </select>
 
+    <select id = "selectLastListenHistoryWithPrivateChart" resultMap="lastListenHistoryResultMap">
+        SELECT CONCAT(a.listen_type, a.listen_type_id) AS listen_id,
+             a.listen_type,
+             a.listen_type_id,
+             c.prefer_disp_nm AS content_title,
+             b.music_content_cnt AS track_count,
+             a.last_listen_dtime
+             ,d.img_size
+             ,d.img_url AS url
+        FROM ( SELECT listen_type, listen_type_id, last_listen_dtime
+                FROM tb_member_last_listen_hist
+                WHERE member_no = #{memberNo}
+                AND character_no = #{characterNo}
+                AND listen_type = 'PRI_CHART'
+                ORDER BY last_listen_dtime DESC
+                LIMIT 300
+            ) a
+            JOIN ( SELECT chart_id, music_content_cnt
+                    FROM tb_chart
+                    WHERE (svc_content_type,chart_type) IN (('ALL', 'HOURLY'), ('KIDS','DAILY'))
+                    AND music_content_type = 'TRACK'
+            ) b
+            ON a.listen_type_id = b.chart_id
+            JOIN tb_prefer_disp c ON b.chart_id = c.disp_id
+            JOIN ( SELECT img_content_id, img_size, img_url, create_dtime
+                    FROM tb_img_mang
+                    WHERE img_content_type = 'MIX_CHART'
+                    AND img_disp_type = 'RCT_DTL'
+                    AND os_type IN ('ALL', #{osType})
+            ) d
+            ON c.prefer_disp_id = d.img_content_id
+    </select>
+
 
     <update id="deleteLastListenHistory">
         DELETE
