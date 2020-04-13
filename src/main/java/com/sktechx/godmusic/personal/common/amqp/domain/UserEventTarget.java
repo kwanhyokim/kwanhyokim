@@ -29,5 +29,5 @@ public enum UserEventTarget {
 	CHART,
 	AUDIO,
 	VIDEO,
-	MYPLAYST
+	MYPLAYLIST
 }

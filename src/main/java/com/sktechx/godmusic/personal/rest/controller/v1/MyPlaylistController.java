@@ -106,7 +106,7 @@ public class MyPlaylistController {
                         .memberNo(memberNo)
                         .charactorNo(characterNo)
                         .targetId(myPlaylistPinRequest.getPinTypeId().toString())
-                        .targetType(UserEventTarget.MYPLAYST)
+                        .targetType(UserEventTarget.MYPLAYLIST)
                         .timeMillis(System.currentTimeMillis())
                         .build()
         );
@@ -138,7 +138,7 @@ public class MyPlaylistController {
                         .memberNo(memberNo)
                         .charactorNo(characterNo)
                         .targetId(memberChannelDto.getMemberChannelId().toString())
-                        .targetType(UserEventTarget.MYPLAYST)
+                        .targetType(UserEventTarget.MYPLAYLIST)
                         .timeMillis(System.currentTimeMillis())
                         .build()
         );
@@ -205,7 +205,7 @@ public class MyPlaylistController {
                             .memberNo(memberNo)
                             .charactorNo(characterNo)
                             .targetId(memberChannelId.toString())
-                            .targetType(UserEventTarget.MYPLAYST)
+                            .targetType(UserEventTarget.MYPLAYLIST)
                             .timeMillis(System.currentTimeMillis())
                             .build()
             );
