@@ -98,6 +98,19 @@ public class MyPlaylistController {
         Long characterNo = getCharacterNo();
         MyPlaylistTrackCreateResponse myPlaylistTrackCreateResponse = memberChannelService.pinMemberChannel(memberNo, characterNo, myPlaylistPinRequest.getPinType(), myPlaylistPinRequest.getPinTypeId());
 
+        // 내 리스트 생성시 (PIN) userevent 발생
+        amqpService.deliverUserEvent(
+                UserEvent.newBuilder()
+                        .playChnl(AppNameType.parseFromCodeToString(GMContext.getContext().getAppName()))
+                        .event(UserEventType.PICK)
+                        .memberNo(memberNo)
+                        .charactorNo(characterNo)
+                        .targetId(myPlaylistPinRequest.getPinTypeId().toString())
+                        .targetType(UserEventTarget.MYPLAYST)
+                        .timeMillis(System.currentTimeMillis())
+                        .build()
+        );
+
         return new CommonApiResponse<>(myPlaylistTrackCreateResponse);
     }
 
