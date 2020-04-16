@@ -22,6 +22,7 @@ import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.vo.like.*;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenDeleteTrackRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendUpdateRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.test.RecommendChartRequest;
 
 /**
  * 설명 :
@@ -198,5 +199,17 @@ public interface PersonalMongoClient {
 
 
 
+    @PutMapping("/personal-mgo/v1/recommends/chart/{chartId}")
+    CommonApiResponse addRecommendChart(
+            @RequestHeader(name = "x-gm-fallback-cno") Long fallBackharacterNo,
+            @PathVariable(name="chartId") Long chartId,
+            @RequestBody RecommendChartRequest recommendChartRequest
+    );
 
+    @DeleteMapping("/personal-mgo/v1/recommends/chart/{chartId}")
+    CommonApiResponse deleteRecommendChart(
+            @RequestHeader(name = "x-gm-fallback-cno") Long fallBackharacterNo,
+            @PathVariable(name="chartId") Long chartId,
+            @RequestBody RecommendChartRequest recommendChartRequest
+    );
 }

@@ -10,21 +10,27 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
+import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendV2DummyDataRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.test.RecommendChartRequest;
 import com.sktechx.godmusic.personal.rest.repository.RecommendDummyDataMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
+import com.sktechx.godmusic.personal.rest.service.chart.ChartService;
 import com.sktechx.godmusic.personal.rest.service.mongo.PersonalMongoClient;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,6 +47,8 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
     private final RedisService redisService;
     private final RecommendMapper recommendMapper;
 
+    private final ChartService chartService;
+
     private final RecommendDummyDataMapper recommendDummyDataMapper;
 
     private final RecommendPanelService recommendPanelService;
@@ -49,13 +57,16 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
 
     private final MetaClient metaClient;
 
-    public RecommendDummyDataServiceImpl(RedisService redisService, RecommendMapper recommendMapper,
+    public RecommendDummyDataServiceImpl(RedisService redisService,
+            RecommendMapper recommendMapper,
+            @Qualifier("chartService") ChartService chartService,
             RecommendDummyDataMapper recommendDummyDataMapper,
             RecommendPanelService recommendPanelService,
             PersonalMongoClient personalMongoClient,
             MetaClient metaClient) {
         this.redisService = redisService;
         this.recommendMapper = recommendMapper;
+        this.chartService = chartService;
         this.recommendDummyDataMapper = recommendDummyDataMapper;
         this.recommendPanelService = recommendPanelService;
         this.personalMongoClient = personalMongoClient;
@@ -192,13 +203,66 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
     @Override
     public void addPrivateChart(Long characterNo, String mix) {
 
+        ChartDto chartDto = chartService.getChartByDispPropsTypeWithTrackList(characterNo,
+                "TOP100", OsType.IOS, 100);
 
-            metaClient.getChartWithTrackList(characterNo, 100).getData()
-            .getTrackList().stream().map(TrackDto::getTrackId).collect(Collectors.toList());
+        Collections.shuffle(chartDto.getTrackList());
+
+        personalMongoClient.addRecommendChart(characterNo,
+                chartDto.getChartId(),
+                RecommendChartRequest.builder()
+                        .characterNo(characterNo)
+                        .chartTaste(mix)
+                        .trackIdList(
+
+                                chartDto.getTrackList().stream().map(TrackDto::getTrackId).collect(
+                                        Collectors.toList())
+                        )
+                .build()
+        );
+
+        chartDto = chartService.getChartByDispPropsTypeWithTrackList(characterNo,
+                "KIDS100", OsType.IOS, 100);
+
+        Collections.shuffle(chartDto.getTrackList());
+
+        personalMongoClient.addRecommendChart(characterNo,
+                chartDto.getChartId(),
+                RecommendChartRequest.builder()
+                        .characterNo(characterNo)
+                        .chartTaste(mix)
+                        .trackIdList(
+
+                                chartDto.getTrackList().stream().map(TrackDto::getTrackId).collect(
+                                        Collectors.toList())
+                        )
+                        .build()
+        );
+
 
     }
     @Override
     public void deletePrivateChart(Long characterNo) {
+
+        ChartDto chartDto = chartService.getChartByDispPropsTypeWithTrackList(characterNo,
+                "TOP100", OsType.IOS, 100);
+
+        personalMongoClient.deleteRecommendChart(characterNo,
+                chartDto.getChartId(),
+                RecommendChartRequest.builder()
+                        .characterNo(characterNo)
+                .build()
+        );
+
+        chartDto = chartService.getChartByDispPropsTypeWithTrackList(characterNo,
+                "KIDS100", OsType.IOS, 100);
+
+        personalMongoClient.deleteRecommendChart(characterNo,
+                chartDto.getChartId(),
+                RecommendChartRequest.builder()
+                        .characterNo(characterNo)
+                .build()
+        );
     }
 
     @Override

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.personal.common.domain.ListResponse;
@@ -24,6 +25,7 @@ import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.vo.like.*;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenDeleteTrackRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendUpdateRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.test.RecommendChartRequest;
 import com.sktechx.godmusic.personal.rest.service.LikeService;
 import com.sktechx.godmusic.personal.rest.service.TrackService;
 import feign.hystrix.FallbackFactory;
@@ -186,6 +188,24 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
             public CommonApiResponse<ChartTrackDto> getRecommendChart(Long characterNo,
                     Long chartId, Integer trackLimitSize) {
                 log.warn("{}@getRecommendChart-fallback, message={}",
+                        characterNo, throwable.getMessage()
+                );
+                return new CommonApiResponse<>(null);
+            }
+            @Override
+            public CommonApiResponse addRecommendChart(
+                    Long characterNo,
+                    Long chartId,
+                    RecommendChartRequest recommendChartRequest) {
+                log.warn("{}@addRecommentChart-fallback, message={}",
+                        characterNo, throwable.getMessage()
+                );
+                return new CommonApiResponse<>(null);
+            }
+            @Override
+            public CommonApiResponse deleteRecommendChart(Long characterNo, Long chartId,
+                    @RequestBody RecommendChartRequest recommendChartRequest) {
+                log.warn("{}@deleteRecommentChart-fallback, message={}",
                         characterNo, throwable.getMessage()
                 );
                 return new CommonApiResponse<>(null);

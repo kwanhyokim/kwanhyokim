@@ -144,7 +144,7 @@
             $("button[name='btn_priChartCreate1']").on("click", function (e) {
                 e.preventDefault();
                 fn_ajax({'x-gm-member-no':$("#member_no").val(), 'x-gm-character-no':$("#character_no").val()},
-                    "GET", "/personal/test/chart/create", "type=MIX&characterNo="+$("#character_no").val(), function(result){
+                    "GET", "/personal/test/private-chart/create", "type=MIX&characterNo="+$("#character_no").val(), function(result){
 
                     }
 
@@ -155,7 +155,7 @@
             $("button[name='btn_priChartCreate2']").on("click", function (e) {
                 e.preventDefault();
                 fn_ajax({'x-gm-member-no':$("#member_no").val(), 'x-gm-character-no':$("#character_no").val()},
-                    "GET", "/personal/test/chart/create", "type=REQUIRE_MORE_LISTEN&characterNo="+$("#character_no").val(), function(result){
+                    "GET", "/personal/test/private-chart/create", "type=REQUIRE_MORE_LISTEN&characterNo="+$("#character_no").val(), function(result){
 
                     }
 
@@ -167,7 +167,7 @@
             $("button[name='btn_priChartCreate3']").on("click", function (e) {
                 e.preventDefault();
                 fn_ajax({'x-gm-member-no':$("#member_no").val(), 'x-gm-character-no':$("#character_no").val()},
-                    "GET", "/personal/test/chart/create", "type=SAME&characterNo="+$("#character_no").val(), function(result){
+                    "GET", "/personal/test/private-chart/create", "type=SAME&characterNo="+$("#character_no").val(), function(result){
 
                     }
 
@@ -179,7 +179,7 @@
             $("button[name='btn_priChartCreate4']").on("click", function (e) {
                 e.preventDefault();
                 fn_ajax({'x-gm-member-no':$("#member_no").val(), 'x-gm-character-no':$("#character_no").val()},
-                    "GET", "/personal/test/chart/delete", "type=MIX&characterNo="+$("#character_no").val(), function(result){
+                    "GET", "/personal/test/private-chart/delete", "type=MIX&characterNo="+$("#character_no").val(), function(result){
 
                     }
 

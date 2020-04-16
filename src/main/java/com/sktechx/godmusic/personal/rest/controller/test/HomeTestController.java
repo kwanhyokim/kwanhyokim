@@ -125,9 +125,9 @@ public class HomeTestController {
     @GetMapping(value = "/private-chart/create")
     @ResponseBody
     public String createPrivateChart(@RequestParam Long characterNo, @RequestParam String type){
-        log.info("deleteChart :" );
+        log.info("/private-chart/create :" );
 
-        recommendDummyDataService.deleteChart(characterNo);
+        recommendDummyDataService.addPrivateChart(characterNo, type);
 
         return "true";
     }
@@ -136,9 +136,9 @@ public class HomeTestController {
     @GetMapping(value = "/private-chart/delete")
     @ResponseBody
     public String deletePrivateChart(@RequestParam Long characterNo){
-        log.info("deleteChart :" );
+        log.info("/private-chart/delete :" );
 
-        recommendDummyDataService.deleteChart(characterNo);
+        recommendDummyDataService.deletePrivateChart(characterNo);
 
         return "true";
     }
