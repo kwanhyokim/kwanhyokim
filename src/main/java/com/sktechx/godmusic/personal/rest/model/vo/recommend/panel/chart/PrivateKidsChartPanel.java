@@ -42,7 +42,11 @@ public class PrivateKidsChartPanel extends Panel {
 
         this.imgList = bgImgList;
         this.title = chart.getChartNm();
-        this.subTitle = DateUtil.dateToString(chart.getUpdateDtime(), "yyyy.MM.dd");
+        this.subTitle = DateUtil.dateToString(
+                (chart.getUpdateDtime() == null ?
+                        chart.getDispStartDtime() :
+                        chart.getUpdateDtime()),
+                "yyyy.MM.dd");
         this.priChartTitle =
                 ChartTitle.builder()
                     .prefix("키즈 차트")

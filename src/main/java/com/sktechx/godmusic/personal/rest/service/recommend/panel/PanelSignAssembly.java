@@ -91,7 +91,7 @@ public abstract class PanelSignAssembly extends PanelAssembly {
                         Integer appVersion = ServiceUtils.getFormattedAppVersion(getAppVersion());
                         Panel panel;
 
-                        // 5.0.0 이하
+                        // 4.15.0 이하
                         if(appVersion.compareTo(41500) < 0){
 
                             panel = createChartPanel(
