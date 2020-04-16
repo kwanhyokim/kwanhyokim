@@ -30,7 +30,8 @@ public enum AppNameType implements CodeEnum {
 	FLO_APP("FLO", "FLO"),
 	FLO_WEB("FLO_WEB", "FLO_WEB"),
 	BIXBY("BIXBY", "BIXBY"),
-	BIXBY_SPEAKER("BIXBY_SPEAKER", "BIXBY_SPEAKER")
+	BIXBY_SPEAKER("BIXBY_SPEAKER", "BIXBY_SPEAKER"),
+	GOOGLE_CR("GOOGLE_CR", "GOOGLE_CR")
 	;
 	
 	final String code;
