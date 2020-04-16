@@ -12,10 +12,7 @@ package com.sktechx.godmusic.personal.rest.model.vo.chart;
 
 import java.util.*;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.*;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
 import com.sktechx.godmusic.personal.common.domain.type.PlayListType;
@@ -93,10 +90,26 @@ public class ChartVo {
 
     public String basedOnUpdate;
 
+    @JsonIgnore
+    private String requestedMixYn;
+
+    public void adjustTasteMix(){
+        if("N".equals(requestedMixYn) && "NOT_MIXED".equals(tasteMixDto.getStatus())){
+            tasteMixDto = RCMMD_TASTE_MIX_VO_MAP.get("MIX_OFF");
+        }
+
+        if("SAME".equals(tasteMixDto.getStatus())){
+            tasteMixDto.setDescriptionMessage(
+                    String.format(tasteMixDto.getDescriptionMessage(),
+                    this.name)
+            );
+        }
+
+    }
+
     public static ChartVo from (ChartDto chartDto, ChartTrackDto chartTrackDto){
 
-        return
-            (chartDto == null || chartTrackDto == null ?
+        return (chartDto == null || chartTrackDto == null ?
                 null
                 :
                 ChartVo.builder()
@@ -113,7 +126,7 @@ public class ChartVo {
                         .imgList(chartDto.getImgList())
                         .tasteMixDto(
                                 RCMMD_TASTE_MIX_VO_MAP.get(
-                                    (chartTrackDto.getChartTaste() == null ? "NOT_MIX" :
+                                    (chartTrackDto.getChartTaste() == null ? "NOT_MIXED" :
                                             chartTrackDto.getChartTaste()
                                     )
                                 )
@@ -127,7 +140,7 @@ public class ChartVo {
     static {
         Map<String, TasteMixDto> rcmmdTasteMixVoMap = new HashMap<>();
 
-        rcmmdTasteMixVoMap.put("NOT_MIX",
+        rcmmdTasteMixVoMap.put("NOT_MIXED",
                 TasteMixDto.builder()
                         .mixYn(YnType.N)
                         .status("NOT_MIXED")
@@ -147,7 +160,7 @@ public class ChartVo {
                 TasteMixDto.builder()
                         .mixYn(YnType.N)
                         .status("SAME")
-                        .descriptionMessage("일반FLO 차트와 비슷한 취향이에요!")
+                        .descriptionMessage("일반 %s와 비슷한 취향이에요!")
                         .displayMessage("FLO 차트를 내 취향 순서로 변경했습니다.")
                         .build()
         );
@@ -159,6 +172,14 @@ public class ChartVo {
                         .displayMessage("FLO 차트를 내 취향 순서로 변경했습니다.")
                         .build()
         );
+        rcmmdTasteMixVoMap.put("MIX_OFF",
+                TasteMixDto.builder()
+                        .mixYn(YnType.N)
+                        .status("OFF")
+                        .displayMessage("인기 순서의 일반 FLO 차트로 변경했습니다.")
+                        .build()
+        );
+
 
         RCMMD_TASTE_MIX_VO_MAP = Collections.unmodifiableMap(rcmmdTasteMixVoMap);
     }

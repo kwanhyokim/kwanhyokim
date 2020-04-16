@@ -178,6 +178,12 @@ public class RecommendPanelController {
 		if(chartVo == null) {
 			chartVo = chartService
 					.getChartWithTrackList(ctx.getCharacterNo(), chartId, ctx.getOsType(), 100);
+
+		}
+
+		if(chartVo != null){
+			chartVo.setRequestedMixYn(mixYn);
+			chartVo.adjustTasteMix();
 		}
 
 		return new CommonApiResponse<>(chartVo);

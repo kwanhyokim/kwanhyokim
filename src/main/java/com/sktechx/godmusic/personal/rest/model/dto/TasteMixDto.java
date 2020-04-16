@@ -24,12 +24,14 @@ import lombok.Data;
 @Builder
 @Data
 public class TasteMixDto {
+
     private YnType mixYn;   // 믹스 여부
     private String status;  // 믹스 상태
-                            // mixed : 개인화 차트
-                            // not_mixed : 개인화 차트 아님(실시간 차트)
-                            // require_more_listen : 더욱 청취 필요
-                            // same : 개인화 차트와 실시간 차트가 동일
+    // mixed : 개인화 차트
+    // not_mixed : 개인화 차트 아님(실시간 차트)
+    // require_more_listen : 더욱 청취 필요
+    // same : 개인화 차트와 실시간 차트가 동일
     private String descriptionMessage;  // 차트의 믹스 상태에 대한 설명
     private String displayMessage;      // 차트 믹스 전시 메시지 (토스트 팝업용)
+
 }
