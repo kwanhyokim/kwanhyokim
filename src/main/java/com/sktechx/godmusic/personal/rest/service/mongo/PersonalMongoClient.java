@@ -122,7 +122,7 @@ public interface PersonalMongoClient {
      */
     @GetMapping("/personal-mgo/v1/recommends/{rcmmdType}/{rcmmdId}/tracks")
     CommonApiResponse<List<RecommendPanelTrackDto>> getRecommendTrackListByRcmmdTypeAndRcmmdId(
-            @PathVariable(name = "rcmmdId") String rcmmdType,
+            @PathVariable(name = "rcmmdType") String rcmmdType,
             @PathVariable(name = "rcmmdId") Long rcmmdId,
             @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
             @RequestParam(name = "size") int size
@@ -183,8 +183,20 @@ public interface PersonalMongoClient {
             @PathVariable(name="rcmmdId") Long rcmmdId,
             @RequestBody RecommendUpdateRequest request);
 
-    @GetMapping("/personal-mgo/internal/recommends/chart/{chartId}")
+    /**
+     *  추천 차트 조회
+     * @param characterNo
+     * @param chartId
+     * @param trackLimitSize
+     * @return
+     */
+    @GetMapping("/personal-mgo/v1/recommends/chart/{chartId}")
     CommonApiResponse<ChartTrackDto> getRecommendChart(
             @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
-            @PathVariable(name="chartId") Long chartId);
+            @PathVariable(name="chartId") Long chartId,
+            @RequestParam(name="size") Integer trackLimitSize );
+
+
+
+
 }

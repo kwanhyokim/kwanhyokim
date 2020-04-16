@@ -12,8 +12,7 @@ package com.sktechx.godmusic.personal.rest.service.chart;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
-import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartMetaDto;
-import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
+import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartVo;
 
 /**
  * 설명 : 차트 서비스
@@ -22,8 +21,10 @@ import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
  * @date 2018. 07. 23.
  */
 public interface ChartService {
-    ChartDto getRealTimeTrackChart( OsType osType, int trackLimitSize);
-    ChartDto getKidsChart(OsType osType, int trackLimitSize);
+    ChartVo getChartWithTrackList(Long characterNo, Long chartId, OsType osType,
+            int trackLimitSize);
 
-    ChartTrackDto getChartWithTrackList(Long chartId, OsType osType, int trackLimitSize);
+    ChartDto getChartByDispPropsTypeWithTrackList(Long characterNo, String dispPropsType,
+            OsType osType,
+            int trackLimitSize);
 }

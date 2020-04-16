@@ -8,7 +8,7 @@
  * you entered into with Dreamus Company.
  */
 
-package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data;
+package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.chart;
 
 import lombok.Builder;
 import lombok.Data;

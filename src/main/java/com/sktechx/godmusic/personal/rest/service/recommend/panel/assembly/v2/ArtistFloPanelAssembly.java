@@ -55,7 +55,6 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
         appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
 
         mergePanelList(panelList, myPanelList, chartPanelList, 7);
-        sort(personalPhaseMeta , panelList);
 
     }
 

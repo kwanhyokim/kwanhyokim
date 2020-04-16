@@ -59,8 +59,6 @@ public class PreferArtistVideoPanelAssembly extends PanelSignAssembly {
         appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
 
         mergePanelList(panelList, myPanelList, chartPanelList, 7);
-        sort(personalPhaseMeta , panelList);
-
     }
 
     private void appendPreferArtistVideoList(final PersonalPhaseMeta personalPhaseMeta,

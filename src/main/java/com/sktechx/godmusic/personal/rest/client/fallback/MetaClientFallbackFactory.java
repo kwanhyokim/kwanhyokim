@@ -89,7 +89,8 @@ public class MetaClientFallbackFactory implements FallbackFactory<MetaClient>{
                 return null;
             }
             @Override
-            public CommonApiResponse<ChartTrackDto> getChartWithTrackList(Long chartId) {
+            public CommonApiResponse<ChartTrackDto> getChartWithTrackList(Long chartId,
+                    Integer trackSize) {
                 log.warn("{}@getRecommendChart-fallback, message={}",
                         chartId, throwable.getMessage()
                 );

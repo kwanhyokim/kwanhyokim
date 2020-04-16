@@ -41,8 +41,13 @@ public interface ChartMapper {
 
     List<ChartDto> selectChartListByPreferGenre(@Param("characterNo") Long characterNo);
 
-    ChartDto selectPreferDisp(
+    ChartDto selectPreferDispByChartId(
             @Param("chartId") Long chartId,
+            @Param("osType") OsType osType);
+
+
+    ChartDto selectPreferDispByDispPropsType(
+            @Param("dispPropsType") String dispPropsType,
             @Param("osType") OsType osType);
 
 

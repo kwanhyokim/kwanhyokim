@@ -23,7 +23,6 @@ import lombok.Data;
 @Data
 public class RecommendChartTrackDto extends TrackDto {
 
-    private Integer rank;
     private Double score;
     private Integer originalRank;
 

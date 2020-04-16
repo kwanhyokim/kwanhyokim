@@ -10,19 +10,23 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.chart;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
 import com.sktechx.godmusic.personal.common.domain.type.PlayListType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
+import com.sktechx.godmusic.personal.rest.model.dto.TasteMixDto;
+import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendChartTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
+import lombok.Data;
 
 /**
  * 설명 : 차트 vo
@@ -32,6 +36,10 @@ import lombok.Builder;
  */
 
 @Builder
+@Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({"type", "id", "name", "imgList", "createDateTime", "updateDateTime",
+        "renewDateTime", "likeYn", "renewYn", "totalCount", "basedOnUpdate", "trackList"})
 public class ChartVo {
 
     @JsonProperty("id")
@@ -41,7 +49,7 @@ public class ChartVo {
     private String name;
 
     private String playTime;
-    private Integer trackCount;
+    private Integer totalCount;
 
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
     private Date createDateTime;
@@ -52,7 +60,7 @@ public class ChartVo {
 
     private List<ImageInfo> imgList;
 
-    private List<RecommendChartTrackDto> trackList;
+    private List<TrackDto> trackList;
 
     private ChartType chartType;
 
@@ -64,13 +72,8 @@ public class ChartVo {
 
     private YnType renewYn;
 
-    private Integer renewTrackCnt;
-
-    private String description;
-
-    @JsonProperty("renewTrackCount")
-    public Integer getRenewTrackCnt() {
-        return this.renewYn == YnType.N ? 0 : renewTrackCnt;
+    public boolean getRenew(){
+        return YnType.Y == renewYn;
     }
 
     public void setImgList(List<ImageInfo> imgList) {
@@ -82,14 +85,84 @@ public class ChartVo {
         this.imgList = imgList;
     }
 
+    @JsonProperty("tasteMix")
+    private TasteMixDto tasteMixDto;
+
+    @ApiModelProperty(hidden = true)
+    private Date dispStartDtime;
+
+    public String basedOnUpdate;
+
     public static ChartVo from (ChartDto chartDto, ChartTrackDto chartTrackDto){
-        return ChartVo.builder()
-                .id(chartTrackDto.getId())
-                .name(chartTrackDto.getName())
-                .playListType(chartTrackDto.getType())
-                .trackList(chartTrackDto.getTrackList())
-                .build();
+
+        return
+            (chartDto == null || chartTrackDto == null ?
+                null
+                :
+                ChartVo.builder()
+                        .id(chartTrackDto.getId())
+                        .name(chartDto.getChartNm())
+                        .playListType(chartTrackDto.getType())
+                        .trackList(chartTrackDto.getTrackList())
+                        .createDateTime(chartTrackDto.getCreateDateTime())
+                        .updateDateTime(chartTrackDto.getUpdateDateTime())
+                        .basedOnUpdate(chartTrackDto.getBasedOnUpdate())
+                        .chartType(chartTrackDto.getChartType())
+                        .renewYn(chartTrackDto.getRenewYn())
+                        .totalCount(chartTrackDto.getTotalCount())
+                        .imgList(chartDto.getImgList())
+                        .tasteMixDto(
+                                RCMMD_TASTE_MIX_VO_MAP.get(
+                                    (chartTrackDto.getChartTaste() == null ? "NOT_MIX" :
+                                            chartTrackDto.getChartTaste()
+                                    )
+                                )
+                        )
+                        .build()
+                );
     }
+
+    private static final Map<String, TasteMixDto> RCMMD_TASTE_MIX_VO_MAP;
+
+    static {
+        Map<String, TasteMixDto> rcmmdTasteMixVoMap = new HashMap<>();
+
+        rcmmdTasteMixVoMap.put("NOT_MIX",
+                TasteMixDto.builder()
+                        .mixYn(YnType.N)
+                        .status("NOT_MIXED")
+                        .descriptionMessage("취향인 곡이 없어 일반 순위가 표시됩니다.")
+                        .displayMessage("FLO 차트를 내 취향 순서로 변경했습니다.")
+                        .build()
+        );
+
+        rcmmdTasteMixVoMap.put("PRIVATE",
+                TasteMixDto.builder()
+                        .mixYn(YnType.Y)
+                        .status("MIXED")
+                        .displayMessage("FLO 차트를 내 취향 순서로 변경했습니다.")
+                        .build()
+        );
+        rcmmdTasteMixVoMap.put("CHART_TASTE",
+                TasteMixDto.builder()
+                        .mixYn(YnType.N)
+                        .status("SAME")
+                        .descriptionMessage("일반FLO 차트와 비슷한 취향이에요!")
+                        .displayMessage("FLO 차트를 내 취향 순서로 변경했습니다.")
+                        .build()
+        );
+        rcmmdTasteMixVoMap.put("NOT_ENOUGH_TASTE",
+                TasteMixDto.builder()
+                        .mixYn(YnType.N)
+                        .status("REQUIRE_MORE_LISTEN")
+                        .descriptionMessage("취향이 충분히 쌓일 때 까지 일반 순위가 표시됩니다.")
+                        .displayMessage("FLO 차트를 내 취향 순서로 변경했습니다.")
+                        .build()
+        );
+
+        RCMMD_TASTE_MIX_VO_MAP = Collections.unmodifiableMap(rcmmdTasteMixVoMap);
+    }
+
 }
 
 

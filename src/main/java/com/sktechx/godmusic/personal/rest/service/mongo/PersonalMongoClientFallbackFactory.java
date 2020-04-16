@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.personal.common.domain.ListResponse;
-import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartMetaDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.vo.like.*;
@@ -185,7 +184,7 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
             }
             @Override
             public CommonApiResponse<ChartTrackDto> getRecommendChart(Long characterNo,
-                    Long chartId) {
+                    Long chartId, Integer trackLimitSize) {
                 log.warn("{}@getRecommendChart-fallback, message={}",
                         characterNo, throwable.getMessage()
                 );

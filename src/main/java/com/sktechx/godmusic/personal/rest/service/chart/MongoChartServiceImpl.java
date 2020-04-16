@@ -10,23 +10,21 @@
 
 package com.sktechx.godmusic.personal.rest.service.chart;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
+import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendChartPanelType;
+import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
-import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
-import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartMetaDto;
+import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartVo;
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
 import com.sktechx.godmusic.personal.rest.service.mongo.PersonalMongoClient;
 import lombok.extern.slf4j.Slf4j;
-
-import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.KIDS_CHART_EXPIRED_SECONDS;
-import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.REALTIME_CHART_EXPIRED_SECONDS;
-import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.KIDS_CHART_KEY;
-import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.REALTIME_CHART_KEY;
 
 /**
  * 설명 : 각종 차트 서비스
@@ -48,54 +46,59 @@ public class MongoChartServiceImpl implements ChartService {
     @Autowired
     private PersonalMongoClient personalMongoClient;
 
+    @Autowired
+    private MetaClient metaClient;
+
     @Override
-    public ChartDto getRealTimeTrackChart(OsType osType, int trackLimitSize) {
+    public ChartVo getChartWithTrackList(Long characterNo, Long chartId, OsType osType,
+            int trackLimitSize) {
 
-        ChartDto realTimeTrackChart = null;
-        try{
-            realTimeTrackChart =  redisService.getWithPrefix(REALTIME_CHART_KEY , ChartDto.class);
-        }catch(Exception e){
-            log.error("getRealTimeTrackChart error : {}",e.getMessage());
-        }finally{
-            if(realTimeTrackChart == null){
-                realTimeTrackChart = chartMapper.selectPreferDispChart(RecommendChartPanelType.TOP100 , osType, trackLimitSize);
-                if(realTimeTrackChart != null){
+        ChartDto imgChartDto = Optional.ofNullable(
+                chartMapper.selectPreferDispByChartId(chartId, osType)
+        ).orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
 
-                    int priority = 1;
-                    for(TrackDto trackDto : realTimeTrackChart.getTrackList()){
-                        trackDto.setTrackSn(priority++);
-                    }
 
-                    redisService.setWithPrefix(REALTIME_CHART_KEY, realTimeTrackChart, REALTIME_CHART_EXPIRED_SECONDS);
-                }
-            }
-        }
-        return realTimeTrackChart;
+        return ChartVo.from(
+                    imgChartDto
+                ,
+                Optional.ofNullable(
+                        personalMongoClient.getRecommendChart(
+                                characterNo,
+                                chartId,
+                                trackLimitSize).getData()
+                )
+                .orElseGet(
+                        () -> metaClient.getChartWithTrackList(imgChartDto.getChartId(), trackLimitSize).getData()
+                )
+        );
     }
 
     @Override
-    public ChartDto getKidsChart(OsType osType, int trackLimitSize) {
-        ChartDto kidsTrackChart = null;
-        try{
-            kidsTrackChart =  redisService.getWithPrefix(KIDS_CHART_KEY , ChartDto.class);
-        }catch(Exception e){
-            log.error("getKidsChart error : {}",e.getMessage());
-        }finally{
-            if(kidsTrackChart == null){
-                kidsTrackChart = chartMapper.selectPreferDispChart(RecommendChartPanelType.KIDS, osType, trackLimitSize);
-                if(kidsTrackChart != null){
-                    redisService.setWithPrefix(KIDS_CHART_KEY, kidsTrackChart , KIDS_CHART_EXPIRED_SECONDS);
-                }
-            }
-        }
-        return kidsTrackChart;
-    }
-    @Override
-    public ChartMetaDto getChartWithTrackList(Long chartId, OsType osType, int trackLimitSize) {
+    public ChartDto getChartByDispPropsTypeWithTrackList(Long characterNo, String dispPropsType,
+            OsType osType,
+            int trackLimitSize) {
 
+        ChartDto imgChartDto = Optional.ofNullable(
+                chartMapper.selectPreferDispByDispPropsType(
+                dispPropsType,
+                osType)
+        ).orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
 
+        ChartDto chartDto =
+                ChartDto.from(
+                        Optional.ofNullable(
+                personalMongoClient.getRecommendChart(
+                        characterNo,
+                        imgChartDto.getChartId(),
+                        trackLimitSize).getData()
+        ).orElseGet(
+                () -> metaClient.getChartWithTrackList(imgChartDto.getChartId(), trackLimitSize).getData()
+        ));
 
+        chartDto.setImgList(imgChartDto.getImgList());
+        chartDto.setChartNm(imgChartDto.getChartNm());
 
-        return null;
+        return chartDto;
+
     }
 }

@@ -17,7 +17,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -26,6 +28,7 @@ import lombok.Data;
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 22.
  */
+@Builder
 @Data
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class ChartDto {
@@ -64,4 +67,17 @@ public class ChartDto {
         this.imgList = imgList;
     }
 
+    public static ChartDto from (ChartTrackDto chartTrackDto){
+        return ChartDto.builder()
+                .chartId(chartTrackDto.getId())
+                .chartNm(chartTrackDto.getName())
+                .chartType(chartTrackDto.getChartType())
+                .trackList(chartTrackDto.getTrackList())
+                .createDtime(chartTrackDto.getCreateDateTime())
+                .updateDtime(chartTrackDto.getUpdateDateTime())
+                .dispStartDtime(chartTrackDto.getDispStartDtime())
+                .trackCount(chartTrackDto.getTotalCount())
+                .imgList(chartTrackDto.getImgList())
+                .build();
+    }
 }

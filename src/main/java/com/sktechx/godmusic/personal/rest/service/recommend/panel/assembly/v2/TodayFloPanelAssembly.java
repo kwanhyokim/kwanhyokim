@@ -60,8 +60,6 @@ public class TodayFloPanelAssembly extends PanelSignAssembly {
         appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
 
         mergePanelList(panelList, myPanelList, chartPanelList, 7);
-        sort(personalPhaseMeta , panelList);
-
     }
 
     protected void appendSimilarTrackPanelList(final PersonalPhaseMeta personalPhaseMeta,

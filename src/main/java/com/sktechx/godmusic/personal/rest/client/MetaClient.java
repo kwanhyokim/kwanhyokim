@@ -71,7 +71,8 @@ public interface MetaClient {
     @GetMapping("/meta/v1/ping")
     CommonApiResponse<Void> ping();
 
-    @GetMapping("/meta/v1/chart/{chartId}/track/list")
-    CommonApiResponse<ChartTrackDto> getChartWithTrackList(@PathVariable("chartId") Long chartId);
+    @GetMapping("/meta/v1/chart/track/{chartId}?size={trackSize}")
+    CommonApiResponse<ChartTrackDto> getChartWithTrackList(@PathVariable("chartId") Long chartId,
+            @RequestParam("trackSize") Integer trackSize);
 
 }

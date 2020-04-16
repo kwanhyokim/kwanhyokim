@@ -14,11 +14,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.util.CollectionUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
@@ -26,12 +26,14 @@ import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.PopularChannelPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.chart.ChartPanel;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.ChartTitle;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.chart.PrivateFloChartPanel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.chart.PrivateKidsChartPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.repository.*;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import com.sktechx.godmusic.personal.rest.service.chart.ChartService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendReadService;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,7 +49,13 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
 public abstract class PanelAssembly {
 
     @Autowired
+    @Qualifier("chartService")
     protected ChartService chartService;
+
+    @Autowired
+    @Qualifier("mongoChartService")
+    protected ChartService mongoChartService;
+
     @Autowired
     protected ChannelService channelService;
 
@@ -68,6 +76,7 @@ public abstract class PanelAssembly {
     @Autowired
     protected CharacterPreferGenreMapper characterPreferGenreMapper;
 
+    @Getter
     @Setter
     public String appVersion;
 
@@ -122,43 +131,57 @@ public abstract class PanelAssembly {
         ChartDto chart = null;
 
         if(RecommendPanelType.LIVE_CHART.equals(recommendPanelType)){
-            chart = chartService.getRealTimeTrackChart(osType,trackLimitSize);
+            chart = chartService.getChartByDispPropsTypeWithTrackList(null,
+                    "TOP100",
+                    osType,
+                    trackLimitSize);
+
         }else if(RecommendPanelType.KIDS_CHART.equals(recommendPanelType)){
-            chart = chartService.getKidsChart(osType,trackLimitSize);
+            chart = chartService.getChartByDispPropsTypeWithTrackList(null,
+                    "KIDS100",
+                    osType,
+                    trackLimitSize);
         }
         if(chart != null){
             try{
-                ChartPanel chartPanel = new ChartPanel(recommendPanelType, chart,
+                return new ChartPanel(recommendPanelType, chart,
                         getDefaultBgImageList(chart.getImgList(), osType));
 
-                if(RecommendPanelType.LIVE_CHART.equals(recommendPanelType)){
-                    chartPanel.setType(RecommendPanelType.PRI_LIVE_CHART);
-                    chartPanel.setPriChartTitle(
-                            ChartTitle.builder()
-                                    .prefix("FLO 차트")
-                                    .suffix("내 취향 MIX")
-                                    .build()
-                    );
-
-                    chartPanel.getContent().setType(RecommendPanelContentType.PRI_CHART);
-                }else {
-                    chartPanel.setType(RecommendPanelType.PRI_KIDS_CHART);
-                    chartPanel.setPriChartTitle(
-                            ChartTitle.builder()
-                                    .prefix("KIDS 차트")
-                                    .suffix("내 취향 MIX")
-                                    .build()
-                    );
-                    chartPanel.getContent().setType(RecommendPanelContentType.PRI_CHART);
-                }
-
-                log.info("XXXXXXXXX {}", chartPanel);
-
-                return chartPanel;
             }catch(Exception e){
                 log.error("create chart panel failed.");
             }
         }
+        return null;
+    }
+
+    protected Panel createPrivateChartPanel(Long characterNo, RecommendPanelType recommendPanelType,
+            OsType osType,
+            int trackLimitSize){
+
+        ChartDto chart;
+
+        if(RecommendPanelType.PRI_LIVE_CHART.equals(recommendPanelType)){
+            chart = mongoChartService.getChartByDispPropsTypeWithTrackList(characterNo,
+                    "TOP100",
+                    osType,
+                    trackLimitSize);
+
+            return new PrivateFloChartPanel(
+                    recommendPanelType, chart,
+                    getDefaultBgImageList(chart.getImgList(), osType)
+            );
+        }else if(RecommendPanelType.PRI_KIDS_CHART.equals(recommendPanelType)){
+            chart = mongoChartService.getChartByDispPropsTypeWithTrackList(characterNo,
+                    "KIDS100",
+                    osType,
+                    trackLimitSize);
+
+            return new PrivateKidsChartPanel(
+                    recommendPanelType, chart,
+                    getDefaultBgImageList(chart.getImgList(), osType)
+            );
+        }
+
         return null;
     }
 

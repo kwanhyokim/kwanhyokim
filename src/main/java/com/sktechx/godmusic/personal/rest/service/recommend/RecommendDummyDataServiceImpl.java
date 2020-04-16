@@ -11,17 +11,21 @@
 package com.sktechx.godmusic.personal.rest.service.recommend;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
+import com.sktechx.godmusic.personal.rest.client.MetaClient;
+import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendV2DummyDataRequest;
 import com.sktechx.godmusic.personal.rest.repository.RecommendDummyDataMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendMapper;
+import com.sktechx.godmusic.personal.rest.service.mongo.PersonalMongoClient;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -41,13 +45,21 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
 
     private final RecommendPanelService recommendPanelService;
 
+    private final PersonalMongoClient personalMongoClient;
+
+    private final MetaClient metaClient;
+
     public RecommendDummyDataServiceImpl(RedisService redisService, RecommendMapper recommendMapper,
             RecommendDummyDataMapper recommendDummyDataMapper,
-            RecommendPanelService recommendPanelService) {
+            RecommendPanelService recommendPanelService,
+            PersonalMongoClient personalMongoClient,
+            MetaClient metaClient) {
         this.redisService = redisService;
         this.recommendMapper = recommendMapper;
         this.recommendDummyDataMapper = recommendDummyDataMapper;
         this.recommendPanelService = recommendPanelService;
+        this.personalMongoClient = personalMongoClient;
+        this.metaClient = metaClient;
     }
 
     @Override
@@ -177,12 +189,24 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
                 .format(RedisKeyConstant.PERSONAL_RECOMMEND_PHASE_KEY, characterNo);
         return (redisService.delWithPrefix(personalRecommendPhaseKey) ? "true" : "false");
     }
+    @Override
+    public void addPrivateChart(Long characterNo, String mix) {
+
+
+            metaClient.getChartWithTrackList(characterNo, 100).getData()
+            .getTrackList().stream().map(TrackDto::getTrackId).collect(Collectors.toList());
+
+    }
+    @Override
+    public void deletePrivateChart(Long characterNo) {
+    }
 
     @Override
     public void deleteChart(Long characterNo) {
         recommendDummyDataMapper.deleteCharacterPreferDisp(characterNo);
         clearCacheHome(characterNo);
     }
+
 
     public int addTpoRecommendDummyData(Long characterNo){
         if(recommendDummyDataMapper.selectTpoRecommendDataCount(characterNo) < 1)
