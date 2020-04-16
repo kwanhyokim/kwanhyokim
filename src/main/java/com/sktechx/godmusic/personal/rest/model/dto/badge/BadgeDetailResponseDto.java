@@ -73,7 +73,7 @@ public class BadgeDetailResponseDto {
         this.description = badgeIssue.getBadgeDto().getBadgeDesc();
         this.badgeImgUrl = badgeIssue.getBadgeDto().getIssuAfImgUrl();
         this.popupImgUrl = badgeIssue.getBadgeDto().getPopupImgUrl();
-        this.bgColorCode = badgeIssue.getBadgeTypeDto().getBackgroundRgbValue();
+        this.bgColorCode = badgeIssue.getBadgeDto().getBackgroundRgbValue();
         this.badgeType = badgeIssue.getBadgeTypeDto().getBadgeType();
         this.issueDtime = badgeIssue.getIssuDtime();
 
