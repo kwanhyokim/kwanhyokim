@@ -29,13 +29,13 @@
             <result property="popupImgUrl" column="popup_img_url"/>
             <result property="issuAfImgUrl" column="issu_af_img_url"/>
             <result property="useYn" column="use_yn"/>
+            <result property="backgroundRgbValue" column="background_rgb_value"/>
         </association>
 
         <association property="badgeTypeDto" javaType="com.sktechx.godmusic.personal.rest.domain.badge.BadgeTypeDto">
             <id property="badgeTypeId" column="badge_type_id"/>
             <result property="badgeType" column="badge_type"/>
             <result property="badgeUiType" column="badge_ui_type"/>
-            <result property="backgroundRgbValue" column="background_rgb_value"/>
         </association>
     </resultMap>
 
@@ -54,9 +54,9 @@
                 b.issu_af_img_url,
                 b.popup_img_url,
                 b.use_yn,
+                b.background_rgb_value,
                 c.badge_type,
-                c.badge_ui_type,
-                c.background_rgb_value
+                c.badge_ui_type
         FROM    tb_badge_issue a
         JOIN    tb_badge b ON a.badge_id = b.badge_id
         JOIN    tb_badge_type c ON b.badge_type_id = c.badge_type_id
@@ -101,9 +101,9 @@
                 b.issu_af_img_url,
                 b.popup_img_url,
                 b.use_yn,
+                b.background_rgb_value,
                 c.badge_type,
-                c.badge_ui_type,
-                c.background_rgb_value
+                c.badge_ui_type
         FROM    tb_badge_issue a
         JOIN    tb_badge b ON a.badge_id = b.badge_id
         JOIN    tb_badge_type c ON b.badge_type_id = c.badge_type_id
@@ -128,9 +128,9 @@
                 b.issu_af_img_url,
                 b.popup_img_url,
                 b.use_yn,
+                b.background_rgb_value,
                 c.badge_type,
-                c.badge_ui_type,
-                c.background_rgb_value
+                c.badge_ui_type
         FROM    tb_badge_issue a
         JOIN    tb_badge b ON a.badge_id = b.badge_id
         JOIN    tb_badge_type c ON b.badge_type_id = c.badge_type_id

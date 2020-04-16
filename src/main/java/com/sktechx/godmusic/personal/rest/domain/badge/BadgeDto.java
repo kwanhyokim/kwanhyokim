@@ -39,4 +39,6 @@ public class BadgeDto {
 
     private YnType useYn;
     private int dispSn;
+
+    private String backgroundRgbValue;
 }
