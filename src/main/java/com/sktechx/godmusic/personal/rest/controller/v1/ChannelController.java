@@ -59,28 +59,28 @@ public class ChannelController {
     private RecommendPanelService recommendPanelService;
 
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", dataType = "integer", paramType = "query",
-                    value = "Results page you want to retrieve (0..N)", defaultValue = "0"),
-            @ApiImplicitParam(name = "size", dataType = "integer", paramType = "query",
-                    value = "Number of records per page.", defaultValue = "5")
+            @ApiImplicitParam(name = "page", dataType = "integer", paramType = "query", defaultValue = "1"),
+            @ApiImplicitParam(name = "size", dataType = "integer", paramType = "query", defaultValue = "50")
     })
-    @ApiOperation(value = "최근 들은 플레이리스트 상세 by Peter ( 기존 /v2/my/channel/recent/list GET )")
+    @ApiOperation(value = "최근 감상한 리스트 목록 조회")
     @GetMapping("recentListened")
     public CommonApiResponse<ListResponse> getLastListenHistory(
             @ApiIgnore @RequestGMContext GMContext ctx,
-            @ApiIgnore @PageableDefault(size=50, page=0) Pageable pageable){
+            @ApiIgnore @PageableDefault(page = 1, size=50) Pageable pageable) {
 
         int start = Ints.checkedCast(pageable.getOffset());
         int end = Ints.checkedCast(pageable.getOffset()) + pageable.getPageSize();
 
-        List<LastListenHistoryDto> lastListenHistory = channelService.getLastListenHistory(ctx.getMemberNo(), ctx.getCharacterNo(), ctx.getOsType(), ctx.getAppVer());
-        if(CollectionUtils.isEmpty(lastListenHistory))
+        List<LastListenHistoryDto> lastListenHistory =
+                channelService.getLastListenHistory(ctx.getMemberNo(), ctx.getCharacterNo(), ctx.getOsType(), ctx.getAppVer());
+
+        if (CollectionUtils.isEmpty(lastListenHistory))
             throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
 
-        if(start >= lastListenHistory.size() || start >= end)
+        if (start >= lastListenHistory.size() || start >= end)
             throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
 
-        if(end > lastListenHistory.size())
+        if (end > lastListenHistory.size())
             end = lastListenHistory.size();
 
         /**
