@@ -20,7 +20,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
-import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
@@ -155,8 +155,7 @@ public abstract class PanelAssembly {
     }
 
     protected Panel createPrivateChartPanel(Long characterNo, RecommendPanelType recommendPanelType,
-            OsType osType,
-            int trackLimitSize){
+            OsType osType, int trackLimitSize){
 
         ChartDto chart;
 

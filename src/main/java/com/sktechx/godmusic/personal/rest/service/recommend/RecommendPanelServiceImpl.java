@@ -182,6 +182,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                     recommendPanelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
 
                 }catch(Exception e){
+                    e.printStackTrace();
                     log.error("createRecommendPanelV2 recovery not catched exception : {}",e.getMessage());
                 }
             }

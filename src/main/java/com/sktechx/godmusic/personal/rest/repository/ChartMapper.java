@@ -21,7 +21,8 @@ import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
 import com.sktechx.godmusic.lib.redis.annotation.RedisCacheable;
 import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendChartPanelType;
-import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsDto;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
 
 /**
  * 설명 :
@@ -41,14 +42,9 @@ public interface ChartMapper {
 
     List<ChartDto> selectChartListByPreferGenre(@Param("characterNo") Long characterNo);
 
-    ChartDto selectPreferDispByChartId(
-            @Param("chartId") Long chartId,
-            @Param("osType") OsType osType);
+    List<ChartDispPropsDto> selectPreferDisp();
 
 
-    ChartDto selectPreferDispByDispPropsType(
-            @Param("dispPropsType") String dispPropsType,
-            @Param("osType") OsType osType);
 
 
 }

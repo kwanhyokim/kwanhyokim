@@ -8,7 +8,7 @@
  * you entered into with SK TECHX.
  */
 
-package com.sktechx.godmusic.personal.rest.model.dto;
+package com.sktechx.godmusic.personal.rest.model.dto.chart;
 
 import java.util.Date;
 import java.util.List;
@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
-import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
+import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import lombok.Builder;
 import lombok.Data;

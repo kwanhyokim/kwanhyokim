@@ -11,14 +11,15 @@
 package com.sktechx.godmusic.personal.rest.model.vo.chart;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.*;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
 import com.sktechx.godmusic.personal.common.domain.type.PlayListType;
-import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TasteMixDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import io.swagger.annotations.ApiModelProperty;
@@ -107,14 +108,14 @@ public class ChartVo {
 
     }
 
-    public static ChartVo from (ChartDto chartDto, ChartTrackDto chartTrackDto){
+    public static ChartVo from (ChartDispPropsDto chartDispPropsDto, ChartTrackDto chartTrackDto){
 
-        return (chartDto == null || chartTrackDto == null ?
+        return (chartDispPropsDto == null || chartTrackDto == null ?
                 null
                 :
                 ChartVo.builder()
                         .id(chartTrackDto.getId())
-                        .name(chartDto.getChartNm())
+                        .name(chartDispPropsDto.getChartNm())
                         .playListType(chartTrackDto.getType())
                         .trackList(chartTrackDto.getTrackList())
                         .createDateTime(chartTrackDto.getCreateDateTime())
@@ -123,7 +124,11 @@ public class ChartVo {
                         .chartType(chartTrackDto.getChartType())
                         .renewYn(chartTrackDto.getRenewYn())
                         .totalCount(chartTrackDto.getTotalCount())
-                        .imgList(chartDto.getImgList())
+                        .imgList(
+                                chartDispPropsDto.getImgList().stream().map(
+                                        chartImageInfo -> (ImageInfo)chartImageInfo).collect(
+                                        Collectors.toList())
+                        )
                         .tasteMixDto(
                                 RCMMD_TASTE_MIX_VO_MAP.get(
                                     (chartTrackDto.getChartTaste() == null ? "NOT_MIXED" :

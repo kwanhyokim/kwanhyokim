@@ -20,10 +20,14 @@ import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
-import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsDto;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartVo;
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
 import lombok.extern.slf4j.Slf4j;
+
+import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.KIDS_CHART_KEY;
+import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.REALTIME_CHART_KEY;
 
 /**
  * 설명 : 각종 차트 서비스
@@ -46,11 +50,24 @@ public class ChartServiceImpl implements ChartService {
     private MetaClient metaClient;
 
     @Override
+    public ChartMapper getChartMapper() {
+        return chartMapper;
+    }
+    @Override
+    public RedisService getRedisService() {
+        return redisService;
+    }
+    @Override
     public ChartVo getChartWithTrackList(Long characterNo, Long chartId, OsType osType,
             int trackLimitSize) {
 
         return ChartVo.from(
-                chartMapper.selectPreferDispByChartId(chartId, osType),
+                getPreferDisp(
+                        chartDispPropsDto ->
+                                chartDispPropsDto.getChartId().equals(chartId)
+                        , osType
+                        , false
+                ),
                 Optional.ofNullable(
                         metaClient.getChartWithTrackList(chartId, trackLimitSize).getData()
                 ).orElseThrow(
@@ -62,22 +79,28 @@ public class ChartServiceImpl implements ChartService {
     public ChartDto getChartByDispPropsTypeWithTrackList(Long characterNo, String dispPropsType,
             OsType osType, int trackLimitSize) {
 
-//        redisService.getWithPrefix(REALTIME_CHART_KEY , ChartDto.class);
-//        redisService.getWithPrefix(KIDS_CHART_KEY , ChartDto.class);
-
-        return ChartDto.from(
-                Optional.ofNullable(
-                        metaClient.getChartWithTrackList(
-                                Optional.ofNullable(
-                                        chartMapper.selectPreferDispByDispPropsType(
-                                                dispPropsType,
-                                                osType
-                                        )
-                                ).orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA))
-                                        .getChartId(),
-                                trackLimitSize
-                        ).getData()
-                ).orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA))
+        ChartDispPropsDto chartDispPropsDto = getPreferDisp(
+                currentChartDispPropsDto -> dispPropsType.equals(
+                        (currentChartDispPropsDto).getDispPropsType()
+                )
+                , osType
+                , false
         );
+
+        ChartDto chartDto;
+
+        String cacheKey = "TOP100".equals(dispPropsType) ? REALTIME_CHART_KEY :KIDS_CHART_KEY ;
+
+        chartDto = redisService.getWithPrefix(cacheKey , ChartDto.class);
+
+        if(chartDto == null) {
+            chartDto = ChartDto.from(Optional.ofNullable(
+                    metaClient.getChartWithTrackList(chartDispPropsDto
+                    .getChartId(), trackLimitSize)
+                            .getData()
+            ).orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA)));
+        }
+
+        return chartDto;
     }
 }
