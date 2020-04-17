@@ -15,12 +15,12 @@
 
 <mapper namespace="com.sktechx.godmusic.personal.rest.repository.ChartMapper">
 
-    <resultMap type="com.sktechx.godmusic.personal.rest.model.dto.ChartDto" id="chartListResultMap" autoMapping="true">
+    <resultMap type="com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto" id="chartListResultMap" autoMapping="true">
         <!--<id property="chartId" column="chart_id" />-->
         <!--<collection property="trackList" resultMap="com.sktechx.godmusic.personal.rest.repository.TrackMapper.trackResultMap" column="chart_id" autoMapping="true" />-->
     </resultMap>
 
-    <resultMap id="chartResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.ChartDto" autoMapping="true">
+    <resultMap id="chartResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto" autoMapping="true">
         <id property="chartId" column="chart_id" />
         <result property="trackCount" column="music_content_cnt" />
         <collection property="trackList" resultMap="com.sktechx.godmusic.personal.rest.repository.TrackMapper.trackResultMap">
@@ -28,6 +28,15 @@
         <collection property="imgList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" autoMapping="true">
             <result property="size" column="img_size" />
             <result property="url" column="img_url" />
+        </collection>
+    </resultMap>
+
+    <resultMap id="chartDispPropsResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsDto" autoMapping="true">
+        <id property="chartId" column="chart_id" />
+        <collection property="imgList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" autoMapping="true">
+            <result property="size" column="img_size" />
+            <result property="url" column="img_url" />
+            <result property="osType" column="os_type" />
         </collection>
     </resultMap>
 
@@ -194,26 +203,7 @@
         ]]>
     </select>
 
-    <select id="selectPreferDispByChartId" resultMap="chartResultMap" >
-        SELECT
-            b.prefer_disp_nm AS chart_nm,
-            b.prefer_disp_nm AS chart_disp_nm,
-            c.img_size,
-            c.img_url
-        FROM
-            tb_prefer_disp b
-                INNER JOIN
-            tb_img_mang c ON b.prefer_disp_id = c.img_content_id
-                AND b.disp_type = 'CHART'
-                AND b.disp_id = #{chartId}
-                AND c.img_content_type = 'DISP'
-                AND c.dfk_type = 'EVERY'
-                AND c.img_disp_type = 'MAIN_TOP'
-                AND c.os_type = #{osType}
-    </select>
-
-
-    <select id="selectPreferDispByDispPropsType" resultMap="chartResultMap" >
+    <select id="selectPreferDisp" resultMap="chartDispPropsResultMap" >
         SELECT
             b.disp_id AS chart_id,
             b.prefer_disp_nm AS chart_nm,
@@ -225,11 +215,9 @@
                 INNER JOIN
             tb_img_mang c ON b.prefer_disp_id = c.img_content_id
                 AND b.disp_type = 'CHART'
-                AND b.disp_props_type = #{dispPropsType}
                 AND c.img_content_type = 'DISP'
                 AND c.dfk_type = 'EVERY'
                 AND c.img_disp_type = 'MAIN_TOP'
-                AND c.os_type = #{osType}
     </select>
 
 </mapper>
