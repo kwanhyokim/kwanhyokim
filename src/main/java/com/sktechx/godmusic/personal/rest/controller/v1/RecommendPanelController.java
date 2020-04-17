@@ -13,16 +13,20 @@ package com.sktechx.godmusic.personal.rest.controller.v1;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.RequestGMContext;
+import com.sktechx.godmusic.lib.utils.ComparableVersion;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
+import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
+import com.sktechx.godmusic.personal.rest.service.chart.ChartService;
+import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelHeaderService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import com.sktechx.godmusic.personal.rest.validate.Validator;
@@ -43,9 +47,27 @@ import springfox.documentation.annotations.ApiIgnore;
 public class RecommendPanelController {
     private final RecommendPanelService recommendPanelService;
     private final PersonalRecommendPhaseService personalRecommendPhaseService;
-	public RecommendPanelController(RecommendPanelService recommendPanelService, PersonalRecommendPhaseService personalRecommendPhaseService) {
+
+    private final RecommendPanelHeaderService recommendPanelHeaderService;
+    private final RecommendPanelHeaderService v2RecommendPanelHeaderService;
+
+    private final ChartService chartService;
+	private final ChartService mongoChartService;
+
+	public RecommendPanelController(
+			@Qualifier("recommendPanelService") RecommendPanelService recommendPanelService,
+			PersonalRecommendPhaseService personalRecommendPhaseService,
+			@Qualifier("recommendPanelHeaderService") RecommendPanelHeaderService recommendPanelHeaderService,
+			@Qualifier("v2RecommendPanelHeaderService") RecommendPanelHeaderService v2RecommendPanelHeaderService,
+			@Qualifier("chartService")ChartService chartService,
+			@Qualifier("mongoChartService")ChartService mongoChartService
+	) {
 		this.recommendPanelService = recommendPanelService;
 		this.personalRecommendPhaseService = personalRecommendPhaseService;
+		this.recommendPanelHeaderService = recommendPanelHeaderService;
+		this.v2RecommendPanelHeaderService = v2RecommendPanelHeaderService;
+		this.chartService = chartService;
+		this.mongoChartService = mongoChartService;
 	}
 
 	@ApiOperation(value = "추천 개인화 정보 조회 ( New )", httpMethod = "GET" , hidden = true)
@@ -83,7 +105,8 @@ public class RecommendPanelController {
 	public CommonApiResponse recommendPanelTrackList(
 			@ApiIgnore @RequestGMContext GMContext ctx,
 			@ApiParam(defaultValue = "52") @PathVariable Long panelContentId,
-			@ApiParam(value = "추천 패널 컨텐트 타입", allowableValues = "RC_ATST_TR, RC_SML_TR, RC_GR_TR, RC_CF_TR") @RequestParam(value = "type") RecommendPanelContentType recommendPanelContentType){
+			@ApiParam(value = "추천 패널 컨텐트 타입", allowableValues = "RC_ATST_TR, RC_SML_TR, RC_GR_TR, RC_CF_TR")
+			@RequestParam(value = "type") String recommendPanelContentType){
 
 		return new CommonApiResponse<>(recommendPanelService.getRecommendPanelTrackList(ctx.getCharacterNo(), recommendPanelContentType, panelContentId));
 	}
@@ -94,9 +117,16 @@ public class RecommendPanelController {
 	public CommonApiResponse recommendPanelInfo(
 			@ApiIgnore @RequestGMContext GMContext ctx,
 			@ApiParam(defaultValue = "52") @PathVariable Long panelContentId,
-			@ApiParam(value = "추천 패널 컨텐트 타입", allowableValues = "RC_ATST_TR, RC_SML_TR, RC_GR_TR, RC_CF_TR") @RequestParam(value = "type") RecommendPanelContentType recommendPanelContentType){
+			@ApiParam(value = "추천 패널 컨텐트 타입", allowableValues = "RC_ATST_TR, RC_SML_TR, RC_GR_TR, RC_CF_TR")
+			@RequestParam(value = "type") String recommendPanelContentType){
 
-		return new CommonApiResponse<>(recommendPanelService.getRecommendPanelInfo(ctx.getCharacterNo(), recommendPanelContentType, panelContentId, ctx.getOsType(), ctx.getAppVer()));
+		return new CommonApiResponse<>(
+				(new ComparableVersion(ctx.getAppVer()).compareTo(new ComparableVersion("4.6.0")) < 0 ?
+					recommendPanelHeaderService.getRecommendPanelInfo(ctx.getCharacterNo(), recommendPanelContentType, panelContentId, ctx.getOsType())
+					:
+					v2RecommendPanelHeaderService.getRecommendPanelInfo(ctx.getCharacterNo(), recommendPanelContentType, panelContentId, ctx.getOsType())
+				)
+		);
 	}
 
 	@ApiOperation(value = "Discovery Flow 2-C 선호/유사 아티스트 인기곡 by Kobe", httpMethod = "POST",
@@ -123,6 +153,41 @@ public class RecommendPanelController {
 		recommendPanelService.addPreferGenrePanel(currentContext.getCharacterNo());
 
 		return CommonApiResponse.emptySuccess();
+	}
+
+	@ApiOperation(value = "추천 개인화 차트 조회 ( New )", httpMethod = "GET",
+			notes="사용자 개인화 차트 조회(개인화 차트가 없는 경우, 기존 실시간/키즈 차트 제공)")
+	@GetMapping("/chart/{chartId}")
+	public CommonApiResponse<ChartVo> getRecommendChart(
+			@ApiIgnore @RequestGMContext GMContext ctx,
+			@PathVariable("chartId") Long chartId,
+			@RequestParam("mixYn") String mixYn
+	){
+
+		ChartVo chartVo = null;
+
+		if("Y".equals(mixYn)){
+			chartVo = mongoChartService.getChartWithTrackList(
+					ctx.getCharacterNo(),
+					chartId,
+					ctx.getOsType(),
+					100
+			);
+		}
+
+		if(chartVo == null) {
+			chartVo = chartService
+					.getChartWithTrackList(ctx.getCharacterNo(), chartId, ctx.getOsType(), 100);
+
+		}
+
+		if(chartVo != null){
+			chartVo.setRequestedMixYn(mixYn);
+			chartVo.adjustTasteMix();
+		}
+
+		return new CommonApiResponse<>(chartVo);
+
 	}
 
 }

@@ -74,8 +74,6 @@ public class TrackDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
     private Date renewDtime;
 
-    private RankDto rank;
-
     private YnType displayYn;
 
     public YnType getRenewYn(){

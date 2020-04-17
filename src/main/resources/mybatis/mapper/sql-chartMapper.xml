@@ -194,4 +194,42 @@
         ]]>
     </select>
 
+    <select id="selectPreferDispByChartId" resultMap="chartResultMap" >
+        SELECT
+            b.prefer_disp_nm AS chart_nm,
+            b.prefer_disp_nm AS chart_disp_nm,
+            c.img_size,
+            c.img_url
+        FROM
+            tb_prefer_disp b
+                INNER JOIN
+            tb_img_mang c ON b.prefer_disp_id = c.img_content_id
+                AND b.disp_type = 'CHART'
+                AND b.disp_id = #{chartId}
+                AND c.img_content_type = 'DISP'
+                AND c.dfk_type = 'EVERY'
+                AND c.img_disp_type = 'MAIN_TOP'
+                AND c.os_type = #{osType}
+    </select>
+
+
+    <select id="selectPreferDispByDispPropsType" resultMap="chartResultMap" >
+        SELECT
+            b.disp_id AS chart_id,
+            b.prefer_disp_nm AS chart_nm,
+            b.prefer_disp_nm AS chart_disp_nm,
+            c.img_size,
+            c.img_url
+        FROM
+            tb_prefer_disp b
+                INNER JOIN
+            tb_img_mang c ON b.prefer_disp_id = c.img_content_id
+                AND b.disp_type = 'CHART'
+                AND b.disp_props_type = #{dispPropsType}
+                AND c.img_content_type = 'DISP'
+                AND c.dfk_type = 'EVERY'
+                AND c.img_disp_type = 'MAIN_TOP'
+                AND c.os_type = #{osType}
+    </select>
+
 </mapper>

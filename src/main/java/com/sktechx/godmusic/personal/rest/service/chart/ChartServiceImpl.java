@@ -1,0 +1,83 @@
+/*
+ * Copyright (c) 2018 SK TECHX.
+ * All right reserved.
+ *
+ * This software is the confidential and proprietary information of SK TECHX.
+ * You shall not disclose such Confidential Information and
+ * shall use it only in accordance with the terms of the license agreement
+ * you entered into with SK TECHX.
+ */
+
+package com.sktechx.godmusic.personal.rest.service.chart;
+
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
+import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
+import com.sktechx.godmusic.lib.redis.service.RedisService;
+import com.sktechx.godmusic.personal.rest.client.MetaClient;
+import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
+import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartVo;
+import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * 설명 : 각종 차트 서비스
+ *
+ * @author 오경무/SKTECHX (km.oh@sk.com)
+ * @date 2018. 07. 23.
+ */
+@Service("chartService")
+@Slf4j
+public class ChartServiceImpl implements ChartService {
+
+
+    @Autowired
+    private ChartMapper chartMapper;
+
+    @Autowired
+    private RedisService redisService;
+
+    @Autowired
+    private MetaClient metaClient;
+
+    @Override
+    public ChartVo getChartWithTrackList(Long characterNo, Long chartId, OsType osType,
+            int trackLimitSize) {
+
+        return ChartVo.from(
+                chartMapper.selectPreferDispByChartId(chartId, osType),
+                Optional.ofNullable(
+                        metaClient.getChartWithTrackList(chartId, trackLimitSize).getData()
+                ).orElseThrow(
+                        () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA)
+                )
+        );
+    }
+    @Override
+    public ChartDto getChartByDispPropsTypeWithTrackList(Long characterNo, String dispPropsType,
+            OsType osType, int trackLimitSize) {
+
+//        redisService.getWithPrefix(REALTIME_CHART_KEY , ChartDto.class);
+//        redisService.getWithPrefix(KIDS_CHART_KEY , ChartDto.class);
+
+        return ChartDto.from(
+                Optional.ofNullable(
+                        metaClient.getChartWithTrackList(
+                                Optional.ofNullable(
+                                        chartMapper.selectPreferDispByDispPropsType(
+                                                dispPropsType,
+                                                osType
+                                        )
+                                ).orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA))
+                                        .getChartId(),
+                                trackLimitSize
+                        ).getData()
+                ).orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA))
+        );
+    }
+}

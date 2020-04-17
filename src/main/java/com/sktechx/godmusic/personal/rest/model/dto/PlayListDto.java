@@ -13,11 +13,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import lombok.Data;
 
 /**
- * Created by Kobe.
  *
- * @author Kobe/최훈영/SKTECHX (hunyoung.choi@sk.com)
- * @date 2018. 8. 10.
- * @time PM 4:53
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)

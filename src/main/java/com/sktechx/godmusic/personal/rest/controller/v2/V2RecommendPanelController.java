@@ -13,6 +13,7 @@ package com.sktechx.godmusic.personal.rest.controller.v2;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
@@ -23,7 +24,6 @@ import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ChannelListResponse;
@@ -47,7 +47,8 @@ public class V2RecommendPanelController {
 	private final PersonalRecommendPhaseService personalRecommendPhaseService;
 	private final ChannelService channelService;
 
-	public V2RecommendPanelController(RecommendPanelService recommendPanelService,
+	public V2RecommendPanelController(
+			@Qualifier("recommendPanelService") RecommendPanelService recommendPanelService,
 			PersonalRecommendPhaseService personalRecommendPhaseService,
 			ChannelService channelService) {
 		this.recommendPanelService = recommendPanelService;
@@ -83,14 +84,20 @@ public class V2RecommendPanelController {
 	@RequestMapping(value = "/panel/list", method = RequestMethod.GET)
 	public CommonApiResponse recommendPanelTrackList(
 			@ApiIgnore @RequestGMContext GMContext ctx,
-			@ApiParam(value = "추천 패널 컨텐트 타입", allowableValues = "RC_ATST_TR, RC_SML_TR, RC_CF_TR") @RequestParam(value = "type") RecommendPanelContentType recommendPanelContentType,
+			@ApiParam(value = "추천 패널 컨텐트 타입", allowableValues = "RC_ATST_TR, RC_SML_TR, RC_CF_TR")
+			@RequestParam(value = "type") String recommendPanelContentType,
             @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo,
 		    @RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType
     ){
 
 		return new CommonApiResponse<>(new ListDto<>(
 				Optional.ofNullable(
-						recommendPanelService.getRecommendPanelList(ctx.getCharacterNo(), recommendPanelContentType, ctx.getOsType())
+						recommendPanelService.getRecommendPanelList(
+								ctx.getCharacterNo(),
+								recommendPanelContentType,
+								ctx.getOsType(),
+								ctx.getAppVer()
+						)
 				).orElseThrow( () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA))
 
 		));
@@ -108,9 +115,15 @@ public class V2RecommendPanelController {
 
 		return new CommonApiResponse<>(
 				RecommendPanelListResponse.builder()
-					.forMePanelList(recommendPanelService.getRecommendPanelList(characterNo, RecommendPanelContentType.RC_CF_TR, ctx.getOsType()))
-					.todayFloPanelList(recommendPanelService.getRecommendPanelList(characterNo, RecommendPanelContentType.RC_SML_TR, ctx.getOsType()))
-					.artistFloPanelList(recommendPanelService.getRecommendPanelList(characterNo, RecommendPanelContentType.RC_ATST_TR, ctx.getOsType()))
+					.forMePanelList(
+							recommendPanelService.getRecommendPanelList(
+									characterNo, "RC_CF_TR", ctx.getOsType(), ctx.getAppVer()))
+					.todayFloPanelList(
+							recommendPanelService.getRecommendPanelList(
+									characterNo, "RC_SML_TR", ctx.getOsType(), ctx.getAppVer()))
+					.artistFloPanelList(
+							recommendPanelService.getRecommendPanelList(
+									characterNo, "RC_ATST_TR", ctx.getOsType(), ctx.getAppVer()))
 				.build());
 	}
 

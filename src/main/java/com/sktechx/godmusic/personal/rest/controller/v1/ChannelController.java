@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 
-import com.sktechx.godmusic.personal.rest.model.vo.LastListenHistoryVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.google.common.primitives.Ints;
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
-import com.sktechx.godmusic.lib.domain.CommonConstant;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.RequestGMContext;
 import com.sktechx.godmusic.lib.domain.code.OsType;
@@ -24,12 +22,12 @@ import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.personal.common.domain.ListResponse;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto;
 import com.sktechx.godmusic.personal.rest.model.dto.MemberChannelDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ChannelListResponse;
+import com.sktechx.godmusic.personal.rest.model.vo.LastListenHistoryVo;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenDeleteRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
@@ -141,12 +139,15 @@ public class ChannelController {
     @ApiOperation(value = "AFLO 테마 리스트 ")
     @GetMapping("/afloChnl/list")
     public CommonApiResponse recommendPanelTrackList(
-            @ApiIgnore @RequestGMContext GMContext ctx,
-            @RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType
+            @ApiIgnore @RequestGMContext GMContext ctx
     ){
 
         Long characterNo = ctx.getCharacterNo();
-        List<Panel> recommendPanelList = recommendPanelService.getRecommendPanelList(characterNo, RecommendPanelContentType.AFLO, ctx.getOsType());
+        List<Panel> recommendPanelList = recommendPanelService.getRecommendPanelList(
+                characterNo, "AFLO",
+                ctx.getOsType(),
+                ctx.getAppVer()
+        );
 
         return new CommonApiResponse<>(new ListDto<>(recommendPanelList));
     }

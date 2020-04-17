@@ -15,6 +15,7 @@ import java.util.Objects;
 
 import org.springframework.util.CollectionUtils;
 
+import com.sktechx.godmusic.lib.utils.ServiceUtils;
 import com.sktechx.godmusic.personal.common.domain.PreferPropsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.common.util.BooleanComparator;
@@ -87,13 +88,45 @@ public abstract class PanelSignAssembly extends PanelAssembly {
                     .filter(Objects::nonNull)
                     .forEach(characterPreferDisp -> {
 
-                        RecommendPanelType recommendPanelType = getPreferRecommendPanelType(characterPreferDisp.getDispPropsType());
-                        if (recommendPanelType != null) {
-                            Panel panel = createChartPanel(recommendPanelType, personalPhaseMeta.getOsType(), PREFER_DISP_CHART_TRACK_LIMIT_SIZE);
-                            if (panel != null) {
-                                panelList.add(panel);
-                            }
+                        Integer appVersion = ServiceUtils.getFormattedAppVersion(getAppVersion());
+                        Panel panel;
+
+                        // 4.15.0 이하
+                        if(appVersion.compareTo(41500) < 0){
+
+                            panel = createChartPanel(
+                                    (
+                                        PreferPropsType.TOP100.getCode().equals(
+                                                characterPreferDisp.getDispPropsType()
+                                        )
+                                        ?
+                                        RecommendPanelType.LIVE_CHART
+                                        :
+                                        RecommendPanelType.KIDS_CHART
+                                    ),
+
+                                    personalPhaseMeta.getOsType(), PREFER_DISP_CHART_TRACK_LIMIT_SIZE
+                            );
+
+
+                        }else {
+                            panel = createPrivateChartPanel(
+                                    personalPhaseMeta.getCharacterNo(),
+                                    (
+                                        PreferPropsType.TOP100.getCode().equals(
+                                                characterPreferDisp.getDispPropsType()
+                                        )
+                                        ?
+                                        RecommendPanelType.PRI_LIVE_CHART
+                                        :
+                                        RecommendPanelType.PRI_KIDS_CHART
+                                    ),
+                                    personalPhaseMeta.getOsType(), PREFER_DISP_CHART_TRACK_LIMIT_SIZE
+                            );
+
                         }
+
+                        panelList.add(panel);
 
                     });
         }
@@ -128,9 +161,8 @@ public abstract class PanelSignAssembly extends PanelAssembly {
 
         List<ArtistDto> artistList = recommendArtistDto.getArtistList();
 
-        long representationArtistCount = artistList.stream().filter(artistDto -> {
-            return "REPRSNT".equals(artistDto.getArtistType());
-        }).count();
+        long representationArtistCount = artistList.stream().filter(
+                artistDto -> "REPRSNT".equals(artistDto.getArtistType())).count();
 
         long trackCount = recommendArtistDto.getTrackCount();
 
@@ -233,18 +265,27 @@ public abstract class PanelSignAssembly extends PanelAssembly {
     }
 
 
-    private RecommendPanelType getPreferRecommendPanelType(String preferPropsType ){
+    private RecommendPanelType getPreferChartRecommendPanelType(String preferPropsType ){
 
-        if(PreferPropsType.TOP100.getCode().equals(preferPropsType)){
-            return RecommendPanelType.LIVE_CHART;
-        }else if(PreferPropsType.KIDS100.getCode().equals(preferPropsType)){
-            return RecommendPanelType.KIDS_CHART;
+        Integer appVersion = ServiceUtils.getFormattedAppVersion(getAppVersion());
+
+        if(appVersion.compareTo(50000) < 0){
+
+            if (PreferPropsType.TOP100.getCode().equals(preferPropsType)) {
+                return RecommendPanelType.PRI_LIVE_CHART;
+            } else if (PreferPropsType.KIDS100.getCode().equals(preferPropsType)) {
+                return RecommendPanelType.PRI_KIDS_CHART;
+            }
+
+        }else {
+            if (PreferPropsType.TOP100.getCode().equals(preferPropsType)) {
+                return RecommendPanelType.LIVE_CHART;
+            } else if (PreferPropsType.KIDS100.getCode().equals(preferPropsType)) {
+                return RecommendPanelType.KIDS_CHART;
+            }
         }
         return null;
-
     }
-
-
 
     private Panel createPreferGenreSimilarTrackPanel(final PersonalPhaseMeta personalPhaseMeta,
                                                      final RecommendTrackDto preferGenreSimilarTrack){
