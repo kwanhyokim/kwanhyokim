@@ -65,7 +65,9 @@ public class ChartServiceImpl implements ChartService {
                 getPreferDisp(
                         chartDispPropsDto ->
                                 chartDispPropsDto.getChartId().equals(chartId)
-                        , osType),
+                        , osType
+                        , false
+                ),
                 Optional.ofNullable(
                         metaClient.getChartWithTrackList(chartId, trackLimitSize).getData()
                 ).orElseThrow(
@@ -81,7 +83,9 @@ public class ChartServiceImpl implements ChartService {
                 currentChartDispPropsDto -> dispPropsType.equals(
                         (currentChartDispPropsDto).getDispPropsType()
                 )
-                , osType);
+                , osType
+                , false
+        );
 
         ChartDto chartDto;
 

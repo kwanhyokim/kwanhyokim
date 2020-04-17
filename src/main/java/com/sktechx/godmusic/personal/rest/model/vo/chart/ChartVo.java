@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.model.vo.chart;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.*;
 import com.sktechx.godmusic.lib.domain.code.YnType;
@@ -123,7 +124,11 @@ public class ChartVo {
                         .chartType(chartTrackDto.getChartType())
                         .renewYn(chartTrackDto.getRenewYn())
                         .totalCount(chartTrackDto.getTotalCount())
-                        .imgList(chartDispPropsDto.getImgList())
+                        .imgList(
+                                chartDispPropsDto.getImgList().stream().map(
+                                        chartImageInfo -> (ImageInfo)chartImageInfo).collect(
+                                        Collectors.toList())
+                        )
                         .tasteMixDto(
                                 RCMMD_TASTE_MIX_VO_MAP.get(
                                     (chartTrackDto.getChartTaste() == null ? "NOT_MIXED" :

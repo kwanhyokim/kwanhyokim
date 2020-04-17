@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.service.chart;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartVo;
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
 import com.sktechx.godmusic.personal.rest.service.mongo.PersonalMongoClient;
@@ -66,7 +68,8 @@ public class MongoChartServiceImpl implements ChartService {
                 getPreferDisp(
                         cuurentChartDispPropsDto ->
                                 cuurentChartDispPropsDto.getChartId().equals(chartId)
-                        , osType)
+                , osType
+                ,   true)
         ).orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
 
 
@@ -94,8 +97,9 @@ public class MongoChartServiceImpl implements ChartService {
                 getPreferDisp(
                     currentChartDispPropsDto -> dispPropsType.equals(
                             (currentChartDispPropsDto).getDispPropsType()
-                    ),
-                osType)
+                    )
+                , osType
+                , true)
         ).orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
 
         ChartDto chartDto =
@@ -109,7 +113,10 @@ public class MongoChartServiceImpl implements ChartService {
                 () -> metaClient.getChartWithTrackList(chartDispPropsDto.getChartId(), trackLimitSize).getData()
         ));
 
-        chartDto.setImgList(chartDispPropsDto.getImgList());
+        chartDto.setImgList(
+                chartDispPropsDto.getImgList().stream().map(
+                chartImageInfo -> (ImageInfo)chartImageInfo).collect(Collectors.toList())
+        );
         chartDto.setChartNm(chartDispPropsDto.getChartNm());
 
         return chartDto;

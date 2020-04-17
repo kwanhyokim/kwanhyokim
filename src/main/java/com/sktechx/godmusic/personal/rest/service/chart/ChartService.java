@@ -45,7 +45,8 @@ public interface ChartService {
             OsType osType,
             int trackLimitSize);
 
-    default ChartDispPropsDto getPreferDisp(Predicate<ChartDispPropsDto> predicate, OsType osType){
+    default ChartDispPropsDto getPreferDisp(Predicate<ChartDispPropsDto> predicate, OsType osType
+            , Boolean useNewImgUrl){
 
         ChartDispPropsDtoWrapper chartDispPropsDtoWrapper =
                 getRedisService().getWithPrefix(CHART_DISPLAY_PROPERTIES_KEY,
@@ -76,8 +77,11 @@ public interface ChartService {
                 .findFirst()
                 .ifPresent(
                         imageInfo -> {
+
+                            imageInfo.replaceUrlByNew(useNewImgUrl);
                             chartDispPropsDto.setImgList(Collections.singletonList(imageInfo));
                         }
+
                 );
 
         return chartDispPropsDto;

@@ -33,10 +33,11 @@
 
     <resultMap id="chartDispPropsResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsDto" autoMapping="true">
         <id property="chartId" column="chart_id" />
-        <collection property="imgList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" autoMapping="true">
+        <collection property="imgList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.dto.chart.ChartImageInfo" autoMapping="true">
             <result property="size" column="img_size" />
             <result property="url" column="img_url" />
             <result property="osType" column="os_type" />
+            <result property="newUrl" column="new_img_url" />
         </collection>
     </resultMap>
 
@@ -208,8 +209,11 @@
             b.disp_id AS chart_id,
             b.prefer_disp_nm AS chart_nm,
             b.prefer_disp_nm AS chart_disp_nm,
+            b.disp_props_type,
+            c.os_type,
             c.img_size,
-            c.img_url
+            c.img_url,
+            c.new_img_url
         FROM
             tb_prefer_disp b
                 INNER JOIN

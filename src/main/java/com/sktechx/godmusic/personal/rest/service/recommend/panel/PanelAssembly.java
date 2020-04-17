@@ -154,7 +154,7 @@ public abstract class PanelAssembly {
         return null;
     }
 
-    Panel createPrivateChartPanel(Long characterNo, RecommendPanelType recommendPanelType,
+    protected Panel createPrivateChartPanel(Long characterNo, RecommendPanelType recommendPanelType,
             OsType osType, int trackLimitSize){
 
         ChartDto chart;

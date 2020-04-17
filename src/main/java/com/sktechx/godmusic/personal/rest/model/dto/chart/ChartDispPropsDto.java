@@ -12,7 +12,6 @@ package com.sktechx.godmusic.personal.rest.model.dto.chart;
 
 import java.util.List;
 
-import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import lombok.Data;
 
 /**
@@ -28,5 +27,5 @@ public class ChartDispPropsDto {
     private String chartNm;
     private String chartdispNm;
     private String dispPropsType;
-    private List<ImageInfo> imgList;
+    private List<ChartImageInfo> imgList;
 }
