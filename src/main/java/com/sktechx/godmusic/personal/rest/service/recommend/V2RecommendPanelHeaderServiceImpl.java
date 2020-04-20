@@ -163,7 +163,8 @@ public class V2RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderSe
                 .subTitle(subTitle)
                 .imgList(
                         getRecommendPanelInfoBgImage(recommendPanelContentType, panelContentId,
-                                osType, dispSn.get())).trackCount(trackCount)
+                                osType, dispSn.get())
+                ).trackCount(trackCount)
                 .newYn(this.getNewYn(dispStdStartDt)).renewDtime(dispStdStartDt)
                 .seedGenreVo(seedGenreVo).build();
     }
@@ -177,7 +178,9 @@ public class V2RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderSe
             int trackCount) {
 
         RecommendSimilarTrackDto recommendSimilarTrackDto =
-                recommendReadService.getRecommendTodayFlo(panelContentId, characterNo);
+                Optional.ofNullable(
+                    recommendReadService.getRecommendTodayFlo(characterNo, panelContentId)
+                ).orElseThrow( () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
 
         Date dispDate = recommendSimilarTrackDto.getDispStdStartDt();
 
@@ -224,7 +227,7 @@ public class V2RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderSe
     private RecommendPanelHeaderVo getArtistFloRecommendPanelInfoDto(Long characterNo,
             Long panelContentId) {
         RecommendArtistDto recommendArtistDto =
-                recommendReadService.getRecommendArtistFlo(panelContentId, characterNo);
+                recommendReadService.getRecommendArtistFlo(characterNo, panelContentId);
 
         List<ArtistDto> artistDtoList =
 
