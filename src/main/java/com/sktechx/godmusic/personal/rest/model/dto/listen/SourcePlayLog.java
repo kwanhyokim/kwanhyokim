@@ -139,4 +139,7 @@ public class SourcePlayLog {
 
     @JsonProperty("app_version")
     private String appVersion;
+
+    @JsonProperty("build_number")
+    private String buildNumber;
 }
