@@ -26,6 +26,7 @@ import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+import com.sktechx.godmusic.personal.common.util.DateUtil;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferDispDto;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
@@ -168,11 +169,11 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
                 }
             }
 
-            boolean result = redisService.setWithPrefix(personalRecommendPhaseKey, personalPhaseMeta, "NX", "PX", hourlyRemainMillisecond());
-
-            log.info("{}", result);
+            redisService.setWithPrefix(personalRecommendPhaseKey, personalPhaseMeta, "NX",
+                    "PX", DateUtil.hourlyRemainMillisecond());
 
         }catch(Exception ex){
+            ex.printStackTrace();
             log.error("getPersonalRecommendPhaseMeta not catched exception : {}",ex.getMessage());
             personalPhaseMeta = getGuestPhaseMeta(osType);
         }
@@ -298,33 +299,6 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
     }
     private List<CharacterPreferGenreDto> selectFillPreferGenreList(Long characterNo){
         return characterPreferGenreMapper.selectCharacterPreferDispMapGenre(characterNo);
-    }
-
-    private long hourlyRemainMillisecond(){
-        Calendar cal = Calendar.getInstance();
-
-        cal.set(Calendar.HOUR_OF_DAY, 5);
-        cal.set(Calendar.MINUTE , 59);
-        cal.set(Calendar.SECOND,59);
-        cal.set(Calendar.MILLISECOND,999);
-        cal.add(Calendar.DAY_OF_YEAR, 1);
-
-        long remainMillisecond = cal.getTimeInMillis() - System.currentTimeMillis();
-        if(remainMillisecond > 0)
-            return remainMillisecond;
-        return 0;
-
-    }
-    private long todayRemainMillisecond(){
-        LocalDateTime todayMaxLocalTime = LocalDate.now().atTime(LocalTime.MAX);
-        long epochMilli = todayMaxLocalTime.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
-
-        LocalDateTime nowLocalTime = LocalDate.now().atTime(LocalTime.now());
-        long localEpochMilli = nowLocalTime.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
-
-        if(epochMilli > localEpochMilli)
-            return epochMilli - localEpochMilli;
-        return 0;
     }
 
     private PersonalPhaseMeta getGuestPhaseMeta(OsType osType){

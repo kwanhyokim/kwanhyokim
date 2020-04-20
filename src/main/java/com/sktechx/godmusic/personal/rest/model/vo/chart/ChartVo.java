@@ -44,6 +44,9 @@ public class ChartVo {
     private Long id;
 
     @JsonProperty("name")
+    private String displayName;
+
+    @JsonIgnore
     private String name;
 
     private String playTime;
@@ -81,6 +84,10 @@ public class ChartVo {
         }
 
         this.imgList = imgList;
+    }
+
+    public String getDisplayName(){
+        return this.name + " 내 취향 MIX";
     }
 
     @JsonProperty("tasteMix")

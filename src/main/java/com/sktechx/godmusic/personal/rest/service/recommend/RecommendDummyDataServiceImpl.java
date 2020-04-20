@@ -34,6 +34,8 @@ import com.sktechx.godmusic.personal.rest.service.chart.ChartService;
 import com.sktechx.godmusic.personal.rest.service.mongo.PersonalMongoClient;
 import lombok.extern.slf4j.Slf4j;
 
+import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.PERSONAL_CHART_KEY;
+
 /**
  * 설명 : XXXXXXXX
  *
@@ -206,6 +208,10 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
         ChartDto chartDto = chartService.getChartByDispPropsTypeWithTrackList(characterNo,
                 "TOP100", OsType.IOS, 100);
 
+
+        redisService.delWithPrefix(String.format(PERSONAL_CHART_KEY, chartDto.getChartId(),
+                characterNo));
+
         Collections.shuffle(chartDto.getTrackList());
 
         personalMongoClient.addRecommendChart(characterNo,
@@ -225,6 +231,10 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
                 "KIDS100", OsType.IOS, 100);
 
         Collections.shuffle(chartDto.getTrackList());
+
+        redisService.delWithPrefix(String.format(PERSONAL_CHART_KEY, chartDto.getChartId(),
+                characterNo));
+
 
         personalMongoClient.addRecommendChart(characterNo,
                 chartDto.getChartId(),
@@ -247,6 +257,9 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
         ChartDto chartDto = chartService.getChartByDispPropsTypeWithTrackList(characterNo,
                 "TOP100", OsType.IOS, 100);
 
+        redisService.delWithPrefix(String.format(PERSONAL_CHART_KEY, chartDto.getChartId(),
+                characterNo));
+
         personalMongoClient.deleteRecommendChart(characterNo,
                 chartDto.getChartId(),
                 RecommendChartRequest.builder()
@@ -256,6 +269,9 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
 
         chartDto = chartService.getChartByDispPropsTypeWithTrackList(characterNo,
                 "KIDS100", OsType.IOS, 100);
+
+        redisService.delWithPrefix(String.format(PERSONAL_CHART_KEY, chartDto.getChartId(),
+                characterNo));
 
         personalMongoClient.deleteRecommendChart(characterNo,
                 chartDto.getChartId(),

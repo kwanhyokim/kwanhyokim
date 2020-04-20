@@ -102,6 +102,8 @@ public class TrackDto {
 
     private YnType freeYn;
 
+    private RankDto rank;
+
     @JsonIgnore
     public boolean isNotStreamable() {
         return YnType.N == this.svcStreamingYn;

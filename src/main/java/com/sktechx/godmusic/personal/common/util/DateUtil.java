@@ -421,9 +421,6 @@ public class DateUtil {
 	/**
 	 * yyyymmdd 형식의 데이터를 cnt 만큼 더한 날짜를 반환
 	 *
-	 * @param	String yyyymmdd
-	 * @param	int cnt
-	 * @return		String
 	 */
 	public static String getPlusDate(String yyyymmdd, int cnt){
 		if (yyyymmdd.length() != 8) return "";
@@ -459,9 +456,6 @@ public class DateUtil {
 	/**
 	 * yyyymmdd 형식의 데이터를 cnt 만큼 뺀 날짜를 반환
 	 *
-	 * @param	String yyyymmdd
-	 * @param	int cnt
-	 * @return	String
 	 */
 	public static String getMinusDate(String yyyymmdd, int cnt){
 		if (yyyymmdd.length() != 8) return "";
@@ -613,5 +607,34 @@ public class DateUtil {
 
 	public static Date asDate(Long epochSecond) {
 		return Date.from(Instant.ofEpochSecond(epochSecond).atZone(ZoneId.of("Asia/Seoul")).toInstant());
+	}
+
+	public static long hourlyRemainMillisecond(){
+		Calendar cal = Calendar.getInstance();
+
+		cal.set(Calendar.HOUR_OF_DAY, 5);
+		cal.set(Calendar.MINUTE , 59);
+		cal.set(Calendar.SECOND,59);
+		cal.set(Calendar.MILLISECOND,999);
+		cal.add(Calendar.DAY_OF_YEAR, 1);
+
+		long remainMillisecond = cal.getTimeInMillis() - System.currentTimeMillis();
+		if(remainMillisecond > 0)
+			return remainMillisecond;
+		return 0;
+
+	}
+
+	public static long getMillisecondRemainToHour(){
+		Calendar cal = Calendar.getInstance();
+
+		cal.add(Calendar.HOUR_OF_DAY, 1);
+		cal.set(Calendar.SECOND, 10);
+
+		long remainMillisecond = cal.getTimeInMillis() - System.currentTimeMillis();
+		if(remainMillisecond > 0)
+			return remainMillisecond;
+		return 0;
+
 	}
 }

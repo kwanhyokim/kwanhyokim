@@ -12,6 +12,7 @@ package com.sktechx.godmusic.personal.rest.model.dto.chart;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -60,5 +61,12 @@ public class ChartTrackDto {
     private String chartTaste;
 
     private String basedOnUpdate;
+
+    public void decreaseTrackListSizeTo(int trackLimitSize){
+        if(this.trackList != null) {
+            this.trackList =
+                    this.trackList.stream().limit(trackLimitSize).collect(Collectors.toList());
+        }
+    }
 
 }
