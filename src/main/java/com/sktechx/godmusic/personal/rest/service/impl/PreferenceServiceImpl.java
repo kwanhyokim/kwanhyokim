@@ -458,7 +458,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 		String redisKey = String.format(RedisKeyConstant.PERSONAL_PREFERENCE_VIDEO_ARTIST_NEW_LIST, characterNo);
 
-		if(redisService.exists(redisKey)){
+		if(redisService.existsWithPrefix(redisKey)){
 			return redisService.getListWithPrefix(redisKey, VideoVo.class);
 		}
 
@@ -514,7 +514,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 		String redisKey = String.format(RedisKeyConstant.PERSONAL_PREFERENCE_VIDEO_GENRE_NEW_LIST, characterNo);
 
-		if (redisService.exists(redisKey)) {
+		if (redisService.existsWithPrefix(redisKey)) {
 			return redisService.getListWithPrefix(redisKey, VideoVo.class);
 		}
 

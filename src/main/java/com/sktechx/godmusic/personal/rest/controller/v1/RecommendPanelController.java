@@ -176,9 +176,9 @@ public class RecommendPanelController {
 		}
 
 		if(chartVo == null) {
-			chartVo = chartService
-					.getChartWithTrackList(ctx.getCharacterNo(), chartId, ctx.getOsType(), 100);
-
+			chartVo = chartService.getChartWithTrackList(
+					ctx.getCharacterNo(), chartId, ctx.getOsType(), 100
+			);
 		}
 
 		if(chartVo != null){

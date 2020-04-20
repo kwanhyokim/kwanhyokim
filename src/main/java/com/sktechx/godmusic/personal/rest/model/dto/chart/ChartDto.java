@@ -12,6 +12,7 @@ package com.sktechx.godmusic.personal.rest.model.dto.chart;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -68,7 +69,8 @@ public class ChartDto {
     }
 
     public static ChartDto from (ChartTrackDto chartTrackDto){
-        return ChartDto.builder()
+
+        return chartTrackDto == null ? null : ChartDto.builder()
                 .chartId(chartTrackDto.getId())
                 .chartNm(chartTrackDto.getName())
                 .chartType(chartTrackDto.getChartType())
@@ -79,5 +81,33 @@ public class ChartDto {
                 .trackCount(chartTrackDto.getTotalCount())
                 .imgList(chartTrackDto.getImgList())
                 .build();
+    }
+
+    public static ChartDto from (ChartDispPropsDto chartDispPropsDto, ChartTrackDto chartTrackDto){
+
+        if(chartDispPropsDto == null || chartTrackDto == null){
+            return null;
+        }
+
+        ChartDto chartDto =  ChartDto.builder()
+                .chartId(chartTrackDto.getId())
+                .chartNm(chartTrackDto.getName())
+                .chartType(chartTrackDto.getChartType())
+                .trackList(chartTrackDto.getTrackList())
+                .createDtime(chartTrackDto.getCreateDateTime())
+                .updateDtime(chartTrackDto.getUpdateDateTime())
+                .dispStartDtime(chartTrackDto.getDispStartDtime())
+                .trackCount(chartTrackDto.getTotalCount())
+                .imgList(chartTrackDto.getImgList())
+                .build();
+
+        chartDto.setImgList(
+                chartDispPropsDto.getImgList().stream().map(
+                        chartImageInfo -> (ImageInfo)chartImageInfo).collect(Collectors.toList())
+        );
+
+        chartDto.setChartNm(chartDispPropsDto.getChartNm());
+
+        return chartDto;
     }
 }

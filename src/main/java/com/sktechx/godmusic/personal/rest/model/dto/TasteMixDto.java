@@ -27,10 +27,12 @@ public class TasteMixDto {
 
     private YnType mixYn;   // 믹스 여부
     private String status;  // 믹스 상태
-    // mixed : 개인화 차트
-    // not_mixed : 개인화 차트 아님(실시간 차트)
-    // require_more_listen : 더욱 청취 필요
-    // same : 개인화 차트와 실시간 차트가 동일
+    // MIXED : 개인화 차트
+    // NOT_MIXED : 개인화 차트 아님(실시간 차트)
+    // REQUIRE_MORE_LISTEN : 더욱 청취 필요
+    // SAME : 개인화 차트와 실시간 차트가 동일
+    // REQUIRE_LOGIN : 로그인이 필요합니다 ( 로그인 안하고 요청한 경우)
+    // OFF : 일반 곡 순서로 변경한 경우
     private String descriptionMessage;  // 차트의 믹스 상태에 대한 설명
     private String displayMessage;      // 차트 믹스 전시 메시지 (토스트 팝업용)
 
