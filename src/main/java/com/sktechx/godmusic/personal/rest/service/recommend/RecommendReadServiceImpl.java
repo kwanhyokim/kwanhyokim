@@ -92,9 +92,15 @@ public class RecommendReadServiceImpl implements RecommendReadService {
         return recommendReadMapper.selectRecommendArtistByCharacterNo(
                 characterNo,
                 DateUtil.dateToString(
-                        Optional.of(
-                                recommendReadMapper.selectRecommendArtistMostRecentDispDateByCharacterNo(characterNo)
-                        ).get()
+                        Optional.ofNullable(
+                                recommendReadMapper
+                                        .selectRecommendArtistMostRecentDispDateByCharacterNo(
+                                                characterNo
+                                        )
+
+                        ).orElseThrow(
+                                () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA)
+                        )
                         , "yyyyMMdd")
 
         );
@@ -108,7 +114,7 @@ public class RecommendReadServiceImpl implements RecommendReadService {
                         panelMaxSize,
                         trackMaxSize,
                         osType)
-        ).orElseGet(Collections::emptyList);
+        ).orElseThrow( () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
     }
 
     @Override
@@ -119,15 +125,13 @@ public class RecommendReadServiceImpl implements RecommendReadService {
             OsType osType) {
 
         return Optional.ofNullable(
-                personalMongoClient.getRecommendTodayFloListWithTrackByCharacterNo(characterNo).getData()
-                .getList()
-        ).orElseGet( () ->
-            recommendReadMapper.selectRecommendSimilarTrackListByCharacterNo(
-                    characterNo,
-                    panelMaxSize,
-                    trackMaxSize,
-                    osType
-            ));
+                recommendReadMapper.selectRecommendSimilarTrackListByCharacterNo(
+                        characterNo,
+                        panelMaxSize,
+                        trackMaxSize,
+                        osType
+                )
+        ).orElseThrow( () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
     }
     @Override
     public List<RecommendTrackDto> getRecommendArtistFloListWithTrackByCharacterNo(Long characterNo,

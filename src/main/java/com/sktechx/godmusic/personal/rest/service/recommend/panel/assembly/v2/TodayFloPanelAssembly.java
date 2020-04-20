@@ -13,7 +13,6 @@ package com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.v2;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
@@ -24,7 +23,6 @@ import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.PreferSimilarTrackPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
-import com.sktechx.godmusic.personal.rest.service.recommend.RecommendReadService;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelSignAssembly;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,9 +40,6 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
 public class TodayFloPanelAssembly extends PanelSignAssembly {
 
     public TodayFloPanelAssembly(){}
-
-    @Autowired
-    private RecommendReadService recommendReadService;
 
     @Override
     protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
