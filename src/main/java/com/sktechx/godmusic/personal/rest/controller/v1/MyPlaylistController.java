@@ -14,10 +14,6 @@ package com.sktechx.godmusic.personal.rest.controller.v1;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
-import com.sktechx.godmusic.personal.common.amqp.domain.UserEvent;
-import com.sktechx.godmusic.personal.common.amqp.domain.UserEventTarget;
-import com.sktechx.godmusic.personal.common.amqp.domain.UserEventType;
-import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.common.domain.type.AppNameType;
 import com.sktechx.godmusic.personal.common.domain.type.PinType;
@@ -73,9 +69,6 @@ public class MyPlaylistController {
     @Autowired
     MemberChannelService memberChannelService;
 
-    @Autowired
-    private AmqpService amqpService;
-
     private static final String PIN_MY_PLAYLIST_DEFAULT_REQUEST = "{\n" +
             " \"type\": \"회원이 생성할 플레이리스트 타입\", \n" +
             " \"id\": \"회원이 생성할 플레이리스트 타입 ID\" \n" +
@@ -98,19 +91,6 @@ public class MyPlaylistController {
         Long characterNo = getCharacterNo();
         MyPlaylistTrackCreateResponse myPlaylistTrackCreateResponse = memberChannelService.pinMemberChannel(memberNo, characterNo, myPlaylistPinRequest.getPinType(), myPlaylistPinRequest.getPinTypeId());
 
-        // 내 리스트 생성시 (PIN) userevent 발생
-        amqpService.deliverUserEvent(
-                UserEvent.newBuilder()
-                        .playChnl(AppNameType.parseFromCodeToString(GMContext.getContext().getAppName()))
-                        .event(UserEventType.PICK)
-                        .memberNo(memberNo)
-                        .charactorNo(characterNo)
-                        .targetId(myPlaylistPinRequest.getPinTypeId().toString())
-                        .targetType(UserEventTarget.MYPLAYLIST)
-                        .timeMillis(System.currentTimeMillis())
-                        .build()
-        );
-
         return new CommonApiResponse<>(myPlaylistTrackCreateResponse);
     }
 
@@ -129,19 +109,6 @@ public class MyPlaylistController {
         }
 
         MemberChannelDto memberChannelDto = memberChannelService.getMemberChannel(memberNo, characterNo, memberChannel.getMemberChannelId());
-
-        // 내 리스트 생성시 userevent 발생
-        amqpService.deliverUserEvent(
-                UserEvent.newBuilder()
-                        .playChnl(AppNameType.parseFromCodeToString(GMContext.getContext().getAppName()))
-                        .event(UserEventType.PICK)
-                        .memberNo(memberNo)
-                        .charactorNo(characterNo)
-                        .targetId(memberChannelDto.getMemberChannelId().toString())
-                        .targetType(UserEventTarget.MYPLAYLIST)
-                        .timeMillis(System.currentTimeMillis())
-                        .build()
-        );
 
         return new CommonApiResponse<>(memberChannelDto);
     }
@@ -195,21 +162,6 @@ public class MyPlaylistController {
         Long characterNo = getCharacterNo();
         List<Long> memberChannelIdList = myPlaylistDeleteRequest.getMemberChannelIdList();
         memberChannelService.removeMemberChannel(memberNo, characterNo, memberChannelIdList);
-
-        for (Long memberChannelId : memberChannelIdList) {
-            // 내 리스트 삭제시 userevent 발생
-            amqpService.deliverUserEvent(
-                    UserEvent.newBuilder()
-                            .playChnl(AppNameType.parseFromCodeToString(GMContext.getContext().getAppName()))
-                            .event(UserEventType.UNPICK)
-                            .memberNo(memberNo)
-                            .charactorNo(characterNo)
-                            .targetId(memberChannelId.toString())
-                            .targetType(UserEventTarget.MYPLAYLIST)
-                            .timeMillis(System.currentTimeMillis())
-                            .build()
-            );
-        }
 
         return CommonApiResponse.emptySuccess();
     }
