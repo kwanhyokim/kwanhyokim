@@ -34,6 +34,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.header.RecommendPan
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedArtistVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedGenreVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedTrackVo;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
@@ -144,20 +145,25 @@ public class V2RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderSe
 
         AtomicReference<Integer> dispSn = new AtomicReference<>();
 
-        personalPhaseMeta.getRecommendPersonalPanelList(RecommendPanelContentType.RC_CF_TR).stream()
+        PersonalPanel personalPanel =
+                Optional.ofNullable(
+                personalPhaseMeta.getRecommendPersonalPanelList(RecommendPanelContentType.RC_CF_TR)
+                ).orElseGet(Collections::emptyList)
+                        .stream()
                 .filter(
-                        personalPanel -> panelContentId.equals(personalPanel.getRecommendId())
-                ).findFirst()
-                .ifPresent( personalPanel -> {
-                            if (personalPhaseMeta
-                                    .getRecommendPersonalPanelList(RecommendPanelContentType.RC_CF_TR)
-                                    .indexOf(personalPanel) % 2 == 0) {
-                                dispSn.set(2);
-                            } else {
-                                dispSn.set(1);
-                            }
-                        }
-                );
+                        panel -> panelContentId.equals(panel.getRecommendId())
+                )
+                .findFirst()
+                .orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
+
+                if (personalPhaseMeta
+                        .getRecommendPersonalPanelList(RecommendPanelContentType.RC_CF_TR)
+                        .indexOf(personalPanel) % 2 == 0) {
+                    dispSn.set(2);
+                } else {
+                    dispSn.set(1);
+                }
+
         return RecommendPanelHeaderVo.builder()
                 .title(RecommendConstant.RCMMD_TRACK_PANEL_TITLE)
                 .subTitle(subTitle)
