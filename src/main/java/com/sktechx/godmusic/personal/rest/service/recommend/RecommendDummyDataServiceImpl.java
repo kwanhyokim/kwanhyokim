@@ -214,6 +214,12 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
 
         Collections.shuffle(chartDto.getTrackList());
 
+        int i =0;
+
+        for(TrackDto trackDto : chartDto.getTrackList()) {
+            trackDto.getRank().setRankBadge(i++);
+        }
+
         personalMongoClient.addRecommendChart(characterNo,
                 chartDto.getChartId(),
                 RecommendChartRequest.builder()
@@ -231,6 +237,12 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
                 "KIDS100", OsType.IOS, 100);
 
         Collections.shuffle(chartDto.getTrackList());
+
+        i =0;
+
+        for(TrackDto trackDto : chartDto.getTrackList()) {
+            trackDto.getRank().setRankBadge(i++);
+        }
 
         redisService.delWithPrefix(String.format(PERSONAL_CHART_KEY, chartDto.getChartId(),
                 characterNo));
