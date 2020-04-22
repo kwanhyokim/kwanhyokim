@@ -59,6 +59,7 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConst
 public class ChannelServiceImpl implements ChannelService {
 
     private static int RECENT_LISTENED_LIST_LIMIT = 300;
+    private static final String PREFIX_STR_PRIVATE_CHART = "내 취향 MIX";
 
     @Autowired
     private SqlSessionTemplate sqlSessionTemplate;
@@ -292,6 +293,9 @@ public class ChannelServiceImpl implements ChannelService {
 
         if (OVER_VERSION_4_15_0 && isNotWeb) {
             List<LastListenHistoryDto> lastListenHistoryByPrivateChart = channelMapper.selectLastListenHistoryWithPrivateChart(memberNo, characterNo, osType);
+            for (LastListenHistoryDto each : lastListenHistoryByPrivateChart) {
+                each.setContentTitle(each.getContentTitle() + " " + PREFIX_STR_PRIVATE_CHART);
+            }
             lastListenHistory.addAll(lastListenHistoryByPrivateChart);
         }
 
