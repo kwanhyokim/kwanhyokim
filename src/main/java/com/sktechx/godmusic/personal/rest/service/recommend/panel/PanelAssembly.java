@@ -19,6 +19,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.util.CollectionUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.lib.utils.ServiceUtils;
+import com.sktechx.godmusic.personal.common.domain.PreferPropsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
@@ -38,6 +40,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.POPULAR_CHNL_TRACK_LIMIT_SIZE;
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.PREFER_DISP_CHART_TRACK_LIMIT_SIZE;
 
 /**
  * 설명 : 추천 패널 생성기
@@ -261,6 +264,58 @@ public abstract class PanelAssembly {
                                 }
 
                         ));
+    }
+
+    public void appendPreferenceChartPanel(final PersonalPhaseMeta personalPhaseMeta, final List<Panel> panelList) {
+        if(!CollectionUtils.isEmpty(personalPhaseMeta.getPreferDispList())) {
+
+            personalPhaseMeta.getPreferDispList()
+                    .stream()
+                    .filter(Objects::nonNull)
+                    .forEach(characterPreferDisp -> {
+
+                        Integer appVersion = ServiceUtils.getFormattedAppVersion(getAppVersion());
+                        Panel panel;
+
+                        // 4.15.0 이하
+                        if(appVersion.compareTo(41500) < 0){
+
+                            panel = createChartPanel(
+                                    (
+                                            PreferPropsType.TOP100.getCode().equals(
+                                                    characterPreferDisp.getDispPropsType()
+                                            )
+                                                    ?
+                                                    RecommendPanelType.LIVE_CHART
+                                                    :
+                                                    RecommendPanelType.KIDS_CHART
+                                    ),
+
+                                    personalPhaseMeta.getOsType(), PREFER_DISP_CHART_TRACK_LIMIT_SIZE
+                            );
+
+
+                        }else {
+                            panel = createPrivateChartPanel(
+                                    personalPhaseMeta.getCharacterNo(),
+                                    (
+                                            PreferPropsType.TOP100.getCode().equals(
+                                                    characterPreferDisp.getDispPropsType()
+                                            )
+                                                    ?
+                                                    RecommendPanelType.PRI_LIVE_CHART
+                                                    :
+                                                    RecommendPanelType.PRI_KIDS_CHART
+                                    ),
+                                    personalPhaseMeta.getOsType(), PREFER_DISP_CHART_TRACK_LIMIT_SIZE
+                            );
+
+                        }
+
+                        panelList.add(panel);
+
+                    });
+        }
     }
 
 }

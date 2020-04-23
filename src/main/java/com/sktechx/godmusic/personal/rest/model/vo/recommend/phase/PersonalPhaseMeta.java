@@ -86,20 +86,16 @@ public class PersonalPhaseMeta {
          return !CollectionUtils.isEmpty(getPreferGenreList());
     }
 
+
     public List<Long> getRecommendPersonalPanelRcmmdIdList(RecommendPanelContentType recommendPanelContentType) {
         if(!CollectionUtils.isEmpty(rcmmdPanelList)) {
             return rcmmdPanelList.stream()
-                    .filter(personalPanel -> {
-                        return Objects.nonNull(personalPanel) && recommendPanelContentType.equals(personalPanel.getRecommendPanelContentType());
-                    })
+                    .filter(personalPanel ->
+                            Objects.nonNull(personalPanel) && recommendPanelContentType.equals(personalPanel.getRecommendPanelContentType()))
                     .sorted(
-                            Comparator.comparing(PersonalPanel::getRecommendId, (r1, r2) -> {
-                                return r1.compareTo(r2);
-                                    }).reversed()
-                                    .thenComparing(
-                            Comparator.comparing(PersonalPanel::getDispSn, (dispSn1, dispSn2) -> {
-                        return dispSn1.compareTo(dispSn2);
-                    })))
+                            Comparator.comparing(PersonalPanel::getRecommendId, (r1, r2) -> r1.compareTo(r2)).reversed()
+                                    .thenComparing(PersonalPanel::getDispSn,
+                                            Comparator.naturalOrder()))
                     .map(PersonalPanel::getRecommendId)
                     .distinct()
                     .collect(Collectors.toList());
@@ -181,15 +177,10 @@ public class PersonalPhaseMeta {
     }
     private PersonalPanel getRecommendPersonalPanel(RecommendPanelContentType recommendPanelContentType){
         if(!CollectionUtils.isEmpty(rcmmdPanelList)){
-            return rcmmdPanelList
-                    .stream()
-                    .filter(personalPanel -> Objects.nonNull(personalPanel)
-                            && recommendPanelContentType.equals(personalPanel.getRecommendPanelContentType())
-                    )
-                    .sorted(Comparator.comparing(PersonalPanel::getDispSn, (dispSn1, dispSn2) -> {
-                        return dispSn1.compareTo(dispSn2);
-                    }))
-                    .findFirst()
+            return rcmmdPanelList.stream().filter(personalPanel -> Objects.nonNull(personalPanel)
+                    && recommendPanelContentType
+                    .equals(personalPanel.getRecommendPanelContentType()))
+                    .min(Comparator.comparing(PersonalPanel::getDispSn, Integer::compareTo))
                     .orElse(null);
         }
 
