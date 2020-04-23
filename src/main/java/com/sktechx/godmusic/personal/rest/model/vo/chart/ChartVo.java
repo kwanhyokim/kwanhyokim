@@ -15,8 +15,10 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.*;
 import com.sktechx.godmusic.lib.domain.code.YnType;
+import com.sktechx.godmusic.personal.common.domain.PreferPropsType;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
 import com.sktechx.godmusic.personal.common.domain.type.PlayListType;
+import com.sktechx.godmusic.personal.common.util.DateUtil;
 import com.sktechx.godmusic.personal.rest.model.dto.TasteMixDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsDto;
@@ -25,6 +27,8 @@ import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
+
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.CHART_PANEL_HOURLY_BASIS_PHRASES;
 
 /**
  * 설명 : 차트 vo
@@ -127,7 +131,16 @@ public class ChartVo {
                         .trackList(chartTrackDto.getTrackList())
                         .createDateTime(chartTrackDto.getCreateDateTime())
                         .updateDateTime(chartTrackDto.getUpdateDateTime())
-                        .basedOnUpdate(chartTrackDto.getBasedOnUpdate())
+                        .basedOnUpdate(PreferPropsType.TOP100.getCode().equals(
+                                chartDispPropsDto.getDispPropsType()
+                                ) ?
+                                DateUtil.dateToString(
+                                        (chartTrackDto.getDispStartDtime() == null ?
+                                                new Date() : chartTrackDto.getDispStartDtime()
+                                        ), "HH") + CHART_PANEL_HOURLY_BASIS_PHRASES
+                                        :
+                                chartTrackDto.getBasedOnUpdate()
+                        )
                         .chartType(chartTrackDto.getChartType())
                         .renewYn(chartTrackDto.getRenewYn())
                         .totalCount(chartTrackDto.getTotalCount())

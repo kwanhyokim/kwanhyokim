@@ -19,6 +19,7 @@ import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
+import com.sktechx.godmusic.personal.common.domain.PreferPropsType;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
@@ -89,7 +90,8 @@ public class ChartServiceImpl implements ChartService {
 
         ChartDto chartDto;
 
-        String cacheKey = "TOP100".equals(dispPropsType) ? REALTIME_CHART_KEY :KIDS_CHART_KEY ;
+        String cacheKey = PreferPropsType.TOP100.getCode().equals(dispPropsType) ?
+                REALTIME_CHART_KEY : KIDS_CHART_KEY ;
 
         chartDto = redisService.getWithPrefix(cacheKey , ChartDto.class);
 
