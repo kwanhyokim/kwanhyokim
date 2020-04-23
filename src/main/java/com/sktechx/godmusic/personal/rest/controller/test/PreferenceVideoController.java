@@ -125,10 +125,10 @@ public class PreferenceVideoController {
 
         if(CollectionUtils.isEmpty(videoVoList) || !videoVoList.contains(VideoVo.builder().videoId(videoId).build())){
             return String.format(response, "해당 비디오 전시일("+
-                    DateUtil.dateToString(tempVideoVo.getDispStartDtime(), "yyyy-MM-dd")
-                    +"이 기준일 (" +
-                    DateUtil.dateToString(from, "yyyy-MM-dd") +
-                    DateUtil.dateToString(to, "yyyy-MM-dd") +
+                    DateUtil.dateToString(tempVideoVo.getDispStartDtime(), "yyyy-MM-dd HH:mm:ss")
+                    +")이 기준일 (" +
+                    DateUtil.dateToString(from, "yyyy-MM-dd HH:mm:ss") + " ~ " +
+                    DateUtil.dateToString(to, "yyyy-yyyy-MM-dd HH:mm:ss-dd") +
                     ")에 포함되지 않음");
         }
 
@@ -143,7 +143,7 @@ public class PreferenceVideoController {
                 preferenceMapper.selectPreferGenreVideoIdListByCharacterNo(characterNo);
 
         if(CollectionUtils.isEmpty(videoIdList)){
-            return String.format(response, "해당 회원의 선호 정보가 없음");
+            return String.format(response, "해당 회원의 선호 정보가 없어 기존 장르로 대체됨");
         }
 
         if(!videoIdList.contains(videoId)){
@@ -177,10 +177,10 @@ public class PreferenceVideoController {
 
         if(CollectionUtils.isEmpty(videoVoList) || !videoVoList.contains(VideoVo.builder().videoId(videoId).build())){
             return String.format(response, "해당 비디오 전시일("+
-                    DateUtil.dateToString(tempVideoVo.getDispStartDtime(), "yyyy-MM-dd")
-                    +"이 기준일 (" +
-                    DateUtil.dateToString(from, "yyyy-MM-dd") +
-                    DateUtil.dateToString(to, "yyyy-MM-dd") +
+                    DateUtil.dateToString(tempVideoVo.getDispStartDtime(), "yyyy-MM-dd HH:mm:ss")
+                    +")이 기준일 (" +
+                    DateUtil.dateToString(from, "yyyy-MM-dd HH:mm:ss") + " ~ " +
+                    DateUtil.dateToString(to, "yyyy-yyyy-MM-dd HH:mm:ss-dd") +
                     ")에 포함되지 않음");
         }
 
