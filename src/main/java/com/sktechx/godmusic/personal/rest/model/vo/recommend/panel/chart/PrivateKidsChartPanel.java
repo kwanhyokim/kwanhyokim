@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.chart;
 
+import java.util.Date;
 import java.util.List;
 
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
@@ -43,9 +44,9 @@ public class PrivateKidsChartPanel extends Panel {
         this.imgList = bgImgList;
         this.title = chart.getChartNm();
         this.subTitle = DateUtil.dateToString(
-                (chart.getUpdateDtime() == null ?
-                        chart.getDispStartDtime() :
-                        chart.getUpdateDtime()),
+                (chart.getDispStartDtime() == null ?
+                        new Date() :
+                        chart.getDispStartDtime()),
                 "yyyy.MM.dd");
         this.priChartTitle =
                 ChartTitle.builder()

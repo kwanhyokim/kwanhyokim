@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.chart;
 
+import java.util.Date;
 import java.util.List;
 
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
@@ -45,7 +46,8 @@ public class PrivateFloChartPanel extends Panel {
         this.imgList = bgImgList;
         this.title = chart.getChartNm();
         this.subTitle = DateUtil.dateToString(
-                chart.getDispStartDtime(), "HH") + CHART_PANEL_HOURLY_BASIS_PHRASES;
+                (chart.getDispStartDtime() == null ? new Date() : chart.getDispStartDtime()),
+                "HH") + CHART_PANEL_HOURLY_BASIS_PHRASES;
 
         this.priChartTitle =
                 ChartTitle.builder()
