@@ -135,13 +135,13 @@ public abstract class PanelAssembly {
 
         if(RecommendPanelType.LIVE_CHART.equals(recommendPanelType)){
             chart = chartService.getChartByDispPropsTypeWithTrackList(null,
-                    "TOP100",
+                    PreferPropsType.TOP100.getCode(),
                     osType,
                     trackLimitSize);
 
         }else if(RecommendPanelType.KIDS_CHART.equals(recommendPanelType)){
             chart = chartService.getChartByDispPropsTypeWithTrackList(null,
-                    "KIDS100",
+                    PreferPropsType.KIDS100.getCode(),
                     osType,
                     trackLimitSize);
         }
@@ -164,7 +164,7 @@ public abstract class PanelAssembly {
 
         if(RecommendPanelType.PRI_LIVE_CHART.equals(recommendPanelType)){
             chart = mongoChartService.getChartByDispPropsTypeWithTrackList(characterNo,
-                    "TOP100",
+                    PreferPropsType.TOP100.getCode(),
                     osType,
                     trackLimitSize);
 
@@ -174,7 +174,7 @@ public abstract class PanelAssembly {
             );
         }else if(RecommendPanelType.PRI_KIDS_CHART.equals(recommendPanelType)){
             chart = mongoChartService.getChartByDispPropsTypeWithTrackList(characterNo,
-                    "KIDS100",
+                    PreferPropsType.KIDS100.getCode(),
                     osType,
                     trackLimitSize);
 
