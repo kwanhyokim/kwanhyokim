@@ -50,8 +50,14 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
         List<Panel> myPanelList = new ArrayList<>();
         List<Panel> chartPanelList = new ArrayList<>();
 
+        log.info("XXXXXXXXXXX appendRecommendCfTrackPanelList started");
         appendRecommendCfTrackPanelList(personalPhaseMeta, myPanelList);
+        log.info("XXXXXXXXXXX appendRecommendCfTrackPanelList end");
+        log.info("XXXXXXXXXXX appendPreferenceChartPanel started");
         appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
+        log.info("XXXXXXXXXXX appendPreferenceChartPanel end");
+
+        log.info("XXXXXXXXXX {}", myPanelList);
 
         if(!CollectionUtils.isEmpty(myPanelList)){
 
@@ -92,6 +98,7 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
                         personalPhaseMeta.getOsType()
                 )
                 ;
+        log.info("XXXXXXXXXX appendRecommendCfTrackPanelList {}", recommendCfTrackList);
 
         for(RecommendTrackDto recommendTrackDto :
                 recommendCfTrackList
