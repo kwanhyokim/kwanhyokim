@@ -136,6 +136,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         }catch(CommonBusinessException cbex){
             log.error("createRecommendPanel business exception : {}", cbex.getDisplayMessage());
         }catch(Exception ex){
+            ex.printStackTrace();
             log.error("createRecommendPanel not catched exception : {}",ex.getMessage());
         }finally{
             if(CollectionUtils.isEmpty(panelList)){
