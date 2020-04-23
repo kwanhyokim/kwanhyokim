@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>홈 패널 테스트 기능</title>
+    <meta charset="utf-8">
+    <script
+            src="https://code.jquery.com/jquery-2.2.4.min.js"
+            integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+            crossorigin="anonymous"></script>
+    <style>
+        .board_list {width:100%;border-top:2px solid #252525;border-bottom:1px solid #ccc}
+        .board_list thead th:first-child{background-image:none}
+        .board_list thead th {border-bottom:1px solid #ccc;padding:12px 0 13px 0;color:#3b3a3a;vertical-align:middle}
+        .board_list tbody tr:first-child td {border:none}
+        .board_list tbody td {padding:10px 0;text-align:center;vertical-align:middle}
+        .board_list tbody td a {display:inline-block}
+        .memberTr {cursor: pointer;}
+        .mar_tx_20 {margin-top: 20px;}
+    </style>
+</head>
+<body>
+    <div>
+        <form id="frm_member">
+            <label for="character_no"> character_no</label>
+            <input type="text" id="character_no" name="character_no" class=".search">
+            <label for="video_id"> video_id</label>
+            <input type="text" id="video_id" name="video_id" class=".search">
+            <br/>
+            <button name="btn_clearCache">비디오 둘 다 캐쉬 지우기</button>
+
+            <br/>
+            <button name="btn_checkVideoArtist">선호 아티스트 최신 비디오 검증</button>
+            <button name="btn_checkVideoGenre">선호 아티스트 최신 비디오 검증</button>
+            <br/>
+        </form>
+    </div>
+    <div id="layout">
+
+
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $("button[name='btn_clearCache']").on("click", function (e) {
+                e.preventDefault();
+                fn_ajax(null, "GET", "/personal/test/preference/video/clearCache",
+                    "characterNo="+$("#character_no").val(),
+                    fn_success
+                );
+            });
+
+            $("button[name='btn_checkVideoArtist']").on("click", function (e) {
+                e.preventDefault();
+                fn_ajax(null, "GET",
+                    "/personal/test/preference/video/checkArtist",
+                    "characterNo="+$("#character_no").val() + "&videoId=" + $("#video_id").val(),
+                    function(result){
+                        var body = $("#layout");
+                        body.empty();
+                        body.append(result.message);
+                    }
+                );
+            });
+
+            $("button[name='btn_checkVideoGenre']").on("click", function (e) {
+                e.preventDefault();
+                fn_ajax(null, "GET",
+                    "/personal/test/preference/video/checkGenre",
+                    "characterNo="+$("#character_no").val() + "&videoId=" + $("#video_id").val(),
+                    function(result){
+                        var body = $("#layout");
+                        body.empty();
+                        body.append(result.message);
+                    }
+                );
+            });
+        });
+
+        function fn_success(result){
+            alert(result);
+        }
+
+        function fn_ajax(headers, type, url, data, success){
+            $.ajax({
+                type: type,
+                headers: headers,
+                url : url,
+                dataType : "json",
+                contentType : "application/json",
+                data : data,
+                success : success
+                ,
+                error : function(jqXHR, textStatus, errorThrown) {
+                    alert(errorThrown);
+                    var body = $("#layout");
+                    body.empty();
+                }
+
+            })
+        }
+
+    </script>
+</body>
+</html>
