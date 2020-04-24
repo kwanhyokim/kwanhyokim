@@ -12,6 +12,8 @@ package com.sktechx.godmusic.personal.rest.model.dto.chart;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -62,11 +64,46 @@ public class ChartTrackDto {
 
     private String basedOnUpdate;
 
+    public String getChartTaste(){
+
+        if(chartTaste == null){
+            return "NOT_MIXED";
+        }
+
+        return chartTaste;
+    }
+
+
+    // 트랙 사이즈 조정하기
     public void decreaseTrackListSizeTo(int trackLimitSize){
         if(this.trackList != null) {
             this.trackList =
                     this.trackList.stream().limit(trackLimitSize).collect(Collectors.toList());
         }
+    }
+
+    // 트랙 순서 표기
+    public void makeTrackDispSn(){
+
+        Optional.ofNullable(
+                this.trackList
+        ).ifPresent(
+                trackDtos -> {
+                    AtomicInteger atomicInteger = new AtomicInteger();
+                    trackDtos.forEach(
+                            trackDto -> trackDto.setTrackSn(atomicInteger.incrementAndGet())
+                    );
+                }
+        );
+    }
+
+    // 트랙 rank 제거
+    public void disableRank(){
+        Optional.ofNullable(
+                this.trackList
+        ).ifPresent(
+                trackDtos -> trackDtos.forEach( TrackDto::disableRankIndicator)
+        );
     }
 
 }

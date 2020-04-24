@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.personal.common.domain.ListResponse;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackTasteMixDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.vo.like.*;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenDeleteTrackRequest;
@@ -37,6 +38,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author Daniel/DREAMUS COMPANY (daekwon.song@sk.com)
  * @date 2019. 08. 30.
  */
+@SuppressWarnings("unchecked")
 @Slf4j
 @Service
 public class PersonalMongoClientFallbackFactory implements FallbackFactory<PersonalMongoClient> {
@@ -51,6 +53,8 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
 
     @Override
     public PersonalMongoClient create(Throwable throwable) {
+
+        final CommonApiResponse emptyApiResponse = new CommonApiResponse<>(null);
 
         return new PersonalMongoClient() {
 
@@ -74,7 +78,7 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
             @Override
             public CommonApiResponse<Void> deleteRecentListenTrack(Long memberNo, Long characterNo, ListenDeleteTrackRequest request) {
                 log.warn("{}@deleteRecentListenTrack-fallback, message={}", characterNo, throwable.getMessage());
-                return new CommonApiResponse<>(null);
+                return emptyApiResponse;
             }
 
             @Override
@@ -111,7 +115,7 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
             @Override
             public CommonApiResponse<Void> sortLikes(Long characterNo, LikeTypeIdListRequest request) {
                 log.warn("{}@sortLikes-fallback, message={}", characterNo, throwable.getMessage());
-                return new CommonApiResponse<>(null);
+                return emptyApiResponse;
             }
 
             /**
@@ -120,7 +124,7 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
             @Override
             public CommonApiResponse<Void> appendLike(Long characterNo, LikeRequest request) {
                 log.warn("{}@appendLike-fallback, message={}", characterNo, throwable.getMessage());
-                return new CommonApiResponse<>(null);
+                return emptyApiResponse;
             }
 
             /**
@@ -129,48 +133,48 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
             @Override
             public CommonApiResponse<Void> deleteLikes(Long characterNo, LikeTypeIdListRequest request) {
                 log.warn("{}@deleteLikes-fallback, message={}", characterNo, throwable.getMessage());
-                return new CommonApiResponse<>(null);
+                return emptyApiResponse;
             }
 
             @Override
             public CommonApiResponse<List<RecommendPanelTrackDto>> getRecommendTrackListByRcmmdTypeAndRcmmdId(
                     String rcmmdType, Long rcmmdId, Long characterNo, int size) {
                 log.warn("{}@getRecommendTrackListByRcmmdTypeAndRcmmdId-fallback, message={}", characterNo, throwable.getMessage());
-                return new CommonApiResponse<>(null);
+                return emptyApiResponse;
             }
 
             @Override
             public CommonApiResponse<RecommendArtistDto> getRecommendArtistFlo(Long rcmmdId,
                     Long characterNo) {
                 log.warn("{}@getRecommendArtistFlo-fallback, message={}", characterNo, throwable.getMessage());
-                return new CommonApiResponse<>(null);
+                return emptyApiResponse;
             }
 
             @Override
             public CommonApiResponse<RecommendForMeDto> getRecommendFormeFlo(Long rcmmdId,
                     Long characterNo) {
                 log.warn("{}@getRecommendFormeFlo-fallback, message={}", characterNo, throwable.getMessage());
-                return new CommonApiResponse<>(null);
+                return emptyApiResponse;
             }
 
             @Override
             public CommonApiResponse<RecommendSimilarTrackDto> getRecommendTodayFlo(Long rcmmdId,
                     Long characterNo) {
                 log.warn("{}@getRecommendTodayFlo-fallback, message={}", characterNo, throwable.getMessage());
-                return new CommonApiResponse<>(null);
+                return emptyApiResponse;
             }
 
             @Override
             public CommonApiResponse<ListDto<List<RecommendSimilarTrackDto>>> getRecommendTodayFloListByCharacterNo(
                     Long characterNo) {
                 log.warn("{}@getRecommendTodayFloListByCharacterNo-fallback, message={}", characterNo, throwable.getMessage());
-                return new CommonApiResponse<>(null);
+                return emptyApiResponse;
             }
             @Override
             public CommonApiResponse<ListDto<List<RecommendTrackDto>>> getRecommendTodayFloListWithTrackByCharacterNo(
                     Long characterNo) {
                 log.warn("{}@getRecommendTodayFloListWithTrackByCharacterNo-fallback, message={}", characterNo, throwable.getMessage());
-                return new CommonApiResponse<>(null);
+                return emptyApiResponse;
             }
 
 
@@ -182,7 +186,7 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
                         characterNo, throwable.getMessage(),
                         rcmmdType, rcmmdId
                 );
-                return new CommonApiResponse<>(null);
+                return emptyApiResponse;
             }
             @Override
             public CommonApiResponse<ChartTrackDto> getRecommendChart(Long characterNo,
@@ -190,7 +194,7 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
                 log.warn("{}@getRecommendChart-fallback, message={}",
                         characterNo, throwable.getMessage()
                 );
-                return new CommonApiResponse<>(null);
+                return emptyApiResponse;
             }
             @Override
             public CommonApiResponse addRecommendChart(
@@ -200,7 +204,7 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
                 log.warn("{}@addRecommentChart-fallback, message={}",
                         characterNo, throwable.getMessage()
                 );
-                return new CommonApiResponse<>(null);
+                return emptyApiResponse;
             }
             @Override
             public CommonApiResponse deleteRecommendChart(Long characterNo, Long chartId,
@@ -208,7 +212,15 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
                 log.warn("{}@deleteRecommentChart-fallback, message={}",
                         characterNo, throwable.getMessage()
                 );
-                return new CommonApiResponse<>(null);
+                return emptyApiResponse;
+            }
+            @Override
+            public CommonApiResponse<ChartTrackTasteMixDto> getRecommendChartTrackTasteMixDto(
+                    Long characterNo, Long chartId) {
+                log.warn("{}@getRecommendChartTrackTasteMixDto-fallback, message={}",
+                        characterNo, throwable.getMessage()
+                );
+                return emptyApiResponse;
             }
         };
     }

@@ -12,6 +12,7 @@ package com.sktechx.godmusic.personal.rest.model.dto.chart;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -56,8 +57,10 @@ public class ChartDto {
 
     private Integer trackCount;
 
-
     private List<ImageInfo> imgList;
+
+    private String chartTaste;
+
 
     public void setImgList(List<ImageInfo> imgList) {
 
@@ -80,6 +83,7 @@ public class ChartDto {
                 .dispStartDtime(chartTrackDto.getDispStartDtime())
                 .trackCount(chartTrackDto.getTotalCount())
                 .imgList(chartTrackDto.getImgList())
+                .chartTaste(chartTrackDto.getChartTaste())
                 .build();
     }
 
@@ -89,24 +93,19 @@ public class ChartDto {
             return null;
         }
 
-        ChartDto chartDto =  ChartDto.builder()
-                .chartId(chartTrackDto.getId())
-                .chartNm(chartTrackDto.getName())
-                .chartType(chartTrackDto.getChartType())
-                .trackList(chartTrackDto.getTrackList())
-                .createDtime(chartTrackDto.getCreateDateTime())
-                .updateDtime(chartTrackDto.getUpdateDateTime())
-                .dispStartDtime(chartTrackDto.getDispStartDtime())
-                .trackCount(chartTrackDto.getTotalCount())
-                .imgList(chartTrackDto.getImgList())
-                .build();
+        ChartDto chartDto =
+                ChartDto.from(chartTrackDto);
 
-        chartDto.setImgList(
-                chartDispPropsDto.getImgList().stream().map(
-                        chartImageInfo -> (ImageInfo)chartImageInfo).collect(Collectors.toList())
-        );
-
-        chartDto.setChartNm(chartDispPropsDto.getChartNm());
+        Optional.ofNullable(chartDto)
+                .ifPresent(
+                        currentChartDto -> {
+                            currentChartDto.setImgList(
+                                    chartDispPropsDto.getImgList().stream()
+                                    .map(chartImageInfo -> (ImageInfo) chartImageInfo)
+                                            .collect(Collectors.toList()));
+                            currentChartDto.setChartNm(chartDispPropsDto.getChartNm());
+                        }
+                );
 
         return chartDto;
     }

@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.service.chart;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -19,14 +20,17 @@ import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
-import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackTasteMixTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartVo;
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
 import com.sktechx.godmusic.personal.rest.service.mongo.PersonalMongoClient;
 import lombok.extern.slf4j.Slf4j;
+
+import static java.util.Comparator.comparingInt;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * 설명 : 각종 차트 서비스
@@ -80,11 +84,8 @@ public class MongoChartServiceImpl implements ChartService {
         ChartTrackDto chartTrackDto = getChartTrackDto(characterNo, trackLimitSize,
                 chartDispPropsDto);
 
-        Optional.ofNullable(
-                chartTrackDto.getTrackList()
-        ).ifPresent(
-                trackDtos -> trackDtos.forEach( TrackDto::disableRankIndicator)
-        );
+        chartTrackDto.disableRank();
+        chartTrackDto.makeTrackDispSn();
 
         return ChartVo.from( chartDispPropsDto, chartTrackDto );
     }
@@ -107,30 +108,48 @@ public class MongoChartServiceImpl implements ChartService {
         ChartTrackDto chartTrackDto = getChartTrackDto(characterNo, trackLimitSize,
                 chartDispPropsDto);
 
+        chartTrackDto.disableRank();
+        chartTrackDto.makeTrackDispSn();
+
         return ChartDto.from( chartDispPropsDto, chartTrackDto );
     }
 
     private ChartTrackDto getChartTrackDto(Long characterNo, int trackLimitSize,
             ChartDispPropsDto chartDispPropsDto) {
 
-        ChartTrackDto chartTrackDto =
-                personalMongoClient.getRecommendChart(characterNo,
-                                        chartDispPropsDto.getChartId(),
-                                        100
-                                ).getData()
-                ;
+        ChartTrackDto chartTrackDto = Optional.ofNullable(
+                metaClient
+                        .getChartWithTrackList(chartDispPropsDto.getChartId(), trackLimitSize)
+                        .getData()
+        ).orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
+
+
+        Optional.ofNullable(
+                personalMongoClient.getRecommendChartTrackTasteMixDto(
+                        characterNo,
+                        chartDispPropsDto.getChartId()
+                ).getData())
+        .ifPresent(
+                trackTasteMixDto -> {
+                    if (trackTasteMixDto.isRequireReordering()) {
+                        Map<Long, Integer> chartTrackDisplayOrderMap =
+                                trackTasteMixDto.getTrackList().stream().collect(
+                                toMap(
+                                        ChartTrackTasteMixTrackDto::getTrackId,
+                                        ChartTrackTasteMixTrackDto::getDisplayOrder, (dupA, dupB) -> dupA)
+                                );
+
+                        chartTrackDto.getTrackList()
+                                .sort(comparingInt(value -> chartTrackDisplayOrderMap
+                                .getOrDefault(value.getTrackId(), Integer.MAX_VALUE)));
+                    }
+
+                    chartTrackDto.setChartTaste(trackTasteMixDto.getStatus());
+                }
+        );
 
         if(chartTrackDto != null) {
             chartTrackDto.decreaseTrackListSizeTo(trackLimitSize);
-
-        }else{
-            chartTrackDto =
-                    Optional.ofNullable(
-                            metaClient
-                                    .getChartWithTrackList(chartDispPropsDto.getChartId(), trackLimitSize)
-                                    .getData()
-                    ).orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA)
-            );
         }
 
         return chartTrackDto;
