@@ -123,5 +123,10 @@ public class TrackDto {
             this.fileUpdateDateTime = DateUtil.asDate(epochSecond);
         }
     }
+
+    @JsonIgnore
+    public void disableRankIndicator() {
+        this.rank = RankDto.INDICATOR_DISABLED;
+    }
 }
 

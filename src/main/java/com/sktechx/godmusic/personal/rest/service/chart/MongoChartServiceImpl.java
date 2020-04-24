@@ -20,6 +20,7 @@ import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
+import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
@@ -66,6 +67,7 @@ public class MongoChartServiceImpl implements ChartService {
         return redisService;
     }
 
+    // 개인화 차트 상세
     @Override
     public ChartVo getChartWithTrackList(Long characterNo, Long chartId, OsType osType,
             int trackLimitSize) {
@@ -81,9 +83,16 @@ public class MongoChartServiceImpl implements ChartService {
         ChartTrackDto chartTrackDto = getChartTrackDto(characterNo, trackLimitSize,
                 chartDispPropsDto);
 
+        Optional.ofNullable(
+                chartTrackDto.getTrackList()
+        ).ifPresent(
+                trackDtos -> trackDtos.forEach( TrackDto::disableRankIndicator)
+        );
+
         return ChartVo.from( chartDispPropsDto, chartTrackDto );
     }
 
+    // 개인화 차트 홈
     @Override
     public ChartDto getChartByDispPropsTypeWithTrackList(Long characterNo, String dispPropsType,
             OsType osType,

@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import lombok.Data;
 
@@ -23,4 +24,11 @@ import lombok.Data;
 public class RankDto {
     private YnType newYn;
     private int rankBadge;
+
+    @JsonIgnore
+    static final RankDto INDICATOR_DISABLED = new RankDto() {
+        {
+            setNewYn(YnType.N); setRankBadge(0);
+        }
+    };
 }
