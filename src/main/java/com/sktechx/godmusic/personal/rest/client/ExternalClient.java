@@ -12,7 +12,7 @@ package com.sktechx.godmusic.personal.rest.client;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.personal.rest.client.fallback.ExternalClientFallbackFactory;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.ResourcePlayLogRequestParam;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.SendListenLogRequestVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +31,6 @@ public interface ExternalClient {
     CommonApiResponse<Void> ping();
 
     @PostMapping("/external/v1/pipe/listen/log")
-    CommonApiResponse<?> sendListenLogRequest(@RequestBody ResourcePlayLogRequestParam requestParam);
+    CommonApiResponse<?> sendListenLogRequest(@RequestBody SendListenLogRequestVo listenLogRequestVo);
 
 }

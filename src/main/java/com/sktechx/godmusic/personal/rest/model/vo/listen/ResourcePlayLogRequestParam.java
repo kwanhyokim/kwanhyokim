@@ -250,4 +250,31 @@ public class ResourcePlayLogRequestParam {
         return StringUtils.defaultIfBlank(clientIp, StringUtils.EMPTY);
     }
 
+    public SendListenLogRequestVo toSendListenRequestVo() {
+        return SendListenLogRequestVo.builder()
+                .resourceId(this.resourceId)
+                .sourceType(this.sourceType)
+                .logType(this.logType)
+                .osType(this.osType.getCode())
+                .quality(this.quality)
+                .duration(this.duration)
+                .runningTimeSecs(this.runningTimeSecs)
+                .freeYn(this.freeYn.getCode())
+                .playOfflineYn(this.playOfflineYn.getCode())
+                .playCachedYn(this.playCachedYn.getCode())
+                .sessionId(this.sessionId)
+                .sttToken(this.sttToken)
+                .cachedStreamingToken(this.cachedStreamingToken)
+                .ownerToken(this.ownerToken)
+                .albumId(this.albumId)
+                .channelId(this.channelId)
+                .recommendTrackId(this.recommendTrackId)
+                .addDateTime(this.addDateTime)
+                .offlineStartDtime(this.offlineStartDtime)
+                .metaCachedUpdateDtime(this.metaCachedUpdateDtime)
+                .freeCachedStreamingToken(this.freeCachedStreamingToken)
+                .traceType(this.traceType)
+                .build();
+    }
+
 }

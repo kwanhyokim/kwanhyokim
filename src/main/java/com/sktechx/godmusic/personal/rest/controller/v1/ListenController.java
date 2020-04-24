@@ -73,7 +73,9 @@ public class ListenController {
             @RequestBody List<ResourcePlayLogRequestParam> logRequestParamList) {
 
         if (isSendListenLog) {
-            logRequestParamList.forEach(externalClient::sendListenLogRequest);
+            logRequestParamList.forEach(resourcePlayLogRequestParam -> {
+                externalClient.sendListenLogRequest(resourcePlayLogRequestParam.toSendListenRequestVo());
+            });
         }
 
         GMContext gmContext = GMContext.getContext();
@@ -104,7 +106,7 @@ public class ListenController {
         log.debug("[RESOURCE 청취 로그] logRequestParam={}", logRequestParam);
 
         if (isSendListenLog) {
-            externalClient.sendListenLogRequest(logRequestParam);
+            externalClient.sendListenLogRequest(logRequestParam.toSendListenRequestVo());
         }
 
         String requestSourceType = logRequestParam.getSourceType();

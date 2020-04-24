@@ -12,7 +12,7 @@ package com.sktechx.godmusic.personal.rest.client.fallback;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.personal.rest.client.ExternalClient;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.ResourcePlayLogRequestParam;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.SendListenLogRequestVo;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -37,7 +37,7 @@ public class ExternalClientFallbackFactory implements FallbackFactory<ExternalCl
             }
 
             @Override
-            public CommonApiResponse<?> sendListenLogRequest(ResourcePlayLogRequestParam requestParam) {
+            public CommonApiResponse<?> sendListenLogRequest(SendListenLogRequestVo listenLogRequestVo) {
                 return null;
             }
         };
