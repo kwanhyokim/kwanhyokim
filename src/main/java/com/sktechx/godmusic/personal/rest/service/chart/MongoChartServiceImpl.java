@@ -123,6 +123,7 @@ public class MongoChartServiceImpl implements ChartService {
                         .getData()
         ).orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
 
+        chartTrackDto.setChartTaste("NOT_MIXED");
 
         Optional.ofNullable(
                 personalMongoClient.getRecommendChartTrackTasteMixDto(
@@ -148,9 +149,7 @@ public class MongoChartServiceImpl implements ChartService {
                 }
         );
 
-        if(chartTrackDto != null) {
-            chartTrackDto.decreaseTrackListSizeTo(trackLimitSize);
-        }
+        chartTrackDto.decreaseTrackListSizeTo(trackLimitSize);
 
         return chartTrackDto;
     }

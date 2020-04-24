@@ -183,7 +183,6 @@ public class RecommendPanelController {
 
 		if(chartVo != null){
 			chartVo.setRequestedMixYn(mixYn);
-			chartVo.adjustTasteMix();
 		}
 
 		return new CommonApiResponse<>(chartVo);
