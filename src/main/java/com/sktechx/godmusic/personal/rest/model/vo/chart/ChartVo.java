@@ -94,7 +94,7 @@ public class ChartVo {
         return this.name + " 내 취향 MIX";
     }
 
-    @JsonProperty("tasteMix")
+    @JsonIgnore
     private TasteMixDto tasteMixDto;
 
     @ApiModelProperty(hidden = true)
@@ -105,9 +105,15 @@ public class ChartVo {
     @JsonIgnore
     private String requestedMixYn;
 
-    public void adjustTasteMix(){
+    public TasteMixDto getTasteMix(){
+
+        if(tasteMixDto == null){
+            return RCMMD_TASTE_MIX_VO_MAP.get("OFF");
+
+        }
+
         if("N".equals(requestedMixYn) && "NOT_MIXED".equals(tasteMixDto.getStatus())){
-            tasteMixDto = RCMMD_TASTE_MIX_VO_MAP.get("MIX_OFF");
+            return RCMMD_TASTE_MIX_VO_MAP.get("OFF");
         }
 
         if("SAME".equals(tasteMixDto.getStatus())){
@@ -116,6 +122,8 @@ public class ChartVo {
                     this.name)
             );
         }
+
+        return tasteMixDto;
 
     }
 
