@@ -31,6 +31,6 @@ public interface ExternalClient {
     CommonApiResponse<Void> ping();
 
     @PostMapping("/external/v1/pipe/listen/log")
-    CommonApiResponse<?> sendListenLogRequest(@RequestBody SendListenLogRequestVo listenLogRequestVo);
+    CommonApiResponse<Void> sendListenLogRequest(@RequestBody SendListenLogRequestVo listenLogRequestVo);
 
 }

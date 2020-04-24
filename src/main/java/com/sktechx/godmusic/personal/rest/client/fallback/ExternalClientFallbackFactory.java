@@ -37,7 +37,7 @@ public class ExternalClientFallbackFactory implements FallbackFactory<ExternalCl
             }
 
             @Override
-            public CommonApiResponse<?> sendListenLogRequest(SendListenLogRequestVo listenLogRequestVo) {
+            public CommonApiResponse<Void> sendListenLogRequest(SendListenLogRequestVo listenLogRequestVo) {
                 return null;
             }
         };
