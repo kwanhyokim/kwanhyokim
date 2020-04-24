@@ -62,6 +62,7 @@ public class PrivateFloChartPanel extends Panel {
                 .updateDtime(chart.getUpdateDtime())
                 .trackList(chart.getTrackList())
                 .trackCount(chart.getTrackCount())
+                .chartTaste(chart.getChartTaste())
                 .build();
 
     }

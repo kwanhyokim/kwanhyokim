@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * 설명 : 트랙 DTO
@@ -29,6 +30,7 @@ import lombok.Data;
  * @date 2018. 07. 09.
  */
 @Data
+@EqualsAndHashCode
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class TrackDto {
     @JsonProperty("id")

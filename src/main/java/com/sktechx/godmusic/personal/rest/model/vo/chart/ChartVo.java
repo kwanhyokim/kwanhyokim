@@ -40,7 +40,7 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
 @Builder
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({"type", "id", "name", "imgList", "createDateTime", "updateDateTime",
+@JsonPropertyOrder({"type", "id", "name", "tasteMix","imgList", "createDateTime", "updateDateTime",
         "renewDateTime", "likeYn", "renewYn", "totalCount", "basedOnUpdate", "trackList"})
 public class ChartVo {
 
@@ -160,7 +160,7 @@ public class ChartVo {
                 );
     }
 
-    private static final Map<String, TasteMixDto> RCMMD_TASTE_MIX_VO_MAP;
+    public static final Map<String, TasteMixDto> RCMMD_TASTE_MIX_VO_MAP;
 
     static {
         Map<String, TasteMixDto> rcmmdTasteMixVoMap = new HashMap<>();
@@ -174,14 +174,14 @@ public class ChartVo {
                         .build()
         );
 
-        rcmmdTasteMixVoMap.put("PRIVATE",
+        rcmmdTasteMixVoMap.put("MIXED",
                 TasteMixDto.builder()
                         .mixYn(YnType.Y)
                         .status("MIXED")
                         .displayMessage("FLO 차트를 내 취향 순서로 변경했습니다.")
                         .build()
         );
-        rcmmdTasteMixVoMap.put("CHART_TASTE",
+        rcmmdTasteMixVoMap.put("SAME",
                 TasteMixDto.builder()
                         .mixYn(YnType.N)
                         .status("SAME")
@@ -189,7 +189,7 @@ public class ChartVo {
                         .displayMessage("FLO 차트를 내 취향 순서로 변경했습니다.")
                         .build()
         );
-        rcmmdTasteMixVoMap.put("NOT_ENOUGH_TASTE",
+        rcmmdTasteMixVoMap.put("REQUIRE_MORE_LISTEN",
                 TasteMixDto.builder()
                         .mixYn(YnType.N)
                         .status("REQUIRE_MORE_LISTEN")
@@ -197,7 +197,7 @@ public class ChartVo {
                         .displayMessage("FLO 차트를 내 취향 순서로 변경했습니다.")
                         .build()
         );
-        rcmmdTasteMixVoMap.put("MIX_OFF",
+        rcmmdTasteMixVoMap.put("OFF",
                 TasteMixDto.builder()
                         .mixYn(YnType.N)
                         .status("OFF")
