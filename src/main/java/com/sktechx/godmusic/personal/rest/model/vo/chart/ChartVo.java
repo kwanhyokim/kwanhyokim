@@ -227,6 +227,14 @@ public class ChartVo {
                         .build()
         );
 
+        rcmmdTasteMixVoMap.put("REQUIRE_LOGIN",
+                TasteMixDto.builder()
+                        .mixYn(YnType.N)
+                        .status("REQUIRE_LOGIN")
+                        .displayMessage("인기 순서의 일반 FLO 차트로 변경했습니다.")
+                        .build()
+        );
+
 
         RCMMD_TASTE_MIX_VO_MAP = Collections.unmodifiableMap(rcmmdTasteMixVoMap);
     }
