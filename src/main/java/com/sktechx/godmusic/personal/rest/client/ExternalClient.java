@@ -15,11 +15,13 @@ import com.sktechx.godmusic.personal.rest.client.fallback.ExternalClientFallback
 import com.sktechx.godmusic.personal.rest.model.vo.listen.SendListenLogRequestVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 /**
- * 설명 : XXXXXXXXXXX
+ * 설명 : External Client
+ *
+ *  OCR 관련된 {@link com.sktechx.godmusic.personal.rest.service.ExternalApiProxy} 라는 녀석이 이미 존재함.
  *
  * @author Groot(조민국) / dev.mingood@sk.com
  * @since 2020. 04. 24
@@ -31,6 +33,6 @@ public interface ExternalClient {
     CommonApiResponse<Void> ping();
 
     @PostMapping("/external/v1/pipe/listen/log")
-    CommonApiResponse<Void> sendListenLogRequest(@RequestBody SendListenLogRequestVo listenLogRequestVo);
+    CommonApiResponse<Void> sendListenLogRequest(@ModelAttribute SendListenLogRequestVo listenLogRequestVo);
 
 }
