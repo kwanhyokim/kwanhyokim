@@ -38,6 +38,7 @@ public class ExternalClientFallbackFactory implements FallbackFactory<ExternalCl
 
             @Override
             public CommonApiResponse<Void> sendListenLogRequest(SendListenLogRequestVo listenLogRequestVo) {
+                log.error("[Listen-Pipeline] 호출 실패, message={}", throwable.getMessage());
                 return null;
             }
         };
