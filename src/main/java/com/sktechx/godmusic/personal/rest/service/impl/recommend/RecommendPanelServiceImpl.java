@@ -211,11 +211,11 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             );
         }
 
-        return RecommendPanelResponse.builder().list(
-                        Optional.ofNullable(
-                                recommendPanelList
-                        ).orElseThrow( () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA))
-                ).build();
+        return new RecommendPanelResponse(
+                Optional.ofNullable(
+                        recommendPanelList
+                ).orElseThrow( () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA))
+        );
     }
 
     @Override
