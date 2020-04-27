@@ -95,7 +95,7 @@ public class RecommendPanelController {
 		return Optional.ofNullable(
 				panelList
 			).isPresent() ?
-				new CommonApiResponse<>(RecommendPanelResponse.builder().list(panelList).build())
+				new CommonApiResponse<>(new RecommendPanelResponse(panelList))
 				: null;
     }
 

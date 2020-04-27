@@ -20,8 +20,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
 /**
  * 설명 : 추천 패널 API 응답
@@ -29,18 +28,20 @@ import lombok.Data;
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 09.
  */
-@Data
-@Builder
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RecommendPanelResponse {
+    @Getter
     List<Panel> list;
+    @Getter
     Integer mostRecentPanelIndex;
 
+    @Getter
     @JsonProperty("updateDateTime")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
     private Date updateDtime;
 
-    public void setList(List<Panel> recommendPanelList){
+    public RecommendPanelResponse(List<Panel> recommendPanelList){
 
         Optional.ofNullable(recommendPanelList)
                 .ifPresent(
