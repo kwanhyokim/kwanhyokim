@@ -123,6 +123,12 @@ public class MongoChartServiceImpl implements ChartService {
                         .getData()
         ).orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
 
+
+        if(characterNo == null) {
+            chartTrackDto.setChartTaste("REQUIRE_LOGIN");
+            return chartTrackDto;
+        }
+
         chartTrackDto.setChartTaste("NOT_MIXED");
 
         Optional.ofNullable(
