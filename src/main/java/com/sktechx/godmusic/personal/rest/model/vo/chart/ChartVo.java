@@ -134,6 +134,7 @@ public class ChartVo {
         );
 
         TasteMixDto tasteMixDto = TasteMixDto.builder()
+                .mixYn(currentTasteMixDto.getMixYn())
                 .status(currentTasteMixDto.getStatus())
                 .displayMessage(currentTasteMixDto.getDisplayMessage())
                 .descriptionMessage(currentTasteMixDto.getDescriptionMessage())
