@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -56,6 +57,7 @@ public class V2RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderSe
     private RecommendPanelService recommendPanelService;
 
     @Autowired
+    @Qualifier("recommendReadService")
     private RecommendReadService recommendReadService;
 
     @Autowired
@@ -124,7 +126,7 @@ public class V2RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderSe
 
         RecommendForMeDto recommendForMeDto =
                 recommendReadService.getRecommendForMeFlo(
-                        panelContentId, personalPhaseMeta.getCharacterNo());
+                        personalPhaseMeta.getCharacterNo(), panelContentId);
 
         Date dispStdStartDt = new Date();
         SeedGenreVo seedGenreVo = null;

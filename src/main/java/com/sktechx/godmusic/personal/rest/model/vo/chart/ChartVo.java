@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.model.vo.chart;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.*;
@@ -116,22 +117,41 @@ public class ChartVo {
             return RCMMD_TASTE_MIX_VO_MAP.get("OFF");
         }
 
-        if("SAME".equals(tasteMixDto.getStatus())){
-            tasteMixDto.setDescriptionMessage(
-                    String.format(tasteMixDto.getDescriptionMessage(),
-                    this.name)
-            );
-        }
-
         return tasteMixDto;
 
     }
 
     public static ChartVo from (ChartDispPropsDto chartDispPropsDto, ChartTrackDto chartTrackDto){
 
-        return (chartDispPropsDto == null || chartTrackDto == null ?
-                null
-                :
+        if(chartDispPropsDto == null || chartTrackDto == null){
+            return null;
+        }
+
+        TasteMixDto currentTasteMixDto = RCMMD_TASTE_MIX_VO_MAP.get(
+                (chartTrackDto.getChartTaste() == null ? "NOT_MIXED" :
+                        chartTrackDto.getChartTaste()
+                )
+        );
+
+        TasteMixDto tasteMixDto = TasteMixDto.builder()
+                .status(currentTasteMixDto.getStatus())
+                .displayMessage(currentTasteMixDto.getDisplayMessage())
+                .descriptionMessage(currentTasteMixDto.getDescriptionMessage())
+                .build();
+
+
+        if("SAME".equals(tasteMixDto.getStatus())){
+            tasteMixDto.setDescriptionMessage(
+                    String.format(tasteMixDto.getDescriptionMessage(), chartDispPropsDto.getChartNm())
+            );
+
+            tasteMixDto.setDisplayMessage(
+                    String.format(tasteMixDto.getDisplayMessage(), chartDispPropsDto.getChartNm())
+            );
+        }
+
+
+        return
                 ChartVo.builder()
                         .id(chartTrackDto.getId())
                         .name(chartDispPropsDto.getChartNm())
@@ -157,21 +177,15 @@ public class ChartVo {
                                         chartImageInfo -> (ImageInfo)chartImageInfo).collect(
                                         Collectors.toList())
                         )
-                        .tasteMixDto(
-                                RCMMD_TASTE_MIX_VO_MAP.get(
-                                    (chartTrackDto.getChartTaste() == null ? "NOT_MIXED" :
-                                            chartTrackDto.getChartTaste()
-                                    )
-                                )
-                        )
+                        .tasteMixDto(tasteMixDto)
                         .build()
-                );
+                ;
     }
 
     public static final Map<String, TasteMixDto> RCMMD_TASTE_MIX_VO_MAP;
 
     static {
-        Map<String, TasteMixDto> rcmmdTasteMixVoMap = new HashMap<>();
+        Map<String, TasteMixDto> rcmmdTasteMixVoMap = new ConcurrentHashMap<>();
 
         rcmmdTasteMixVoMap.put("NOT_MIXED",
                 TasteMixDto.builder()
@@ -191,10 +205,10 @@ public class ChartVo {
         );
         rcmmdTasteMixVoMap.put("SAME",
                 TasteMixDto.builder()
-                        .mixYn(YnType.N)
+                        .mixYn(YnType.Y)
                         .status("SAME")
                         .descriptionMessage("일반 %s와 비슷한 취향이에요!")
-                        .displayMessage("FLO 차트를 내 취향 순서로 변경했습니다.")
+                        .displayMessage("%s를 내 취향 순서로 변경했습니다.")
                         .build()
         );
         rcmmdTasteMixVoMap.put("REQUIRE_MORE_LISTEN",
