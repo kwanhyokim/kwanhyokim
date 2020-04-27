@@ -15,9 +15,6 @@ import java.util.Objects;
 
 import org.springframework.util.CollectionUtils;
 
-import com.sktechx.godmusic.lib.utils.ServiceUtils;
-import com.sktechx.godmusic.personal.common.domain.PreferPropsType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.common.util.BooleanComparator;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
@@ -212,28 +209,6 @@ public abstract class PanelSignAssembly extends PanelAssembly {
         }
     }
 
-
-    private RecommendPanelType getPreferChartRecommendPanelType(String preferPropsType ){
-
-        Integer appVersion = ServiceUtils.getFormattedAppVersion(getAppVersion());
-
-        if(appVersion.compareTo(50000) < 0){
-
-            if (PreferPropsType.TOP100.getCode().equals(preferPropsType)) {
-                return RecommendPanelType.PRI_LIVE_CHART;
-            } else if (PreferPropsType.KIDS100.getCode().equals(preferPropsType)) {
-                return RecommendPanelType.PRI_KIDS_CHART;
-            }
-
-        }else {
-            if (PreferPropsType.TOP100.getCode().equals(preferPropsType)) {
-                return RecommendPanelType.LIVE_CHART;
-            } else if (PreferPropsType.KIDS100.getCode().equals(preferPropsType)) {
-                return RecommendPanelType.KIDS_CHART;
-            }
-        }
-        return null;
-    }
 
     private Panel createPreferGenreSimilarTrackPanel(final PersonalPhaseMeta personalPhaseMeta,
                                                      final RecommendTrackDto preferGenreSimilarTrack){

@@ -119,7 +119,7 @@ public class MongoChartServiceImpl implements ChartService {
 
         ChartTrackDto chartTrackDto = Optional.ofNullable(
                 metaClient
-                        .getChartWithTrackList(chartDispPropsDto.getChartId(), trackLimitSize)
+                        .getChartWithTrackList(chartDispPropsDto.getChartId(), 100)
                         .getData()
         ).orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
 
@@ -141,8 +141,11 @@ public class MongoChartServiceImpl implements ChartService {
                                 );
 
                         chartTrackDto.getTrackList()
-                                .sort(comparingInt(value -> chartTrackDisplayOrderMap
-                                .getOrDefault(value.getTrackId(), Integer.MAX_VALUE)));
+                                .sort(comparingInt(value ->
+                                        chartTrackDisplayOrderMap.getOrDefault(
+                                                value.getTrackId(),
+                                                Integer.MAX_VALUE))
+                                );
                     }
 
                     chartTrackDto.setChartTaste(trackTasteMixDto.getStatus());
