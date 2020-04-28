@@ -59,8 +59,8 @@ public abstract class ChannelPanel extends Panel{
                     .trackList(channel.getTrackList())
                     .createDtime(channel.getCreateDtime())
                     .updateDtime(channel.getUpdateDtime())
-                    .renewYn(channel.getRenewYn())
-                    .renewTrackCount( YnType.Y.equals(channel.getRenewYn())?channel.getRenewTrackCnt() : 0)
+                    .renewYn(YnType.N)
+                    .renewTrackCount(0)
                     .genre(this.genre)
                 .build();
 
