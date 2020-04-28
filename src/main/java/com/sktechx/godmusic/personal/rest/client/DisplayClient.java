@@ -10,12 +10,11 @@
 
 package com.sktechx.godmusic.personal.rest.client;
 
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.personal.rest.client.fallback.DisplayClientFallbackFactory;
 import com.sktechx.godmusic.personal.rest.model.vo.ChannelListResponse;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
 
 /**
  * 설명 : XXXXXXXXX

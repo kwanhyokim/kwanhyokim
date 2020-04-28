@@ -11,12 +11,15 @@
 package com.sktechx.godmusic.personal.rest.client.fallback;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
+import com.sktechx.godmusic.personal.common.domain.type.AwsBucketType;
 import com.sktechx.godmusic.personal.rest.client.ExternalClient;
+import com.sktechx.godmusic.personal.rest.model.vo.external.AwsFileVo;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.SendListenLogRequestVo;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 설명 : external 클라이언트 fallback
@@ -38,8 +41,26 @@ public class ExternalClientFallbackFactory implements FallbackFactory<ExternalCl
             }
 
             @Override
-            public CommonApiResponse<Void> sendListenLogRequest(@ModelAttribute SendListenLogRequestVo listenLogRequestVo) {
+            public CommonApiResponse<Void> sendListenLogRequest(@RequestBody SendListenLogRequestVo listenLogRequestVo) {
                 log.error("[Listen-Pipeline] 호출 실패, message={}", throwable.getMessage());
+                return null;
+            }
+
+            @Override
+            public CommonApiResponse ocrRecognize(Long ocrNo,
+                                                  Integer imageCount,
+                                                  Integer ocrFileNo,
+                                                  String bucketKey,
+                                                  String bucketName) {
+                log.error("[ocrRecognize] 호출 실패, message={}", throwable.getMessage());
+                return null;
+            }
+
+            @Override
+            public CommonApiResponse<AwsFileVo> createOcrFile(MultipartFile file,
+                                                              AwsBucketType awsBucketType,
+                                                              Long memberNo) {
+                log.error("[createOcrFile] 호출 실패, message={}", throwable.getMessage());
                 return null;
             }
         };

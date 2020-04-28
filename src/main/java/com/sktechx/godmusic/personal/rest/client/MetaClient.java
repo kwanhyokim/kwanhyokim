@@ -10,18 +10,25 @@
 
 package com.sktechx.godmusic.personal.rest.client;
 
-import java.util.List;
-
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.*;
-
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.personal.rest.client.fallback.MetaClientFallbackFactory;
 import com.sktechx.godmusic.personal.rest.client.model.MetaVideoRequestVo;
-import com.sktechx.godmusic.personal.rest.model.dto.*;
+import com.sktechx.godmusic.personal.rest.model.dto.AlbumDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
+import com.sktechx.godmusic.personal.rest.model.dto.ChannelValidityDto;
+import com.sktechx.godmusic.personal.rest.model.dto.PlayListDto;
+import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 /**
  * 설명 : 메타 연동
