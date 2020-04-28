@@ -16,6 +16,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.listen.SendListenLogRequestVo
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 /**
  * 설명 : external 클라이언트 fallback
@@ -37,7 +38,7 @@ public class ExternalClientFallbackFactory implements FallbackFactory<ExternalCl
             }
 
             @Override
-            public CommonApiResponse<Void> sendListenLogRequest(SendListenLogRequestVo listenLogRequestVo) {
+            public CommonApiResponse<Void> sendListenLogRequest(@ModelAttribute SendListenLogRequestVo listenLogRequestVo) {
                 log.error("[Listen-Pipeline] 호출 실패, message={}", throwable.getMessage());
                 return null;
             }

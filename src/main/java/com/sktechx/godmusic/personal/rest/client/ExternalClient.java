@@ -15,6 +15,7 @@ import com.sktechx.godmusic.personal.rest.client.fallback.ExternalClientFallback
 import com.sktechx.godmusic.personal.rest.model.vo.listen.SendListenLogRequestVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 /**
@@ -32,6 +33,6 @@ public interface ExternalClient {
     CommonApiResponse<Void> ping();
 
     @PostMapping("/external/v1/pipe/listen/log")
-    CommonApiResponse<Void> sendListenLogRequest(SendListenLogRequestVo listenLogRequestVo);
+    CommonApiResponse<Void> sendListenLogRequest(@ModelAttribute SendListenLogRequestVo listenLogRequestVo);
 
 }
