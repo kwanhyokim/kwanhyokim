@@ -22,6 +22,7 @@ import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.utils.ServiceUtils;
 import com.sktechx.godmusic.personal.common.domain.PreferPropsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
+import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferDispDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
@@ -129,9 +130,10 @@ public abstract class PanelAssembly {
         }
     }
 
-    protected Panel createChartPanel(RecommendPanelType recommendPanelType, OsType osType, int trackLimitSize){
+    protected Panel createChartPanel(RecommendPanelType recommendPanelType, OsType osType,
+            int trackLimitSize){
 
-        ChartDto chart = null;
+        ChartDto chart;
 
         if(RecommendPanelType.LIVE_CHART.equals(recommendPanelType)){
             chart = chartService.getChartByDispPropsTypeWithTrackList(null,
@@ -139,12 +141,13 @@ public abstract class PanelAssembly {
                     osType,
                     trackLimitSize);
 
-        }else if(RecommendPanelType.KIDS_CHART.equals(recommendPanelType)){
+        }else {
             chart = chartService.getChartByDispPropsTypeWithTrackList(null,
                     PreferPropsType.KIDS100.getCode(),
                     osType,
                     trackLimitSize);
         }
+
         if(chart != null){
             try{
                 return new ChartPanel(recommendPanelType, chart,
@@ -157,10 +160,34 @@ public abstract class PanelAssembly {
         return null;
     }
 
-    protected Panel createPrivateChartPanel(Long characterNo, RecommendPanelType recommendPanelType,
+    protected Panel createChartPanel(CharacterPreferDispDto characterPreferDisp, OsType osType,
+            int trackLimitSize){
+
+        RecommendPanelType recommendPanelType =
+                PreferPropsType.TOP100.getCode().equals(
+                        characterPreferDisp.getDispPropsType()
+                )
+                        ?
+                        RecommendPanelType.LIVE_CHART
+                        :
+                        RecommendPanelType.KIDS_CHART
+                ;
+
+        return createChartPanel(recommendPanelType, osType, trackLimitSize);
+    }
+
+    protected Panel createPrivateChartPanel(Long characterNo, CharacterPreferDispDto characterPreferDispDto,
             OsType osType, int trackLimitSize){
 
         ChartDto chart;
+
+        RecommendPanelType recommendPanelType =
+                PreferPropsType.TOP100.getCode().equals(characterPreferDispDto.getDispPropsType())
+                        ?
+                        RecommendPanelType.PRI_LIVE_CHART
+                        :
+                        RecommendPanelType.PRI_KIDS_CHART
+        ;
 
         if(RecommendPanelType.PRI_LIVE_CHART.equals(recommendPanelType)){
             chart = mongoChartService.getChartByDispPropsTypeWithTrackList(characterNo,
@@ -172,7 +199,7 @@ public abstract class PanelAssembly {
                     recommendPanelType, chart,
                     getDefaultBgImageList(chart.getImgList(), osType)
             );
-        }else if(RecommendPanelType.PRI_KIDS_CHART.equals(recommendPanelType)){
+        }else {
             chart = mongoChartService.getChartByDispPropsTypeWithTrackList(characterNo,
                     PreferPropsType.KIDS100.getCode(),
                     osType,
@@ -184,7 +211,6 @@ public abstract class PanelAssembly {
             );
         }
 
-        return null;
     }
 
 
@@ -275,43 +301,21 @@ public abstract class PanelAssembly {
                     .forEach(characterPreferDisp -> {
 
                         Integer appVersion = ServiceUtils.getFormattedAppVersion(getAppVersion());
-                        Panel panel;
+                        Panel panel =
 
-                        // 4.15.0 이하
-                        if(appVersion.compareTo(41500) < 0){
-
-                            panel = createChartPanel(
-                                    (
-                                            PreferPropsType.TOP100.getCode().equals(
-                                                    characterPreferDisp.getDispPropsType()
-                                            )
-                                                    ?
-                                                    RecommendPanelType.LIVE_CHART
-                                                    :
-                                                    RecommendPanelType.KIDS_CHART
-                                    ),
-
-                                    personalPhaseMeta.getOsType(), PREFER_DISP_CHART_TRACK_LIMIT_SIZE
-                            );
-
-
-                        }else {
-                            panel = createPrivateChartPanel(
-                                    personalPhaseMeta.getCharacterNo(),
-                                    (
-                                            PreferPropsType.TOP100.getCode().equals(
-                                                    characterPreferDisp.getDispPropsType()
-                                            )
-                                                    ?
-                                                    RecommendPanelType.PRI_LIVE_CHART
-                                                    :
-                                                    RecommendPanelType.PRI_KIDS_CHART
-                                    ),
-                                    personalPhaseMeta.getOsType(), PREFER_DISP_CHART_TRACK_LIMIT_SIZE
-                            );
-
-                        }
-
+                            appVersion.compareTo(41500) < 0 ?
+                                createChartPanel(
+                                        characterPreferDisp,
+                                        personalPhaseMeta.getOsType(),
+                                        PREFER_DISP_CHART_TRACK_LIMIT_SIZE
+                                )
+                                :
+                                createPrivateChartPanel(
+                                        personalPhaseMeta.getCharacterNo(),
+                                        characterPreferDisp,
+                                        personalPhaseMeta.getOsType(), PREFER_DISP_CHART_TRACK_LIMIT_SIZE
+                                )
+                        ;
                         panelList.add(panel);
 
                     });

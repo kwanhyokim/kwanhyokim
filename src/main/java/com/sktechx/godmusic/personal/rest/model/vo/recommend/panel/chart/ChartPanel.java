@@ -51,7 +51,6 @@ public class ChartPanel extends Panel {
         this.subTitle = getBasedOnUpdate(chart , this.type);
         this.content = PanelContentVo.builder()
                 .id(chart.getChartId())
-
                 .type(RecommendPanelContentType.CHART)
                 .createDtime(chart.getCreateDtime())
                 .updateDtime(chart.getUpdateDtime())
