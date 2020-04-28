@@ -105,10 +105,8 @@ public class ListenController {
         Validator.loginValidate(gmContext);
         log.debug("[RESOURCE 청취 로그] logRequestParam={}", logRequestParam);
 
-        log.info("## {}", isSendListenLog);
-
+        // TODO buildNumber 확인해야함
         if (isSendListenLog) {
-            log.info("## ENTRY SEND LOG!!");
             externalClient.sendListenLogRequest(logRequestParam.toSendListenRequestVo());
         }
 

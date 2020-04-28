@@ -45,4 +45,5 @@ public class SendListenLogRequestVo {
     private String metaCachedUpdateDtime;
     private String freeCachedStreamingToken;
     private String traceType;
+    private String buildNumber;
 }
