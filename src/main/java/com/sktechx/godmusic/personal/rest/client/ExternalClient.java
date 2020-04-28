@@ -27,8 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 설명 : External Client
- * <p>
- * OCR 관련된 {@link com.sktechx.godmusic.personal.rest.service.ExternalApiProxy} 라는 녀석이 이미 존재함.
  *
  * @author Groot(조민국) / dev.mingood@sk.com
  * @since 2020. 04. 24
