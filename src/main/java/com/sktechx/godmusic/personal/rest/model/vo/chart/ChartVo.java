@@ -206,7 +206,7 @@ public class ChartVo {
                 TasteMixDto.builder()
                         .mixYn(YnType.N)
                         .status("NOT_MIXED")
-                        .descriptionMessage("취향인 곡이 없어 일반 순위가 표시됩니다.")
+                        .descriptionMessage("취향이 충분히 쌓일 때 까지 일반 순위가 표시됩니다.")
                         .displayMessage("FLO 차트를 내 취향 순서로 변경했습니다.")
                         .build()
         );
@@ -230,7 +230,7 @@ public class ChartVo {
                 TasteMixDto.builder()
                         .mixYn(YnType.N)
                         .status("REQUIRE_MORE_LISTEN")
-                        .descriptionMessage("취향이 충분히 쌓일 때 까지 일반 순위가 표시됩니다.")
+                        .descriptionMessage("취향인 곡이 없어 일반 순위가 표시됩니다.")
                         .displayMessage("FLO 차트를 내 취향 순서로 변경했습니다.")
                         .build()
         );
