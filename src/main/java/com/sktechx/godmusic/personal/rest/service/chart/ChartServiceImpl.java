@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.service.chart;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartVo;
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -117,6 +119,13 @@ public class ChartServiceImpl implements ChartService {
             chartTrackDto.makeTrackDispSn();
 
             chartDto = ChartDto.from(chartTrackDto);
+
+            if(chartDto != null) {
+                chartDto.setImgList(chartDispPropsDto.getImgList().stream()
+                        .map(chartImageInfo -> new ImageInfo(chartImageInfo.getSize(),
+                        chartImageInfo.getUrl())).collect(Collectors.toList())
+                );
+            }
         }
 
         return chartDto;
