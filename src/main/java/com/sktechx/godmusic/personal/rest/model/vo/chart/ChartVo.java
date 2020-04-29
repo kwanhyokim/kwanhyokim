@@ -109,12 +109,26 @@ public class ChartVo {
     public TasteMixDto getTasteMix(){
 
         if(tasteMixDto == null){
-            return RCMMD_TASTE_MIX_VO_MAP.get("OFF");
+            TasteMixDto currentTasteMixDto = RCMMD_TASTE_MIX_VO_MAP.get("OFF");
+
+            return TasteMixDto.builder()
+                    .mixYn(currentTasteMixDto.getMixYn())
+                    .status(currentTasteMixDto.getStatus())
+                    .displayMessage(
+                            String.format(currentTasteMixDto.getDisplayMessage(), "FLO 차트"))
+                    .build();
 
         }
 
-        if("N".equals(requestedMixYn) && "NOT_MIXED".equals(tasteMixDto.getStatus())){
-            return RCMMD_TASTE_MIX_VO_MAP.get("OFF");
+        if("N".equals(requestedMixYn)){
+            TasteMixDto currentTasteMixDto = RCMMD_TASTE_MIX_VO_MAP.get("OFF");
+
+            return TasteMixDto.builder()
+                    .mixYn(currentTasteMixDto.getMixYn())
+                    .status(currentTasteMixDto.getStatus())
+                    .displayMessage(
+                            String.format(currentTasteMixDto.getDisplayMessage(), this.name))
+                    .build();
         }
 
         return tasteMixDto;
@@ -224,7 +238,7 @@ public class ChartVo {
                 TasteMixDto.builder()
                         .mixYn(YnType.N)
                         .status("OFF")
-                        .displayMessage("인기 순서의 일반 FLO 차트로 변경했습니다.")
+                        .displayMessage("인기 순서의 일반 %s로 변경했습니다.")
                         .build()
         );
 
