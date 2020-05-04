@@ -448,7 +448,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
         int modifyTrackIdCount = modifyTrackIdList.size();
 
         //같으면 전체 업데이트, 다르면 변경된 부분만 잘라서 업데이트
-        List<Long> remainderTrackIdList = memberChannelTrackIdList.subList(modifyTrackIdCount, memberChannlAllTrackIdCount);
+        List<Long> remainderTrackIdList = memberChannelTrackIdList.subList(Math.min(modifyTrackIdCount, memberChannlAllTrackIdCount), memberChannlAllTrackIdCount);
         modifyTrackIdList.addAll(remainderTrackIdList);
 
         AtomicInteger atomicInteger = new AtomicInteger(0);
