@@ -109,12 +109,26 @@ public class ChartVo {
     public TasteMixDto getTasteMix(){
 
         if(tasteMixDto == null){
-            return RCMMD_TASTE_MIX_VO_MAP.get("OFF");
+            TasteMixDto currentTasteMixDto = RCMMD_TASTE_MIX_VO_MAP.get("OFF");
+
+            return TasteMixDto.builder()
+                    .mixYn(currentTasteMixDto.getMixYn())
+                    .status(currentTasteMixDto.getStatus())
+                    .displayMessage(
+                            String.format(currentTasteMixDto.getDisplayMessage(), "FLO 차트"))
+                    .build();
 
         }
 
-        if("N".equals(requestedMixYn) && "NOT_MIXED".equals(tasteMixDto.getStatus())){
-            return RCMMD_TASTE_MIX_VO_MAP.get("OFF");
+        if("N".equals(requestedMixYn)){
+            TasteMixDto currentTasteMixDto = RCMMD_TASTE_MIX_VO_MAP.get("OFF");
+
+            return TasteMixDto.builder()
+                    .mixYn(currentTasteMixDto.getMixYn())
+                    .status(currentTasteMixDto.getStatus())
+                    .displayMessage(
+                            String.format(currentTasteMixDto.getDisplayMessage(), this.name))
+                    .build();
         }
 
         return tasteMixDto;
@@ -145,11 +159,11 @@ public class ChartVo {
             tasteMixDto.setDescriptionMessage(
                     String.format(tasteMixDto.getDescriptionMessage(), chartDispPropsDto.getChartNm())
             );
-
-            tasteMixDto.setDisplayMessage(
-                    String.format(tasteMixDto.getDisplayMessage(), chartDispPropsDto.getChartNm())
-            );
         }
+
+        tasteMixDto.setDisplayMessage(
+                String.format(tasteMixDto.getDisplayMessage(), chartDispPropsDto.getChartNm())
+        );
 
 
         return
@@ -192,8 +206,8 @@ public class ChartVo {
                 TasteMixDto.builder()
                         .mixYn(YnType.N)
                         .status("NOT_MIXED")
-                        .descriptionMessage("취향인 곡이 없어 일반 순위가 표시됩니다.")
-                        .displayMessage("FLO 차트를 내 취향 순서로 변경했습니다.")
+                        .descriptionMessage("취향이 충분히 쌓일 때 까지 일반 순위가 표시됩니다.")
+                        .displayMessage("%s를 내 취향 순서로 변경했습니다.")
                         .build()
         );
 
@@ -201,7 +215,7 @@ public class ChartVo {
                 TasteMixDto.builder()
                         .mixYn(YnType.Y)
                         .status("MIXED")
-                        .displayMessage("FLO 차트를 내 취향 순서로 변경했습니다.")
+                        .displayMessage("%s를 내 취향 순서로 변경했습니다.")
                         .build()
         );
         rcmmdTasteMixVoMap.put("SAME",
@@ -216,15 +230,15 @@ public class ChartVo {
                 TasteMixDto.builder()
                         .mixYn(YnType.N)
                         .status("REQUIRE_MORE_LISTEN")
-                        .descriptionMessage("취향이 충분히 쌓일 때 까지 일반 순위가 표시됩니다.")
-                        .displayMessage("FLO 차트를 내 취향 순서로 변경했습니다.")
+                        .descriptionMessage("취향인 곡이 없어 일반 순위가 표시됩니다.")
+                        .displayMessage("%s를 내 취향 순서로 변경했습니다.")
                         .build()
         );
         rcmmdTasteMixVoMap.put("OFF",
                 TasteMixDto.builder()
                         .mixYn(YnType.N)
                         .status("OFF")
-                        .displayMessage("인기 순서의 일반 FLO 차트로 변경했습니다.")
+                        .displayMessage("인기 순서의 일반 %s로 변경했습니다.")
                         .build()
         );
 
@@ -232,7 +246,7 @@ public class ChartVo {
                 TasteMixDto.builder()
                         .mixYn(YnType.N)
                         .status("REQUIRE_LOGIN")
-                        .displayMessage("인기 순서의 일반 FLO 차트로 변경했습니다.")
+                        .displayMessage("인기 순서의 일반 %s로 변경했습니다.")
                         .build()
         );
 
