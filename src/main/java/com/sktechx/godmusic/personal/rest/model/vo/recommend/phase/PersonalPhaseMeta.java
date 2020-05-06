@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.util.CollectionUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
@@ -55,6 +56,10 @@ public class PersonalPhaseMeta {
     private Date afloCharacterExpireDtime;
     // aflo 채널 최신생성일
     private Date afloChnlRecentCreateDtime;
+
+    // 현재 앱 버전
+    @JsonIgnore
+    private String appVer;
 
     public void setRcmmdPanelList(List<PersonalPanel> rcmmdPanelList){
         this.rcmmdPanelList = rcmmdPanelList;
