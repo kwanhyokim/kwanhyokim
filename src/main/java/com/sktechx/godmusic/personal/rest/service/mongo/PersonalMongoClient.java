@@ -9,15 +9,21 @@
 
 package com.sktechx.godmusic.personal.rest.service.mongo;
 
+import java.util.List;
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.personal.common.domain.ListResponse;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackTasteMixDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.vo.like.*;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenDeleteTrackRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendUpdateRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.test.RecommendChartRequest;
 
 /**
  * 설명 :
@@ -91,31 +97,116 @@ public interface PersonalMongoClient {
      * 트랙/앨범/아티스트 좋아요 순서 변경
      */
     @PutMapping("/personal-mgo/v1/like")
-    CommonApiResponse<Void> sortLikes(
-            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
+    CommonApiResponse<Void> sortLikes(@RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
             LikeTypeIdListRequest request);
 
     /**
      * 트랙/앨범/아티스트 좋아요 추가
      */
     @PostMapping("/personal-mgo/v1/like")
-    CommonApiResponse<Void> appendLike(
-            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
+    CommonApiResponse<Void> appendLike(@RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
             @RequestBody LikeRequest request);
 
     /**
      * 트랙/앨범/아티스트 좋아요 삭제
      */
     @DeleteMapping("/personal-mgo/v1/like")
-    CommonApiResponse<Void> deleteLikes(
-            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
+    CommonApiResponse<Void> deleteLikes(@RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
             @RequestBody LikeTypeIdListRequest request);
+    // 추천 관련 API
 
+    /**
+     * 추천 패널의 추천 트랙 조회
+     */
+    @GetMapping("/personal-mgo/v1/recommends/{rcmmdType}/{rcmmdId}/tracks")
+    CommonApiResponse<List<RecommendPanelTrackDto>> getRecommendTrackListByRcmmdTypeAndRcmmdId(
+            @PathVariable(name = "rcmmdType") String rcmmdType,
+            @PathVariable(name = "rcmmdId") Long rcmmdId,
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
+            @RequestParam(name = "size") int size);
+
+    /**
+     * 나를 위한 FLO 추천 상세 정보
+     */
+    @GetMapping("/personal-mgo/v1/recommends/RC_CF_TR/{rcmmdId}")
+    CommonApiResponse<RecommendForMeDto> getRecommendFormeFlo(
+            @PathVariable(name = "rcmmdId") Long rcmmdId,
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo);
+
+    /**
+     * 아티스트 FLO 추천 상세 정보
+     */
+    @GetMapping("/personal-mgo/v1/recommends/RC_ATST_TR/{rcmmdId}")
+    CommonApiResponse<RecommendArtistDto> getRecommendArtistFlo(
+            @PathVariable(name = "rcmmdId") Long rcmmdId,
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo);
+
+    /**
+     * 오늘의 FLO 추천 상세 정보
+     */
+    @GetMapping("/personal-mgo/v1/recommends/RC_SML_TR/{rcmmdId}")
+    CommonApiResponse<RecommendSimilarTrackDto> getRecommendTodayFlo(
+            @PathVariable(name = "rcmmdId") Long rcmmdId,
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo);
+
+    /**
+     * 오늘의 FLO 추천 목록 조회
+     */
+    @GetMapping("/personal-mgo/v1/recommends/RC_SML_TR?incldueTrackYn=N")
+    CommonApiResponse<ListDto<List<RecommendSimilarTrackDto>>> getRecommendTodayFloListByCharacterNo(
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo);
+
+    /**
+     * 오늘의 FLO 추천 목록 트랙 정보 포함 조회
+     */
+    @GetMapping("/personal-mgo/v1/recommends/RC_SML_TR?includeTrackYn=Y")
+    CommonApiResponse<ListDto<List<RecommendTrackDto>>> getRecommendTodayFloListWithTrackByCharacterNo(
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo);
+
+    /**
+     * 추천 데이터의 삭제 여부 플래그 변경
+     *
+     * @param characterNo
+     * @param rcmmdType
+     * @param rcmmdId
+     * @param request
+     * @return
+     */
     @PutMapping("/personal-mgo/internal/recommends/{rcmmdType}/{rcmmdId}")
     CommonApiResponse<Long> updateRecommendDelTargetYn(
             @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
-            @PathVariable(name="rcmmdType") String rcmmdType,
-            @PathVariable(name="rcmmdId") Long rcmmdId,
+            @PathVariable(name = "rcmmdType") String rcmmdType,
+            @PathVariable(name = "rcmmdId") Long rcmmdId,
             @RequestBody RecommendUpdateRequest request);
 
+    /**
+     * 추천 차트 조회
+     *
+     * @param characterNo
+     * @param chartId
+     * @param trackLimitSize
+     * @return
+     */
+    @GetMapping("/personal-mgo/v1/recommends/chart/{chartId}")
+    CommonApiResponse<ChartTrackDto> getRecommendChart(
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
+            @PathVariable(name = "chartId") Long chartId,
+            @RequestParam(name = "size") Integer trackLimitSize);
+
+    @PutMapping("/personal-mgo/v1/recommends/chart/{chartId}")
+    CommonApiResponse addRecommendChart(
+            @RequestHeader(name = "x-gm-fallback-cno") Long fallBackharacterNo,
+            @PathVariable(name = "chartId") Long chartId,
+            @RequestBody RecommendChartRequest recommendChartRequest);
+
+    @DeleteMapping("/personal-mgo/v1/recommends/chart/{chartId}")
+    CommonApiResponse deleteRecommendChart(
+            @RequestHeader(name = "x-gm-fallback-cno") Long fallBackharacterNo,
+            @PathVariable(name = "chartId") Long chartId,
+            @RequestBody RecommendChartRequest recommendChartRequest);
+
+    @GetMapping("/personal-mgo/v1/recommends/chart/{chartId}/tracks")
+    CommonApiResponse<ChartTrackTasteMixDto> getRecommendChartTrackTasteMixDto(
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
+            @PathVariable(name = "chartId") Long chartId);
 }

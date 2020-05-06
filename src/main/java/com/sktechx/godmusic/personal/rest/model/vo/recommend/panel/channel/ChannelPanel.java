@@ -60,6 +60,7 @@ public abstract class ChannelPanel extends Panel{
                     .createDtime(channel.getCreateDtime())
                     .updateDtime(channel.getUpdateDtime())
                     .renewYn(channel.getRenewYn())
+                    // up, new 뱃지 공용 사용하며, 채널 타입별로 단말에서 어느 용도로 사용할지  전시 정의함
                     .renewTrackCount( YnType.Y.equals(channel.getRenewYn())?channel.getRenewTrackCnt() : 0)
                     .genre(this.genre)
                 .build();

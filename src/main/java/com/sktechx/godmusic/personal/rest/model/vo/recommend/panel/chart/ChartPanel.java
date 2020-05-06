@@ -20,10 +20,12 @@ import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
-import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
+import lombok.Getter;
+import lombok.Setter;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.CHART_PANEL_HOURLY_BASIS_PHRASES;
 
@@ -37,6 +39,10 @@ public class ChartPanel extends Panel {
     @JsonIgnore
     private ChartDto chart;
 
+    @Getter
+    @Setter
+    private ChartTitle priChartTitle;
+
     public ChartPanel(RecommendPanelType panelType , ChartDto chart, List<ImageInfo> bgImgList) throws CommonBusinessException {
         super(panelType);
         this.chart = neverNullChart(chart);
@@ -45,7 +51,6 @@ public class ChartPanel extends Panel {
         this.subTitle = getBasedOnUpdate(chart , this.type);
         this.content = PanelContentVo.builder()
                 .id(chart.getChartId())
-
                 .type(RecommendPanelContentType.CHART)
                 .createDtime(chart.getCreateDtime())
                 .updateDtime(chart.getUpdateDtime())

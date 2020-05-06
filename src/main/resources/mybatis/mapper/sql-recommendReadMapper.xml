@@ -99,12 +99,8 @@
                 AND d.disp_status_type = 'Y'
             WHERE
                 a.character_no = #{characterNo}
-            <if test="checkDispEndDt">
-                AND NOW() BETWEEN a.disp_std_start_dt AND a.disp_std_end_dt
-            </if>
-            <if test="!checkDispEndDt">
+
                 AND NOW() BETWEEN a.disp_std_start_dt AND DATE_ADD(a.disp_std_start_dt, INTERVAL 30 DAY)
-            </if>
             GROUP BY a.rcmmd_mforu_id
             HAVING contentCount <![CDATA[>=]]> #{rcmmdCfTrackDispStandardCount}
             UNION ALL
@@ -127,12 +123,7 @@
             WHERE
                 a.character_no =#{characterNo}
 
-            <if test="checkDispEndDt">
-                AND NOW() BETWEEN a.disp_std_start_dt AND a.disp_std_end_dt
-            </if>
-            <if test="!checkDispEndDt">
             AND NOW() BETWEEN a.disp_std_start_dt AND DATE_ADD(a.disp_std_start_dt, INTERVAL 30 DAY)
-            </if>
 
             GROUP BY a.rcmmd_similar_track_id
             HAVING contentCount <![CDATA[>=]]> #{similarTrackDispStandardCount}
@@ -151,16 +142,9 @@
                 tb_rcmmd_artist a
             WHERE
                 character_no = #{characterNo}
-            <if test="checkDispEndDt">
-                AND NOW() BETWEEN a.disp_std_start_dt AND a.disp_std_end_dt
-            </if>
-            <if test="!checkDispEndDt">
                 AND NOW() BETWEEN a.disp_std_start_dt AND DATE_ADD(a.disp_std_start_dt, INTERVAL 30 DAY)
-            </if>
 
-        <if test="!checkDispEndDt">
-            ORDER BY disp_std_start_dt DESC, panelOrder ASC, dispSn ASC
-        </if>
+            ORDER BY disp_std_start_dt DESC, panelOrder, dispSn
 
     </select>
 
@@ -826,7 +810,7 @@
         SELECT
         c.img_url
         FROM
-        <if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_SML_TR'">
+        <if test="recommendPanelContentType != null and recommendPanelContentType == 'RC_SML_TR'">
             tb_rcmmd_img_mang c
         WHERE
             c.dfk_type = CASE DAYOFWEEK(NOW())
@@ -845,7 +829,7 @@
         ORDER BY c.disp_sn
         LIMIT 1
         </if>
-        <if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_GR_TR'">
+        <if test="recommendPanelContentType != null and recommendPanelContentType == 'RC_GR_TR'">
             tb_rcmmd_prefer_genre_similar_track a
             INNER JOIN
               tb_svc_genre b ON a.svc_genre_id = b.svc_genre_id
@@ -869,7 +853,7 @@
 
             LIMIT 1
         </if>
-        <if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_CF_TR'">
+        <if test="recommendPanelContentType != null and recommendPanelContentType == 'RC_CF_TR'">
             tb_rcmmd_mforu a
             INNER JOIN
               tb_svc_genre b ON a.svc_genre_id = b.svc_genre_id
@@ -886,7 +870,7 @@
         </if>
     </select>
 
-    <select id="selectRecommendGenreByRcmmdId" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendGenreVo">
+    <select id="selectRecommendGenreByRcmmdId" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendForMeDto">
         SELECT
             b.svc_genre_nm,
             a.disp_std_start_dt,
@@ -1138,6 +1122,7 @@
                         FROM
                             tb_rcmmd_mforu a
                         INNER JOIN tb_svc_genre b ON a.svc_genre_id = b.svc_genre_id
+                            AND b.disp_status_type = 'Y'
 
                         WHERE
                           a.character_no = #{characterNo}

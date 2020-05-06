@@ -72,7 +72,8 @@ public abstract class AbstractRelatedTrackResourcePlayLogService implements Reso
                 .playOfflineYn(logRequestParam.getPlayOfflineYn())                          // 캐시드 스트리밍
                 .playCacheYn(logRequestParam.getPlayCachedYn())                             // 캐시드 스트리밍
                 .traceType(logRequestParam.getTraceType())
-                .appVersion(gmContext.getAppVer());
+                .appVersion(gmContext.getAppVer())
+                .buildNumber(logRequestParam.getBuildNumber());
     }
 
     /**

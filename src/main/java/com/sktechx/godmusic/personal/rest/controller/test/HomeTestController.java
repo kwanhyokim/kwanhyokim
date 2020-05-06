@@ -119,5 +119,28 @@ public class HomeTestController {
 
         return "true";
     }
+
+
+
+    @GetMapping(value = "/private-chart/create")
+    @ResponseBody
+    public String createPrivateChart(@RequestParam Long characterNo, @RequestParam String type){
+        log.info("/private-chart/create :" );
+
+        recommendDummyDataService.addPrivateChart(characterNo, type);
+
+        return "true";
+    }
+
+
+    @GetMapping(value = "/private-chart/delete")
+    @ResponseBody
+    public String deletePrivateChart(@RequestParam Long characterNo){
+        log.info("/private-chart/delete :" );
+
+        recommendDummyDataService.deletePrivateChart(characterNo);
+
+        return "true";
+    }
 }
 

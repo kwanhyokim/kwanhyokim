@@ -19,6 +19,7 @@ import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.personal.rest.client.fallback.MetaClientFallbackFactory;
 import com.sktechx.godmusic.personal.rest.client.model.MetaVideoRequestVo;
 import com.sktechx.godmusic.personal.rest.model.dto.*;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
@@ -70,5 +71,8 @@ public interface MetaClient {
     @GetMapping("/meta/v1/ping")
     CommonApiResponse<Void> ping();
 
+    @GetMapping("/meta/v1/chart/track/{chartId}?size={trackSize}")
+    CommonApiResponse<ChartTrackDto> getChartWithTrackList(@PathVariable("chartId") Long chartId,
+            @RequestParam("trackSize") Integer trackSize);
 
 }

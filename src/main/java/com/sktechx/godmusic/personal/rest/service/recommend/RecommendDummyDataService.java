@@ -36,4 +36,9 @@ public interface RecommendDummyDataService {
     void deleteChart(Long characterNo);
 
     String clearCacheHome(Long characterNo);
+
+    void addPrivateChart(Long characterNo, String mix);
+
+    void deletePrivateChart(Long characterNo);
+
 }

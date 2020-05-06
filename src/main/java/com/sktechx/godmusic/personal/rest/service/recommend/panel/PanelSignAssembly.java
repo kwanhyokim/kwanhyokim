@@ -15,8 +15,6 @@ import java.util.Objects;
 
 import org.springframework.util.CollectionUtils;
 
-import com.sktechx.godmusic.personal.common.domain.PreferPropsType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.common.util.BooleanComparator;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
@@ -79,26 +77,6 @@ public abstract class PanelSignAssembly extends PanelAssembly {
 
     }
 
-    public void appendPreferenceChartPanel(final PersonalPhaseMeta personalPhaseMeta, final List<Panel> panelList) {
-        if(!CollectionUtils.isEmpty(personalPhaseMeta.getPreferDispList())) {
-
-            personalPhaseMeta.getPreferDispList()
-                    .stream()
-                    .filter(Objects::nonNull)
-                    .forEach(characterPreferDisp -> {
-
-                        RecommendPanelType recommendPanelType = getPreferRecommendPanelType(characterPreferDisp.getDispPropsType());
-                        if (recommendPanelType != null) {
-                            Panel panel = createChartPanel(recommendPanelType, personalPhaseMeta.getOsType(), PREFER_DISP_CHART_TRACK_LIMIT_SIZE);
-                            if (panel != null) {
-                                panelList.add(panel);
-                            }
-                        }
-
-                    });
-        }
-    }
-
     protected void appendPreferArtistPopularTrackPanel(final PersonalPhaseMeta personalPhaseMeta, final List<Panel> panelList) {
         Long rcmmdId = personalPhaseMeta.getRecommendPersonalPanelRcmmdId(RC_ATST_TR);
 
@@ -128,9 +106,8 @@ public abstract class PanelSignAssembly extends PanelAssembly {
 
         List<ArtistDto> artistList = recommendArtistDto.getArtistList();
 
-        long representationArtistCount = artistList.stream().filter(artistDto -> {
-            return "REPRSNT".equals(artistDto.getArtistType());
-        }).count();
+        long representationArtistCount = artistList.stream().filter(
+                artistDto -> "REPRSNT".equals(artistDto.getArtistType())).count();
 
         long trackCount = recommendArtistDto.getTrackCount();
 
@@ -231,19 +208,6 @@ public abstract class PanelSignAssembly extends PanelAssembly {
             }
         }
     }
-
-
-    private RecommendPanelType getPreferRecommendPanelType(String preferPropsType ){
-
-        if(PreferPropsType.TOP100.getCode().equals(preferPropsType)){
-            return RecommendPanelType.LIVE_CHART;
-        }else if(PreferPropsType.KIDS100.getCode().equals(preferPropsType)){
-            return RecommendPanelType.KIDS_CHART;
-        }
-        return null;
-
-    }
-
 
 
     private Panel createPreferGenreSimilarTrackPanel(final PersonalPhaseMeta personalPhaseMeta,

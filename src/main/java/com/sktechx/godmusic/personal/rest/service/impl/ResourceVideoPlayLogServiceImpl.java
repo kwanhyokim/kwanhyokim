@@ -128,7 +128,8 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
                 .playOfflineYn(null)
                 .playCacheYn(null)
                 .traceType(logRequestParam.getTraceType())
-                .appVersion(gmContext.getAppVer());
+                .appVersion(gmContext.getAppVer())
+                .buildNumber(logRequestParam.getBuildNumber());
     }
 
     /**

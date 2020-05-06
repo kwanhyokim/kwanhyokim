@@ -230,6 +230,13 @@ public class ResourcePlayLogRequestParam {
     )
     private String traceType;
 
+    @ApiModelProperty(
+            name = "buildNumber",
+            value = "",
+            position = 24
+    )
+    private String buildNumber;
+
     @JsonIgnore
     public boolean isFree() {
         return YnType.Y == freeYn;

@@ -14,25 +14,34 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.util.CollectionUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.lib.utils.ServiceUtils;
+import com.sktechx.godmusic.personal.common.domain.PreferPropsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
-import com.sktechx.godmusic.personal.rest.model.dto.ChartDto;
+import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferDispDto;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.PopularChannelPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.chart.ChartPanel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.chart.PrivateFloChartPanel;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.chart.PrivateKidsChartPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.repository.*;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
-import com.sktechx.godmusic.personal.rest.service.ChartService;
-import com.sktechx.godmusic.personal.rest.service.recommend.RecommendPanelService;
+import com.sktechx.godmusic.personal.rest.service.chart.ChartService;
+import com.sktechx.godmusic.personal.rest.service.recommend.RecommendReadService;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.POPULAR_CHNL_TRACK_LIMIT_SIZE;
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.PREFER_DISP_CHART_TRACK_LIMIT_SIZE;
 
 /**
  * 설명 : 추천 패널 생성기
@@ -44,13 +53,19 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
 public abstract class PanelAssembly {
 
     @Autowired
+    @Qualifier("chartService")
     protected ChartService chartService;
+
+    @Autowired
+    @Qualifier("mongoChartService")
+    protected ChartService mongoChartService;
+
     @Autowired
     protected ChannelService channelService;
 
     @Autowired
     @Lazy
-    protected RecommendPanelService recommendPanelService;
+    protected RecommendReadService recommendReadService;
 
     @Autowired
     protected ChannelMapper channelMapper;
@@ -64,6 +79,10 @@ public abstract class PanelAssembly {
     protected ChartMapper chartMapper;
     @Autowired
     protected CharacterPreferGenreMapper characterPreferGenreMapper;
+
+    @Getter
+    @Setter
+    public String appVersion;
 
     public abstract List<Panel> assembleRecommendPanel(PersonalPhaseMeta personalPhaseMeta) throws Exception;
     protected abstract List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta);
@@ -105,29 +124,93 @@ public abstract class PanelAssembly {
 
     protected List<ImageInfo> getDefaultBgImageList(final List<ImageInfo> imgList , OsType osType){
         if(CollectionUtils.isEmpty(imgList)){
-            return recommendPanelService.getRecommendPanelDefaultImageList(osType);
+            return recommendReadService.getRecommendPanelDefaultImageList(osType);
         }else{
             return imgList;
         }
     }
 
-    protected Panel createChartPanel(RecommendPanelType recommendPanelType, OsType osType, int trackLimitSize){
+    protected Panel createChartPanel(RecommendPanelType recommendPanelType, OsType osType,
+            int trackLimitSize){
 
-        ChartDto chart = null;
+        ChartDto chart;
 
         if(RecommendPanelType.LIVE_CHART.equals(recommendPanelType)){
-            chart = chartService.getRealTimeTrackChart(osType,trackLimitSize);
-        }else if(RecommendPanelType.KIDS_CHART.equals(recommendPanelType)){
-            chart = chartService.getKidsChart(osType,trackLimitSize);
+            chart = chartService.getChartByDispPropsTypeWithTrackList(null,
+                    PreferPropsType.TOP100.getCode(),
+                    osType,
+                    trackLimitSize);
+
+        }else {
+            chart = chartService.getChartByDispPropsTypeWithTrackList(null,
+                    PreferPropsType.KIDS100.getCode(),
+                    osType,
+                    trackLimitSize);
         }
+
         if(chart != null){
             try{
-                return new ChartPanel(recommendPanelType, chart, getDefaultBgImageList(chart.getImgList(),osType));
+                return new ChartPanel(recommendPanelType, chart,
+                        getDefaultBgImageList(chart.getImgList(), osType));
+
             }catch(Exception e){
                 log.error("create chart panel failed.");
             }
         }
         return null;
+    }
+
+    protected Panel createChartPanel(CharacterPreferDispDto characterPreferDisp, OsType osType,
+            int trackLimitSize){
+
+        RecommendPanelType recommendPanelType =
+                PreferPropsType.TOP100.getCode().equals(
+                        characterPreferDisp.getDispPropsType()
+                )
+                        ?
+                        RecommendPanelType.LIVE_CHART
+                        :
+                        RecommendPanelType.KIDS_CHART
+                ;
+
+        return createChartPanel(recommendPanelType, osType, trackLimitSize);
+    }
+
+    protected Panel createPrivateChartPanel(Long characterNo, CharacterPreferDispDto characterPreferDispDto,
+            OsType osType, int trackLimitSize){
+
+        ChartDto chart;
+
+        RecommendPanelType recommendPanelType =
+                PreferPropsType.TOP100.getCode().equals(characterPreferDispDto.getDispPropsType())
+                        ?
+                        RecommendPanelType.PRI_LIVE_CHART
+                        :
+                        RecommendPanelType.PRI_KIDS_CHART
+        ;
+
+        if(RecommendPanelType.PRI_LIVE_CHART.equals(recommendPanelType)){
+            chart = mongoChartService.getChartByDispPropsTypeWithTrackList(characterNo,
+                    PreferPropsType.TOP100.getCode(),
+                    osType,
+                    trackLimitSize);
+
+            return new PrivateFloChartPanel(
+                    recommendPanelType, chart,
+                    getDefaultBgImageList(chart.getImgList(), osType)
+            );
+        }else {
+            chart = mongoChartService.getChartByDispPropsTypeWithTrackList(characterNo,
+                    PreferPropsType.KIDS100.getCode(),
+                    osType,
+                    trackLimitSize);
+
+            return new PrivateKidsChartPanel(
+                    recommendPanelType, chart,
+                    getDefaultBgImageList(chart.getImgList(), osType)
+            );
+        }
+
     }
 
 
@@ -159,12 +242,19 @@ public abstract class PanelAssembly {
         Optional<Panel> liveChartPanel = Optional.ofNullable(chartPanelList)
                 .orElseGet(Collections::emptyList)
                 .stream()
-                .filter(panel -> RecommendPanelType.LIVE_CHART.equals(panel.getType()))
+                .filter(
+                        panel ->
+                                RecommendPanelType.LIVE_CHART.equals(panel.getType()) ||
+                                        RecommendPanelType.PRI_LIVE_CHART.equals(panel.getType())
+                )
                 .findFirst();
         Optional<Panel> kidsChartPanel = Optional.ofNullable(chartPanelList)
                 .orElseGet(Collections::emptyList)
                 .stream()
-                .filter(panel -> RecommendPanelType.KIDS_CHART.equals(panel.getType()))
+                .filter(
+                        panel -> RecommendPanelType.KIDS_CHART.equals(panel.getType()) ||
+                                RecommendPanelType.PRI_KIDS_CHART.equals(panel.getType())
+                )
                 .findFirst();
 
         if(liveChartPanel.isPresent()){
@@ -200,6 +290,36 @@ public abstract class PanelAssembly {
                                 }
 
                         ));
+    }
+
+    public void appendPreferenceChartPanel(final PersonalPhaseMeta personalPhaseMeta, final List<Panel> panelList) {
+        if(!CollectionUtils.isEmpty(personalPhaseMeta.getPreferDispList())) {
+
+            personalPhaseMeta.getPreferDispList()
+                    .stream()
+                    .filter(Objects::nonNull)
+                    .forEach(characterPreferDisp -> {
+
+                        Integer appVersion = ServiceUtils.getFormattedAppVersion(getAppVersion());
+                        Panel panel =
+
+                            appVersion.compareTo(41500) < 0 ?
+                                createChartPanel(
+                                        characterPreferDisp,
+                                        personalPhaseMeta.getOsType(),
+                                        PREFER_DISP_CHART_TRACK_LIMIT_SIZE
+                                )
+                                :
+                                createPrivateChartPanel(
+                                        personalPhaseMeta.getCharacterNo(),
+                                        characterPreferDisp,
+                                        personalPhaseMeta.getOsType(), PREFER_DISP_CHART_TRACK_LIMIT_SIZE
+                                )
+                        ;
+                        panelList.add(panel);
+
+                    });
+        }
     }
 
 }
