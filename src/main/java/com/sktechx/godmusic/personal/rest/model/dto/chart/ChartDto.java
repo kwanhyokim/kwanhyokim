@@ -62,15 +62,6 @@ public class ChartDto {
     private String chartTaste;
 
 
-    public void setImgList(List<ImageInfo> imgList) {
-
-        if (imgList != null) {
-            imgList.sort(null);
-        }
-
-        this.imgList = imgList;
-    }
-
     public static ChartDto from (ChartTrackDto chartTrackDto){
 
         return chartTrackDto == null ? null : ChartDto.builder()
@@ -101,7 +92,7 @@ public class ChartDto {
                         currentChartDto -> {
                             currentChartDto.setImgList(
                                     chartDispPropsDto.getImgList().stream()
-                                    .map(chartImageInfo -> (ImageInfo) chartImageInfo)
+                                    .map(chartImageInfo -> chartImageInfo)
                                             .collect(Collectors.toList()));
                             currentChartDto.setChartNm(chartDispPropsDto.getChartNm());
                         }

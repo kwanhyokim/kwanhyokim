@@ -10,9 +10,13 @@
 
 package com.sktechx.godmusic.personal.rest.service.chart;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import org.springframework.util.CollectionUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
@@ -49,42 +53,65 @@ public interface ChartService {
             , Boolean useNewImgUrl){
 
         ChartDispPropsDtoWrapper chartDispPropsDtoWrapper =
-                getRedisService().getWithPrefix(CHART_DISPLAY_PROPERTIES_KEY,
-                ChartDispPropsDtoWrapper.class
+                getRedisService().getWithPrefix(
+                        CHART_DISPLAY_PROPERTIES_KEY,
+                        ChartDispPropsDtoWrapper.class
                 );
 
-        List<ChartDispPropsDto> chartDispPropsDtoList;
+        List<ChartDispPropsDto> chartDispPropsDtoList = new ArrayList<>();
 
         if(chartDispPropsDtoWrapper == null){
-            chartDispPropsDtoList = getChartMapper().selectPreferDisp();
+
+            chartDispPropsDtoWrapper = ChartDispPropsDtoWrapper.builder()
+                    .chartDispPropsDtoList(
+                            getChartMapper().selectPreferDispNameAndChartBgImage()
+                    )
+                    .mixChartDispPropsDtoList(
+                            getChartMapper().selectPreferDispNameAndMixChartBgImage()
+                    )
+                    .build();
+
             getRedisService().setWithPrefix(CHART_DISPLAY_PROPERTIES_KEY,
-                    ChartDispPropsDtoWrapper.builder()
-                            .chartDispPropsDtoList(chartDispPropsDtoList)
-                            .build(),
-                    86400);
-        }else{
-            chartDispPropsDtoList = chartDispPropsDtoWrapper.getChartDispPropsDtoList();
+                    chartDispPropsDtoWrapper, 86400);
+
         }
 
-        ChartDispPropsDto chartDispPropsDto =
-                chartDispPropsDtoList.stream()
-                .filter( predicate )
-                .findFirst()
-                .orElseThrow( () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
 
-        chartDispPropsDto.getImgList().stream()
-                .filter( imageInfo -> osType.equals(imageInfo.getOsType()))
-                .findFirst()
+        Optional.ofNullable(
+                useNewImgUrl ?
+                        chartDispPropsDtoWrapper.getMixChartDispPropsDtoList()
+                        :
+                        chartDispPropsDtoWrapper.getChartDispPropsDtoList()
+        )
                 .ifPresent(
-                        imageInfo -> {
+                    chartDispPropsDtos ->
+                        chartDispPropsDtos.forEach(
+                                chartDispPropsDto -> {
+                            if (CollectionUtils.isEmpty(chartDispPropsDto.getImgList())) {
+                                chartDispPropsDto.setImgList(ChartDispPropsDto.DEFAULT_TOP100_IMGLIST);
+                            }else{
+                                if(!useNewImgUrl) {
+                                    chartDispPropsDto.setImgList(
+                                            chartDispPropsDto.getImgList().stream()
+                                                    .filter(
+                                                            imageInfo -> osType.equals(imageInfo.getOsType())
+                                                    )
+                                                    .collect(Collectors.toList())
+                                    );
+                                }
 
-                            imageInfo.replaceUrlByNew(useNewImgUrl);
-                            chartDispPropsDto.setImgList(Collections.singletonList(imageInfo));
-                        }
+                            }
 
+                            if(predicate.test(chartDispPropsDto)) {
+                                chartDispPropsDtoList.add(chartDispPropsDto);
+                            }
+                        })
                 );
 
-        return chartDispPropsDto;
+
+        return chartDispPropsDtoList.stream()
+                .findFirst()
+                .orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
     }
 
 }
