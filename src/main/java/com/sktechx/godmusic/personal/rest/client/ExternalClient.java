@@ -15,7 +15,7 @@ import com.sktechx.godmusic.personal.common.config.FeignDefaultConfig;
 import com.sktechx.godmusic.personal.common.domain.type.AwsBucketType;
 import com.sktechx.godmusic.personal.rest.client.fallback.ExternalClientFallbackFactory;
 import com.sktechx.godmusic.personal.rest.model.vo.external.AwsFileVo;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.SendListenLogRequestVo;
+import com.sktechx.godmusic.personal.rest.model.vo.listen.ResourcePlayLogRequestParam;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,7 +42,7 @@ public interface ExternalClient {
     CommonApiResponse<Void> ping();
 
     @PostMapping(value = "/external/v1/pipe/listen/log")
-    CommonApiResponse<Void> sendListenLogRequest(@RequestBody SendListenLogRequestVo listenLogRequestVo);
+    CommonApiResponse<Void> sendListenLogRequest(@RequestBody ResourcePlayLogRequestParam logRequestParam);
 
     @PostMapping(value = "/external/v1/ocr/ocr-recognize")
     CommonApiResponse ocrRecognize(@RequestParam("ocrNo") Long ocrNo,
