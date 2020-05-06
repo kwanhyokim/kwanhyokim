@@ -10,10 +10,11 @@
 
 package com.sktechx.godmusic.personal.common.domain.type;
 
+import org.apache.ibatis.type.MappedTypes;
+
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnum;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnumTypeHandler;
-import org.apache.ibatis.type.MappedTypes;
 
 /**
  *  * 설명 : 차트  타입

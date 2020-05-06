@@ -343,20 +343,6 @@ public class MemberChannelServiceImpl implements MemberChannelService {
 
         memberChannelTrackMapper.deleteTrack(memberChannelId, trackIdList);
 
-        // 사용자 이벤트 전송
-        for(Long trackId : trackIdList){
-            UserEvent userEvent = UserEvent.newBuilder()
-                    .playChnl(appName.getCode())
-                    .event(UserEventType.UNPICK)
-                    .memberNo(memberNo)
-                    .charactorNo(characterNo)
-                    .targetId(String.valueOf(trackId))
-                    .targetType(UserEventTarget.TRACK)
-		            .timeMillis(System.currentTimeMillis())
-                    .build();
-            amqpService.deliverUserEvent(userEvent);
-        }
-
         // 앨범 아이디 및 trackCount 업데이트
         Long albumId = getMemberChannelAlbumId(memberChannelId);
         memberChannelMapper.updateMemberChannelList(memberNo, characterNo, memberChannelId, null, albumId, true, true, new Date());
@@ -402,17 +388,6 @@ public class MemberChannelServiceImpl implements MemberChannelService {
                     memberChannelTrackMapper.insertTrackMemberChannel(memberChannelId, trackDto.getTrackId(), viewPriority.getAndIncrement(), now);
                     successfulIdList.add(trackDto.getTrackId());
 
-                    // 사용자 이벤트 전송
-                    UserEvent userEvent = UserEvent.newBuilder()
-                            .playChnl(appName.getCode())
-                            .event(UserEventType.PICK)
-                            .memberNo(memberNo)
-                            .charactorNo(characterNo)
-                            .targetId(String.valueOf(trackDto.getTrackId()))
-                            .targetType(UserEventTarget.TRACK)
-                            .timeMillis(System.currentTimeMillis())
-                            .build();
-                    amqpService.deliverUserEvent(userEvent);
                 }
                 catch (Exception e) {
                     // 중복 등록 - 키 중복 에러로 체크
@@ -473,7 +448,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
         int modifyTrackIdCount = modifyTrackIdList.size();
 
         //같으면 전체 업데이트, 다르면 변경된 부분만 잘라서 업데이트
-        List<Long> remainderTrackIdList = memberChannelTrackIdList.subList(modifyTrackIdCount, memberChannlAllTrackIdCount);
+        List<Long> remainderTrackIdList = memberChannelTrackIdList.subList(Math.min(modifyTrackIdCount, memberChannlAllTrackIdCount), memberChannlAllTrackIdCount);
         modifyTrackIdList.addAll(remainderTrackIdList);
 
         AtomicInteger atomicInteger = new AtomicInteger(0);

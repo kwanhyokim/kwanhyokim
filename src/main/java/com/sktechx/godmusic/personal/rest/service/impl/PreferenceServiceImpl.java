@@ -35,6 +35,7 @@ import com.sktechx.godmusic.personal.common.util.DateUtil;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.client.model.MetaVideoRequestVo;
 import com.sktechx.godmusic.personal.rest.model.dto.*;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.preference.PreferSimilarArtistDto;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.Artist;
 import com.sktechx.godmusic.personal.rest.model.vo.preference.Chart;
@@ -43,7 +44,6 @@ import com.sktechx.godmusic.personal.rest.model.vo.preference.PreferenceSimilarA
 import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 import com.sktechx.godmusic.personal.rest.repository.*;
 import com.sktechx.godmusic.personal.rest.service.PreferenceService;
-import com.sktechx.godmusic.personal.rest.service.impl.recommend.panel.assembly.v2.PreferArtistVideoPanelAssembly;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.*;
@@ -71,9 +71,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     @Autowired
     RedisService redisService;
-
-    @Autowired
-    private PreferArtistVideoPanelAssembly preferArtistVideoPanelAssembly;
 
     @Autowired
     private PreferenceMapper preferenceMapper;
@@ -461,7 +458,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 		String redisKey = String.format(RedisKeyConstant.PERSONAL_PREFERENCE_VIDEO_ARTIST_NEW_LIST, characterNo);
 
-		if(redisService.exists(redisKey)){
+		if(redisService.existsWithPrefix(redisKey)){
 			return redisService.getListWithPrefix(redisKey, VideoVo.class);
 		}
 
@@ -517,7 +514,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 		String redisKey = String.format(RedisKeyConstant.PERSONAL_PREFERENCE_VIDEO_GENRE_NEW_LIST, characterNo);
 
-		if (redisService.exists(redisKey)) {
+		if (redisService.existsWithPrefix(redisKey)) {
 			return redisService.getListWithPrefix(redisKey, VideoVo.class);
 		}
 

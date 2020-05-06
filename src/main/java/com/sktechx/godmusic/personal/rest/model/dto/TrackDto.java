@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * 설명 : 트랙 DTO
@@ -29,6 +30,7 @@ import lombok.Data;
  * @date 2018. 07. 09.
  */
 @Data
+@EqualsAndHashCode
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class TrackDto {
     @JsonProperty("id")
@@ -74,8 +76,6 @@ public class TrackDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
     private Date renewDtime;
 
-    private RankDto rank;
-
     private YnType displayYn;
 
     public YnType getRenewYn(){
@@ -104,6 +104,8 @@ public class TrackDto {
 
     private YnType freeYn;
 
+    private RankDto rank;
+
     @JsonIgnore
     public boolean isNotStreamable() {
         return YnType.N == this.svcStreamingYn;
@@ -122,6 +124,11 @@ public class TrackDto {
         if(epochSecond > 0) {
             this.fileUpdateDateTime = DateUtil.asDate(epochSecond);
         }
+    }
+
+    @JsonIgnore
+    public void disableRankIndicator() {
+        this.rank = RankDto.INDICATOR_DISABLED;
     }
 }
 

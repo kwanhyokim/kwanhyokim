@@ -28,5 +28,6 @@ public enum UserEventTarget {
 	CHNL,
 	CHART,
 	AUDIO,
-	VIDEO
+	VIDEO,
+	MYPLAYLIST
 }

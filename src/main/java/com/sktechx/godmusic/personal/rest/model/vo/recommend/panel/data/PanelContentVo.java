@@ -25,6 +25,7 @@ import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnum;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.chart.TasteMixVo;
 import lombok.Builder;
 import lombok.Data;
 
@@ -62,7 +63,14 @@ public class PanelContentVo {
     @JsonIgnore
     private OsType osType;
 
-    // WEB 에서 추천 아이디가 너무 길 경우 Number 타입은 정확하게 변환이 안되어 web 요청일 경우 String 타입으로 내려줌
+    @JsonIgnore
+    private String chartTaste;
+
+    public TasteMixVo getTasteMix(){
+        return TasteMixVo.from(chartTaste);
+    }
+
+    // WEB 에서 추천 아이디가 javascript가 파싱 가능한 숫자 범위를 넘어가므로, web 요청일 경우 String 타입으로 내려줌
     public Object getId(){
         if(ObjectUtils.isEmpty(osType) || !OsType.WEB.equals(osType)){
             return id;

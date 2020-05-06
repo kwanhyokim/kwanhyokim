@@ -14,6 +14,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.google.common.base.Strings;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
@@ -58,6 +59,7 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConst
 public class ChannelServiceImpl implements ChannelService {
 
     private static int RECENT_LISTENED_LIST_LIMIT = 300;
+    private static final String PREFIX_STR_PRIVATE_CHART = "내 취향 MIX";
 
     @Autowired
     private SqlSessionTemplate sqlSessionTemplate;
@@ -273,14 +275,29 @@ public class ChannelServiceImpl implements ChannelService {
             exceptAfloChnl = true;
         }
 
-
         List<LastListenHistoryDto> lastListenHistory = channelMapper.selectLastListenHistory(memberNo, characterNo, osType);
         List<LastListenHistoryDto> lastListenHistoryByChannel = channelMapper.selectLastListenHistoryByChannel(memberNo, characterNo, osType, exceptFlacChnl, exceptAfloChnl);
         List<LastListenHistoryDto> lastListenHistoryByAlbum = albumMapper.selectLastListenHistory(memberNo, characterNo);
 
-
         lastListenHistory.addAll(lastListenHistoryByChannel);
         lastListenHistory.addAll(lastListenHistoryByAlbum);
+
+        /*
+         * FLO, KIDS 내취향 MIX 차트 추가 ( 2020.4.10 )
+         * 해당 차트의 보관함 > 최근감상리스트 노출을 위해 이미지 코드 추가됨
+         * Note. v4.15.0 이상 App에서는 listen_type = PRI_CHART 인 경우 별도의 개인화 차트 API를 호출하기 때문에
+         *       개인화차트 청취이력리스트는 v4.15.0 이상만 반환한다
+         */
+        boolean OVER_VERSION_4_15_0 = !Strings.isNullOrEmpty(appVersion) && new ComparableVersion(appVersion).compareTo(new ComparableVersion("4.15.0")) >= 0;
+        boolean isNotWeb = OsType.WEB != osType;
+
+        if (OVER_VERSION_4_15_0 && isNotWeb) {
+            List<LastListenHistoryDto> lastListenHistoryByPrivateChart = channelMapper.selectLastListenHistoryWithPrivateChart(memberNo, characterNo, osType);
+            for (LastListenHistoryDto each : lastListenHistoryByPrivateChart) {
+                each.setContentTitle(each.getContentTitle() + " " + PREFIX_STR_PRIVATE_CHART);
+            }
+            lastListenHistory.addAll(lastListenHistoryByPrivateChart);
+        }
 
         return lastListenHistory.stream()
                 .distinct()

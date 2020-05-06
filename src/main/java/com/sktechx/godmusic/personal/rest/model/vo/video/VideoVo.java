@@ -9,6 +9,11 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.video;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -19,17 +24,14 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.video.VideoPa
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
-
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
 
 @SuppressWarnings("WeakerAccess")
 @Data
 @Builder
 @ToString(callSuper = true)
+@EqualsAndHashCode(of={"videoId"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class VideoVo {

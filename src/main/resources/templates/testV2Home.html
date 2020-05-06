@@ -45,22 +45,23 @@
             <button name="btn_artistFloDelete">좋아할만한 아티스트 MIX 삭제하기</button>
             <br/>
 
-            <button name="btn_chartCreate">차트 추가하기</button>
-            <button name="btn_chartDelete">차트 삭제하기</button>
+            <button name="btn_chartCreate">취향에서 차트(실시간,키즈) 추가하기</button>
+            <button name="btn_chartDelete">취향에서 차트 삭제하기</button>
 
             <br/>
             <button name="btn_aFloChnlUpdate">AFLO 채널들 현시각으로 갱신하기</button>
             <br/>
 
-<!--            <button name="btn_showLayout">내 레이아웃 보기</button>-->
+            <button name="btn_priChartCreate1">내 취향 차트 만들기(취향 차트)</button>
+            <button name="btn_priChartCreate2">내 취향 차트 만들기(취향 차트 있긴 한데 부족)</button>
+            <button name="btn_priChartCreate3">내 취향 차트 만들기(추천은 받았는데 실시간과 같음)</button>
+            <button name="btn_priChartCreate4">내 취향 차트 만들기(취향 없음)</button>
         </form>
     </div>
     <div id="layout">
 
 
     </div>
-
-
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -140,15 +141,30 @@
             });
 
 
-            $("button[name='btn_showLayout']").on("click", function (e) {
+            $("button[name='btn_priChartCreate1']").on("click", function (e) {
                 e.preventDefault();
                 fn_ajax({'x-gm-member-no':$("#member_no").val(), 'x-gm-character-no':$("#character_no").val()},
-                    "GET", "https://qa-api.music-flo.com/display/v2/home/layout", null, function(result){
+                    "GET", "/personal/test/private-chart/create", "type=PRIVATE&characterNo="+$("#character_no").val(), fn_success);
+            });
 
-                    }
+            $("button[name='btn_priChartCreate2']").on("click", function (e) {
+                e.preventDefault();
+                fn_ajax({'x-gm-member-no':$("#member_no").val(), 'x-gm-character-no':$("#character_no").val()},
+                    "GET", "/personal/test/private-chart/create", "type=NOT_ENOUGH_TASTE&characterNo="+$("#character_no").val(), fn_success);
+            });
 
 
-                );
+            $("button[name='btn_priChartCreate3']").on("click", function (e) {
+                e.preventDefault();
+                fn_ajax({'x-gm-member-no':$("#member_no").val(), 'x-gm-character-no':$("#character_no").val()},
+                    "GET", "/personal/test/private-chart/create", "type=CHART_TASTE&characterNo="+$("#character_no").val(), fn_success);
+            });
+
+
+            $("button[name='btn_priChartCreate4']").on("click", function (e) {
+                e.preventDefault();
+                fn_ajax({'x-gm-member-no':$("#member_no").val(), 'x-gm-character-no':$("#character_no").val()},
+                    "GET", "/personal/test/private-chart/delete", "characterNo="+$("#character_no").val(), fn_success);
             });
 
         });

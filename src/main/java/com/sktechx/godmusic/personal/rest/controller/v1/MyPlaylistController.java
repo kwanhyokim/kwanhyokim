@@ -52,6 +52,7 @@ import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * 설명 :
@@ -107,8 +108,9 @@ public class MyPlaylistController {
             memberChannel = memberChannelService.createMemberChannel(memberNo, characterNo, myPlaylistCreateRequest.getMemberChannelName());
         }
 
+        MemberChannelDto memberChannelDto = memberChannelService.getMemberChannel(memberNo, characterNo, memberChannel.getMemberChannelId());
 
-        return new CommonApiResponse<>(memberChannelService.getMemberChannel(memberNo, characterNo, memberChannel.getMemberChannelId()));
+        return new CommonApiResponse<>(memberChannelDto);
     }
 
     @GetMapping
@@ -158,7 +160,8 @@ public class MyPlaylistController {
     public CommonApiResponse deleteMyPlaylist(@Valid @RequestBody MyPlaylistDeleteRequest myPlaylistDeleteRequest) {
         Long memberNo = getMemberNo();
         Long characterNo = getCharacterNo();
-        memberChannelService.removeMemberChannel(memberNo, characterNo, myPlaylistDeleteRequest.getMemberChannelIdList());
+        List<Long> memberChannelIdList = myPlaylistDeleteRequest.getMemberChannelIdList();
+        memberChannelService.removeMemberChannel(memberNo, characterNo, memberChannelIdList);
 
         return CommonApiResponse.emptySuccess();
     }
