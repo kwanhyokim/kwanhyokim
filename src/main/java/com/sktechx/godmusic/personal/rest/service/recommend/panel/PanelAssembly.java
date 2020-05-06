@@ -301,6 +301,10 @@ public abstract class PanelAssembly {
                     .forEach(characterPreferDisp -> {
 
                         Integer appVersion = ServiceUtils.getFormattedAppVersion(getAppVersion());
+
+                        log.info("trace-appendPreferenceChartPanel {} {} {}",
+                                personalPhaseMeta.getCharacterNo(), appVersion, appVersion.compareTo(41500) );
+
                         Panel panel =
 
                             appVersion.compareTo(41500) < 0 ?
