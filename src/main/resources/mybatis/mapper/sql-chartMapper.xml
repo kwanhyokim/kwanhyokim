@@ -33,11 +33,10 @@
 
     <resultMap id="chartDispPropsResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsDto" autoMapping="true">
         <id property="chartId" column="chart_id" />
-        <collection property="imgList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.dto.chart.ChartImageInfo" autoMapping="true">
+        <collection property="imgList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" autoMapping="true">
             <result property="size" column="img_size" />
             <result property="url" column="img_url" />
             <result property="osType" column="os_type" />
-            <result property="newUrl" column="new_img_url" />
         </collection>
     </resultMap>
 
@@ -204,7 +203,7 @@
         ]]>
     </select>
 
-    <select id="selectPreferDisp" resultMap="chartDispPropsResultMap" >
+    <select id="selectPreferDispNameAndChartBgImage" resultMap="chartDispPropsResultMap" >
         SELECT
             b.disp_id AS chart_id,
             b.prefer_disp_nm AS chart_nm,
@@ -212,14 +211,32 @@
             b.disp_props_type,
             c.os_type,
             c.img_size,
-            c.img_url,
-            c.new_img_url
+            c.img_url
         FROM
             tb_prefer_disp b
-                INNER JOIN
+                LEFT OUTER JOIN
             tb_img_mang c ON b.disp_id = c.img_content_id
                 AND b.disp_type = 'CHART'
                 AND c.img_content_type = 'DISP'
+                AND c.dfk_type = 'EVERY'
+                AND c.img_disp_type = 'MAIN_TOP'
+    </select>
+
+    <select id="selectPreferDispNameAndMixChartBgImage" resultMap="chartDispPropsResultMap" >
+        SELECT
+            b.disp_id AS chart_id,
+            b.prefer_disp_nm AS chart_nm,
+            b.prefer_disp_nm AS chart_disp_nm,
+            b.disp_props_type,
+            c.os_type,
+            c.img_size,
+            c.img_url
+        FROM
+            tb_prefer_disp b
+                LEFT OUTER JOIN
+            tb_img_mang c ON b.disp_id = c.img_content_id
+                AND b.disp_type = 'CHART'
+                AND c.img_content_type = 'MIX_CHART'
                 AND c.dfk_type = 'EVERY'
                 AND c.img_disp_type = 'MAIN_TOP'
     </select>

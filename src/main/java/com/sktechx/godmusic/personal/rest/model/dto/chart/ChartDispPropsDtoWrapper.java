@@ -26,4 +26,5 @@ import lombok.Data;
 @Data
 public class ChartDispPropsDtoWrapper {
     List<ChartDispPropsDto> chartDispPropsDtoList;
+    List<ChartDispPropsDto> mixChartDispPropsDtoList;
 }

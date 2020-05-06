@@ -10,8 +10,12 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto.chart;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -21,11 +25,26 @@ import lombok.Data;
  * @date 2020-04-17
  */
 
+@Builder
 @Data
 public class ChartDispPropsDto {
     private Long chartId;
     private String chartNm;
     private String chartdispNm;
     private String dispPropsType;
-    private List<ChartImageInfo> imgList;
+    private List<ImageInfo> imgList;
+
+    public static List<ImageInfo> DEFAULT_TOP100_IMGLIST;
+
+    static {
+
+        List<ImageInfo> defaultTop100DispList = new ArrayList<>();
+        defaultTop100DispList.add(
+                new ImageInfo(750L, "https://www3.music-flo.com/mmate/feapi/img/display/genre_rc/temp/main_panel.jpg")
+        );
+
+        DEFAULT_TOP100_IMGLIST = Collections.unmodifiableList(defaultTop100DispList);
+
+    }
+
 }
