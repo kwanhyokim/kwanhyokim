@@ -23,8 +23,8 @@ import com.sktechx.godmusic.lib.utils.ServiceUtils;
 import com.sktechx.godmusic.personal.common.domain.PreferPropsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferDispDto;
-import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.channel.PopularChannelPanel;
@@ -36,8 +36,6 @@ import com.sktechx.godmusic.personal.rest.repository.*;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import com.sktechx.godmusic.personal.rest.service.chart.ChartService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendReadService;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.POPULAR_CHNL_TRACK_LIMIT_SIZE;
@@ -79,10 +77,6 @@ public abstract class PanelAssembly {
     protected ChartMapper chartMapper;
     @Autowired
     protected CharacterPreferGenreMapper characterPreferGenreMapper;
-
-    @Getter
-    @Setter
-    public String appVersion;
 
     public abstract List<Panel> assembleRecommendPanel(PersonalPhaseMeta personalPhaseMeta) throws Exception;
     protected abstract List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta);
@@ -300,7 +294,8 @@ public abstract class PanelAssembly {
                     .filter(Objects::nonNull)
                     .forEach(characterPreferDisp -> {
 
-                        Integer appVersion = ServiceUtils.getFormattedAppVersion(getAppVersion());
+                        Integer appVersion =
+                                ServiceUtils.getFormattedAppVersion(personalPhaseMeta.getAppVer());
 
                         log.info("trace-appendPreferenceChartPanel {} {} {}",
                                 personalPhaseMeta.getCharacterNo(), appVersion, appVersion.compareTo(41500) );
