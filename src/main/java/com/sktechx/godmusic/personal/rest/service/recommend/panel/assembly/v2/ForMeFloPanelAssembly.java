@@ -92,7 +92,6 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
                         personalPhaseMeta.getOsType()
                 )
                 ;
-        log.info("XXXXXXXXXX appendRecommendCfTrackPanelList {}", recommendCfTrackList);
 
         for(RecommendTrackDto recommendTrackDto :
                 recommendCfTrackList

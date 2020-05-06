@@ -127,6 +127,7 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
             if (!ObjectUtils.isEmpty(personalPhaseMeta)) {
 
                 personalPhaseMeta.setOsType(osType);
+                personalPhaseMeta.setAppVer(appVer);
                 return personalPhaseMeta;
             }
 
@@ -134,6 +135,7 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
 
             personalPhaseMeta.setCharacterNo(characterNo);
             personalPhaseMeta.setOsType(osType);
+            personalPhaseMeta.setAppVer(appVer);
             personalPhaseMeta.setAfloCharacterExpireDtime(afloExpireDate);
             personalPhaseMeta.setAfloChnlRecentCreateDtime(afloChnlRecentCreateDtime);
 
