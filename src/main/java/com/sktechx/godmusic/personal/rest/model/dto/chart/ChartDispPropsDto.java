@@ -11,12 +11,8 @@
 package com.sktechx.godmusic.personal.rest.model.dto.chart;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import org.springframework.util.CollectionUtils;
-
-import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import lombok.Builder;
 import lombok.Data;
 
@@ -34,40 +30,27 @@ public class ChartDispPropsDto {
     private String chartNm;
     private String chartdispNm;
     private String dispPropsType;
-    private List<ImageInfo> imgList;
 
-    public List<ImageInfo> getImgList(){
-        if(CollectionUtils.isEmpty(imgList)){
-            return (chartId == 1L ? DEFAULT_TOP100_IMGLIST : DEFAULT_KIDS100_IMGLIST);
-        }else{
-            return this.imgList;
-        }
+    public static List<ChartDispPropsDto> defaultChartDispPropsList(){
+
+        List<ChartDispPropsDto> list = new ArrayList<>();
+
+        list.add(ChartDispPropsDto.builder()
+                .chartId(1L)
+                .chartNm("FLO 차트")
+                .chartdispNm("FLO 차트")
+                .dispPropsType("TOP100")
+                .build());
+
+        list.add(ChartDispPropsDto.builder()
+                .chartId(3569L)
+                .chartNm("키즈 차트")
+                .chartdispNm("키즈 차트")
+                .dispPropsType("KIDS100")
+                .build());
+
+        return list;
     }
 
-    public static List<ImageInfo> DEFAULT_TOP100_IMGLIST;
-
-    public static List<ImageInfo> DEFAULT_KIDS100_IMGLIST;
-
-    static {
-
-        List<ImageInfo> defaultTop100ImageInfoList = new ArrayList<>();
-        defaultTop100ImageInfoList.add(
-                new ImageInfo(
-                        750L,
-                        "https://www3.music-flo.com/mmate/feapi/img/display/genre_rc/temp/main_panel.jpg")
-        );
-
-        DEFAULT_TOP100_IMGLIST = Collections.unmodifiableList(defaultTop100ImageInfoList);
-
-        List<ImageInfo> defaultKids100ImageInfoList = new ArrayList<>();
-        defaultKids100ImageInfoList.add(
-                new ImageInfo(
-                        750L,
-                        "https://www3.music-flo.com/mmate/feapi/img/display/genre_rc/temp/kids_panel.jpg")
-        );
-
-        DEFAULT_KIDS100_IMGLIST = Collections.unmodifiableList(defaultKids100ImageInfoList);
-
-    }
 
 }

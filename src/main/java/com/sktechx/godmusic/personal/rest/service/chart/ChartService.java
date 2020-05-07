@@ -10,24 +10,19 @@
 
 package com.sktechx.godmusic.personal.rest.service.chart;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsDto;
-import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsDtoWrapper;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsImageDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
+import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartDispPropsVo;
 import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartVo;
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
-import lombok.extern.slf4j.Slf4j;
-
-import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.CHART_DISPLAY_PROPERTIES_KEY;
 
 /**
  * 설명 : 차트 서비스
@@ -37,9 +32,6 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConst
  */
 
 public interface ChartService {
-
-    @Slf4j
-    final class LogHolder {}
 
     ChartMapper getChartMapper();
 
@@ -52,67 +44,39 @@ public interface ChartService {
             OsType osType,
             int trackLimitSize);
 
-    default ChartDispPropsDto getPreferDisp(Predicate<ChartDispPropsDto> predicate, OsType osType
+    default ChartDispPropsVo getPreferDisp(Predicate<ChartDispPropsDto> predicate, OsType osType
             , Boolean useNewImgUrl){
 
-        ChartDispPropsDtoWrapper chartDispPropsDtoWrapper =
-                getRedisService().getWithPrefix(
-                        CHART_DISPLAY_PROPERTIES_KEY,
-                        ChartDispPropsDtoWrapper.class
-                );
+        ChartDispPropsDto chartDispPropsDto =
+                Optional.ofNullable(
+                        getChartMapper().selectPreferDisp()
+                ).orElseGet( ChartDispPropsDto::defaultChartDispPropsList )
+                        .stream()
+                        .filter( predicate )
+                        .findFirst()
+                        .orElseThrow( () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA))
 
-        List<ChartDispPropsDto> chartDispPropsDtoList = new ArrayList<>();
+                ;
 
-        if(chartDispPropsDtoWrapper == null){
+        return ChartDispPropsVo.from(
 
-            chartDispPropsDtoWrapper = ChartDispPropsDtoWrapper.builder()
-                    .chartDispPropsDtoList(
-                            getChartMapper().selectPreferDispNameAndChartBgImage()
-                    )
-                    .mixChartDispPropsDtoList(
-                            getChartMapper().selectPreferDispNameAndMixChartBgImage()
-                    )
-                    .build();
+                chartDispPropsDto
+                ,
 
-            getRedisService().setWithPrefix(CHART_DISPLAY_PROPERTIES_KEY,
-                    chartDispPropsDtoWrapper, 86400);
-
-        }
-
-
-        Optional.ofNullable(
-                useNewImgUrl ?
-                        chartDispPropsDtoWrapper.getMixChartDispPropsDtoList()
+                (useNewImgUrl ?
+                        getChartMapper().selectPreferDispNameAndMixChartBgImage()
                         :
-                        chartDispPropsDtoWrapper.getChartDispPropsDtoList()
-        )
-                .ifPresent(
-                    chartDispPropsDtos ->
-                        chartDispPropsDtos.forEach(
-                                chartDispPropsDto -> {
-                            if(!useNewImgUrl) {
-                                chartDispPropsDto.setImgList(
-                                        chartDispPropsDto.getImgList().stream()
-                                                .filter(
-                                                        imageInfo -> osType.equals(imageInfo.getOsType())
-                                                )
-                                                .collect(Collectors.toList())
-                                );
-                            }
+                        getChartMapper().selectPreferDispNameAndChartBgImage(osType)
+                )
 
-                            LogHolder.log.info("trace-chartdispprops {} {}", predicate,
-                                    chartDispPropsDto);
-
-                            if(predicate.test(chartDispPropsDto)) {
-                                chartDispPropsDtoList.add(chartDispPropsDto);
-                            }
-                        })
-                );
-
-
-        return chartDispPropsDtoList.stream()
+                .stream()
+                .filter( chartDispPropsImageDto -> chartDispPropsImageDto.getChartId().equals(chartDispPropsDto.getChartId()))
                 .findFirst()
-                .orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
+                .orElseGet( () -> ChartDispPropsImageDto.builder().chartId(1L).build())
+
+
+        );
+
     }
 
 }
