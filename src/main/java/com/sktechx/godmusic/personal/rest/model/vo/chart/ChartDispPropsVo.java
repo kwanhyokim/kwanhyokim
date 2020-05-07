@@ -11,9 +11,9 @@
 package com.sktechx.godmusic.personal.rest.model.vo.chart;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+
+import org.springframework.util.CollectionUtils;
 
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsImageDto;
@@ -47,52 +47,25 @@ public class ChartDispPropsVo {
             return ChartDispPropsVo.builder().build();
         }
 
+        List<ImageInfo> imageInfoList = chartDispPropsImageDto.getImgList();
+
+        if(CollectionUtils.isEmpty(imageInfoList)) {
+            imageInfoList = new ArrayList<>(1);
+
+            if (chartDispPropsDto.getChartId() == 1L) {
+                imageInfoList.add(new ImageInfo(750L, "https://www3.music-flo.com/mmate/feapi/img/display/genre_rc/temp/main_panel.jpg"));
+            } else {
+                imageInfoList.add(new ImageInfo(750L, "https://www3.music-flo.com/mmate/feapi/img/display/genre_rc/temp/kids_panel.jpg"));
+            }
+        }
 
         return ChartDispPropsVo.builder()
                 .chartId(chartDispPropsDto.getChartId())
                 .chartNm(chartDispPropsDto.getChartNm())
                 .chartdispNm(chartDispPropsDto.getChartdispNm())
                 .dispPropsType(chartDispPropsDto.getDispPropsType())
-                .imgList(
-                        Optional.ofNullable(
-                                chartDispPropsImageDto.getImgList()
-                        ).orElseGet( () ->
-                                {
-                                    if(chartDispPropsDto.getChartId() == 1L){
-                                        return DEFAULT_TOP100_IMGLIST;
-                                    }else{
-                                        return DEFAULT_KIDS100_IMGLIST;
-                                    }
-                                }
-                        )
-                )
+                .imgList(imageInfoList)
                 .build();
-    }
-
-    public static List<ImageInfo> DEFAULT_TOP100_IMGLIST;
-
-    public static List<ImageInfo> DEFAULT_KIDS100_IMGLIST;
-
-    static {
-
-        List<ImageInfo> defaultTop100ImageInfoList = new ArrayList<>();
-        defaultTop100ImageInfoList.add(
-                new ImageInfo(
-                        750L,
-                        "https://www3.music-flo.com/mmate/feapi/img/display/genre_rc/temp/main_panel.jpg")
-        );
-
-        DEFAULT_TOP100_IMGLIST = Collections.unmodifiableList(defaultTop100ImageInfoList);
-
-        List<ImageInfo> defaultKids100ImageInfoList = new ArrayList<>();
-        defaultKids100ImageInfoList.add(
-                new ImageInfo(
-                        750L,
-                        "https://www3.music-flo.com/mmate/feapi/img/display/genre_rc/temp/kids_panel.jpg")
-        );
-
-        DEFAULT_KIDS100_IMGLIST = Collections.unmodifiableList(defaultKids100ImageInfoList);
-
     }
 
 }
