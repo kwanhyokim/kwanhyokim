@@ -215,7 +215,8 @@
         FROM
             tb_prefer_disp b
                 LEFT OUTER JOIN
-            tb_img_mang c ON b.disp_id = c.img_content_id
+            tb_img_mang c
+                ON b.disp_id = c.img_content_id
                 AND b.disp_type = 'CHART'
                 AND c.img_content_type = 'DISP'
                 AND c.dfk_type = 'EVERY'
@@ -234,7 +235,8 @@
         FROM
             tb_prefer_disp b
                 LEFT OUTER JOIN
-            tb_img_mang c ON b.disp_id = c.img_content_id
+            tb_img_mang c
+                ON b.disp_id = c.img_content_id
                 AND b.disp_type = 'CHART'
                 AND c.img_content_type = 'MIX_CHART'
                 AND c.dfk_type = 'EVERY'
