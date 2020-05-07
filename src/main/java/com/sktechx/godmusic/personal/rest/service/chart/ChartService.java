@@ -16,8 +16,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.springframework.util.CollectionUtils;
-
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
@@ -27,6 +25,7 @@ import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsDtoWrapp
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartVo;
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
+import lombok.extern.slf4j.Slf4j;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.CHART_DISPLAY_PROPERTIES_KEY;
 
@@ -36,7 +35,11 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConst
  * @author 오경무/SKTECHX (km.oh@sk.com)
  * @date 2018. 07. 23.
  */
+
 public interface ChartService {
+
+    @Slf4j
+    final class LogHolder {}
 
     ChartMapper getChartMapper();
 
@@ -87,20 +90,18 @@ public interface ChartService {
                     chartDispPropsDtos ->
                         chartDispPropsDtos.forEach(
                                 chartDispPropsDto -> {
-                            if (CollectionUtils.isEmpty(chartDispPropsDto.getImgList())) {
-                                chartDispPropsDto.setImgList(ChartDispPropsDto.DEFAULT_TOP100_IMGLIST);
-                            }else{
-                                if(!useNewImgUrl) {
-                                    chartDispPropsDto.setImgList(
-                                            chartDispPropsDto.getImgList().stream()
-                                                    .filter(
-                                                            imageInfo -> osType.equals(imageInfo.getOsType())
-                                                    )
-                                                    .collect(Collectors.toList())
-                                    );
-                                }
-
+                            if(!useNewImgUrl) {
+                                chartDispPropsDto.setImgList(
+                                        chartDispPropsDto.getImgList().stream()
+                                                .filter(
+                                                        imageInfo -> osType.equals(imageInfo.getOsType())
+                                                )
+                                                .collect(Collectors.toList())
+                                );
                             }
+
+                            LogHolder.log.info("trace-chartdispprops {} {}", predicate,
+                                    chartDispPropsDto);
 
                             if(predicate.test(chartDispPropsDto)) {
                                 chartDispPropsDtoList.add(chartDispPropsDto);
