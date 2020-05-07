@@ -20,10 +20,10 @@ import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
-import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackTasteMixTrackDto;
+import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartDispPropsVo;
 import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartVo;
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
 import com.sktechx.godmusic.personal.rest.service.mongo.PersonalMongoClient;
@@ -73,7 +73,7 @@ public class MongoChartServiceImpl implements ChartService {
     public ChartVo getChartWithTrackList(Long characterNo, Long chartId, OsType osType,
             int trackLimitSize) {
 
-        ChartDispPropsDto chartDispPropsDto = Optional.ofNullable(
+        ChartDispPropsVo chartDispPropsVo = Optional.ofNullable(
                 getPreferDisp(
                         currentChartDispPropsDto ->
                                 currentChartDispPropsDto.getChartId().equals(chartId)
@@ -82,12 +82,12 @@ public class MongoChartServiceImpl implements ChartService {
         ).orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
 
         ChartTrackDto chartTrackDto = getChartTrackDto(characterNo, trackLimitSize,
-                chartDispPropsDto);
+                chartDispPropsVo);
 
         chartTrackDto.disableRank();
         chartTrackDto.makeTrackDispSn();
 
-        return ChartVo.from( chartDispPropsDto, chartTrackDto );
+        return ChartVo.from( chartDispPropsVo, chartTrackDto );
     }
 
     // 개인화 차트 홈
@@ -96,7 +96,7 @@ public class MongoChartServiceImpl implements ChartService {
             OsType osType,
             int trackLimitSize) {
 
-        ChartDispPropsDto chartDispPropsDto = Optional.ofNullable(
+        ChartDispPropsVo chartDispPropsVo = Optional.ofNullable(
                 getPreferDisp(
                     currentChartDispPropsDto -> dispPropsType.equals(
                             (currentChartDispPropsDto).getDispPropsType()
@@ -106,20 +106,20 @@ public class MongoChartServiceImpl implements ChartService {
         ).orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
 
         ChartTrackDto chartTrackDto = getChartTrackDto(characterNo, trackLimitSize,
-                chartDispPropsDto);
+                chartDispPropsVo);
 
         chartTrackDto.disableRank();
         chartTrackDto.makeTrackDispSn();
 
-        return ChartDto.from( chartDispPropsDto, chartTrackDto );
+        return ChartDto.from( chartDispPropsVo, chartTrackDto );
     }
 
     private ChartTrackDto getChartTrackDto(Long characterNo, int trackLimitSize,
-            ChartDispPropsDto chartDispPropsDto) {
+            ChartDispPropsVo chartDispPropsVo) {
 
         ChartTrackDto chartTrackDto = Optional.ofNullable(
                 metaClient
-                        .getChartWithTrackList(chartDispPropsDto.getChartId(), 100)
+                        .getChartWithTrackList(chartDispPropsVo.getChartId(), 100)
                         .getData()
         ).orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
 
@@ -134,7 +134,7 @@ public class MongoChartServiceImpl implements ChartService {
         Optional.ofNullable(
                 personalMongoClient.getRecommendChartTrackTasteMixDto(
                         characterNo,
-                        chartDispPropsDto.getChartId()
+                        chartDispPropsVo.getChartId()
                 ).getData())
         .ifPresent(
                 trackTasteMixDto -> {

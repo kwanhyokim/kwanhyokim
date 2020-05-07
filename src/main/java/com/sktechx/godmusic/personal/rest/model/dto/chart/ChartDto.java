@@ -13,7 +13,6 @@ package com.sktechx.godmusic.personal.rest.model.dto.chart;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -21,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
+import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartDispPropsVo;
 import lombok.Builder;
 import lombok.Data;
 
@@ -78,9 +78,9 @@ public class ChartDto {
                 .build();
     }
 
-    public static ChartDto from (ChartDispPropsDto chartDispPropsDto, ChartTrackDto chartTrackDto){
+    public static ChartDto from (ChartDispPropsVo chartDispPropsVo, ChartTrackDto chartTrackDto){
 
-        if(chartDispPropsDto == null || chartTrackDto == null){
+        if(chartDispPropsVo == null || chartTrackDto == null){
             return null;
         }
 
@@ -90,11 +90,8 @@ public class ChartDto {
         Optional.ofNullable(chartDto)
                 .ifPresent(
                         currentChartDto -> {
-                            currentChartDto.setImgList(
-                                    chartDispPropsDto.getImgList().stream()
-                                    .map(chartImageInfo -> chartImageInfo)
-                                            .collect(Collectors.toList()));
-                            currentChartDto.setChartNm(chartDispPropsDto.getChartNm());
+                            currentChartDto.setImgList(chartDispPropsVo.getImgList());
+                            currentChartDto.setChartNm(chartDispPropsVo.getChartNm());
                         }
                 );
 
