@@ -40,7 +40,4 @@ public interface ChartMapper {
 
     List<ChartDispPropsDto> selectPreferDispNameAndMixChartBgImage();
 
-
-
-
 }

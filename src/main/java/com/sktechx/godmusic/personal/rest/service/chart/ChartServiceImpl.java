@@ -63,7 +63,6 @@ public class ChartServiceImpl implements ChartService {
     public ChartVo getChartWithTrackList(Long characterNo, Long chartId, OsType osType,
             int trackLimitSize) {
 
-
         ChartTrackDto chartTrackDto =
                 Optional.ofNullable(
                         metaClient.getChartWithTrackList(chartId, trackLimitSize)
@@ -94,7 +93,6 @@ public class ChartServiceImpl implements ChartService {
                 , osType
                 , false
         );
-
 
         ChartDto chartDto =
                 redisService.getWithPrefix(
