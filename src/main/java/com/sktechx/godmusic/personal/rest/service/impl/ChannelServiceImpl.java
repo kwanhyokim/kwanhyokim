@@ -279,7 +279,17 @@ public class ChannelServiceImpl implements ChannelService {
         List<LastListenHistoryDto> lastListenHistoryByChannel = channelMapper.selectLastListenHistoryByChannel(memberNo, characterNo, osType, exceptFlacChnl, exceptAfloChnl);
         List<LastListenHistoryDto> lastListenHistoryByAlbum = albumMapper.selectLastListenHistory(memberNo, characterNo);
 
-        lastListenHistory.addAll(lastListenHistoryByChannel);
+        /*
+         * 채널 대표 이미지가 존재하는 경우 채널 대표이미지로 교체
+         */
+        if (!CollectionUtils.isEmpty(lastListenHistoryByChannel)) {
+
+            lastListenHistoryByChannel.stream()
+                    .forEach(LastListenHistoryDto::replacePlayListImageIfRepImageExists);
+
+            lastListenHistory.addAll(lastListenHistoryByChannel);
+        }
+
         lastListenHistory.addAll(lastListenHistoryByAlbum);
 
         /*

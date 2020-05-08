@@ -54,6 +54,9 @@
 
     <resultMap id="lastListenHistoryResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto" autoMapping="true">
         <id property="listenId" column="listen_id"/>
+        <association property="channelImage"
+                     javaType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo"
+                     columnPrefix="channel_image_" autoMapping="true"/>
         <collection property="imgList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" column="listen_id" autoMapping="true">
             <result property="size" column="size" />
             <result property="url" column="url" />
@@ -845,7 +848,8 @@
                d.album_img_size as size,
                d.album_img_url AS url,
                b.renew_track_cnt,
-               b.renew_dtime
+               b.renew_dtime,
+               chnl_img.img_url AS channel_image_url
           FROM ( SELECT listen_type, listen_type_id, last_listen_dtime
                    FROM tb_member_last_listen_hist
                   WHERE member_no = #{memberNo}
@@ -859,8 +863,10 @@
           </if>
           JOIN ted_album c ON b.album_id = c.album_id AND c.disp_status_yn= 'Y' AND now() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
           LEFT JOIN tb_album_img d
-            ON c.album_id = d.album_id)
-
+            ON c.album_id = d.album_id
+          LEFT JOIN tb_chnl_img chnl_img
+            ON b.chnl_id = chnl_img.chnl_id
+        )
         <if test="!exceptAfloChnl">
             UNION ALL
 
@@ -873,7 +879,8 @@
                 600 as size,
                 h.img_url AS url,
                 g.renew_track_cnt,
-                g.renew_dtime
+                g.renew_dtime,
+                null as channel_image_url
             FROM
                 tb_character a
                 INNER JOIN
