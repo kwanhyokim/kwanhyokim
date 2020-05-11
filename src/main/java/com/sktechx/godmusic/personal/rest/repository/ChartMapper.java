@@ -16,12 +16,10 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
 import com.sktechx.godmusic.lib.redis.annotation.RedisCacheable;
 import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsDto;
-import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsImageDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
 
 /**
@@ -38,10 +36,9 @@ public interface ChartMapper {
 
     List<ChartDto> selectChartListByPreferGenre(@Param("characterNo") Long characterNo);
 
-    List<ChartDispPropsImageDto> selectPreferDispNameAndChartBgImage(@Param("osType")OsType osType);
-
-    List<ChartDispPropsImageDto> selectPreferDispNameAndMixChartBgImage();
-
+    @RedisCacheable(key = RedisKeyConstant.CHART_DISPLAY_PROPERTIES_KEY)
     List<ChartDispPropsDto> selectPreferDisp();
+
+    Long selectSvcGenreIdFromTrack(@Param("trackId") Long trackId);
 
 }

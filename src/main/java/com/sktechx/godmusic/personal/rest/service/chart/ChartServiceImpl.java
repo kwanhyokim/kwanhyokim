@@ -24,9 +24,12 @@ import com.sktechx.godmusic.personal.common.domain.PreferPropsType;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.DispPropsImageDto;
 import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartDispPropsVo;
 import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartVo;
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
+import com.sktechx.godmusic.personal.rest.repository.ImageManagementMapper;
+import com.sktechx.godmusic.personal.rest.service.image.ImageReadService;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.KIDS_CHART_KEY;
@@ -47,7 +50,13 @@ public class ChartServiceImpl implements ChartService {
     private ChartMapper chartMapper;
 
     @Autowired
+    private ImageManagementMapper imageManagementMapper;
+
+    @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private ImageReadService imageReadService;
 
     @Autowired
     private MetaClient metaClient;
@@ -61,7 +70,8 @@ public class ChartServiceImpl implements ChartService {
         return redisService;
     }
     @Override
-    public ChartVo getChartWithTrackList(Long characterNo, Long chartId, OsType osType,
+
+    public ChartVo getChartVoForDetailWithTrackList(Long characterNo, Long chartId, OsType osType,
             int trackLimitSize) {
 
         ChartTrackDto chartTrackDto =
@@ -77,22 +87,23 @@ public class ChartServiceImpl implements ChartService {
                 getPreferDisp(
                         chartDispPropsDto ->
                                 chartDispPropsDto.getChartId().equals(chartId)
-                        , osType
-                        , false
                 ),
                 chartTrackDto
         );
     }
     @Override
-    public ChartDto getChartByDispPropsTypeWithTrackList(Long characterNo, String dispPropsType,
+    public ChartDto getChartDtoForHomeByDispPropsTypeWithTrackList(Long characterNo, String dispPropsType,
             OsType osType, int trackLimitSize) {
 
         ChartDispPropsVo chartDispPropsVo = getPreferDisp(
                 currentChartDispPropsDto -> dispPropsType.equals(
                         (currentChartDispPropsDto).getDispPropsType()
                 )
-                , osType
-                , false
+        );
+
+        getChartBackgroundImage(chartDispPropsVo.getChartId(), osType)
+            .ifPresent(
+                dispPropsImageDto -> chartDispPropsVo.setImgList(dispPropsImageDto.getImgList())
         );
 
         final ChartDto[] chartDtoArray = new ChartDto[1];
@@ -128,5 +139,9 @@ public class ChartServiceImpl implements ChartService {
         );
 
         return chartDtoArray[0];
+    }
+
+    private Optional<DispPropsImageDto> getChartBackgroundImage(Long chartId, OsType osType){
+        return Optional.ofNullable(imageReadService.getChartBackgroundImage(chartId, osType));
     }
 }

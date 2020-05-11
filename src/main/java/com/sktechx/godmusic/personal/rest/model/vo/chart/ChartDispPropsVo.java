@@ -10,13 +10,9 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.chart;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.util.CollectionUtils;
-
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsDto;
-import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsImageDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import lombok.Builder;
 import lombok.Data;
@@ -38,25 +34,10 @@ public class ChartDispPropsVo {
 
     private List<ImageInfo> imgList;
 
+    public static ChartDispPropsVo from (ChartDispPropsDto chartDispPropsDto){
 
-    public static ChartDispPropsVo from (ChartDispPropsDto chartDispPropsDto,
-            ChartDispPropsImageDto chartDispPropsImageDto){
-
-
-        if(chartDispPropsDto == null || chartDispPropsImageDto == null){
+        if(chartDispPropsDto == null){
             return ChartDispPropsVo.builder().build();
-        }
-
-        List<ImageInfo> imageInfoList = chartDispPropsImageDto.getImgList();
-
-        if(CollectionUtils.isEmpty(imageInfoList)) {
-            imageInfoList = new ArrayList<>(1);
-
-            if (chartDispPropsDto.getChartId() == 1L) {
-                imageInfoList.add(new ImageInfo(750L, "https://www3.music-flo.com/mmate/feapi/img/display/genre_rc/temp/main_panel.jpg"));
-            } else {
-                imageInfoList.add(new ImageInfo(750L, "https://www3.music-flo.com/mmate/feapi/img/display/genre_rc/temp/kids_panel.jpg"));
-            }
         }
 
         return ChartDispPropsVo.builder()
@@ -64,8 +45,6 @@ public class ChartDispPropsVo {
                 .chartNm(chartDispPropsDto.getChartNm())
                 .chartdispNm(chartDispPropsDto.getChartdispNm())
                 .dispPropsType(chartDispPropsDto.getDispPropsType())
-                .imgList(imageInfoList)
                 .build();
     }
-
 }

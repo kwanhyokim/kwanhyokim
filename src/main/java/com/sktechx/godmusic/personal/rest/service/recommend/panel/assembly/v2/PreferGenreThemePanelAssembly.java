@@ -45,11 +45,9 @@ public class PreferGenreThemePanelAssembly extends PanelSignAssembly {
     protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){
 
         List<Panel> myPanelList = new ArrayList<>();
-        List<Panel> chartPanelList = new ArrayList<>();
+        List<Panel> chartPanelList = appendPreferenceChartPanel(personalPhaseMeta);
 
         this.appendPreferGenreChannelPanelList(personalPhaseMeta, myPanelList, 5 );
-
-        appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
 
         mergePanelList(panelList, myPanelList, chartPanelList, 7);
     }

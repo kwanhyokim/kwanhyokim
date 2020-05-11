@@ -64,9 +64,6 @@ public interface RecommendReadMapper {
     RecommendArtistDto selectRecommendArtistById(@Param("recommendArtistId") Long recommendArtistId);
 
 
-    // 추천 패널 기본 이미지
-    List<ImageInfo> selectRecommendPanelDefaultImageList();
-
 	List<CharacterPreferArtistDto> selectCharacterPreferArtist(@Param("characterNo") Long characterNo, @Param("genreId") Long genreId);
 
 	List<CharacterPreferArtistGenreDto> selectCharacterPreferArtistGenre(@Param("characterNo") Long characterNo);
@@ -78,12 +75,6 @@ public interface RecommendReadMapper {
 	List<PreferGenreTrackDto> selectPreferGenreTrack(@Param("characterNo") Long characterNo);
 
     List<SimilarTrackDto> selectSimilarTrackListByIdList(@Param("trackIds") List<Long> trackIds);
-
-
-    String selectRecommendPanelInfoBgImageUrl(@Param("recommendPanelContentType") String recommendPanelContentType
-            , @Param("rcmmdId") Long rcmmdId
-            , @Param("osType") OsType osType
-            , @Param("dispSn") int dispSn);
 
     RecommendForMeDto selectRecommendGenreByRcmmdId(@Param("rcmmdId") Long rcmmdId);
 

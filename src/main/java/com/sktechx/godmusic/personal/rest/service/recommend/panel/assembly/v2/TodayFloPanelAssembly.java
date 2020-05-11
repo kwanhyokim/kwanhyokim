@@ -49,10 +49,9 @@ public class TodayFloPanelAssembly extends PanelSignAssembly {
     protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){
 
         List<Panel> myPanelList = new ArrayList<>();
-        List<Panel> chartPanelList = new ArrayList<>();
+        List<Panel> chartPanelList = appendPreferenceChartPanel(personalPhaseMeta);
 
         appendSimilarTrackPanelList(personalPhaseMeta, myPanelList, 7);
-        appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
 
         mergePanelList(panelList, myPanelList, chartPanelList, 7);
     }

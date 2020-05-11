@@ -54,10 +54,9 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
         final List<Panel> panelList = new ArrayList<>();
 
         List<Panel> myPanelList = new ArrayList<>();
-        List<Panel> chartPanelList = new ArrayList<>();
+        List<Panel> chartPanelList = appendPreferenceChartPanel(personalPhaseMeta);
 
         appendTPOPanel(personalPhaseMeta, myPanelList);
-        appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
 
         mergePanelList(panelList, myPanelList, chartPanelList, 7);
 

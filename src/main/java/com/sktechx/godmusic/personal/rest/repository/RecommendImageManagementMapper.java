@@ -12,16 +12,16 @@
 
 package com.sktechx.godmusic.personal.rest.repository;
 
-import com.sktechx.godmusic.lib.mybatis.annotation.ReadOnlyMapper;
-import com.sktechx.godmusic.lib.redis.annotation.RedisCacheable;
-import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
-import com.sktechx.godmusic.personal.common.domain.type.ImageDisplayType;
-import com.sktechx.godmusic.personal.common.domain.type.OsType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
-import com.sktechx.godmusic.personal.rest.model.dto.ImageManagementDto;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
+import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.lib.mybatis.annotation.ReadOnlyMapper;
+import com.sktechx.godmusic.personal.common.domain.type.ImageDisplayType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
+import com.sktechx.godmusic.personal.rest.model.dto.ImageManagementDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 
 /**
  * 설명 :
@@ -48,4 +48,15 @@ public interface RecommendImageManagementMapper {
                                                                   @Param("recommendId") Long recommendId,
                                                                   @Param("imageType") ImageDisplayType imageType,
                                                                   @Param("osType") OsType osType);
+
+    // 추천 패널 기본 이미지
+    List<ImageInfo> selectRecommendPanelDefaultImageList();
+
+
+    // 추천 패널 상세 헤더 배경 이미지
+
+    String selectRecommendPanelInfoBgImageUrl(@Param("recommendPanelContentType") String recommendPanelContentType
+            , @Param("rcmmdId") Long rcmmdId
+            , @Param("osType") OsType osType
+            , @Param("dispSn") int dispSn);
 }

@@ -17,9 +17,19 @@
 
     <resultMap id="imageManagementResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.ImageManagementDto" autoMapping="true" />
 
+	<resultMap id="dispPropsResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.chart.DispPropsImageDto" autoMapping="true">
+		<id property="id" column="id" />
+		<collection property="imgList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" autoMapping="true">
+			<result property="size" column="img_size" />
+			<result property="url" column="img_url" />
+			<result property="osType" column="os_type" />
+			<result property="dispSn" column="disp_sn" />
+		</collection>
+	</resultMap>
+
 	<select id="selectImageManagementList" resultMap="imageManagementResultMap">
-		SELECT
-		  img_content_type,
+	SELECT
+	img_content_type,
 		  img_content_id,
 		  img_size,
 		  os_type,
@@ -38,6 +48,65 @@
 			AND shortcut_type = #{shortcutType}
 		</if>
 		ORDER BY disp_sn
+	</select>
+
+
+	<select id="selectChartBackgroundImageList" resultMap="dispPropsResultMap" >
+		SELECT
+			b.disp_id AS id,
+			c.os_type,
+			c.img_size,
+			c.img_url
+		FROM
+			tb_prefer_disp b
+				INNER JOIN
+			tb_img_mang c
+			ON b.disp_id = c.img_content_id
+			   AND b.disp_id = #{dispId}
+				AND b.disp_type = 'CHART'
+				AND c.img_content_type = 'DISP'
+				AND c.dfk_type = 'EVERY'
+				AND c.img_disp_type = 'MAIN_TOP'
+				AND c.os_type = #{osType}
+	</select>
+
+	<select id="selectDefaultMixChartBackgroundImageList" resultMap="dispPropsResultMap" >
+		SELECT
+			b.disp_id AS id,
+			c.os_type,
+			c.img_size,
+			c.img_url
+		FROM
+			tb_prefer_disp b
+				INNER JOIN
+			tb_img_mang c
+			ON b.disp_id = c.img_content_id
+				AND b.disp_id = #{dispId}
+				AND b.disp_type = 'CHART'
+				AND c.img_content_type = 'MIX_CHART'
+				AND c.dfk_type = 'EVERY'
+				AND c.img_disp_type = 'MAIN_TOP'
+				AND c.os_type = 'ALL'
+	</select>
+
+	<select id="selectMixChartBackgroundImageList" resultMap="dispPropsResultMap" >
+		SELECT
+			b.svc_genre_id AS id,
+			c.os_type,
+			c.img_size,
+			c.img_url,
+			c.disp_sn
+		FROM
+			tb_svc_genre b
+				INNER JOIN
+			tb_img_mang c
+			ON b.svc_genre_id = c.img_content_id
+			    AND b.svc_genre_id = #{dispId}
+				AND b.level = 2
+				AND b.disp_status_type = 'Y'
+				AND c.img_content_type = 'MIX_GENRE'
+				AND c.img_disp_type = 'MAIN_TOP'
+				AND c.os_type = #{osType}
 	</select>
 
 </mapper>

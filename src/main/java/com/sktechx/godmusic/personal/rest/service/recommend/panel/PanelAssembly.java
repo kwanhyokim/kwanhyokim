@@ -35,6 +35,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase
 import com.sktechx.godmusic.personal.rest.repository.*;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import com.sktechx.godmusic.personal.rest.service.chart.ChartService;
+import com.sktechx.godmusic.personal.rest.service.recommend.RecommendImageManagementService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendReadService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -64,6 +65,9 @@ public abstract class PanelAssembly {
     @Autowired
     @Lazy
     protected RecommendReadService recommendReadService;
+
+    @Autowired
+    protected RecommendImageManagementService recommendImageManagementService;
 
     @Autowired
     protected ChannelMapper channelMapper;
@@ -118,7 +122,7 @@ public abstract class PanelAssembly {
 
     protected List<ImageInfo> getDefaultBgImageList(final List<ImageInfo> imgList , OsType osType){
         if(CollectionUtils.isEmpty(imgList)){
-            return recommendReadService.getRecommendPanelDefaultImageList(osType);
+            return recommendImageManagementService.getRecommendPanelDefaultImageList(osType);
         }else{
             return imgList;
         }
@@ -130,13 +134,13 @@ public abstract class PanelAssembly {
         ChartDto chart;
 
         if(RecommendPanelType.LIVE_CHART.equals(recommendPanelType)){
-            chart = chartService.getChartByDispPropsTypeWithTrackList(null,
+            chart = chartService.getChartDtoForHomeByDispPropsTypeWithTrackList(null,
                     PreferPropsType.TOP100.getCode(),
                     osType,
                     trackLimitSize);
 
         }else {
-            chart = chartService.getChartByDispPropsTypeWithTrackList(null,
+            chart = chartService.getChartDtoForHomeByDispPropsTypeWithTrackList(null,
                     PreferPropsType.KIDS100.getCode(),
                     osType,
                     trackLimitSize);
@@ -184,7 +188,7 @@ public abstract class PanelAssembly {
         ;
 
         if(RecommendPanelType.PRI_LIVE_CHART.equals(recommendPanelType)){
-            chart = mongoChartService.getChartByDispPropsTypeWithTrackList(characterNo,
+            chart = mongoChartService.getChartDtoForHomeByDispPropsTypeWithTrackList(characterNo,
                     PreferPropsType.TOP100.getCode(),
                     osType,
                     trackLimitSize);
@@ -194,7 +198,7 @@ public abstract class PanelAssembly {
                     getDefaultBgImageList(chart.getImgList(), osType)
             );
         }else {
-            chart = mongoChartService.getChartByDispPropsTypeWithTrackList(characterNo,
+            chart = mongoChartService.getChartDtoForHomeByDispPropsTypeWithTrackList(characterNo,
                     PreferPropsType.KIDS100.getCode(),
                     osType,
                     trackLimitSize);
@@ -286,39 +290,32 @@ public abstract class PanelAssembly {
                         ));
     }
 
-    public void appendPreferenceChartPanel(final PersonalPhaseMeta personalPhaseMeta, final List<Panel> panelList) {
-        if(!CollectionUtils.isEmpty(personalPhaseMeta.getPreferDispList())) {
+    public List<Panel> appendPreferenceChartPanel(final PersonalPhaseMeta personalPhaseMeta) {
 
+        final List<Panel> finalPanelList = new ArrayList<>();
+
+        Optional.ofNullable(
             personalPhaseMeta.getPreferDispList()
-                    .stream()
-                    .filter(Objects::nonNull)
-                    .forEach(characterPreferDisp -> {
-
-                        Integer appVersion =
-                                ServiceUtils.getFormattedAppVersion(personalPhaseMeta.getAppVer());
-
-                        log.info("trace-appendPreferenceChartPanel {} {} {}",
-                                personalPhaseMeta.getCharacterNo(), appVersion, appVersion.compareTo(41500) );
+        )
+        .ifPresent(
+                preferDispDtoList -> {
+                    for(CharacterPreferDispDto characterPreferDispDto : preferDispDtoList){
 
                         Panel panel =
+                                ServiceUtils.getFormattedAppVersion(
+                                    personalPhaseMeta.getAppVer()
+                                ).compareTo(41500) < 0 ?
+                                createChartPanel(characterPreferDispDto, personalPhaseMeta.getOsType(),
+                                        PREFER_DISP_CHART_TRACK_LIMIT_SIZE) :
+                                createPrivateChartPanel(personalPhaseMeta.getCharacterNo(),
+                                        characterPreferDispDto, personalPhaseMeta.getOsType(),
+                                        PREFER_DISP_CHART_TRACK_LIMIT_SIZE);
+                        finalPanelList.add(panel);
+                    }
+                }
+        );
 
-                            appVersion.compareTo(41500) < 0 ?
-                                createChartPanel(
-                                        characterPreferDisp,
-                                        personalPhaseMeta.getOsType(),
-                                        PREFER_DISP_CHART_TRACK_LIMIT_SIZE
-                                )
-                                :
-                                createPrivateChartPanel(
-                                        personalPhaseMeta.getCharacterNo(),
-                                        characterPreferDisp,
-                                        personalPhaseMeta.getOsType(), PREFER_DISP_CHART_TRACK_LIMIT_SIZE
-                                )
-                        ;
-                        panelList.add(panel);
-
-                    });
-        }
+        return finalPanelList;
     }
 
 }

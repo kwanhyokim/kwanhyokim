@@ -77,7 +77,7 @@ public class ListenPhasePanelAssembly extends PanelSignAssembly {
     @Override
     protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){
         appendPreferArtistPopularTrackPanel(personalPhaseMeta,panelList);
-        appendPreferenceChartPanel(personalPhaseMeta,panelList);
+        panelList.addAll(appendPreferenceChartPanel(personalPhaseMeta));
 
         sort(personalPhaseMeta , panelList);
 

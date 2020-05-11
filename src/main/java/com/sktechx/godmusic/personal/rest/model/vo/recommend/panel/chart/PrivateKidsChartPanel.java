@@ -57,7 +57,9 @@ public class PrivateKidsChartPanel extends Panel {
         this.content = PanelContentVo.builder()
                 .id(chart.getChartId())
                 .type(RecommendPanelContentType.PRI_CHART)
-                .createDtime(chart.getCreateDtime())
+                .createDtime(
+                        chart.getCreateDtime() == null ? new Date() : chart.getCreateDtime()
+                )
                 .updateDtime(chart.getUpdateDtime())
                 .trackList(chart.getTrackList())
                 .trackCount(chart.getTrackCount())

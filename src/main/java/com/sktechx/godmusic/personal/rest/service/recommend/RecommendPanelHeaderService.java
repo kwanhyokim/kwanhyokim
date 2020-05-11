@@ -24,10 +24,20 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.header.RecommendPan
  */
 
 public interface RecommendPanelHeaderService {
+
+    RecommendImageManagementService getRecommendImageManagementService();
+
     RecommendPanelHeaderVo getRecommendPanelInfo(Long characterNo,
             String recommendPanelContentType,
             Long panelContentId,
             OsType osType);
 
-    List<ImageInfo> getRecommendPanelInfoBgImage(String recommendPanelContentType,Long panelContentId, OsType osType , int dispSn);
+
+    default List<ImageInfo> getRecommendPanelInfoBgImage(String recommendPanelContentType,
+            Long panelContentId, OsType osType , int dispSn){
+
+        return getRecommendImageManagementService().selectRecommendPanelInfoBgImageUrl(
+                recommendPanelContentType, panelContentId, osType , (dispSn == 0 ? 1 : dispSn)
+        );
+    }
 }

@@ -25,8 +25,8 @@ import lombok.Data;
 
 @Builder
 @Data
-public class ChartDispPropsImageDto {
-    private Long chartId;
+public class DispPropsImageDto {
+    private Long id;
     private List<ImageInfo> imgList;
 
 }
