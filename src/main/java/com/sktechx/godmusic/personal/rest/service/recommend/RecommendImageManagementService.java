@@ -12,12 +12,13 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend;
 
+import java.util.List;
+
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.ImageDisplayType;
-import com.sktechx.godmusic.personal.common.domain.type.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageManagementDto;
-
-import java.util.List;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 
 /**
  * 설명 :
@@ -28,5 +29,7 @@ import java.util.List;
 public interface RecommendImageManagementService {
 
     List<ImageManagementDto> getRecommendImageList(RecommendPanelContentType recommendType, Long recommendId, ImageDisplayType imageType, OsType osType);
+
+    List<ImageInfo> getRecommendPanelDefaultImageList(OsType osType);
 
 }

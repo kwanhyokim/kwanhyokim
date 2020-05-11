@@ -10,7 +10,6 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,11 +21,9 @@ import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
-import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
-import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
 import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
 import com.sktechx.godmusic.personal.rest.service.mongo.PersonalMongoClient;
@@ -47,6 +44,8 @@ public class RecommendReadServiceImpl implements RecommendReadService {
 
     private final RecommendReadMapper recommendReadMapper;
 
+    private final RecommendImageManagementService recommendImageManagementService;
+
     private final TrackMapper trackMapper;
 
     private final MetaClient metaClient;
@@ -55,11 +54,13 @@ public class RecommendReadServiceImpl implements RecommendReadService {
 
     public RecommendReadServiceImpl(PersonalMongoClient personalMongoClient,
             RecommendReadMapper recommendReadMapper,
+            RecommendImageManagementService recommendImageManagementService,
             TrackMapper trackMapper,
             MetaClient metaClient,
             RedisService redisService) {
         this.personalMongoClient = personalMongoClient;
         this.recommendReadMapper = recommendReadMapper;
+        this.recommendImageManagementService = recommendImageManagementService;
         this.trackMapper = trackMapper;
         this.metaClient = metaClient;
         this.redisService = redisService;
@@ -181,34 +182,6 @@ public class RecommendReadServiceImpl implements RecommendReadService {
         );
     }
 
-    public List<ImageInfo> getRecommendPanelDefaultImageList(OsType osType){
-
-        List<ImageInfo> imgList = null;
-
-        try{
-            imgList = redisService.getListWithPrefix(RedisKeyConstant.RECOMMEND_PANEL_DEFAULT_IMGLIST_KEY,ImageInfo.class);
-        }catch(Exception e){
-            log.error("getRecommendPanelDefaultImageList error : {}",e.getMessage());
-        }finally {
-            if(CollectionUtils.isEmpty(imgList)){
-                imgList = recommendReadMapper.selectRecommendPanelDefaultImageList();
-                if(!CollectionUtils.isEmpty(imgList)){
-                    int recommendPanelDefaultImageExpiredSec = 3600;
-                    redisService.setWithPrefix(RedisKeyConstant.RECOMMEND_PANEL_DEFAULT_IMGLIST_KEY, imgList,
-                            recommendPanelDefaultImageExpiredSec);
-                }
-            }
-        }
-
-        if(!CollectionUtils.isEmpty(imgList)){
-            Collections.shuffle(imgList);
-
-            return Collections.singletonList(
-                    imgList.stream().filter(imageInfo -> osType.equals(imageInfo.getOsType()))
-                            .findFirst().orElse(null));
-        }
-        return null;
-    }
 
     private List<RecommendPanelTrackDto> getTrackList(List<Long> trackIdList){
 

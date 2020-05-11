@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto.chart;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -106,4 +107,14 @@ public class ChartTrackDto {
         );
     }
 
+    // 첫 트랙 아이디 제공
+    public Optional<Long> getTrackIdOfFirstTrack(){
+        return
+            Optional.ofNullable(
+                this.trackList
+            ).orElseGet(Collections::emptyList)
+                    .stream()
+                    .map(TrackDto::getTrackId)
+                    .findFirst();
+    }
 }

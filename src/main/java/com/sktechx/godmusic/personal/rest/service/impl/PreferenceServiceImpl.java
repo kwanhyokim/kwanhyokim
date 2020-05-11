@@ -44,6 +44,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.preference.PreferenceSimilarA
 import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 import com.sktechx.godmusic.personal.rest.repository.*;
 import com.sktechx.godmusic.personal.rest.service.PreferenceService;
+import com.sktechx.godmusic.personal.rest.service.image.ImageReadService;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.*;
@@ -67,7 +68,7 @@ public class PreferenceServiceImpl implements PreferenceService {
     private ArtistMapper artistMapper;
 
     @Autowired
-    private ImageManagementMapper imageManagementMapper;
+    private ImageReadService imageReadService;
 
     @Autowired
     RedisService redisService;
@@ -109,7 +110,9 @@ public class PreferenceServiceImpl implements PreferenceService {
 
             for (ChartDto chartDto : chartDtoList) {
                 String shortcutType = chartDto.getChartType() == ChartType.NEW ? "RECENT" : "POPULARITY";
-                List<ImageManagementDto> imgMangList =  imageManagementMapper.selectImageManagementList(HomeContentType.GENRE.getCode(), chartDto.getSvcContentId(), shortcutType);
+                List<ImageManagementDto> imgMangList =  imageReadService.getImageManagementList(
+                		HomeContentType.GENRE.getCode(), chartDto.getSvcContentId(), shortcutType
+                );
 
                 if (!CollectionUtils.isEmpty(imgMangList)) { // 쇼컷 이미지가 없는 경우 목록에서 제외
                     List<Chart.AlbumImg> albumImgList = new ArrayList<>();

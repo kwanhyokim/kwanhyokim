@@ -64,7 +64,10 @@ public class ChartDto {
 
     public static ChartDto from (ChartTrackDto chartTrackDto){
 
-        return chartTrackDto == null ? null : ChartDto.builder()
+        return chartTrackDto == null ?
+                ChartDto.builder().build()
+                    :
+                ChartDto.builder()
                 .chartId(chartTrackDto.getId())
                 .chartNm(chartTrackDto.getName())
                 .chartType(chartTrackDto.getChartType())
@@ -81,7 +84,7 @@ public class ChartDto {
     public static ChartDto from (ChartDispPropsVo chartDispPropsVo, ChartTrackDto chartTrackDto){
 
         if(chartDispPropsVo == null || chartTrackDto == null){
-            return null;
+            return ChartDto.builder().build();
         }
 
         ChartDto chartDto =
@@ -91,6 +94,27 @@ public class ChartDto {
                 .ifPresent(
                         currentChartDto -> {
                             currentChartDto.setImgList(chartDispPropsVo.getImgList());
+                            currentChartDto.setChartNm(chartDispPropsVo.getChartNm());
+                        }
+                );
+
+        return chartDto;
+    }
+
+    public static ChartDto from (ChartDispPropsVo chartDispPropsVo, ChartTrackDto chartTrackDto,
+            DispPropsImageDto dispPropsImageDto){
+
+        if(chartDispPropsVo == null || chartTrackDto == null || dispPropsImageDto == null){
+            return ChartDto.builder().build();
+        }
+
+        ChartDto chartDto =
+                ChartDto.from(chartTrackDto);
+
+        Optional.ofNullable(chartDto)
+                .ifPresent(
+                        currentChartDto -> {
+                            currentChartDto.setImgList(dispPropsImageDto.getImgList());
                             currentChartDto.setChartNm(chartDispPropsVo.getChartNm());
                         }
                 );

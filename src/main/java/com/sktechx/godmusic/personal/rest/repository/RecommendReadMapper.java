@@ -64,9 +64,6 @@ public interface RecommendReadMapper {
     RecommendArtistDto selectRecommendArtistById(@Param("recommendArtistId") Long recommendArtistId);
 
 
-    // 추천 패널 기본 이미지
-    List<ImageInfo> selectRecommendPanelDefaultImageList();
-
 	List<CharacterPreferArtistDto> selectCharacterPreferArtist(@Param("characterNo") Long characterNo, @Param("genreId") Long genreId);
 
 	List<CharacterPreferArtistGenreDto> selectCharacterPreferArtistGenre(@Param("characterNo") Long characterNo);

@@ -18,7 +18,6 @@ import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsDto;
-import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsImageDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartDispPropsVo;
 import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartVo;
@@ -37,15 +36,14 @@ public interface ChartService {
 
     RedisService getRedisService();
 
-    ChartVo getChartWithTrackList(Long characterNo, Long chartId, OsType osType,
+    ChartVo getChartVoForDetailWithTrackList(Long characterNo, Long chartId, OsType osType,
             int trackLimitSize);
 
-    ChartDto getChartByDispPropsTypeWithTrackList(Long characterNo, String dispPropsType,
+    ChartDto getChartDtoForHomeByDispPropsTypeWithTrackList(Long characterNo, String dispPropsType,
             OsType osType,
             int trackLimitSize);
 
-    default ChartDispPropsVo getPreferDisp(Predicate<ChartDispPropsDto> predicate, OsType osType
-            , Boolean useNewImgUrl){
+    default ChartDispPropsVo getPreferDisp(Predicate<ChartDispPropsDto> predicate){
 
         ChartDispPropsDto chartDispPropsDto =
                 Optional.ofNullable(
@@ -55,27 +53,9 @@ public interface ChartService {
                         .filter( predicate )
                         .findFirst()
                         .orElseThrow( () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA))
-
                 ;
 
-        return ChartDispPropsVo.from(
-
-                chartDispPropsDto
-                ,
-
-                (useNewImgUrl ?
-                        getChartMapper().selectPreferDispNameAndMixChartBgImage()
-                        :
-                        getChartMapper().selectPreferDispNameAndChartBgImage(osType)
-                )
-
-                .stream()
-                .filter( chartDispPropsImageDto -> chartDispPropsImageDto.getChartId().equals(chartDispPropsDto.getChartId()))
-                .findFirst()
-                .orElseGet( () -> ChartDispPropsImageDto.builder().chartId(1L).build())
-
-
-        );
+        return ChartDispPropsVo.from(chartDispPropsDto);
 
     }
 

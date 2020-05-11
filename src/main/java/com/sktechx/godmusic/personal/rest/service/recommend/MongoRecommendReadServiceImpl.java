@@ -22,7 +22,6 @@ import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
-import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
 import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
 import com.sktechx.godmusic.personal.rest.service.mongo.PersonalMongoClient;
@@ -171,10 +170,6 @@ public class MongoRecommendReadServiceImpl implements RecommendReadService {
         return recommendReadService.getRecommendByRealtimeTrackListByCharacterNoAndRcmmdId(
                 characterNo, rcmmdId
         );
-    }
-    @Override
-    public List<ImageInfo> getRecommendPanelDefaultImageList(OsType osType) {
-        return recommendReadService.getRecommendPanelDefaultImageList(osType);
     }
 
 }

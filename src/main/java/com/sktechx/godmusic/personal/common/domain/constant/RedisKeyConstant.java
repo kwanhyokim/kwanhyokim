@@ -40,27 +40,19 @@ public class RedisKeyConstant {
 
 	//이미지관리
 	public static final String PERSONAL_IMAGE_MANAGEMENT_KEY = "godmusic.personalapi.image.management:{}.{}.{}";
-	public static final String PERSONAL_MEMBERCHANNEL_IMAGE_MANAGEMENT_KEY = "godmusic.personalapi.memberchannel.image.management:{}.{}.{}";
-
-	//추천이미지관리
-	public static final String RECOMMEND_IMAGE_MANAGEMENT_KEY = "godmusic.personalapi.recommend.image:{}.{}.{}.{}";
 
 	//유사
 	public static final String PERSONAL_SIMILAR_ARTIST_KEY = "godmusic.personalapi.similar.artist:%s";
+
 	//유사이력
 	public static final String PERSONAL_SIMILAR_ARTIST_HISTORY_KEY = "godmusic.personalapi.similar.artist.history:%s";
-
-	// 선호장르테마, 운영tpo 홈패널 배경 이미지
-	public static final String PERSONAL_TPOANDTHEME_IMAGELIST_KEY = "personalapi.recommend.home.panel.tpoandtheme.imglist";
-
-	// aflo 채널 리스트
-	public static final String PERSONAL_AFLO_CHNL_KEY="godmusic.personalapi.aflo.chnllist";
 
 	// 홈 선호 아티스트 최신 영상
 	public static final String PERSONAL_PREFERENCE_VIDEO_ARTIST_NEW_LIST="godmusic.personalapi.preference.video.artist.new.list:%s";
 
 	// 홈 선호 장르 최신 영상
 	public static final String PERSONAL_PREFERENCE_VIDEO_GENRE_NEW_LIST="godmusic.personalapi.preference.video.genre.new.list:%s";
+
 	// 홈 선호 장르 최신 디폴트 영상
 	public static final String PERSONAL_PREFERENCE_VIDEO_GENRE_NEW_DEFAULT_LIST="godmusic.personalapi.preference.video.genre.new.default.list";
 

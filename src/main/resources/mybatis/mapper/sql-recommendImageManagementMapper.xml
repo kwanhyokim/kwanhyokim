@@ -120,4 +120,18 @@
 		LIMIT 1
 	</select>
 
+	<select id="selectRecommendPanelDefaultImageList" resultType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo">
+		SELECT
+			os_type,
+			img_size size,
+			img_url url,
+			disp_sn
+		FROM
+			tb_rcmmd_img_mang
+		WHERE
+			rcmmd_type_id = 'ALL'
+		  AND dfk_type = 'EVERY'
+		  AND img_disp_type = 'DEFAULT'
+	</select>
+
 </mapper>

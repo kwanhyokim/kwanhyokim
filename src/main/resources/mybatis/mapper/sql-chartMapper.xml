@@ -31,15 +31,6 @@
         </collection>
     </resultMap>
 
-    <resultMap id="chartDispPropsResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsImageDto" autoMapping="true">
-        <id property="chartId" column="chart_id" />
-        <collection property="imgList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" autoMapping="true">
-            <result property="size" column="img_size" />
-            <result property="url" column="img_url" />
-            <result property="osType" column="os_type" />
-        </collection>
-    </resultMap>
-
     <select id="selectPreferDispChart" resultMap="chartResultMap">
         SELECT
             chart_track_table.chart_id,
@@ -217,40 +208,12 @@
 
     </select>
 
-
-    <select id="selectPreferDispNameAndChartBgImage" resultMap="chartDispPropsResultMap" >
-        SELECT
-            b.disp_id AS chart_id,
-            c.os_type,
-            c.img_size,
-            c.img_url
-        FROM
-            tb_prefer_disp b
-                LEFT OUTER JOIN
-            tb_img_mang c
-                ON b.disp_id = c.img_content_id
-                AND b.disp_type = 'CHART'
-                AND c.img_content_type = 'DISP'
-                AND c.dfk_type = 'EVERY'
-                AND c.img_disp_type = 'MAIN_TOP'
-                AND c.os_type = #{osType}
+    <select id="selectSvcGenreIdFromTrack" resultType="long">
+        SELECT svc_genre_id
+        FROM tb_map_svc_genre_track
+        WHERE track_id = #{trackId}
+        LIMIT 1
     </select>
 
-    <select id="selectPreferDispNameAndMixChartBgImage" resultMap="chartDispPropsResultMap" >
-        SELECT
-            b.disp_id AS chart_id,
-            c.os_type,
-            c.img_size,
-            c.img_url
-        FROM
-            tb_prefer_disp b
-                LEFT OUTER JOIN
-            tb_img_mang c
-                ON b.disp_id = c.img_content_id
-                AND b.disp_type = 'CHART'
-                AND c.img_content_type = 'MIX_CHART'
-                AND c.dfk_type = 'EVERY'
-                AND c.img_disp_type = 'MAIN_TOP'
-    </select>
 
 </mapper>

@@ -676,19 +676,6 @@
       ORDER BY b.disp_sn ASC, a.rcmmd_artist_id ASC, c.artist_id ASC, d.size ASC
 
     </select>
-    <select id="selectRecommendPanelDefaultImageList" resultType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo">
-        SELECT
-           os_type,
-           img_size size,
-           img_url url,
-           disp_sn
-        FROM
-            tb_rcmmd_img_mang
-        WHERE
-            rcmmd_type_id = 'ALL'
-        AND dfk_type = 'EVERY'
-        AND img_disp_type = 'DEFAULT'
-    </select>
 
     <select id="selectCharacterPreferArtistGenre" resultType="com.sktechx.godmusic.personal.rest.model.dto.recommend.CharacterPreferArtistGenreDto">
         SELECT GENRE_ID, count(*) AS GENRE_CNT
