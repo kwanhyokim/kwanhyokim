@@ -76,12 +76,6 @@ public interface RecommendReadMapper {
 
     List<SimilarTrackDto> selectSimilarTrackListByIdList(@Param("trackIds") List<Long> trackIds);
 
-
-    String selectRecommendPanelInfoBgImageUrl(@Param("recommendPanelContentType") String recommendPanelContentType
-            , @Param("rcmmdId") Long rcmmdId
-            , @Param("osType") OsType osType
-            , @Param("dispSn") int dispSn);
-
     RecommendForMeDto selectRecommendGenreByRcmmdId(@Param("rcmmdId") Long rcmmdId);
 
     RecommendDuplicateCountDto selectSimilarTrackPanelBetweenDuplicateCount(@Param("characterNo") Long characterNo);

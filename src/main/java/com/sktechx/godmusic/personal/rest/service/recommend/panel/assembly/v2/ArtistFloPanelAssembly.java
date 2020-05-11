@@ -38,6 +38,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service("artistFloPanelAssembly")
 public class ArtistFloPanelAssembly extends PanelSignAssembly {
 
+    private final int ARTIST_FLO_PANNEL_HOME_MAX_SIZE = 7;
+    private final int ARTIST_FLO_PANNEL_LIMIT_SIZE = 4;
+
     public ArtistFloPanelAssembly(){}
 
     @Override
@@ -47,19 +50,18 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
 
     @Override
     protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){
-
-        List<Panel> myPanelList = new ArrayList<>();
-        List<Panel> chartPanelList = new ArrayList<>();
-
-        appendPreferArtistPopularTrackPanel(personalPhaseMeta, myPanelList);
-        appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
-
-        mergePanelList(panelList, myPanelList, chartPanelList, 7);
+        mergePanelList(panelList,
+                appendPreferArtistPopularTrackPanel(personalPhaseMeta),
+                appendPreferenceChartPanel(personalPhaseMeta),
+                ARTIST_FLO_PANNEL_HOME_MAX_SIZE
+        );
 
     }
 
-    @Override
-    protected void appendPreferArtistPopularTrackPanel(final PersonalPhaseMeta personalPhaseMeta, final List<Panel> panelList) {
+    private List<Panel> appendPreferArtistPopularTrackPanel(final PersonalPhaseMeta personalPhaseMeta) {
+
+        final List<Panel> panelList = new ArrayList<>();
+
         List<RecommendArtistDto> recommendArtistDtoList =
                 recommendReadService.getRecommendArtistFloListByCharacterNo(
                         personalPhaseMeta.getCharacterNo()
@@ -75,7 +77,7 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
         .filter(Objects::nonNull)
         .filter(recommendArtistDto -> !recommendArtistDto.getArtistList().isEmpty())
         .sorted(Comparator.comparing(RecommendArtistDto::getDispStdStartDt).reversed())
-        .limit(4)
+        .limit(ARTIST_FLO_PANNEL_LIMIT_SIZE)
         .collect(Collectors.toList())
         .forEach(
                 recommendArtistDto -> {
@@ -94,8 +96,9 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
                 }
 
         );
-    }
 
+        return panelList;
+    }
 
     @Override
     public List<Panel> getRecommendPanelList(Long characterNo, OsType osType){

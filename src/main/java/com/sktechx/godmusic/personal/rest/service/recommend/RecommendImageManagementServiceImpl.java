@@ -14,6 +14,9 @@ package com.sktechx.godmusic.personal.rest.service.recommend;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -102,5 +105,30 @@ public class RecommendImageManagementServiceImpl implements RecommendImageManage
                             .findFirst().orElse(null));
         }
         return null;
+    }
+
+    @Override
+    public List<ImageInfo> selectRecommendPanelInfoBgImageUrl(String recommendPanelContentType, Long rcmmdId,
+            OsType osType, int dispSn) {
+
+        return Stream.of(75L, 140L, 200L, 350L, 500L, 1000L)
+                .map(
+                        size -> {
+                            ImageInfo imageInfo = new ImageInfo();
+                            imageInfo.setSize(size);
+                            imageInfo.setUrl(
+                                    Optional.ofNullable(
+                                            recommendImageManagementMapper.selectRecommendPanelInfoBgImageUrl(
+                                                    recommendPanelContentType, rcmmdId, osType , (dispSn == 0 ? 1 : dispSn))
+                                    ).orElseGet(
+                                            () -> getRecommendPanelDefaultImageList(osType).get(0)
+                                                    .getUrl()
+                                    )
+                            );
+
+                            return imageInfo;
+                        })
+                .collect(Collectors.toList());
+
     }
 }

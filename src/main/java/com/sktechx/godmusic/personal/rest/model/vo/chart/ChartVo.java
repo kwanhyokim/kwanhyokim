@@ -15,7 +15,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.*;
 import com.sktechx.godmusic.lib.domain.code.YnType;
@@ -190,9 +189,7 @@ public class ChartVo {
                         .renewYn(chartTrackDto.getRenewYn())
                         .totalCount(chartTrackDto.getTotalCount())
                         .imgList(
-                                chartDispPropsDto.getImgList().stream().map(
-                                        chartImageInfo -> chartImageInfo).collect(
-                                        Collectors.toList())
+                                chartDispPropsDto.getImgList()
                         )
                         .tasteMixDto(tasteMixDto)
                         .build()

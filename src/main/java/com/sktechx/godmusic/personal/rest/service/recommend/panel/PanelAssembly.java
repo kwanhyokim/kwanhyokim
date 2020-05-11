@@ -290,39 +290,32 @@ public abstract class PanelAssembly {
                         ));
     }
 
-    public void appendPreferenceChartPanel(final PersonalPhaseMeta personalPhaseMeta, final List<Panel> panelList) {
-        if(!CollectionUtils.isEmpty(personalPhaseMeta.getPreferDispList())) {
+    public List<Panel> appendPreferenceChartPanel(final PersonalPhaseMeta personalPhaseMeta) {
 
+        final List<Panel> finalPanelList = new ArrayList<>();
+
+        Optional.ofNullable(
             personalPhaseMeta.getPreferDispList()
-                    .stream()
-                    .filter(Objects::nonNull)
-                    .forEach(characterPreferDisp -> {
-
-                        Integer appVersion =
-                                ServiceUtils.getFormattedAppVersion(personalPhaseMeta.getAppVer());
-
-                        log.info("trace-appendPreferenceChartPanel {} {} {}",
-                                personalPhaseMeta.getCharacterNo(), appVersion, appVersion.compareTo(41500) );
+        )
+        .ifPresent(
+                preferDispDtoList -> {
+                    for(CharacterPreferDispDto characterPreferDispDto : preferDispDtoList){
 
                         Panel panel =
+                                ServiceUtils.getFormattedAppVersion(
+                                    personalPhaseMeta.getAppVer()
+                                ).compareTo(41500) < 0 ?
+                                createChartPanel(characterPreferDispDto, personalPhaseMeta.getOsType(),
+                                        PREFER_DISP_CHART_TRACK_LIMIT_SIZE) :
+                                createPrivateChartPanel(personalPhaseMeta.getCharacterNo(),
+                                        characterPreferDispDto, personalPhaseMeta.getOsType(),
+                                        PREFER_DISP_CHART_TRACK_LIMIT_SIZE);
+                        finalPanelList.add(panel);
+                    }
+                }
+        );
 
-                            appVersion.compareTo(41500) < 0 ?
-                                createChartPanel(
-                                        characterPreferDisp,
-                                        personalPhaseMeta.getOsType(),
-                                        PREFER_DISP_CHART_TRACK_LIMIT_SIZE
-                                )
-                                :
-                                createPrivateChartPanel(
-                                        personalPhaseMeta.getCharacterNo(),
-                                        characterPreferDisp,
-                                        personalPhaseMeta.getOsType(), PREFER_DISP_CHART_TRACK_LIMIT_SIZE
-                                )
-                        ;
-                        panelList.add(panel);
-
-                    });
-        }
+        return finalPanelList;
     }
 
 }

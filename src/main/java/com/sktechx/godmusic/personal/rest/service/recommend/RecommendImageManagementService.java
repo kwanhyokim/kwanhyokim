@@ -21,7 +21,7 @@ import com.sktechx.godmusic.personal.rest.model.dto.ImageManagementDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 
 /**
- * 설명 :
+ * 설명 : 추천 이미지 관리 서비스
  *
  * @author 안영현/SKTECHX (younghyun.ahn@sk.com)
  * @date 2018. 11. 3.
@@ -32,4 +32,7 @@ public interface RecommendImageManagementService {
 
     List<ImageInfo> getRecommendPanelDefaultImageList(OsType osType);
 
+
+    List<ImageInfo> selectRecommendPanelInfoBgImageUrl(String recommendPanelContentType, Long rcmmdId
+            , OsType osType, int dispSn);
 }

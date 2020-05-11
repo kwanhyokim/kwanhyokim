@@ -10,20 +10,21 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelSignAssembly;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.PREFER_GENRE_POPULAR_CHNL_LIST_SIZE;
 /**
  * 설명 : 방문 단계 패널 생성기
  *
@@ -69,7 +70,7 @@ public class VisitPhasePanelAssembly extends PanelSignAssembly {
     @Override
     protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){
         appendPreferArtistPopularTrackPanel(personalPhaseMeta,panelList);
-        appendPreferenceChartPanel(personalPhaseMeta,panelList);
+        panelList.addAll(appendPreferenceChartPanel(personalPhaseMeta));
         sort(personalPhaseMeta, panelList);
     }
 

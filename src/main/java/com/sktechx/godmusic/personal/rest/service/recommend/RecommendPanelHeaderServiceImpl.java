@@ -13,7 +13,6 @@ package com.sktechx.godmusic.personal.rest.service.recommend;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,13 +24,12 @@ import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
-import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.header.RecommendPanelHeaderVo;
 import com.sktechx.godmusic.personal.rest.repository.ArtistMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
 
 /**
- * 설명 : XXXXXXXXX
+ * 설명 : 추천 패널 상세 헤더 ( 4.6.0 이전 )
  *
  * @author 김관효(Kwanhyo Kim)/서버개발팀/DreamusCompany(kwanhyo.kim@sk.com)
  * @date 2020-03-19
@@ -44,13 +42,18 @@ public class RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderServ
     private RecommendPanelService recommendPanelService;
 
     @Autowired
-    private RecommendReadService recommendReadService;
-
-    @Autowired
     private RecommendReadMapper recommendReadMapper;
 
     @Autowired
+    private RecommendImageManagementService recommendImageManagementService;
+
+    @Autowired
     private ArtistMapper artistMapper;
+
+    @Override
+    public RecommendImageManagementService getRecommendImageManagementService() {
+        return recommendImageManagementService;
+    }
 
     @Override
     public RecommendPanelHeaderVo getRecommendPanelInfo(Long characterNo, String rcmmdType,
@@ -184,24 +187,4 @@ public class RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderServ
         return panel;
     }
 
-    @Override
-    public List<ImageInfo> getRecommendPanelInfoBgImage(String recommendPanelContentType,Long panelContentId, OsType osType , int dispSn){
-
-        return Stream.of(75L, 140L, 200L, 350L, 500L, 1000L)
-                .map( size -> {
-                    ImageInfo imageInfo = new ImageInfo();
-                    imageInfo.setSize(size);
-                    imageInfo.setUrl(
-
-                            Optional.ofNullable(
-                                    recommendReadMapper.selectRecommendPanelInfoBgImageUrl(recommendPanelContentType, panelContentId, osType , (dispSn == 0 ? 1 : dispSn))
-                            ).orElse(
-                                    recommendReadService.getRecommendPanelDefaultImageList(osType).get(0).getUrl()
-                            )
-
-                    );
-                    return imageInfo;
-                })
-                .collect(Collectors.toList());
-    }
 }

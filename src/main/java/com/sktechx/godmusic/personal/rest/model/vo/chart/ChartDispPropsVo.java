@@ -36,11 +36,9 @@ public class ChartDispPropsVo {
 
     public static ChartDispPropsVo from (ChartDispPropsDto chartDispPropsDto){
 
-
         if(chartDispPropsDto == null){
             return ChartDispPropsVo.builder().build();
         }
-
 
         return ChartDispPropsVo.builder()
                 .chartId(chartDispPropsDto.getChartId())
