@@ -163,9 +163,6 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         try{
             personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType, appVer);
             panelAssembly = recommendPanelAssemblyFactory.getV2RecommendPanelAssembly(personalPhaseMeta);
-
-            panelAssembly.setAppVersion(appVer);
-
             recommendPanelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
 
         }catch(CommonBusinessException cbex){
@@ -405,7 +402,6 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
         PanelAssembly panelAssembly = recommendPanelAssemblyFactory
                 .getV2RecommendPanelAssembly(RecommendPanelContentType.fromCode(recommendPanelType));
-        panelAssembly.setAppVersion(appVersion);
 
         try {
 
