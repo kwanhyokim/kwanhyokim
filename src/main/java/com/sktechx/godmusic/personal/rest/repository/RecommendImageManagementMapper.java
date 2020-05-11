@@ -49,12 +49,10 @@ public interface RecommendImageManagementMapper {
                                                                   @Param("imageType") ImageDisplayType imageType,
                                                                   @Param("osType") OsType osType);
 
-    // 추천 패널 기본 이미지
     List<ImageInfo> selectRecommendPanelDefaultImageList();
 
 
     // 추천 패널 상세 헤더 배경 이미지
-
     String selectRecommendPanelInfoBgImageUrl(@Param("recommendPanelContentType") String recommendPanelContentType
             , @Param("rcmmdId") Long rcmmdId
             , @Param("osType") OsType osType
