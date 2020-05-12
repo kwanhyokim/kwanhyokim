@@ -331,6 +331,7 @@
                  ON A.ALBUM_ID = I.ALBUM_ID
              LEFT OUTER JOIN TB_CHNL_IMG chnl_img
                  ON A.chnl_id = chnl_img.chnl_id
+                 AND chnl_img.chnl_img_type = 'PANNEL'
         UNION ALL
         SELECT
             A.chnl_id                                                               AS id

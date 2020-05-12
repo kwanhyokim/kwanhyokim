@@ -866,6 +866,7 @@
             ON c.album_id = d.album_id
           LEFT JOIN tb_chnl_img chnl_img
             ON b.chnl_id = chnl_img.chnl_id
+            AND chnl_img.chnl_img_type = 'PANNEL'
         )
         <if test="!exceptAfloChnl">
             UNION ALL
