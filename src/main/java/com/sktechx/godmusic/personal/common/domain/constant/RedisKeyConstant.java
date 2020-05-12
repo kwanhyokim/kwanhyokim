@@ -61,13 +61,13 @@ public class RedisKeyConstant {
 			"godmusic.personalapi.recommend.home.panel.default.imglist";
 	// 일반 차트 배경 이미지
 	public static final String PERSONAL_CHART_BACKGROUND_IMAGE_KEY =
-			"godmusic.personalapi.chart.background.image:{}.{}";
+			"godmusic.personalapi.chart.background.image:%s.%s";
 	// 추천 차트 기본 배경 이미지
 	public static final String PERSONAL_PRICHART_DEFAULT_BACKGROUND_IMAGE_KEY =
-			"godmusic.personalapi.prichart.default.background.image:{}";
+			"godmusic.personalapi.prichart.default.background.image:%s";
 	// 추천 차트 장르별 배경 이미지
 	public static final String PERSONAL_PRICHART_BACKGROUND_IMAGE_KEY =
-			"godmusic.personalapi.prichart.background.image:{}.{}";
+			"godmusic.personalapi.prichart.background.image:%s.%s";
 
 	/** 선호와 유사한 아티스트 **/
 
