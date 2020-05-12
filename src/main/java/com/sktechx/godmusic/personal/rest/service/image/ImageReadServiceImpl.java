@@ -45,8 +45,7 @@ public class ImageReadServiceImpl implements ImageReadService {
         DispPropsImageDto dispPropsImageDto = redisService.getWithPrefix(
                 String.format(RedisKeyConstant.PERSONAL_CHART_BACKGROUND_IMAGE_KEY, chartId,
                         osType)
-                ,
-                DispPropsImageDto.class
+                , DispPropsImageDto.class
         );
 
         if( dispPropsImageDto != null){
@@ -90,8 +89,11 @@ public class ImageReadServiceImpl implements ImageReadService {
 
 
             if(dispPropsImageDto != null) {
-                redisService.setWithPrefix(String.format(RedisKeyConstant.PERSONAL_PRICHART_BACKGROUND_IMAGE_KEY,
-                        svcGenreId, osType), dispPropsImageDto);
+                redisService.setWithPrefix(
+                        String.format(RedisKeyConstant.PERSONAL_PRICHART_BACKGROUND_IMAGE_KEY,
+                            svcGenreId, osType)
+                        , dispPropsImageDto
+                        , 3600);
 
                 if(dispPropsImageDto.getImgList() != null) {
                     Collections.shuffle(dispPropsImageDto.getImgList());
@@ -117,6 +119,14 @@ public class ImageReadServiceImpl implements ImageReadService {
 
         if(dispPropsImageDto == null){
             dispPropsImageDto = imageManagementMapper.selectDefaultMixChartBackgroundImageList(chartId);
+
+            if(dispPropsImageDto != null) {
+                redisService.setWithPrefix(
+                        String.format(RedisKeyConstant.PERSONAL_PRICHART_DEFAULT_BACKGROUND_IMAGE_KEY,
+                        chartId)
+                        , dispPropsImageDto
+                        , 3600);
+            }
         }
 
         // DB에도 디폴트 이미지 없을 경우
