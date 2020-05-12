@@ -10,7 +10,6 @@
 
 package com.sktechx.godmusic.personal.rest.service.image;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -18,12 +17,12 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.lib.redis.service.RedisService;
+import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageManagementDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.DispPropsImageDto;
-import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.repository.ImageManagementMapper;
 
 /**
@@ -37,17 +36,38 @@ public class ImageReadServiceImpl implements ImageReadService {
     @Autowired
     ImageManagementMapper imageManagementMapper;
 
+    @Autowired
+    RedisService redisService;
+
     // 일반 차트 배경 이미지 조회
     @Override
     public DispPropsImageDto getChartBackgroundImage(Long chartId, OsType osType) {
-        return
-            Optional.ofNullable(
+        DispPropsImageDto dispPropsImageDto = redisService.getWithPrefix(
+                String.format(RedisKeyConstant.PERSONAL_CHART_BACKGROUND_IMAGE_KEY, chartId,
+                        osType)
+                ,
+                DispPropsImageDto.class
+        );
+
+        if( dispPropsImageDto != null){
+            return dispPropsImageDto;
+        }
+
+        dispPropsImageDto = Optional.ofNullable(
                 imageManagementMapper.selectChartBackgroundImageList(chartId, osType)
             )
                 .orElseGet(Collections::emptyList)
                 .stream()
                 .findFirst()
             .orElse(null);
+
+        redisService.setWithPrefix(
+                String.format(RedisKeyConstant.PERSONAL_CHART_BACKGROUND_IMAGE_KEY, chartId,
+                        osType)
+                , dispPropsImageDto
+        );
+
+        return dispPropsImageDto;
 
     }
 
@@ -56,59 +76,55 @@ public class ImageReadServiceImpl implements ImageReadService {
     public DispPropsImageDto getMixChartBackgroundImage(Long svcGenreId,
             Long chartId, OsType osType) {
 
-        DispPropsImageDto[] resultDispPropsImageDto = new DispPropsImageDto[1];
-
-        Optional.ofNullable(
-                imageManagementMapper.selectMixChartBackgroundImageList(svcGenreId, osType)
-        )
-        .ifPresent(
-                dispPropsImageDtos -> {
-                    if(!CollectionUtils.isEmpty(dispPropsImageDtos)) {
-
-                        // 이미지 셔플
-                        resultDispPropsImageDto[0] = dispPropsImageDtos.get(0);
-
-                        if(resultDispPropsImageDto[0].getImgList() != null) {
-                            Collections.shuffle(resultDispPropsImageDto[0].getImgList());
-
-                            resultDispPropsImageDto[0].setImgList(
-                                    resultDispPropsImageDto[0].getImgList().stream().limit(1).collect(
-                                            Collectors.toList())
-                            );
-                        }
-
-                    }
-                }
+        // 추천 차트 장르별 캐쉬
+        DispPropsImageDto dispPropsImageDto = redisService.getWithPrefix(
+                String.format(RedisKeyConstant.PERSONAL_PRICHART_BACKGROUND_IMAGE_KEY, svcGenreId,
+                        osType)
+                ,
+                DispPropsImageDto.class
         );
 
-        if(resultDispPropsImageDto[0] == null) {
-            Optional.ofNullable(
-                    imageManagementMapper.selectDefaultMixChartBackgroundImageList(chartId)
-            )
-            .ifPresent(
-                dispPropsImageDtos -> {
-                    if (!CollectionUtils.isEmpty(dispPropsImageDtos)) {
-                        resultDispPropsImageDto[0] = dispPropsImageDtos.get(0);
-                    }
+        if(dispPropsImageDto == null){
+            dispPropsImageDto =
+                    imageManagementMapper.selectMixChartBackgroundImageList(svcGenreId, osType);
+
+
+            if(dispPropsImageDto != null) {
+                redisService.setWithPrefix(String.format(RedisKeyConstant.PERSONAL_PRICHART_BACKGROUND_IMAGE_KEY,
+                        svcGenreId, osType), dispPropsImageDto);
+
+                if(dispPropsImageDto.getImgList() != null) {
+                    Collections.shuffle(dispPropsImageDto.getImgList());
+
+                    dispPropsImageDto.setImgList(
+                            dispPropsImageDto.getImgList().stream().limit(1).collect(
+                                    Collectors.toList()
+                            )
+                    );
                 }
-            );
-        }
-
-        if(resultDispPropsImageDto[0] == null) {
-            List<ImageInfo> imageInfoList = new ArrayList<>(1);
-
-            if(chartId == 1L) {
-                imageInfoList.add(new ImageInfo(750L,
-                        "https://www3.music-flo.com/mmate/feapi/img/display/genre_rc/temp/main_panel.jpg"));
-                resultDispPropsImageDto[0] = DispPropsImageDto.builder().id(1L).imgList(imageInfoList).build();
-            }else {
-                imageInfoList.add(new ImageInfo(750L,
-                        "https://www3.music-flo.com/mmate/feapi/img/display/genre_rc/temp/kids_panel.jpg"));
-                resultDispPropsImageDto[0] = DispPropsImageDto.builder().id(1L).imgList(imageInfoList).build();
             }
         }
 
-        return resultDispPropsImageDto[0];
+        // 장르별 이미지 없을 경우, 디폴트 DB 조회 처리
+        if(dispPropsImageDto == null){
+            dispPropsImageDto = redisService.getWithPrefix(
+                    String.format(RedisKeyConstant.PERSONAL_PRICHART_DEFAULT_BACKGROUND_IMAGE_KEY
+                            , chartId)
+                    ,
+                    DispPropsImageDto.class
+            );
+        }
+
+        if(dispPropsImageDto == null){
+            dispPropsImageDto = imageManagementMapper.selectDefaultMixChartBackgroundImageList(chartId);
+        }
+
+        // DB에도 디폴트 이미지 없을 경우
+        if(dispPropsImageDto == null) {
+            dispPropsImageDto = DispPropsImageDto.getDefault(chartId);
+        }
+
+        return dispPropsImageDto;
 
     }
 

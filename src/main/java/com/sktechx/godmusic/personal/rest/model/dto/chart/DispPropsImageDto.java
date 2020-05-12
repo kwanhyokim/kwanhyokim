@@ -10,10 +10,11 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto.chart;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
-import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -23,10 +24,35 @@ import lombok.Data;
  * @date 2020-04-17
  */
 
-@Builder
 @Data
 public class DispPropsImageDto {
     private Long id;
     private List<ImageInfo> imgList;
 
+    public static DispPropsImageDto getDefault(Long chartId){
+        return (chartId == 1L ? TOP100_DEFAULT : KIDS100_DEFAULT);
+    }
+
+    @JsonIgnore
+    static final DispPropsImageDto TOP100_DEFAULT = new DispPropsImageDto() {
+        {
+            List<ImageInfo> imageInfoList = new ArrayList<>();
+            imageInfoList.add(new ImageInfo(750L,
+                    "https://www3.music-flo.com/mmate/feapi/img/display/genre_rc/temp/main_panel.jpg"));
+            setId(1L);
+            setImgList(imageInfoList);
+        }
+    };
+
+    @JsonIgnore
+    static final DispPropsImageDto KIDS100_DEFAULT = new DispPropsImageDto() {
+        {
+            List<ImageInfo> imageInfoList = new ArrayList<>();
+            imageInfoList.add(new ImageInfo(750L,
+                    "https://www3.music-flo.com/mmate/feapi/img/display/genre_rc/temp/kids_panel"
+                            + ".jpg"));
+            setId(3571L);
+            setImgList(imageInfoList);
+        }
+    };
 }

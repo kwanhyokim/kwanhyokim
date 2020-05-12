@@ -39,19 +39,13 @@ public interface ImageManagementMapper {
                                                    @Param("imgContentId") Long imgContentId,
                                                    @Param("shortcutType") String shortcutType);
 
-    @RedisCacheable(format = RedisKeyConstant.PERSONAL_CHART_BACKGROUND_IMAGE_KEY,
-            params = { "#p0" , "#p1"})
     List<DispPropsImageDto> selectChartBackgroundImageList(@Param("dispId") Long dispId,
             @Param("osType") OsType osType
     );
 
-    @RedisCacheable(format = RedisKeyConstant.PERSONAL_PRICHART_DEFAULT_BACKGROUND_IMAGE_KEY,
-            params = { "#p0"})
-    List<DispPropsImageDto> selectDefaultMixChartBackgroundImageList(@Param("dispId") Long dispId);
+    DispPropsImageDto selectDefaultMixChartBackgroundImageList(@Param("dispId") Long dispId);
 
-    @RedisCacheable(format = RedisKeyConstant.PERSONAL_PRICHART_BACKGROUND_IMAGE_KEY,
-            params = { "#p0", "#p1"})
-    List<DispPropsImageDto> selectMixChartBackgroundImageList(@Param("dispId") Long svcGenreId,
+    DispPropsImageDto selectMixChartBackgroundImageList(@Param("dispId") Long svcGenreId,
             @Param("osType") OsType osType);
 
 }
