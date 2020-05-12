@@ -18,8 +18,10 @@
     <resultMap type="com.sktechx.godmusic.personal.rest.model.dto.ChnlDto" id="channelResultMap" autoMapping="true">
         <id property="chnlId" column="chnl_id" />
         <id property="chnlNm" column="chnl_nm"/>
-        <collection property="trackList" resultMap="popularChannelTrackResultMap">
-        </collection>
+        <association property="channelImage"
+                     javaType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo"
+                     columnPrefix="channel_image_" autoMapping="true"/>
+        <collection property="trackList" resultMap="popularChannelTrackResultMap" />
         <collection property="imgList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" autoMapping="true">
             <id property="size" column="img_size"/>
             <id property="url" column="img_url"/>
@@ -142,7 +144,8 @@
             c.chnl_disp_nm,
             c.update_dtime,
             d.album_img_size AS img_size,
-            d.album_img_url AS img_url
+            d.album_img_url AS img_url,
+            chnl_img.img_url AS channel_image_url
         FROM
             (SELECT
                 a.chnl_id,
@@ -159,9 +162,11 @@
                 a.disp_status_type = 'Y'
                     AND a.chnl_type = 'FLAC'
             ORDER BY a.update_dtime DESC
-            LIMIT 1) c
-                LEFT OUTER JOIN
-          tb_album_img d ON c.album_id = d.album_id
+            LIMIT 1) c LEFT OUTER JOIN tb_album_img d
+                ON c.album_id = d.album_id
+            LEFT OUTER JOIN tb_chnl_img chnl_img
+                ON c.chnl_id = chnl_img.chnl_id
+                AND chnl_img.chnl_img_type = 'PANNEL'
     </select>
 
     <select id="selectAfloChannelList" resultMap="channelResultMap">

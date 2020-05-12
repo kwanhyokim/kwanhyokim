@@ -99,7 +99,10 @@ public class ChannelServiceImpl implements ChannelService {
         ChnlDto floAndDataChnlDto = channelMapper.selectFlacChannel();
 
         Optional.ofNullable(floAndDataChnlDto)
-            .ifPresent(chnlDto -> chnlDto.setChnlType(ChannelType.FLAC));
+            .ifPresent(chnlDto -> {
+                chnlDto.setChnlType(ChannelType.FLAC);
+                chnlDto.replacePlayListImageIfRepImageExists();
+            });
 
         return floAndDataChnlDto;
     }
