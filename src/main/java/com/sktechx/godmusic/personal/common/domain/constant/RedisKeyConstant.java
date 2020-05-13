@@ -29,7 +29,7 @@ public class RedisKeyConstant {
 	public static final String KIDS_CHART_KEY = "godmusic.personalapi.recommend.chart.kids";
 
 	// 차트 전시용 정보 캐쉬 ( 차트명, 차트 이미지 캐쉬)
-	public static final String CHART_DISPLAY_PROPERTIES_KEY = "godmusic.personalapi.recommend.chart.dispprops";
+	public static final String CHART_DISPLAY_PROPERTIES_KEY = "godmusic.personalapi.chart.dispprops";
 
 	// 개인화 차트 캐쉬 ( Mgo의 차트 정보 전체 캐쉬 )
 	public static final String PERSONAL_CHART_KEY = "godmusic.personalapi.recommend.chart:%s.%s";
