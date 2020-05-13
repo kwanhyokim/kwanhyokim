@@ -40,6 +40,7 @@ public class RecommendTrackDto {
     private Date rcmmdUpdateDtime;
 
     private List<TrackDto> trackList;
+    private int trackCount;
 
     private ServiceGenreDto svcGenreDto;
 
@@ -55,6 +56,11 @@ public class RecommendTrackDto {
     }
 
     public int getTrackCount(){
+
+        if(trackCount > 0){
+            return trackCount;
+        }
+
         return this.trackList == null ? 0 : this.trackList.size();
     }
 
