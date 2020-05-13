@@ -61,7 +61,7 @@ public interface ChartService {
                     ChartDispPropsDtoWrapper.builder()
                             .chartDispPropsDtoList(chartDispPropsDtoList)
                             .build(),
-                    86400);
+                    172800);
         }else{
             chartDispPropsDtoList = chartDispPropsDtoWrapper.getChartDispPropsDtoList();
         }
