@@ -13,6 +13,7 @@ package com.sktechx.godmusic.personal.rest.service.recommend;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import com.sktechx.godmusic.lib.utils.ComparableVersion;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
@@ -86,6 +87,12 @@ public class RecommendPanelAssemblyFactory {
 
     public PanelAssembly getV2RecommendPanelAssembly(PersonalPhaseMeta personalPhaseMeta){
 
+        // todo: mockup용 코드
+        if(!ObjectUtils.isEmpty(personalPhaseMeta.getAppVer())
+                && new ComparableVersion(personalPhaseMeta.getAppVer()).compareTo( new ComparableVersion("5.1.0")) >= 0 ){
+            return reactivePanelAssembly;
+        }
+
         PersonalPanel personalPanel = personalPhaseMeta.getRecommendPersonalPanelTopItem();
 
         if(!ObjectUtils.isEmpty(personalPanel)) {
@@ -109,23 +116,23 @@ public class RecommendPanelAssemblyFactory {
 
     public PanelAssembly getV2RecommendPanelAssembly(RecommendPanelContentType recommendPanelContentType){
 
-        return reactivePanelAssembly;
-
-//        switch (recommendPanelContentType){
-//            case AFLO:
-//                return afloPanelAssembly;
-//            // 나를 위한 새로운 발견
-//            case RC_CF_TR:
-//                return forMeFloPanelAssembly;
-//            // 오늘의 추천
-//            case RC_SML_TR:
-//                return todayFloPanelAssembly;
-//            // 좋아할만한 아티스트 MIX
-//            case RC_ATST_TR:
-//                return artistFloPanelAssembly;
-//            default:
-//                return null;
-//        }
+        switch (recommendPanelContentType){
+            case AFLO:
+                return afloPanelAssembly;
+            // 나를 위한 새로운 발견
+            case RC_CF_TR:
+                return forMeFloPanelAssembly;
+            // 오늘의 추천
+            case RC_SML_TR:
+                return todayFloPanelAssembly;
+            // 좋아할만한 아티스트 MIX
+            case RC_ATST_TR:
+                return artistFloPanelAssembly;
+            case RX_PANNEL:
+                return reactivePanelAssembly;
+            default:
+                return null;
+        }
 
     }
 
