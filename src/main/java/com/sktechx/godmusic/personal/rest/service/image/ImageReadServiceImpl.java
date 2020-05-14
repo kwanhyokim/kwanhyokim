@@ -95,16 +95,20 @@ public class ImageReadServiceImpl implements ImageReadService {
                         , dispPropsImageDto
                         , 3600);
 
-                if(dispPropsImageDto.getImgList() != null) {
-                    Collections.shuffle(dispPropsImageDto.getImgList());
-
-                    dispPropsImageDto.setImgList(
-                            dispPropsImageDto.getImgList().stream().limit(1).collect(
-                                    Collectors.toList()
-                            )
-                    );
-                }
             }
+        }
+
+        // 이미지가 조회된 경우, 전체 이미지 중 하나만 골라 셔플
+        if(dispPropsImageDto != null && dispPropsImageDto.getImgList() != null) {
+            Collections.shuffle(dispPropsImageDto.getImgList());
+
+            dispPropsImageDto.setImgList(
+                    dispPropsImageDto.getImgList().stream().limit(1).collect(
+                            Collectors.toList()
+                    )
+            );
+
+            return dispPropsImageDto;
         }
 
         // 장르별 이미지 없을 경우, 디폴트 DB 조회 처리
