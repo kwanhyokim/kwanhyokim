@@ -42,6 +42,7 @@ public class RecommendPanelAssemblyFactory {
     private final AfloPanelAssembly afloPanelAssembly;
     private final PreferGenreThemePanelAssembly preferGenreThemePanelAssembly;
     private final OperationTpoPanelAssembly operationTpoPanelAssembly;
+    private final ReactivePanelAssembly reactivePanelAssembly;
 
     public RecommendPanelAssemblyFactory(VisitPhasePanelAssembly visitPhasePanelAssembly,
             ListenPhasePanelAssembly listenPhasePanelAssembly,
@@ -51,7 +52,8 @@ public class RecommendPanelAssemblyFactory {
             ArtistFloPanelAssembly artistFloPanelAssembly,
             TodayFloPanelAssembly todayFloPanelAssembly, AfloPanelAssembly afloPanelAssembly,
             PreferGenreThemePanelAssembly preferGenreThemePanelAssembly,
-            OperationTpoPanelAssembly operationTpoPanelAssembly) {
+            OperationTpoPanelAssembly operationTpoPanelAssembly,
+            ReactivePanelAssembly reactivePanelAssembly) {
         this.visitPhasePanelAssembly = visitPhasePanelAssembly;
         this.listenPhasePanelAssembly = listenPhasePanelAssembly;
         this.recommendPhasePanelAssembly = recommendPhasePanelAssembly;
@@ -62,6 +64,7 @@ public class RecommendPanelAssemblyFactory {
         this.afloPanelAssembly = afloPanelAssembly;
         this.preferGenreThemePanelAssembly = preferGenreThemePanelAssembly;
         this.operationTpoPanelAssembly = operationTpoPanelAssembly;
+        this.reactivePanelAssembly = reactivePanelAssembly;
     }
 
     public PanelAssembly getRecommendPanelAssembly(PersonalPhaseType personalPhaseType ){
@@ -106,21 +109,23 @@ public class RecommendPanelAssemblyFactory {
 
     public PanelAssembly getV2RecommendPanelAssembly(RecommendPanelContentType recommendPanelContentType){
 
-        switch (recommendPanelContentType){
-            case AFLO:
-                return afloPanelAssembly;
-            // 나를 위한 새로운 발견
-            case RC_CF_TR:
-                return forMeFloPanelAssembly;
-            // 오늘의 추천
-            case RC_SML_TR:
-                return todayFloPanelAssembly;
-            // 좋아할만한 아티스트 MIX
-            case RC_ATST_TR:
-                return artistFloPanelAssembly;
-            default:
-                return null;
-        }
+        return reactivePanelAssembly;
+
+//        switch (recommendPanelContentType){
+//            case AFLO:
+//                return afloPanelAssembly;
+//            // 나를 위한 새로운 발견
+//            case RC_CF_TR:
+//                return forMeFloPanelAssembly;
+//            // 오늘의 추천
+//            case RC_SML_TR:
+//                return todayFloPanelAssembly;
+//            // 좋아할만한 아티스트 MIX
+//            case RC_ATST_TR:
+//                return artistFloPanelAssembly;
+//            default:
+//                return null;
+//        }
 
     }
 

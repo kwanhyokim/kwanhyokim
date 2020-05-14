@@ -84,6 +84,9 @@ public class RecommendConstant {
     public static final String RCMMD_TRACK_PANEL_SUB_TITLE_NEW = "%s\n추천 음악";
     public static final String RCMMD_TRACK_PANEL_SEED_SUFFIX = "추천 음악";
 
+    public static final String RCMMD_REACTIVE_PANEL_TITLE = "방금 레이더";
+    public static final String RCMMD_REACTIVE_PANEL_SUB_TITLE = "방금 좋아한 곡과\n함께 들어보세요.";
+
 
 }
 

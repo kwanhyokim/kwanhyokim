@@ -42,35 +42,30 @@ import lombok.extern.slf4j.Slf4j;
 @Service("operationTpoPanelAssembly")
 public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
 
+    private final int OPERATION_TPO_PANEL_HOME_MAX_SIZE = 7;
+
+    private final DisplayClient displayClient;
+
     public OperationTpoPanelAssembly(DisplayClient displayClient){
         this.displayClient = displayClient;
     }
 
-    private final DisplayClient displayClient;
-
     @Override
-    protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
+    public List<Panel> assembleRecommendPanel(PersonalPhaseMeta personalPhaseMeta) {
 
-        final List<Panel> panelList = new ArrayList<>();
-
-        List<Panel> myPanelList = new ArrayList<>();
-        List<Panel> chartPanelList = appendPreferenceChartPanel(personalPhaseMeta);
-
-        appendTPOPanel(personalPhaseMeta, myPanelList);
-
-        mergePanelList(panelList, myPanelList, chartPanelList, 7);
-
-        return panelList;
+        return mergePanelList(
+                appendTPOPanel(personalPhaseMeta),
+                appendPreferenceChartPanel(personalPhaseMeta),
+                OPERATION_TPO_PANEL_HOME_MAX_SIZE);
     }
-
-
     @Override
     public List<Panel> getRecommendPanelList(Long characterNo, OsType osType) {
         return null;
     }
 
-    private void appendTPOPanel(final PersonalPhaseMeta personalPhaseMeta,
-            final List<Panel> panelList) {
+    private List<Panel> appendTPOPanel(final PersonalPhaseMeta personalPhaseMeta) {
+
+        List<Panel> panelList = new ArrayList<>();
         CommonApiResponse<ChannelListResponse> chnlDtoCommonApiResponse = displayClient.getOperationTpoList();
 
         Optional.ofNullable(chnlDtoCommonApiResponse)
@@ -97,6 +92,8 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
                 }
 
         });
+
+        return panelList;
     }
 
 

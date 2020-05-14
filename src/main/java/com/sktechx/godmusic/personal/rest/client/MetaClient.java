@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.personal.rest.client.fallback.MetaClientFallbackFactory;
+import com.sktechx.godmusic.personal.rest.client.model.GetTrackListRequest;
 import com.sktechx.godmusic.personal.rest.client.model.MetaVideoRequestVo;
 import com.sktechx.godmusic.personal.rest.model.dto.*;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
@@ -74,5 +75,9 @@ public interface MetaClient {
     @GetMapping("/meta/v1/chart/track/{chartId}?size={trackSize}")
     CommonApiResponse<ChartTrackDto> getChartWithTrackList(@PathVariable("chartId") Long chartId,
             @RequestParam("trackSize") Integer trackSize);
+
+
+    @PostMapping("/meta/v2/track/list")
+    CommonApiResponse<ListDto<List<TrackDto>>> getTrackList(@RequestBody GetTrackListRequest request);
 
 }

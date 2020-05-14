@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend.panel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,14 +44,10 @@ import static com.sktechx.godmusic.personal.common.domain.type.RecommendPanelCon
 @Slf4j
 public abstract class PanelSignAssembly extends PanelAssembly {
 
-    protected abstract void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta, final List<Panel> panelList);
+    protected abstract List<Panel> appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta);
 
-    public List<Panel> assembleRecommendPanel(final PersonalPhaseMeta personalPhaseMeta) throws Exception {
-        final List<Panel> panelList = defaultPanelSetting(personalPhaseMeta);
-
-        appendPreferencePanel(personalPhaseMeta, panelList);
-
-        return panelList;
+    public List<Panel> assembleRecommendPanel(final PersonalPhaseMeta personalPhaseMeta){
+        return appendPreferencePanel(personalPhaseMeta);
     }
 
     protected void appendPreferGenreChannelPanelList(final PersonalPhaseMeta personalPhaseMeta,
@@ -77,8 +74,9 @@ public abstract class PanelSignAssembly extends PanelAssembly {
 
     }
 
-    protected void appendPreferArtistPopularTrackPanel(final PersonalPhaseMeta personalPhaseMeta, final List<Panel> panelList) {
+    protected List<Panel> appendPreferArtistPopularTrackPanel(final PersonalPhaseMeta personalPhaseMeta) {
         Long rcmmdId = personalPhaseMeta.getRecommendPersonalPanelRcmmdId(RC_ATST_TR);
+        List<Panel> panelList = new ArrayList<>();
 
         if (rcmmdId != null) {
             RecommendArtistDto recommendArtistDto = recommendReadMapper.selectRecommendArtistById(rcmmdId);
@@ -100,6 +98,8 @@ public abstract class PanelSignAssembly extends PanelAssembly {
                 }
             }
         }
+
+        return panelList;
     }
 
     public boolean isArtistPopularTrackPanelAppend(RecommendArtistDto recommendArtistDto){

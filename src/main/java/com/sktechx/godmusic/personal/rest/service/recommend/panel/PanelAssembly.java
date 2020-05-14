@@ -82,9 +82,7 @@ public abstract class PanelAssembly {
     @Autowired
     protected CharacterPreferGenreMapper characterPreferGenreMapper;
 
-    public abstract List<Panel> assembleRecommendPanel(PersonalPhaseMeta personalPhaseMeta) throws Exception;
-    protected abstract List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta);
-
+    public abstract List<Panel> assembleRecommendPanel(PersonalPhaseMeta personalPhaseMeta);
     public abstract List<Panel> getRecommendPanelList(Long characterNo, OsType osType);
 
     protected int panelCount(RecommendPanelType recommendPanelType ,final List<Panel> panelList){
@@ -235,7 +233,9 @@ public abstract class PanelAssembly {
         }
     }
 
-    protected void mergePanelList(List<Panel> panelList, List<Panel> myPanelList, List<Panel> chartPanelList, int panelMaxSize) {
+    protected List<Panel> mergePanelList(List<Panel> myPanelList, List<Panel> chartPanelList, int panelMaxSize) {
+
+        List<Panel> panelList = new ArrayList<>();
 
         Optional<Panel> liveChartPanel = Optional.ofNullable(chartPanelList)
                 .orElseGet(Collections::emptyList)
@@ -269,6 +269,8 @@ public abstract class PanelAssembly {
 
         liveChartPanel.ifPresent(panel -> panelList.add(0, panel));
         kidsChartPanel.ifPresent(panelList::add);
+
+        return panelList;
     }
 
     protected List<ImageInfo> getTpoAndThemeBackgroundImageList(OsType osType) {

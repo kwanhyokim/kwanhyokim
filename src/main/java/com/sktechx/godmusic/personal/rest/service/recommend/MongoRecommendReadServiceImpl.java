@@ -22,6 +22,7 @@ import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.like.RcmmdLikeTrackDetailDto;
 import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
 import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
 import com.sktechx.godmusic.personal.rest.client.PersonalMongoClient;
@@ -126,6 +127,11 @@ public class MongoRecommendReadServiceImpl implements RecommendReadService {
             Long characterNo, int panelMaxSize, int trackMaxSize, OsType osType) {
         return recommendReadService.getRecommendArtistFloListWithTrackByCharacterNo(
                 characterNo, panelMaxSize, trackMaxSize, osType);
+    }
+    @Override
+    public List<RcmmdLikeTrackDetailDto> getRecommendReactiveTrackListByCharacterNo(
+            Long characterNo, int panelMaxSize, int trackMaxSize, OsType osType) {
+        return null;
     }
 
     @Override

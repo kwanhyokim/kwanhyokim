@@ -37,26 +37,29 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
 @Service("forMeFloPanelAssembly")
 public class ForMeFloPanelAssembly extends PanelSignAssembly {
 
+    private final int FORME_FLO_PANEL_HOME_MAX_SIZE = 6;
+    private final int FORME_FLO_PANEL_LIMIT_SIZE = 4;
+
     public ForMeFloPanelAssembly(){}
 
     @Override
-    protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
-        return new ArrayList<>();
+    protected List<Panel> appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta){
+
+        return mergePanelList(
+                decorateImgPanelList (
+                        appendRecommendCfTrackPanelList(personalPhaseMeta)
+                ),
+                appendPreferenceChartPanel(personalPhaseMeta),
+                FORME_FLO_PANEL_HOME_MAX_SIZE);
+
     }
 
-    @Override
-    protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){
+    private List<Panel> decorateImgPanelList(List<Panel> panelList){
+        if(!CollectionUtils.isEmpty(panelList)){
 
-        List<Panel> myPanelList = new ArrayList<>();
-        List<Panel> chartPanelList = appendPreferenceChartPanel(personalPhaseMeta);
+            for(int i=0; i<panelList.size(); i++){
 
-        appendRecommendCfTrackPanelList(personalPhaseMeta, myPanelList);
-
-        if(!CollectionUtils.isEmpty(myPanelList)){
-
-            for(int i=0; i<myPanelList.size(); i++){
-
-                Panel myPanel = myPanelList.get(i);
+                Panel myPanel = panelList.get(i);
 
                 if( !CollectionUtils.isEmpty(myPanel.getImgList()) &&
                         myPanel.getImgList().size() >=2 ) {
@@ -74,17 +77,17 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
             }
         }
 
-        mergePanelList(panelList, myPanelList, chartPanelList, 6);
-
+        return panelList;
     }
 
-    private void appendRecommendCfTrackPanelList(PersonalPhaseMeta personalPhaseMeta,
-            final List<Panel> panelList) {
+    private List<Panel> appendRecommendCfTrackPanelList(PersonalPhaseMeta personalPhaseMeta) {
+
+        List<Panel> panelList = new ArrayList<>();
 
         List<RecommendTrackDto> recommendCfTrackList =
                 recommendReadService.getRecommendForMeFloListWithTrackByCharacterNo(
                         personalPhaseMeta.getCharacterNo(),
-                        4,
+                        FORME_FLO_PANEL_LIMIT_SIZE,
                         RCMMD_CF_TRACK_LIMIT_SIZE,
                         personalPhaseMeta.getOsType()
                 )
@@ -103,6 +106,7 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
             }
         }
 
+        return panelList;
     }
 
     private RcmmdTrackPanel createRecommendCfTrackPanel(final PersonalPhaseMeta personalPhaseMeta,
@@ -117,11 +121,8 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
         personalPhaseMeta.setCharacterNo(characterNo);
         personalPhaseMeta.setOsType(osType);
 
-        List<Panel> panelList = new ArrayList<>();
+        return appendRecommendCfTrackPanelList(personalPhaseMeta);
 
-        appendRecommendCfTrackPanelList(personalPhaseMeta, panelList);
-
-        return panelList;
 
     }
 

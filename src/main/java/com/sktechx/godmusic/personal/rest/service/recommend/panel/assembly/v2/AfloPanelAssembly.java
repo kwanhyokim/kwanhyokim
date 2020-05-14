@@ -31,41 +31,34 @@ import lombok.extern.slf4j.Slf4j;
  * 설명 : AFLO 홈 패널 생성기
  *
  * @author 김관효(Kwanhyo Kim)/Music사업팀/SKTECH(kwanhyo.kim@sk.com)
- * @date 2019. 5. 8.
+ * @since 2019. 5. 8.
  */
 @Slf4j
 @Service("afloPanelAssembly")
 public class AfloPanelAssembly extends PanelSignAssembly {
 
-    private final int AFLO_PANNEL_HOME_LIMIT_SIZE = 5;
-    private final int AFLO_PANNEL_HOME_MAX_SIZE = 7;
-    private final int AFLO_PANNEL_DETAIL_LIMIT_SIZE = 4;
-    private final int AFLO_PANNEL_CHNL_TRACK_MAX_SIZE = 10;
+    private final int AFLO_PANEL_HOME_LIMIT_SIZE = 5;
+    private final int AFLO_PANEL_HOME_MAX_SIZE = 7;
+    private final int AFLO_PANEL_DETAIL_LIMIT_SIZE = 4;
+    private final int AFLO_PANEL_CHNL_TRACK_MAX_SIZE = 10;
 
     public AfloPanelAssembly(){}
 
     @Override
-    protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
-        return new ArrayList<>();
-    }
+    protected List<Panel> appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta){
 
-    @Override
-    protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta,
-            final List<Panel> panelList){
-
-        List<Panel> myPanelList = appendAfloChannelPanelList(personalPhaseMeta.getCharacterNo(),
-                personalPhaseMeta.getOsType(), AFLO_PANNEL_HOME_LIMIT_SIZE );
-
-        List<Panel> chartPanelList = appendPreferenceChartPanel(personalPhaseMeta);
-
-        mergePanelList(panelList, myPanelList, chartPanelList, AFLO_PANNEL_HOME_MAX_SIZE);
+        return mergePanelList(
+                appendAfloChannelPanelList(personalPhaseMeta.getCharacterNo(),
+                    personalPhaseMeta.getOsType(), AFLO_PANEL_HOME_LIMIT_SIZE),
+                appendPreferenceChartPanel(personalPhaseMeta),
+                AFLO_PANEL_HOME_MAX_SIZE);
     }
 
     @Override
     public List<Panel> getRecommendPanelList(Long characterNo, OsType osType) {
 
         List<Panel> panelList =  appendAfloChannelPanelList(characterNo, osType,
-                AFLO_PANNEL_DETAIL_LIMIT_SIZE);
+                AFLO_PANEL_DETAIL_LIMIT_SIZE);
 
         // 패널의 트랙리스트에서 대표곡을 제외하고 정보 제거
         if(!CollectionUtils.isEmpty(panelList)){
@@ -94,7 +87,7 @@ public class AfloPanelAssembly extends PanelSignAssembly {
 
         List<ChnlDto> appendChannelList = Optional.ofNullable(
                 channelService.getAfloChannelList(characterNo, panelLimitSize,
-                        AFLO_PANNEL_CHNL_TRACK_MAX_SIZE, osType))
+                        AFLO_PANEL_CHNL_TRACK_MAX_SIZE, osType))
                 .orElseGet(Collections::emptyList);
 
 
