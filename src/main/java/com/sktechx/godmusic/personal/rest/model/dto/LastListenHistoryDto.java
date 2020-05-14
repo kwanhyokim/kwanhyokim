@@ -63,6 +63,9 @@ public class LastListenHistoryDto {
     @JsonIgnore
     private Date renewDtime;
 
+    @JsonIgnore
+    private ImageInfo channelImage;
+
     @ApiModelProperty(value = "업데이트 여부")
     public YnType getRenewYn(){
 
@@ -95,5 +98,11 @@ public class LastListenHistoryDto {
         }
 
         this.imgList = imgList;
+    }
+
+    public void replacePlayListImageIfRepImageExists() {
+        if (channelImage != null) {
+            imgList = ImageInfoExpander.expandChannelImageByResizeOption(channelImage);
+        }
     }
 }

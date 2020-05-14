@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sktechx.godmusic.lib.domain.code.YnType;
@@ -50,6 +51,9 @@ public class PlayListDto {
 
 	private Integer renewTrackCnt;
 
+	@JsonIgnore
+	private ImageInfo channelImage;
+
 	@JsonProperty("renewTrackCount")
 	public Integer getRenewTrackCnt() {
 		return this.renewYn == YnType.N ? 0 : renewTrackCnt;
@@ -64,4 +68,9 @@ public class PlayListDto {
 		this.imgList = imgList;
 	}
 
+	public void replacePlayListImageIfRepImageExists() {
+		if (channelImage != null) {
+			imgList = ImageInfoExpander.expandChannelImageByResizeOption(channelImage);
+		}
+	}
 }

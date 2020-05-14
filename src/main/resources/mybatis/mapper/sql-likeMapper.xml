@@ -59,7 +59,9 @@
     <resultMap id="playlistResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.PlayListDto" autoMapping="true">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
-
+        <association property="channelImage"
+                     javaType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo"
+                     columnPrefix="channel_image_" autoMapping="true"/>
         <collection property="imgList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" autoMapping="true">
             <id property="size" column="size"/>
             <id property="url" column="url"/>
@@ -216,6 +218,7 @@
             , likeUpdateDtime
             , renewDateTime
             , renewTrackCnt
+            , channel_image_url
         FROM (
                  SELECT
                        CL.CHART_ID                                                   AS id
@@ -234,6 +237,7 @@
                      , CL.UPDATE_DTIME                                               AS likeUpdateDtime
                      , null                                                          AS renewDateTime
                      , ''                                                            AS renewTrackCnt
+                     , null                                                          as channel_image_url
                  FROM
                      (
                          SELECT
@@ -294,6 +298,7 @@
              , L.UPDATE_DTIME                                                          AS likeUpdateDtime
              , A.RENEW_DTIME                                                           AS renewDateTime
              , A.RENEW_TRACK_CNT                                                       AS renewTrackCnt
+             , chnl_img.img_url                                                        AS channel_image_url
          FROM
              (
                  SELECT
@@ -324,7 +329,9 @@
 
              INNER JOIN TB_ALBUM_IMG I
                  ON A.ALBUM_ID = I.ALBUM_ID
-
+             LEFT OUTER JOIN TB_CHNL_IMG chnl_img
+                 ON A.chnl_id = chnl_img.chnl_id
+                 AND chnl_img.chnl_img_type = 'PANNEL'
         UNION ALL
         SELECT
             A.chnl_id                                                               AS id
@@ -343,6 +350,7 @@
             , L.update_dtime                                                          AS likeUpdateDtime
             , A.renew_dtime                                                           AS renewDateTime
             , A.renew_track_cnt                                                       AS renewTrackCnt
+            , null                                                                    as channel_image_url
             FROM
             (
             SELECT
@@ -363,15 +371,12 @@
                 </if>
                 AND like_type = 'CHNL') L
                 INNER JOIN tb_chnl A
-                ON L.like_type_id = A.chnl_id
-                AND A.disp_status_type = 'Y'
-                AND A.chnl_type ='AFLO'
-
+                    ON L.like_type_id = A.chnl_id
+                    AND A.disp_status_type = 'Y'
+                    AND A.chnl_type ='AFLO'
                 INNER JOIN tb_chnl_img I
-                ON A.chnl_id = I.chnl_id
-                AND I.chnl_img_type = 'TOP_DETAIL'
-
-
+                    ON A.chnl_id = I.chnl_id
+                    AND I.chnl_img_type = 'TOP_DETAIL'
          ) AA
         ORDER BY AA.DISPSN ASC, AA.LIKEUPDATEDTIME ASC
     </select>

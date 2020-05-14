@@ -18,8 +18,10 @@
     <resultMap type="com.sktechx.godmusic.personal.rest.model.dto.ChnlDto" id="channelResultMap" autoMapping="true">
         <id property="chnlId" column="chnl_id" />
         <id property="chnlNm" column="chnl_nm"/>
-        <collection property="trackList" resultMap="popularChannelTrackResultMap">
-        </collection>
+        <association property="channelImage"
+                     javaType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo"
+                     columnPrefix="channel_image_" autoMapping="true"/>
+        <collection property="trackList" resultMap="popularChannelTrackResultMap" />
         <collection property="imgList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" autoMapping="true">
             <id property="size" column="img_size"/>
             <id property="url" column="img_url"/>
@@ -54,6 +56,9 @@
 
     <resultMap id="lastListenHistoryResultMap" type="com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto" autoMapping="true">
         <id property="listenId" column="listen_id"/>
+        <association property="channelImage"
+                     javaType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo"
+                     columnPrefix="channel_image_" autoMapping="true"/>
         <collection property="imgList" javaType="java.util.ArrayList" ofType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo" column="listen_id" autoMapping="true">
             <result property="size" column="size" />
             <result property="url" column="url" />
@@ -139,7 +144,8 @@
             c.chnl_disp_nm,
             c.update_dtime,
             d.album_img_size AS img_size,
-            d.album_img_url AS img_url
+            d.album_img_url AS img_url,
+            chnl_img.img_url AS channel_image_url
         FROM
             (SELECT
                 a.chnl_id,
@@ -156,9 +162,11 @@
                 a.disp_status_type = 'Y'
                     AND a.chnl_type = 'FLAC'
             ORDER BY a.update_dtime DESC
-            LIMIT 1) c
-                LEFT OUTER JOIN
-          tb_album_img d ON c.album_id = d.album_id
+            LIMIT 1) c LEFT OUTER JOIN tb_album_img d
+                ON c.album_id = d.album_id
+            LEFT OUTER JOIN tb_chnl_img chnl_img
+                ON c.chnl_id = chnl_img.chnl_id
+                AND chnl_img.chnl_img_type = 'PANNEL'
     </select>
 
     <select id="selectAfloChannelList" resultMap="channelResultMap">
@@ -845,7 +853,8 @@
                d.album_img_size as size,
                d.album_img_url AS url,
                b.renew_track_cnt,
-               b.renew_dtime
+               b.renew_dtime,
+               chnl_img.img_url AS channel_image_url
           FROM ( SELECT listen_type, listen_type_id, last_listen_dtime
                    FROM tb_member_last_listen_hist
                   WHERE member_no = #{memberNo}
@@ -859,8 +868,11 @@
           </if>
           JOIN ted_album c ON b.album_id = c.album_id AND c.disp_status_yn= 'Y' AND now() BETWEEN c.disp_start_dtime AND c.disp_end_dtime
           LEFT JOIN tb_album_img d
-            ON c.album_id = d.album_id)
-
+            ON c.album_id = d.album_id
+          LEFT JOIN tb_chnl_img chnl_img
+            ON b.chnl_id = chnl_img.chnl_id
+            AND chnl_img.chnl_img_type = 'PANNEL'
+        )
         <if test="!exceptAfloChnl">
             UNION ALL
 
@@ -873,7 +885,8 @@
                 600 as size,
                 h.img_url AS url,
                 g.renew_track_cnt,
-                g.renew_dtime
+                g.renew_dtime,
+                null as channel_image_url
             FROM
                 tb_character a
                 INNER JOIN

@@ -72,6 +72,9 @@ public class ChnlDto {
     // AFLO 사인 이미지
     private List<ImageInfo> signImgList;
 
+    @JsonIgnore
+    private ImageInfo channelImage;
+
     public List<TrackDto> getTrackList(){
         if(!CollectionUtils.isEmpty(trackList)){
             for(TrackDto track : trackList){
@@ -99,6 +102,12 @@ public class ChnlDto {
         }
 
         this.imgList = imgList;
+    }
+
+    public void replacePlayListImageIfRepImageExists() {
+        if (channelImage != null) {
+            imgList = ImageInfoExpander.expandChannelImageByResizeOption(channelImage);
+        }
     }
 
 }
