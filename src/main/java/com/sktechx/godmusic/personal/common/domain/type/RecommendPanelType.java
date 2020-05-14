@@ -41,7 +41,9 @@ public enum RecommendPanelType implements CodeEnum{
     ARTIST_FLO_TRACK("ARTIST_FLO_TRACK", "AFLO 채널"),
 
     PRI_LIVE_CHART("PRI_LIVE_CHART", "FLO 차트 내 취향 MIX"),
-    PRI_KIDS_CHART("PRI_KIDS_CHART", "키즈 차트 내 취향 MIX")
+    PRI_KIDS_CHART("PRI_KIDS_CHART", "키즈 차트 내 취향 MIX"),
+
+    RCMMD_LIKE_TRACK("RCMMD_LIKE_TRACK", "방금 레이더")
     ;
 
 

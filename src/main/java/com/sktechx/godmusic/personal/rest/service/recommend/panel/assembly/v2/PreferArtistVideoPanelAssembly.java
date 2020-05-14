@@ -36,6 +36,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service("preferArtistVideoPanelAssembly")
 public class PreferArtistVideoPanelAssembly extends PanelSignAssembly {
 
+    public static int PREFER_ARTIST_VIDEO_HOME_MAX_PANEL_SIZE = 7;
+
     public PreferArtistVideoPanelAssembly(PreferenceMapper preferMapper, MetaClient metaClient){
         this.preferMapper = preferMapper;
         this.metaClient = metaClient;
@@ -46,23 +48,16 @@ public class PreferArtistVideoPanelAssembly extends PanelSignAssembly {
     private final MetaClient metaClient;
 
     @Override
-    protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
-        return new ArrayList<>();
-    }
-    @Override
-    protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){
+    protected List<Panel> appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta){
 
-        List<Panel> myPanelList = new ArrayList<>();
-        List<Panel> chartPanelList = appendPreferenceChartPanel(personalPhaseMeta);
-
-        appendPreferArtistVideoList(personalPhaseMeta, myPanelList, true);
-
-
-        mergePanelList(panelList, myPanelList, chartPanelList, 7);
+        return mergePanelList(
+                appendPreferArtistVideoList(personalPhaseMeta, true),
+                appendPreferenceChartPanel(personalPhaseMeta),
+                PREFER_ARTIST_VIDEO_HOME_MAX_PANEL_SIZE
+        );
     }
 
-    private void appendPreferArtistVideoList(final PersonalPhaseMeta personalPhaseMeta,
-            final List<Panel> panelList, Boolean isTop) {
+    private List<Panel> appendPreferArtistVideoList(final PersonalPhaseMeta personalPhaseMeta, Boolean isTop) {
 
         Date from;
         Date to;
@@ -78,22 +73,25 @@ public class PreferArtistVideoPanelAssembly extends PanelSignAssembly {
             to = DateUtil.getDate(from, 259200);
         }
 
-        panelList.addAll(
-                Optional.ofNullable(
+        return Optional.ofNullable(
                         metaClient.getVideos(
                                 MetaVideoRequestVo.builder()
-                                        .videoIds(preferMapper.selectPreferArtistVideoIdListByCharacterNo(personalPhaseMeta.getCharacterNo()))
+                                        .videoIds(
+                                                preferMapper.selectPreferArtistVideoIdListByCharacterNo(
+                                                        personalPhaseMeta.getCharacterNo()
+                                                )
+                                        )
                                         .build()
                         ).getData().getList()
 
                 ).orElseGet(Collections::emptyList)
                         .stream()
                         .filter(Objects::nonNull)
-                        .filter(videoVo -> videoVo.getDispStartDtime().after(from) && videoVo.getDispStartDtime().before(to))
+                        .filter(videoVo ->
+                                    videoVo.getDispStartDtime().after(from) &&
+                                    videoVo.getDispStartDtime().before(to))
                         .map(VideoVo::convertToVideoPanel)
-                        .collect(Collectors.toList())
-        );
-
+                        .collect(Collectors.toList());
     }
 
     @Override
@@ -102,9 +100,7 @@ public class PreferArtistVideoPanelAssembly extends PanelSignAssembly {
         personalPhaseMeta.setCharacterNo(characterNo);
         personalPhaseMeta.setOsType(osType);
 
-        List<Panel> panelList = new ArrayList<>();
-
-        appendPreferArtistVideoList(personalPhaseMeta, panelList, false);
+        List<Panel> panelList = appendPreferArtistVideoList(personalPhaseMeta, false);
 
         if(panelList.size() > 5){
             Collections.shuffle(panelList);

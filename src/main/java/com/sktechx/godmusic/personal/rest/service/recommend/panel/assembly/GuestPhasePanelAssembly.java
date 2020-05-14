@@ -10,18 +10,20 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelNonSignAssembly;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.POPULAR_CHNL_LIST_SIZE;
+import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.PREFER_DISP_CHART_TRACK_LIMIT_SIZE;
 /**
  * 설명 : 비로그인 사용자 패널 생성기
  *       인기 채널 3종 제공 + 실시간 차트
@@ -36,7 +38,7 @@ public class GuestPhasePanelAssembly extends PanelNonSignAssembly {
     private GuestPhasePanelAssembly(){}
 
     @Override
-    protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
+    public List<Panel> assembleRecommendPanel(PersonalPhaseMeta personalPhaseMeta){
 
         final List<Panel> panelList = new ArrayList<>();
 

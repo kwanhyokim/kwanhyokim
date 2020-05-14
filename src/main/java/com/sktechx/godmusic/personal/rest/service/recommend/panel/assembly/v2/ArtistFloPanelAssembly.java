@@ -38,27 +38,22 @@ import lombok.extern.slf4j.Slf4j;
 @Service("artistFloPanelAssembly")
 public class ArtistFloPanelAssembly extends PanelSignAssembly {
 
-    private final int ARTIST_FLO_PANNEL_HOME_MAX_SIZE = 7;
-    private final int ARTIST_FLO_PANNEL_LIMIT_SIZE = 4;
+    private final int ARTIST_FLO_PANEL_HOME_MAX_SIZE = 7;
+    private final int ARTIST_FLO_PANEL_LIMIT_SIZE = 4;
 
     public ArtistFloPanelAssembly(){}
 
     @Override
-    protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
-        return new ArrayList<>();
-    }
-
-    @Override
-    protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){
-        mergePanelList(panelList,
+    protected List<Panel> appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta){
+        return mergePanelList(
                 appendPreferArtistPopularTrackPanel(personalPhaseMeta),
                 appendPreferenceChartPanel(personalPhaseMeta),
-                ARTIST_FLO_PANNEL_HOME_MAX_SIZE
+                ARTIST_FLO_PANEL_HOME_MAX_SIZE
         );
 
     }
 
-    private List<Panel> appendPreferArtistPopularTrackPanel(final PersonalPhaseMeta personalPhaseMeta) {
+    protected List<Panel> appendPreferArtistPopularTrackPanel(final PersonalPhaseMeta personalPhaseMeta) {
 
         final List<Panel> panelList = new ArrayList<>();
 
@@ -77,7 +72,7 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
         .filter(Objects::nonNull)
         .filter(recommendArtistDto -> !recommendArtistDto.getArtistList().isEmpty())
         .sorted(Comparator.comparing(RecommendArtistDto::getDispStdStartDt).reversed())
-        .limit(ARTIST_FLO_PANNEL_LIMIT_SIZE)
+        .limit(ARTIST_FLO_PANEL_LIMIT_SIZE)
         .collect(Collectors.toList())
         .forEach(
                 recommendArtistDto -> {

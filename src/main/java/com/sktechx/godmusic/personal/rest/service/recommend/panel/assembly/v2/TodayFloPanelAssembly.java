@@ -39,26 +39,24 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
 @Service("todayFloPanelAssembly")
 public class TodayFloPanelAssembly extends PanelSignAssembly {
 
+    public static int TODAY_FLO_HOME_MAX_PANEL_SIZE = 7;
+    public static int TODAY_FLO_LIMIT_PANEL_SIZE = 7;
+
     public TodayFloPanelAssembly(){}
 
     @Override
-    protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
-        return new ArrayList<>();
-    }
-    @Override
-    protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){
+    protected List<Panel> appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta){
 
-        List<Panel> myPanelList = new ArrayList<>();
-        List<Panel> chartPanelList = appendPreferenceChartPanel(personalPhaseMeta);
-
-        appendSimilarTrackPanelList(personalPhaseMeta, myPanelList, 7);
-
-        mergePanelList(panelList, myPanelList, chartPanelList, 7);
+        return mergePanelList(
+                appendSimilarTrackPanelList(personalPhaseMeta, TODAY_FLO_LIMIT_PANEL_SIZE),
+                appendPreferenceChartPanel(personalPhaseMeta),
+                TODAY_FLO_HOME_MAX_PANEL_SIZE);
     }
 
-    protected void appendSimilarTrackPanelList(final PersonalPhaseMeta personalPhaseMeta,
-            final List<Panel> panelList,
+    protected List<Panel> appendSimilarTrackPanelList(final PersonalPhaseMeta personalPhaseMeta,
             int panelLimitSize) {
+
+        List<Panel> panelList = new ArrayList<>();
 
         Optional.ofNullable(
                         recommendReadService.getRecommendTodayFloListWithTrackByCharacterNo(
@@ -103,6 +101,8 @@ public class TodayFloPanelAssembly extends PanelSignAssembly {
                             });
                 }
         );
+
+        return panelList;
     }
 
     @Override

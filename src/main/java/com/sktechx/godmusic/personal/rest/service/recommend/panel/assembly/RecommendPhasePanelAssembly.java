@@ -42,8 +42,9 @@ import static com.sktechx.godmusic.personal.common.domain.type.RecommendPanelCon
 public class RecommendPhasePanelAssembly extends PanelSignAssembly {
 
     private RecommendPhasePanelAssembly(){}
+
     @Override
-    protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
+    public List<Panel> assembleRecommendPanel(final PersonalPhaseMeta personalPhaseMeta){
 
 
         final List<Panel> panelList = new ArrayList();
@@ -116,11 +117,13 @@ public class RecommendPhasePanelAssembly extends PanelSignAssembly {
     }
 
     @Override
-    protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList) {
+    protected List<Panel> appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta) {
 
-        appendPreferArtistPopularTrackPanel(personalPhaseMeta,panelList);
+        List<Panel> panelList = appendPreferArtistPopularTrackPanel(personalPhaseMeta);
         panelList.addAll(appendPreferenceChartPanel(personalPhaseMeta));
         sort(personalPhaseMeta, panelList);
+
+        return panelList;
     }
 
     private void appendRecommendCfTrackPanelList(PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int panelLimitSize) {
