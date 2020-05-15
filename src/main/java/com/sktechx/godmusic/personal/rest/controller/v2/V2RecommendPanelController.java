@@ -84,7 +84,7 @@ public class V2RecommendPanelController {
 	@RequestMapping(value = "/panel/list", method = RequestMethod.GET)
 	public CommonApiResponse recommendPanelTrackList(
 			@ApiIgnore @RequestGMContext GMContext ctx,
-			@ApiParam(value = "추천 패널 컨텐트 타입", allowableValues = "RC_ATST_TR, RC_SML_TR, RC_CF_TR")
+			@ApiParam(value = "추천 패널 컨텐트 타입", allowableValues = "RC_ATST_TR, RC_SML_TR, RC_CF_TR, RC_LIKE_SML_TR")
 			@RequestParam(value = "type") String recommendPanelContentType,
             @RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo,
 		    @RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType

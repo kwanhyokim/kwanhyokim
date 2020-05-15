@@ -49,7 +49,7 @@ public class RcmmdReactivePanel extends Panel {
 
         this.content = PanelContentVo.builder()
                 .id(rcmmdLikeTrackDetailDto.getRcmmdId())
-                .type(RecommendPanelContentType.RX_PANNEL)
+                .type(RecommendPanelContentType.RC_LIKE_SML_TR)
                 .seedTrackImgList(seedTrackImgList)
                 .rcmmdTrackImgList(rcmmdTrackImgList)
                 .trackCount(rcmmdLikeTrackDetailDto.getTrackIdList().size() + 1)

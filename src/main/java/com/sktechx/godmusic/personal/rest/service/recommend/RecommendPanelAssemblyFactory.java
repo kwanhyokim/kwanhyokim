@@ -128,7 +128,7 @@ public class RecommendPanelAssemblyFactory {
             // 좋아할만한 아티스트 MIX
             case RC_ATST_TR:
                 return artistFloPanelAssembly;
-            case RX_PANNEL:
+            case RC_LIKE_SML_TR:
                 return reactivePanelAssembly;
             default:
                 return null;
