@@ -14,7 +14,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,18 +29,16 @@ import com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
-import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.header.RecommendPanelHeaderVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedArtistVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedGenreVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedTrackVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
-import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 
 /**
- * 설명 : XXXXXXXXX
+ * 설명 : 설명 : 추천 패널 상세 헤더 ( 4.6.0 부터 이용 )
  *
  * @author 김관효(Kwanhyo Kim)/서버개발팀/DreamusCompany(kwanhyo.kim@sk.com)
  * @date 2020-03-19
@@ -61,8 +58,12 @@ public class V2RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderSe
     private RecommendReadService recommendReadService;
 
     @Autowired
-    private RecommendReadMapper recommendReadMapper;
+    private RecommendImageManagementService recommendImageManagementService;
 
+    @Override
+    public RecommendImageManagementService getRecommendImageManagementService() {
+        return recommendImageManagementService;
+    }
     @Override
     public RecommendPanelHeaderVo getRecommendPanelInfo(Long characterNo,
             String recommendPanelContentType,
@@ -264,27 +265,6 @@ public class V2RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderSe
                                 .suffix("")
                                 .build()
                 ).build();
-    }
-
-    @Override
-    public List<ImageInfo> getRecommendPanelInfoBgImage(String recommendPanelContentType,Long panelContentId, OsType osType , int dispSn){
-
-        return Stream.of(75L, 140L, 200L, 350L, 500L, 1000L)
-                .map( size -> {
-                    ImageInfo imageInfo = new ImageInfo();
-                    imageInfo.setSize(size);
-                    imageInfo.setUrl(
-
-                            Optional.ofNullable(
-                                    recommendReadMapper.selectRecommendPanelInfoBgImageUrl(recommendPanelContentType, panelContentId, osType , (dispSn == 0 ? 1 : dispSn))
-                            ).orElse(
-                                    recommendReadService.getRecommendPanelDefaultImageList(osType).get(0).getUrl()
-                            )
-
-                    );
-                    return imageInfo;
-                })
-                .collect(Collectors.toList());
     }
 
     private YnType getNewYn(Date dispDate){

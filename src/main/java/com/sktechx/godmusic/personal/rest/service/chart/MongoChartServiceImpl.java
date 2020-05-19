@@ -20,12 +20,14 @@ import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
-import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsDto;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.DispPropsImageDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackTasteMixTrackDto;
+import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartDispPropsVo;
 import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartVo;
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
+import com.sktechx.godmusic.personal.rest.service.image.ImageReadService;
 import com.sktechx.godmusic.personal.rest.service.mongo.PersonalMongoClient;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,14 +47,16 @@ public class MongoChartServiceImpl implements ChartService {
 
     private final ChartMapper chartMapper;
 
+    private final ImageReadService imageReadService;
     private final RedisService redisService;
 
     private final PersonalMongoClient personalMongoClient;
-
     private final MetaClient metaClient;
-    public MongoChartServiceImpl(ChartMapper chartMapper, RedisService redisService,
+    public MongoChartServiceImpl(ChartMapper chartMapper,
+            ImageReadService imageReadService, RedisService redisService,
             PersonalMongoClient personalMongoClient, MetaClient metaClient) {
         this.chartMapper = chartMapper;
+        this.imageReadService = imageReadService;
         this.redisService = redisService;
         this.personalMongoClient = personalMongoClient;
         this.metaClient = metaClient;
@@ -70,56 +74,64 @@ public class MongoChartServiceImpl implements ChartService {
 
     // 개인화 차트 상세
     @Override
-    public ChartVo getChartWithTrackList(Long characterNo, Long chartId, OsType osType,
+    public ChartVo getChartVoForDetailWithTrackList(Long characterNo, Long chartId, OsType osType,
             int trackLimitSize) {
 
-        ChartDispPropsDto chartDispPropsDto = Optional.ofNullable(
-                getPreferDisp(
-                        currentChartDispPropsDto ->
-                                currentChartDispPropsDto.getChartId().equals(chartId)
-                , osType
-                ,   true)
-        ).orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
+        ChartDispPropsVo chartDispPropsVo = getPreferDisp(
+                currentChartDispPropsDto ->
+                        currentChartDispPropsDto.getChartId().equals(chartId)
+        );
 
         ChartTrackDto chartTrackDto = getChartTrackDto(characterNo, trackLimitSize,
-                chartDispPropsDto);
+                chartDispPropsVo);
 
         chartTrackDto.disableRank();
         chartTrackDto.makeTrackDispSn();
 
-        return ChartVo.from( chartDispPropsDto, chartTrackDto );
+        return ChartVo.from( chartDispPropsVo, chartTrackDto );
     }
 
     // 개인화 차트 홈
     @Override
-    public ChartDto getChartByDispPropsTypeWithTrackList(Long characterNo, String dispPropsType,
+    public ChartDto getChartDtoForHomeByDispPropsTypeWithTrackList(Long characterNo, String dispPropsType,
             OsType osType,
             int trackLimitSize) {
 
-        ChartDispPropsDto chartDispPropsDto = Optional.ofNullable(
+        ChartDispPropsVo chartDispPropsVo = Optional.ofNullable(
                 getPreferDisp(
                     currentChartDispPropsDto -> dispPropsType.equals(
                             (currentChartDispPropsDto).getDispPropsType()
                     )
-                , osType
-                , true)
+                )
         ).orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
 
+        final DispPropsImageDto[] dispPropsImageDtos = new DispPropsImageDto[1];
+
         ChartTrackDto chartTrackDto = getChartTrackDto(characterNo, trackLimitSize,
-                chartDispPropsDto);
+                chartDispPropsVo);
 
         chartTrackDto.disableRank();
         chartTrackDto.makeTrackDispSn();
 
-        return ChartDto.from( chartDispPropsDto, chartTrackDto );
+        chartTrackDto.getTrackIdOfFirstTrack()
+                .ifPresent(
+                        trackId ->
+                            getChartBackgroundImage(chartMapper.selectSvcGenreIdFromTrack(trackId),
+                                    chartDispPropsVo.getChartId(), osType)
+                            .ifPresent(
+                                    dispPropsImageDto -> dispPropsImageDtos[0] = dispPropsImageDto
+                            )
+                );
+
+        return ChartDto.from( chartDispPropsVo, chartTrackDto, dispPropsImageDtos[0]);
     }
 
     private ChartTrackDto getChartTrackDto(Long characterNo, int trackLimitSize,
-            ChartDispPropsDto chartDispPropsDto) {
+            ChartDispPropsVo chartDispPropsVo) {
 
         ChartTrackDto chartTrackDto = Optional.ofNullable(
                 metaClient
-                        .getChartWithTrackList(chartDispPropsDto.getChartId(), 100)
+                        .getChartWithTrackList(chartDispPropsVo.getChartId(), 100)
                         .getData()
         ).orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
 
@@ -134,7 +146,7 @@ public class MongoChartServiceImpl implements ChartService {
         Optional.ofNullable(
                 personalMongoClient.getRecommendChartTrackTasteMixDto(
                         characterNo,
-                        chartDispPropsDto.getChartId()
+                        chartDispPropsVo.getChartId()
                 ).getData())
         .ifPresent(
                 trackTasteMixDto -> {
@@ -161,5 +173,11 @@ public class MongoChartServiceImpl implements ChartService {
         chartTrackDto.decreaseTrackListSizeTo(trackLimitSize);
 
         return chartTrackDto;
+    }
+
+    private Optional<DispPropsImageDto> getChartBackgroundImage(Long svcGenreId, Long chartId,
+            OsType osType){
+        return Optional.ofNullable(imageReadService.getMixChartBackgroundImage(svcGenreId, chartId
+                , osType));
     }
 }

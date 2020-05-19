@@ -48,10 +48,9 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
     protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){
 
         List<Panel> myPanelList = new ArrayList<>();
-        List<Panel> chartPanelList = new ArrayList<>();
+        List<Panel> chartPanelList = appendPreferenceChartPanel(personalPhaseMeta);
 
         appendRecommendCfTrackPanelList(personalPhaseMeta, myPanelList);
-        appendPreferenceChartPanel(personalPhaseMeta, chartPanelList);
 
         if(!CollectionUtils.isEmpty(myPanelList)){
 
@@ -76,8 +75,6 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
         }
 
         mergePanelList(panelList, myPanelList, chartPanelList, 6);
-
-//        sort(personalPhaseMeta , panelList);
 
     }
 

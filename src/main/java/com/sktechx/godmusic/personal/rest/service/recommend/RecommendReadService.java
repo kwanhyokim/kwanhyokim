@@ -14,7 +14,6 @@ import java.util.List;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
-import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 
 /**
  * 설명 : XXXXXXXXX
@@ -69,8 +68,5 @@ public interface RecommendReadService {
     List<RecommendPanelTrackDto> getRecommendByRealtimeTrackListByCharacterNoAndRcmmdId(
             Long characterNo, Long rcmmdId
     );
-
-    List<ImageInfo> getRecommendPanelDefaultImageList(OsType osType);
-
 
 }

@@ -10,9 +10,11 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.chart;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.*;
 import com.sktechx.godmusic.lib.domain.code.YnType;
@@ -22,7 +24,6 @@ import com.sktechx.godmusic.personal.common.domain.type.PlayListType;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
 import com.sktechx.godmusic.personal.rest.model.dto.TasteMixDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
-import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import io.swagger.annotations.ApiModelProperty;
@@ -135,7 +136,7 @@ public class ChartVo {
 
     }
 
-    public static ChartVo from (ChartDispPropsDto chartDispPropsDto, ChartTrackDto chartTrackDto){
+    public static ChartVo from (ChartDispPropsVo chartDispPropsDto, ChartTrackDto chartTrackDto){
 
         if(chartDispPropsDto == null || chartTrackDto == null){
             return null;
@@ -188,9 +189,7 @@ public class ChartVo {
                         .renewYn(chartTrackDto.getRenewYn())
                         .totalCount(chartTrackDto.getTotalCount())
                         .imgList(
-                                chartDispPropsDto.getImgList().stream().map(
-                                        chartImageInfo -> (ImageInfo)chartImageInfo).collect(
-                                        Collectors.toList())
+                                chartDispPropsDto.getImgList()
                         )
                         .tasteMixDto(tasteMixDto)
                         .build()

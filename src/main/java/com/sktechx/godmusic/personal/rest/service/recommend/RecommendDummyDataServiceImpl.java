@@ -205,7 +205,7 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
     @Override
     public void addPrivateChart(Long characterNo, String mix) {
 
-        ChartDto chartDto = chartService.getChartByDispPropsTypeWithTrackList(characterNo,
+        ChartDto chartDto = chartService.getChartDtoForHomeByDispPropsTypeWithTrackList(characterNo,
                 "TOP100", OsType.IOS, 100);
 
 
@@ -233,7 +233,7 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
                 .build()
         );
 
-        chartDto = chartService.getChartByDispPropsTypeWithTrackList(characterNo,
+        chartDto = chartService.getChartDtoForHomeByDispPropsTypeWithTrackList(characterNo,
                 "KIDS100", OsType.IOS, 100);
 
         Collections.shuffle(chartDto.getTrackList());
@@ -266,7 +266,7 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
     @Override
     public void deletePrivateChart(Long characterNo) {
 
-        ChartDto chartDto = chartService.getChartByDispPropsTypeWithTrackList(characterNo,
+        ChartDto chartDto = chartService.getChartDtoForHomeByDispPropsTypeWithTrackList(characterNo,
                 "TOP100", OsType.IOS, 100);
 
         redisService.delWithPrefix(String.format(PERSONAL_CHART_KEY, chartDto.getChartId(),
@@ -279,7 +279,7 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
                 .build()
         );
 
-        chartDto = chartService.getChartByDispPropsTypeWithTrackList(characterNo,
+        chartDto = chartService.getChartDtoForHomeByDispPropsTypeWithTrackList(characterNo,
                 "KIDS100", OsType.IOS, 100);
 
         redisService.delWithPrefix(String.format(PERSONAL_CHART_KEY, chartDto.getChartId(),

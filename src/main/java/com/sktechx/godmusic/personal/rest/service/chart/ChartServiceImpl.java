@@ -11,9 +11,9 @@
 package com.sktechx.godmusic.personal.rest.service.chart;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Optionals;
 import org.springframework.stereotype.Service;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
@@ -22,12 +22,14 @@ import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.PreferPropsType;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
-import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
-import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.DispPropsImageDto;
+import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartDispPropsVo;
 import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartVo;
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
+import com.sktechx.godmusic.personal.rest.repository.ImageManagementMapper;
+import com.sktechx.godmusic.personal.rest.service.image.ImageReadService;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.KIDS_CHART_KEY;
@@ -48,7 +50,13 @@ public class ChartServiceImpl implements ChartService {
     private ChartMapper chartMapper;
 
     @Autowired
+    private ImageManagementMapper imageManagementMapper;
+
+    @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private ImageReadService imageReadService;
 
     @Autowired
     private MetaClient metaClient;
@@ -62,9 +70,9 @@ public class ChartServiceImpl implements ChartService {
         return redisService;
     }
     @Override
-    public ChartVo getChartWithTrackList(Long characterNo, Long chartId, OsType osType,
-            int trackLimitSize) {
 
+    public ChartVo getChartVoForDetailWithTrackList(Long characterNo, Long chartId, OsType osType,
+            int trackLimitSize) {
 
         ChartTrackDto chartTrackDto =
                 Optional.ofNullable(
@@ -79,55 +87,61 @@ public class ChartServiceImpl implements ChartService {
                 getPreferDisp(
                         chartDispPropsDto ->
                                 chartDispPropsDto.getChartId().equals(chartId)
-                        , osType
-                        , false
                 ),
                 chartTrackDto
         );
     }
     @Override
-    public ChartDto getChartByDispPropsTypeWithTrackList(Long characterNo, String dispPropsType,
+    public ChartDto getChartDtoForHomeByDispPropsTypeWithTrackList(Long characterNo, String dispPropsType,
             OsType osType, int trackLimitSize) {
 
-        ChartDispPropsDto chartDispPropsDto = getPreferDisp(
+        ChartDispPropsVo chartDispPropsVo = getPreferDisp(
                 currentChartDispPropsDto -> dispPropsType.equals(
                         (currentChartDispPropsDto).getDispPropsType()
                 )
-                , osType
-                , false
         );
 
+        getChartBackgroundImage(chartDispPropsVo.getChartId(), osType)
+            .ifPresent(
+                dispPropsImageDto -> chartDispPropsVo.setImgList(dispPropsImageDto.getImgList())
+        );
 
-        ChartDto chartDto =
-                redisService.getWithPrefix(
-                        PreferPropsType.TOP100.getCode().equals(dispPropsType) ?
-                                REALTIME_CHART_KEY : KIDS_CHART_KEY
-                        ,
-                        ChartDto.class
-                );
+        final ChartDto[] chartDtoArray = new ChartDto[1];
 
-        if(chartDto == null) {
+        Optionals.ifPresentOrElse(
+                Optional.ofNullable(
+                        redisService.getWithPrefix(
+                                PreferPropsType.TOP100.getCode().equals(dispPropsType) ?
+                                        REALTIME_CHART_KEY : KIDS_CHART_KEY
+                                ,
+                                ChartDto.class
+                        )
+                ),
 
-            ChartTrackDto chartTrackDto =
-                    Optional.ofNullable(
-                            metaClient.getChartWithTrackList(chartDispPropsDto
-                                    .getChartId(), trackLimitSize)
-                                    .getData()
-                    ).orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
+                chartDto -> chartDtoArray[0] = chartDto
+                ,
+
+                () -> {
+
+                    ChartTrackDto chartTrackDto =
+                            Optional.ofNullable(
+                                    metaClient.getChartWithTrackList(chartDispPropsVo
+                                            .getChartId(), trackLimitSize)
+                                            .getData()
+                            ).orElseThrow(() -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
 
 
-            chartTrackDto.makeTrackDispSn();
+                    chartTrackDto.makeTrackDispSn();
 
-            chartDto = ChartDto.from(chartTrackDto);
+                    chartDtoArray[0] = ChartDto.from(chartDispPropsVo, chartTrackDto);
 
-            if(chartDto != null) {
-                chartDto.setImgList(chartDispPropsDto.getImgList().stream()
-                        .map(chartImageInfo -> new ImageInfo(chartImageInfo.getSize(),
-                        chartImageInfo.getUrl())).collect(Collectors.toList())
-                );
-            }
-        }
+                }
+        );
 
-        return chartDto;
+        return chartDtoArray[0];
+    }
+
+    private Optional<DispPropsImageDto> getChartBackgroundImage(Long chartId, OsType osType){
+        return Optional.ofNullable(imageReadService.getChartBackgroundImage(chartId, osType));
     }
 }

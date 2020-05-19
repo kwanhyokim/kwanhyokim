@@ -13,7 +13,6 @@ package com.sktechx.godmusic.personal.rest.model.dto.chart;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -21,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sktechx.godmusic.personal.common.domain.type.ChartType;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
+import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartDispPropsVo;
 import lombok.Builder;
 import lombok.Data;
 
@@ -62,18 +62,12 @@ public class ChartDto {
     private String chartTaste;
 
 
-    public void setImgList(List<ImageInfo> imgList) {
-
-        if (imgList != null) {
-            imgList.sort(null);
-        }
-
-        this.imgList = imgList;
-    }
-
     public static ChartDto from (ChartTrackDto chartTrackDto){
 
-        return chartTrackDto == null ? null : ChartDto.builder()
+        return chartTrackDto == null ?
+                ChartDto.builder().build()
+                    :
+                ChartDto.builder()
                 .chartId(chartTrackDto.getId())
                 .chartNm(chartTrackDto.getName())
                 .chartType(chartTrackDto.getChartType())
@@ -87,10 +81,10 @@ public class ChartDto {
                 .build();
     }
 
-    public static ChartDto from (ChartDispPropsDto chartDispPropsDto, ChartTrackDto chartTrackDto){
+    public static ChartDto from (ChartDispPropsVo chartDispPropsVo, ChartTrackDto chartTrackDto){
 
-        if(chartDispPropsDto == null || chartTrackDto == null){
-            return null;
+        if(chartDispPropsVo == null || chartTrackDto == null){
+            return ChartDto.builder().build();
         }
 
         ChartDto chartDto =
@@ -99,11 +93,29 @@ public class ChartDto {
         Optional.ofNullable(chartDto)
                 .ifPresent(
                         currentChartDto -> {
-                            currentChartDto.setImgList(
-                                    chartDispPropsDto.getImgList().stream()
-                                    .map(chartImageInfo -> (ImageInfo) chartImageInfo)
-                                            .collect(Collectors.toList()));
-                            currentChartDto.setChartNm(chartDispPropsDto.getChartNm());
+                            currentChartDto.setImgList(chartDispPropsVo.getImgList());
+                            currentChartDto.setChartNm(chartDispPropsVo.getChartNm());
+                        }
+                );
+
+        return chartDto;
+    }
+
+    public static ChartDto from (ChartDispPropsVo chartDispPropsVo, ChartTrackDto chartTrackDto,
+            DispPropsImageDto dispPropsImageDto){
+
+        if(chartDispPropsVo == null || chartTrackDto == null || dispPropsImageDto == null){
+            return ChartDto.builder().build();
+        }
+
+        ChartDto chartDto =
+                ChartDto.from(chartTrackDto);
+
+        Optional.ofNullable(chartDto)
+                .ifPresent(
+                        currentChartDto -> {
+                            currentChartDto.setImgList(dispPropsImageDto.getImgList());
+                            currentChartDto.setChartNm(chartDispPropsVo.getChartNm());
                         }
                 );
 

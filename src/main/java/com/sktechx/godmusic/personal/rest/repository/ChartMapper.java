@@ -16,11 +16,9 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
 import com.sktechx.godmusic.lib.redis.annotation.RedisCacheable;
 import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendChartPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDispPropsDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
 
@@ -33,18 +31,14 @@ import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
 @BaseMapper
 public interface ChartMapper {
 
-    ChartDto selectPreferDispChart(@Param("chartPanelType") RecommendChartPanelType recommendChartPanelType,
-                                   @Param("osType") OsType osType ,
-                                   @Param("trackLimitSize") int trackLimitSize);
-
     @RedisCacheable(key = RedisKeyConstant.PERSONAL_PREFERENCE_GENRE_DEFAULT_KEY, expireSeconds = 60)
     List<ChartDto> selectChartListByDefaultGenre();
 
     List<ChartDto> selectChartListByPreferGenre(@Param("characterNo") Long characterNo);
 
+    @RedisCacheable(key = RedisKeyConstant.CHART_DISPLAY_PROPERTIES_KEY)
     List<ChartDispPropsDto> selectPreferDisp();
 
-
-
+    Long selectSvcGenreIdFromTrack(@Param("trackId") Long trackId);
 
 }

@@ -10,8 +10,10 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto.chart;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -21,11 +23,34 @@ import lombok.Data;
  * @date 2020-04-17
  */
 
+@Builder
 @Data
 public class ChartDispPropsDto {
     private Long chartId;
     private String chartNm;
     private String chartdispNm;
     private String dispPropsType;
-    private List<ChartImageInfo> imgList;
+
+    public static List<ChartDispPropsDto> defaultChartDispPropsList(){
+
+        List<ChartDispPropsDto> list = new ArrayList<>();
+
+        list.add(ChartDispPropsDto.builder()
+                .chartId(1L)
+                .chartNm("FLO 차트")
+                .chartdispNm("FLO 차트")
+                .dispPropsType("TOP100")
+                .build());
+
+        list.add(ChartDispPropsDto.builder()
+                .chartId(3569L)
+                .chartNm("키즈 차트")
+                .chartdispNm("키즈 차트")
+                .dispPropsType("KIDS100")
+                .build());
+
+        return list;
+    }
+
+
 }

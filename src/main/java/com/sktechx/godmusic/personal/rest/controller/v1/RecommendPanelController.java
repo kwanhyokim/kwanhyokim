@@ -167,7 +167,7 @@ public class RecommendPanelController {
 		ChartVo chartVo = null;
 
 		if("Y".equals(mixYn)){
-			chartVo = mongoChartService.getChartWithTrackList(
+			chartVo = mongoChartService.getChartVoForDetailWithTrackList(
 					ctx.getCharacterNo(),
 					chartId,
 					ctx.getOsType(),
@@ -176,7 +176,7 @@ public class RecommendPanelController {
 		}
 
 		if(chartVo == null) {
-			chartVo = chartService.getChartWithTrackList(
+			chartVo = chartService.getChartVoForDetailWithTrackList(
 					ctx.getCharacterNo(), chartId, ctx.getOsType(), 100
 			);
 		}

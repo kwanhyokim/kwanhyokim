@@ -12,15 +12,16 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend;
 
-import com.sktechx.godmusic.personal.common.domain.type.ImageDisplayType;
-import com.sktechx.godmusic.personal.common.domain.type.OsType;
-import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
-import com.sktechx.godmusic.personal.rest.model.dto.ImageManagementDto;
-
 import java.util.List;
 
+import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.personal.common.domain.type.ImageDisplayType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
+import com.sktechx.godmusic.personal.rest.model.dto.ImageManagementDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
+
 /**
- * 설명 :
+ * 설명 : 추천 이미지 관리 서비스
  *
  * @author 안영현/SKTECHX (younghyun.ahn@sk.com)
  * @date 2018. 11. 3.
@@ -29,4 +30,9 @@ public interface RecommendImageManagementService {
 
     List<ImageManagementDto> getRecommendImageList(RecommendPanelContentType recommendType, Long recommendId, ImageDisplayType imageType, OsType osType);
 
+    List<ImageInfo> getRecommendPanelDefaultImageList(OsType osType);
+
+
+    List<ImageInfo> selectRecommendPanelInfoBgImageUrl(String recommendPanelContentType, Long rcmmdId
+            , OsType osType, int dispSn);
 }
