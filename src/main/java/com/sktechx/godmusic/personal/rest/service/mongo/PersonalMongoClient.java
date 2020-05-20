@@ -193,16 +193,14 @@ public interface PersonalMongoClient {
             @PathVariable(name = "chartId") Long chartId,
             @RequestParam(name = "size") Integer trackLimitSize);
 
-    @PutMapping("/personal-mgo/v1/recommends/chart/{chartId}")
+    @PutMapping("/personal-mgo/test/recommends/chart")
     CommonApiResponse addRecommendChart(
-            @RequestHeader(name = "x-gm-fallback-cno") Long fallBackharacterNo,
-            @PathVariable(name = "chartId") Long chartId,
+            @RequestHeader(name = "x-gm-fallback-cno") Long fallBackCharacterNo,
             @RequestBody RecommendChartRequest recommendChartRequest);
 
-    @DeleteMapping("/personal-mgo/v1/recommends/chart/{chartId}")
+    @DeleteMapping("/personal-mgo/test/recommends/chart")
     CommonApiResponse deleteRecommendChart(
-            @RequestHeader(name = "x-gm-fallback-cno") Long fallBackharacterNo,
-            @PathVariable(name = "chartId") Long chartId,
+            @RequestHeader(name = "x-gm-fallback-cno") Long fallBackCharacterNo,
             @RequestBody RecommendChartRequest recommendChartRequest);
 
     @GetMapping("/personal-mgo/v1/recommends/chart/{chartId}/tracks")
