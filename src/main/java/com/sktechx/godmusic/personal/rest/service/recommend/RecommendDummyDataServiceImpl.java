@@ -221,8 +221,8 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
         }
 
         personalMongoClient.addRecommendChart(characterNo,
-                chartDto.getChartId(),
                 RecommendChartRequest.builder()
+                        .chartId(chartDto.getChartId())
                         .characterNo(characterNo)
                         .chartTaste(mix)
                         .trackIdList(
@@ -249,8 +249,8 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
 
 
         personalMongoClient.addRecommendChart(characterNo,
-                chartDto.getChartId(),
                 RecommendChartRequest.builder()
+                        .chartId(chartDto.getChartId())
                         .characterNo(characterNo)
                         .chartTaste(mix)
                         .trackIdList(
@@ -273,8 +273,8 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
                 characterNo));
 
         personalMongoClient.deleteRecommendChart(characterNo,
-                chartDto.getChartId(),
                 RecommendChartRequest.builder()
+                        .chartId(chartDto.getChartId())
                         .characterNo(characterNo)
                 .build()
         );
@@ -286,8 +286,8 @@ public class RecommendDummyDataServiceImpl implements RecommendDummyDataService 
                 characterNo));
 
         personalMongoClient.deleteRecommendChart(characterNo,
-                chartDto.getChartId(),
                 RecommendChartRequest.builder()
+                        .chartId(chartDto.getChartId())
                         .characterNo(characterNo)
                 .build()
         );
