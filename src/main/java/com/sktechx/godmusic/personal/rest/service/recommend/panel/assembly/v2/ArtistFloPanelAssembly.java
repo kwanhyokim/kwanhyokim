@@ -106,11 +106,7 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
         personalPhaseMeta.setCharacterNo(characterNo);
         personalPhaseMeta.setOsType(osType);
 
-        List<Panel> panelList = new ArrayList<>();
-
-        appendPreferArtistPopularTrackPanel(personalPhaseMeta, panelList);
-
-        return panelList;
+        return appendPreferArtistPopularTrackPanel(personalPhaseMeta);
 
     }
 }
