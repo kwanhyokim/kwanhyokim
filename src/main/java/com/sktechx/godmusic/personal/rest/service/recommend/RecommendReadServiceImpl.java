@@ -24,7 +24,7 @@ import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.like.RcmmdLikeTrackDetailDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.like.RcmmdLikeTrackDto;
 import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
 import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
 import com.sktechx.godmusic.personal.rest.client.PersonalMongoClient;
@@ -141,10 +141,8 @@ public class RecommendReadServiceImpl implements RecommendReadService {
         return null;
     }
     @Override
-    public List<RcmmdLikeTrackDetailDto> getRecommendReactiveTrackListByCharacterNo(Long characterNo,
+    public List<RcmmdLikeTrackDto> getRecommendReactiveTrackListByCharacterNo(Long characterNo,
             int panelMaxSize, int trackMaxSize, OsType osType) {
-
-
 
         return null;
     }
