@@ -14,7 +14,7 @@ import java.util.List;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.like.RcmmdLikeTrackDetailDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.like.RcmmdLikeTrackDto;
 
 /**
  * 설명 : XXXXXXXXX
@@ -54,7 +54,7 @@ public interface RecommendReadService {
             OsType osType
     );
 
-    List<RcmmdLikeTrackDetailDto> getRecommendReactiveTrackListByCharacterNo(
+    List<RcmmdLikeTrackDto> getRecommendReactiveTrackListByCharacterNo(
             Long characterNo,
             int panelMaxSize,
             int trackMaxSize,

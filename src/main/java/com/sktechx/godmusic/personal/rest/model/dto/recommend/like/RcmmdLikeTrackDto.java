@@ -17,17 +17,21 @@ import lombok.Builder;
 import lombok.Data;
 
 /**
- * 설명 : 좋아요 추천 트랙 전시용 vo
+ * 설명 : 반응형 추천 personal-mgo dto
  */
 
 @Builder
 @Data
 public class RcmmdLikeTrackDto {
 
+    private Long rcmmdId;
+
     private Long characterNo;
     private Date createDtime;
     private Date updateDtime;
+    private Date dispStartDtime;
 
-    private List<RcmmdLikeTrackDetailDto> rcmmdList;
+    private Long seedTrackId;
+    private List<Long> trackIdList;
 
 }
