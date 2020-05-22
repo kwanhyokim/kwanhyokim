@@ -932,7 +932,7 @@
              c.prefer_disp_nm AS content_title,
              b.music_content_cnt AS track_count,
              a.last_listen_dtime
-             ,d.img_size
+             ,d.img_size AS size
              ,d.img_url AS url
         FROM ( SELECT listen_type, listen_type_id, last_listen_dtime
                 FROM tb_member_last_listen_hist
