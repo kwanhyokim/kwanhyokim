@@ -10,6 +10,8 @@
 
 package com.sktechx.godmusic.personal.rest.service.chart;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.DispPropsImageDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartDispPropsVo;
 import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartVo;
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
@@ -74,6 +77,18 @@ public class ChartServiceImpl implements ChartService {
     public ChartVo getChartVoForDetailWithTrackList(Long characterNo, Long chartId, OsType osType,
             int trackLimitSize) {
 
+        ChartDispPropsVo chartDispPropsVo = getPreferDisp(
+                currentChartDispPropsDto ->
+                        currentChartDispPropsDto.getChartId().equals(chartId)
+        );
+
+        final List<ImageInfo> bgImgList = new ArrayList<>();
+
+        imageReadService.getChartDetailThumbnailImage(chartDispPropsVo.getChartId(), osType)
+        .ifPresent(
+                dispPropsImageDto -> bgImgList.addAll(dispPropsImageDto.getImgList())
+        );
+
         ChartTrackDto chartTrackDto =
                 Optional.ofNullable(
                         metaClient.getChartWithTrackList(chartId, trackLimitSize)
@@ -88,7 +103,8 @@ public class ChartServiceImpl implements ChartService {
                         chartDispPropsDto ->
                                 chartDispPropsDto.getChartId().equals(chartId)
                 ),
-                chartTrackDto
+                chartTrackDto,
+                bgImgList
         );
     }
     @Override
