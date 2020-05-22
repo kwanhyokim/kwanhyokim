@@ -199,7 +199,6 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
             @Override
             public CommonApiResponse addRecommendChart(
                     Long characterNo,
-                    Long chartId,
                     RecommendChartRequest recommendChartRequest) {
                 log.warn("{}@addRecommentChart-fallback, message={}",
                         characterNo, throwable.getMessage()
@@ -207,7 +206,7 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
                 return emptyApiResponse;
             }
             @Override
-            public CommonApiResponse deleteRecommendChart(Long characterNo, Long chartId,
+            public CommonApiResponse deleteRecommendChart(Long characterNo,
                     @RequestBody RecommendChartRequest recommendChartRequest) {
                 log.warn("{}@deleteRecommentChart-fallback, message={}",
                         characterNo, throwable.getMessage()
