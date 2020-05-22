@@ -39,6 +39,35 @@ public class ImageReadServiceImpl implements ImageReadService {
     @Autowired
     RedisService redisService;
 
+    private final int chartAdminImageExpireSeconds = 3600;
+
+    @Override
+    public Optional<DispPropsImageDto> getChartDetailThumbnailImage(Long chartId, OsType osType) {
+
+        DispPropsImageDto dispPropsImageDto = redisService.getWithPrefix(
+                String.format(RedisKeyConstant.PERSONAL_CHART_DETAIL_THUMBNAIL_IMAGE_KEY, chartId,
+                        osType)
+                , DispPropsImageDto.class
+        );
+
+        if( dispPropsImageDto != null){
+            return Optional.of(dispPropsImageDto);
+        }
+
+        dispPropsImageDto = Optional.ofNullable(
+                imageManagementMapper.selectChartDetailThumbnailImageList(chartId, osType)
+        ).orElse(null);
+
+        if( dispPropsImageDto != null) {
+            redisService.setWithPrefix(
+                    String.format(RedisKeyConstant.PERSONAL_CHART_BACKGROUND_IMAGE_KEY, chartId,
+                            osType),
+                    dispPropsImageDto, chartAdminImageExpireSeconds
+                    );
+        }
+
+        return Optional.ofNullable(dispPropsImageDto);
+    }
     // 일반 차트 배경 이미지 조회
     @Override
     public DispPropsImageDto getChartBackgroundImage(Long chartId, OsType osType) {
@@ -60,11 +89,12 @@ public class ImageReadServiceImpl implements ImageReadService {
                 .findFirst()
             .orElse(null);
 
-        redisService.setWithPrefix(
-                String.format(RedisKeyConstant.PERSONAL_CHART_BACKGROUND_IMAGE_KEY, chartId,
-                        osType)
-                , dispPropsImageDto
-        );
+        if( dispPropsImageDto != null) {
+            redisService.setWithPrefix(
+                    String.format(RedisKeyConstant.PERSONAL_CHART_BACKGROUND_IMAGE_KEY, chartId,
+                            osType),
+                    dispPropsImageDto, chartAdminImageExpireSeconds);
+        }
 
         return dispPropsImageDto;
 
@@ -93,7 +123,7 @@ public class ImageReadServiceImpl implements ImageReadService {
                         String.format(RedisKeyConstant.PERSONAL_PRICHART_BACKGROUND_IMAGE_KEY,
                             svcGenreId, osType)
                         , dispPropsImageDto
-                        , 3600);
+                        , chartAdminImageExpireSeconds);
 
             }
         }
@@ -129,7 +159,7 @@ public class ImageReadServiceImpl implements ImageReadService {
                         String.format(RedisKeyConstant.PERSONAL_PRICHART_DEFAULT_BACKGROUND_IMAGE_KEY,
                         chartId)
                         , dispPropsImageDto
-                        , 3600);
+                        , chartAdminImageExpireSeconds);
             }
         }
 

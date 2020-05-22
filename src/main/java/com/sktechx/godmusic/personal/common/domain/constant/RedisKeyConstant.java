@@ -68,6 +68,9 @@ public class RedisKeyConstant {
 	// 추천 차트 장르별 배경 이미지
 	public static final String PERSONAL_PRICHART_BACKGROUND_IMAGE_KEY =
 			"godmusic.personalapi.prichart.background.image:%s.%s";
+	// 차트 상세 썸네일 이미지
+	public static final String PERSONAL_CHART_DETAIL_THUMBNAIL_IMAGE_KEY =
+			"godmusic.personalapi.chart.detail.thumbnail.image:%s.%s";
 
 	/** 선호와 유사한 아티스트 **/
 

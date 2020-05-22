@@ -48,6 +48,9 @@ public interface ImageManagementMapper {
     DispPropsImageDto selectMixChartBackgroundImageList(@Param("dispId") Long svcGenreId,
             @Param("osType") OsType osType);
 
+    DispPropsImageDto selectChartDetailThumbnailImageList(@Param("dispId") Long dispId,
+            @Param("osType") OsType osType
+    );
 }
 
 
