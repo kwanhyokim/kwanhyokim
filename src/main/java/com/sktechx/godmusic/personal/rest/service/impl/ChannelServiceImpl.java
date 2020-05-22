@@ -302,9 +302,8 @@ public class ChannelServiceImpl implements ChannelService {
          *       개인화차트 청취이력리스트는 v4.15.0 이상만 반환한다
          */
         boolean OVER_VERSION_4_15_0 = !Strings.isNullOrEmpty(appVersion) && new ComparableVersion(appVersion).compareTo(new ComparableVersion("4.15.0")) >= 0;
-        boolean isNotWeb = OsType.WEB != osType;
 
-        if (OVER_VERSION_4_15_0 && isNotWeb) {
+        if (OVER_VERSION_4_15_0) {
             List<LastListenHistoryDto> lastListenHistoryByPrivateChart = channelMapper.selectLastListenHistoryWithPrivateChart(memberNo, characterNo, osType);
             for (LastListenHistoryDto each : lastListenHistoryByPrivateChart) {
                 each.setContentTitle(each.getContentTitle() + " " + PREFIX_STR_PRIVATE_CHART);
