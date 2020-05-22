@@ -72,21 +72,21 @@
 
 	<select id="selectDefaultMixChartBackgroundImageList" resultMap="dispPropsResultMap" >
 		SELECT
-			b.disp_id AS id,
-			c.os_type,
-			c.img_size,
-			c.img_url
+			a.disp_id AS id,
+			b.os_type,
+			b.img_size,
+			b.img_url
 		FROM
-			tb_prefer_disp b
+			tb_prefer_disp a
 				INNER JOIN
-			tb_img_mang c
-			ON b.disp_id = c.img_content_id
-				AND b.disp_id = #{dispId}
-				AND b.disp_type = 'CHART'
-				AND c.img_content_type = 'MIX_CHART'
-				AND c.dfk_type = 'EVERY'
-				AND c.img_disp_type = 'MAIN_TOP'
-				AND c.os_type = 'ALL'
+			tb_img_mang b
+			ON a.prefer_disp_id = b.img_content_id
+				AND a.disp_id = #{dispId}
+				AND a.disp_type = 'CHART'
+				AND b.img_content_type = 'MIX_CHART'
+				AND b.dfk_type = 'EVERY'
+				AND b.img_disp_type = 'MAIN_TOP'
+				AND b.os_type = 'ALL'
 	</select>
 
 	<select id="selectMixChartBackgroundImageList" resultMap="dispPropsResultMap" >
@@ -109,7 +109,6 @@
 				AND c.os_type = #{osType}
 	</select>
 	<select id="selectChartDetailThumbnailImageList" resultMap="dispPropsResultMap" >
-
 		SELECT
 			a.disp_id AS id,
 			b.img_size,
@@ -118,10 +117,10 @@
 			tb_prefer_disp a
 		INNER JOIN tb_img_mang b
 			ON a.prefer_disp_id = b.img_content_id
-			AND a.prefer_disp_id = #{dispId}
+			AND a.disp_id = #{dispId}
 			AND b.img_content_type = 'MIX_CHART'
-			AND img_disp_type = 'RCT_DTL'
-			AND os_type IN ('ALL', #{osType})
+			AND b.img_disp_type = 'RCT_DTL'
+			AND b.os_type IN ('ALL', #{osType})
 	</select>
 
 </mapper>
