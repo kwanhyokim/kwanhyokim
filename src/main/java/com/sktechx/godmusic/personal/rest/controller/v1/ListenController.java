@@ -17,7 +17,6 @@ import com.sktechx.godmusic.personal.common.domain.domain.Naming;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.common.resolver.ResourcePlayLogResolver;
-import com.sktechx.godmusic.personal.rest.client.ExternalClient;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenTrackRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ResourcePlayLogRequestParam;
@@ -26,7 +25,6 @@ import com.sktechx.godmusic.personal.rest.validate.Validator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,29 +50,19 @@ import java.util.List;
 @Validated
 public class ListenController {
 
-    @Value("${send.listen.log}")
-    private boolean isSendListenLog;
-
     private final ListenService listenService;
     private final ResourcePlayLogResolver resourcePlayLogResolver;
-    private final ExternalClient externalClient;
 
     public ListenController(ListenService listenService,
-                            ResourcePlayLogResolver resourcePlayLogResolver,
-                            ExternalClient externalClient) {
+                            ResourcePlayLogResolver resourcePlayLogResolver) {
         this.listenService = listenService;
         this.resourcePlayLogResolver = resourcePlayLogResolver;
-        this.externalClient = externalClient;
     }
 
     @ApiOperation(value = "Resource Bulk 청취 로그", notes = "Resource 재생(청취) Bulk로 받는 api (For Cached Streaming)")
     @PostMapping("/resource/list")
     public CommonApiResponse addBulkCachedListenHistByResource(
             @RequestBody List<ResourcePlayLogRequestParam> logRequestParamList) {
-
-        if (isSendListenLog) {
-            logRequestParamList.forEach(externalClient::sendListenLogRequest);
-        }
 
         GMContext gmContext = GMContext.getContext();
         Validator.loginValidate(gmContext);
@@ -102,11 +90,6 @@ public class ListenController {
         GMContext gmContext = GMContext.getContext();
         Validator.loginValidate(gmContext);
         log.debug("[RESOURCE 청취 로그] logRequestParam={}", logRequestParam);
-
-        // TODO buildNumber 확인해야함
-        if (isSendListenLog) {
-            externalClient.sendListenLogRequest(logRequestParam);
-        }
 
         String requestSourceType = logRequestParam.getSourceType();
         if (requestSourceType.startsWith("VIDEO") || "MV".equals(requestSourceType)) {

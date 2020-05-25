@@ -14,7 +14,6 @@ import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.personal.common.domain.type.AwsBucketType;
 import com.sktechx.godmusic.personal.rest.client.ExternalClient;
 import com.sktechx.godmusic.personal.rest.model.vo.external.AwsFileVo;
-import com.sktechx.godmusic.personal.rest.model.vo.listen.ResourcePlayLogRequestParam;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -36,12 +35,6 @@ public class ExternalClientFallbackFactory implements FallbackFactory<ExternalCl
             @Override
             public CommonApiResponse<Void> ping() {
                 log.warn("[WARM-UP] ... external Ping 호출 실패. message={}", throwable.getMessage());
-                return null;
-            }
-
-            @Override
-            public CommonApiResponse<Void> sendListenLogRequest(ResourcePlayLogRequestParam logRequestParam) {
-                log.error("[Listen-Pipeline] 호출 실패, message={}", throwable.getMessage());
                 return null;
             }
 
