@@ -63,6 +63,7 @@ public class ListenController {
     @PostMapping("/resource/list")
     public CommonApiResponse addBulkCachedListenHistByResource(
             @RequestBody List<ResourcePlayLogRequestParam> logRequestParamList) {
+
         GMContext gmContext = GMContext.getContext();
         Validator.loginValidate(gmContext);
         Validator.bulkResourcePlayLogRequestParamValidate(logRequestParamList);

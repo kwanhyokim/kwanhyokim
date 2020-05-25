@@ -8,6 +8,7 @@ import com.sktechx.godmusic.personal.common.domain.type.AnalsStatusType;
 import com.sktechx.godmusic.personal.common.domain.type.AwsBucketType;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
+import com.sktechx.godmusic.personal.rest.client.ExternalClient;
 import com.sktechx.godmusic.personal.rest.model.dto.member.MemberDvcDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrEventDto;
@@ -17,7 +18,9 @@ import com.sktechx.godmusic.personal.rest.model.vo.external.AwsFileVo;
 import com.sktechx.godmusic.personal.rest.model.vo.ocr.GetOcrStatusResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.ocr.OcrAnalsVo;
 import com.sktechx.godmusic.personal.rest.repository.OcrMapper;
-import com.sktechx.godmusic.personal.rest.service.*;
+import com.sktechx.godmusic.personal.rest.service.MemberApiProxy;
+import com.sktechx.godmusic.personal.rest.service.OcrHelperService;
+import com.sktechx.godmusic.personal.rest.service.OcrService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,14 +29,15 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Slf4j
 @Service
 public class OcrServiceImpl implements OcrService {
 
     @Autowired
-    private ExternalApiProxy externalApiProxy;
+    private ExternalClient externalApiProxy;
 
     @Autowired
     private MemberApiProxy memberApiProxy;
