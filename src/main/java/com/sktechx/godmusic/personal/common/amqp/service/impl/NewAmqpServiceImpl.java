@@ -49,14 +49,7 @@ public class NewAmqpServiceImpl implements NewAmqpService, CommandLineRunner, Di
 
     @Override
     public void deliverUserEvent(UserEvent data) {
-
-    }
-
-    @Override
-    public void destroy() throws Exception {
-        if (!ObjectUtils.isEmpty(amqpDeliver)) {
-            amqpDeliver.stop();
-        }
+        amqpDeliver.request(exchangeUserEvent, data);
     }
 
     @Override
@@ -72,6 +65,13 @@ public class NewAmqpServiceImpl implements NewAmqpService, CommandLineRunner, Di
             throw new IllegalArgumentException("not found exchange key name : " + propExchangeUserEvent);
         }
         amqpDeliver.start();
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        if (!ObjectUtils.isEmpty(amqpDeliver)) {
+            amqpDeliver.stop();
+        }
     }
 
 }

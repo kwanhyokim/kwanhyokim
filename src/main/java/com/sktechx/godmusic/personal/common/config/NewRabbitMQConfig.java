@@ -47,6 +47,7 @@ public class NewRabbitMQConfig implements RecoveryListener {
 
     @Bean
     public RabbitTemplate newRabbitTemplate() {
+        log.debug("newRabbitTemplate");
         RabbitTemplate template = new RabbitTemplate(newConnectionFactory());
         template.setMessageConverter(jsonMessageConverter());
         return template;
