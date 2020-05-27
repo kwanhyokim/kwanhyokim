@@ -120,6 +120,19 @@
 		LIMIT 1
 	</select>
 
+	<select id="selectAdaptivePanelImageList" resultMap="recommendImageResultMap">
+		SELECT
+		  img_disp_type,
+		  os_type,
+		  img_size,
+		  img_url
+		FROM tb_img_mang
+		WHERE img_content_type = #{recommendType}
+		AND img_disp_type = #{imageType}
+		AND os_TYPE IN ('ALL', #{osType})
+		LIMIT 1
+	</select>
+
 	<select id="selectRecommendPanelDefaultImageList" resultType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo">
 		SELECT
 			os_type,
