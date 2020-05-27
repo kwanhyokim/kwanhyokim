@@ -39,10 +39,10 @@ public class NewRabbitMQConfig implements RecoveryListener {
     @Value("${new.amqp.uri.vhost}")
     private String vhost;
 
-    @Value("${amqp.credential.user}")
+    @Value("${new.amqp.credential.user}")
     private String user;
 
-    @Value("${amqp.credential.password}")
+    @Value("${new.amqp.credential.password}")
     private String password;
 
     @Bean
