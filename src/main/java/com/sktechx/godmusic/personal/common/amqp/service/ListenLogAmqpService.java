@@ -16,12 +16,8 @@ package com.sktechx.godmusic.personal.common.amqp.service;
  * @author Groot(조민국) / dev.mingood@sk.com
  * @since 2020. 05. 22
  */
-public interface NewAmqpDeliver {
+public interface ListenLogAmqpService {
 
-    void request(String exchangeName, Object message);
-
-    void start();
-
-    void stop();
+    void deliverSourcePlay(Object message);
 
 }

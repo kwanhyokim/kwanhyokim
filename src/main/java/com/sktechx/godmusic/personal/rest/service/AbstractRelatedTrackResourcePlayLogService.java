@@ -16,7 +16,7 @@ import com.sktechx.godmusic.personal.common.amqp.domain.UserEvent;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEventTarget;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEventType;
 import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
-import com.sktechx.godmusic.personal.common.amqp.service.NewAmqpService;
+import com.sktechx.godmusic.personal.common.amqp.service.ListenLogAmqpService;
 import com.sktechx.godmusic.personal.common.domain.type.AppNameType;
 import com.sktechx.godmusic.personal.common.domain.type.ResourceLogType;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
@@ -34,12 +34,12 @@ import java.util.Optional;
 public abstract class AbstractRelatedTrackResourcePlayLogService implements ResourcePlayLogService {
 
     protected AmqpService amqpService;
-    protected NewAmqpService newAmqpService;
+    protected ListenLogAmqpService listenLogAmqpService;
 
     public AbstractRelatedTrackResourcePlayLogService(AmqpService amqpService,
-                                                      NewAmqpService newAmqpService) {
+                                                      ListenLogAmqpService listenLogAmqpService) {
         this.amqpService = amqpService;
-        this.newAmqpService = newAmqpService;
+        this.listenLogAmqpService = listenLogAmqpService;
     }
 
     /**

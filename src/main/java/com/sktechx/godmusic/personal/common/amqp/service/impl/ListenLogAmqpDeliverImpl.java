@@ -10,7 +10,7 @@
 
 package com.sktechx.godmusic.personal.common.amqp.service.impl;
 
-import com.sktechx.godmusic.personal.common.amqp.service.NewAmqpDeliver;
+import com.sktechx.godmusic.personal.common.amqp.service.ListenLogAmqpDeliver;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,9 +28,9 @@ import java.util.concurrent.TimeUnit;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class NewAmqpDeliverImpl implements NewAmqpDeliver {
+public class ListenLogAmqpDeliverImpl implements ListenLogAmqpDeliver {
 
-    private final RabbitTemplate newRabbitTemplate;
+    private final RabbitTemplate listenLogRabbitTemplate;
 
     private BlockingQueue<DeliverItem> queue = new LinkedBlockingDeque<>();
     private Thread queueThread;
@@ -97,7 +97,7 @@ public class NewAmqpDeliverImpl implements NewAmqpDeliver {
 
     private boolean deliver(DeliverItem message) {
         try {
-            newRabbitTemplate.convertAndSend(message.exchangeName, "", message.data);
+            listenLogRabbitTemplate.convertAndSend(message.exchangeName, "", message.data);
             log.debug("[{}] deliver success : {}", this.getClass().getSimpleName(), message.data.toString());
             return true;
 

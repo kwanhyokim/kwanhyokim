@@ -10,8 +10,8 @@
 
 package com.sktechx.godmusic.personal.common.amqp.service.impl;
 
-import com.sktechx.godmusic.personal.common.amqp.service.NewAmqpDeliver;
-import com.sktechx.godmusic.personal.common.amqp.service.NewAmqpService;
+import com.sktechx.godmusic.personal.common.amqp.service.ListenLogAmqpDeliver;
+import com.sktechx.godmusic.personal.common.amqp.service.ListenLogAmqpService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +32,7 @@ import org.springframework.util.ObjectUtils;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class NewAmqpServiceImpl implements NewAmqpService, CommandLineRunner, DisposableBean {
+public class ListenLogAmqpServiceImpl implements ListenLogAmqpService, CommandLineRunner, DisposableBean {
 
     @Value("${send.listen.log}")
     private boolean isSend;
@@ -40,7 +40,7 @@ public class NewAmqpServiceImpl implements NewAmqpService, CommandLineRunner, Di
     public final static String propExchangeTrackListen = "amqp.exchange.track_listen";
 
     private String exchangeTrackListen;
-    private NewAmqpDeliver amqpDeliver;
+    private ListenLogAmqpDeliver amqpDeliver;
 
     private final Environment environment;
     private final RabbitTemplate newRabbitTemplate;
@@ -55,7 +55,7 @@ public class NewAmqpServiceImpl implements NewAmqpService, CommandLineRunner, Di
 
     @Override
     public void run(String... args) throws Exception {
-        amqpDeliver = new NewAmqpDeliverImpl(newRabbitTemplate);
+        amqpDeliver = new ListenLogAmqpDeliverImpl(newRabbitTemplate);
         this.exchangeTrackListen = environment.getProperty(propExchangeTrackListen);
         if (StringUtils.isEmpty(this.exchangeTrackListen)) {
             throw new IllegalArgumentException("not found exchange key name : " + propExchangeTrackListen);

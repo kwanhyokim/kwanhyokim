@@ -10,16 +10,18 @@
 
 package com.sktechx.godmusic.personal.common.amqp.service;
 
-import com.sktechx.godmusic.personal.common.amqp.domain.UserEvent;
-
 /**
  * 설명 : XXXXXXXXXXX
  *
  * @author Groot(조민국) / dev.mingood@sk.com
  * @since 2020. 05. 22
  */
-public interface NewAmqpService {
+public interface ListenLogAmqpDeliver {
 
-    void deliverSourcePlay(Object message);
+    void request(String exchangeName, Object message);
+
+    void start();
+
+    void stop();
 
 }

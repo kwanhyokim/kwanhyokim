@@ -31,23 +31,22 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 @Configuration
 @EnableRabbit
-public class NewRabbitMQConfig implements RecoveryListener {
+public class ListenLogRabbitMQConfig implements RecoveryListener {
 
-    @Value("${new.amqp.uri.host}")
+    @Value("${listen.amqp.uri.host}")
     private String host;
 
-    @Value("${new.amqp.uri.vhost}")
+    @Value("${listen.amqp.uri.vhost}")
     private String vhost;
 
-    @Value("${new.amqp.credential.user}")
+    @Value("${listen.amqp.credential.user}")
     private String user;
 
-    @Value("${new.amqp.credential.password}")
+    @Value("${listen.amqp.credential.password}")
     private String password;
 
     @Bean
-    public RabbitTemplate newRabbitTemplate() {
-        log.debug("newRabbitTemplate");
+    public RabbitTemplate listenLogRabbitTemplate() {
         RabbitTemplate template = new RabbitTemplate(newConnectionFactory());
         template.setMessageConverter(jsonMessageConverter());
         return template;
@@ -71,11 +70,11 @@ public class NewRabbitMQConfig implements RecoveryListener {
 
     @Override
     public void handleRecovery(Recoverable recoverable) {
-        log.warn("MCP(NEW)-RabbitMQ connection recovered");
+        log.warn("ListenLog-RabbitMQ connection recovered");
     }
 
     @Override
     public void handleRecoveryStarted(Recoverable recoverable) {
-        log.warn("MCP(NEW)-RabbitMQ connection recovery started");
+        log.warn("ListenLog-RabbitMQ connection recovery started");
     }
 }
