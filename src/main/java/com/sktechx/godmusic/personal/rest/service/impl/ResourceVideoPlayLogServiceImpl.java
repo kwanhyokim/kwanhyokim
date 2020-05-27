@@ -17,6 +17,7 @@ import com.sktechx.godmusic.personal.common.amqp.domain.UserEvent;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEventTarget;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEventType;
 import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
+import com.sktechx.godmusic.personal.common.amqp.service.NewAmqpService;
 import com.sktechx.godmusic.personal.common.domain.type.AppNameType;
 import com.sktechx.godmusic.personal.common.domain.type.ResourceLogType;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
@@ -41,11 +42,14 @@ import org.springframework.stereotype.Service;
 public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
 
     private final AmqpService amqpService;
+    private final NewAmqpService newAmqpService;
     private final TokenService tokenService;
 
     public ResourceVideoPlayLogServiceImpl(AmqpService amqpService,
+                                           NewAmqpService newAmqpService,
                                            TokenService tokenService) {
         this.amqpService = amqpService;
+        this.newAmqpService = newAmqpService;
         this.tokenService = tokenService;
     }
 
@@ -67,6 +71,7 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
         }
 
         amqpService.deliverSourcePlay(sourcePlayLogBuilder.build());
+        newAmqpService.deliverSourcePlay(sourcePlayLogBuilder.build());
         log.info("[VIDEO 청취로그 MQ 발송] {}", sourcePlayLogBuilder.toString());
     }
 
@@ -92,6 +97,7 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
                     .build();
 
             amqpService.deliverUserEvent(userEvent);
+            newAmqpService.deliverUserEvent(userEvent);
             log.info("[VIDEO 청취로그][UserEvent MQ 발송] {}", userEvent.toString());
         }
     }

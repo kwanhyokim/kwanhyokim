@@ -14,9 +14,11 @@ import com.sktechx.godmusic.personal.common.amqp.domain.UserEvent;
 import com.sktechx.godmusic.personal.common.amqp.service.NewAmqpDeliver;
 import com.sktechx.godmusic.personal.common.amqp.service.NewAmqpService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -28,9 +30,13 @@ import org.springframework.util.ObjectUtils;
  * @author Groot(조민국) / dev.mingood@sk.com
  * @since 2020. 05. 22
  */
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class NewAmqpServiceImpl implements NewAmqpService, CommandLineRunner, DisposableBean {
+
+    @Value("${send.listen.log}")
+    private boolean isSend;
 
     public final static String propExchangeTrackListen = "amqp.exchange.track_listen";
     public final static String propExchangeUserEvent = "amqp.exchange.user_event";
@@ -44,12 +50,18 @@ public class NewAmqpServiceImpl implements NewAmqpService, CommandLineRunner, Di
 
     @Override
     public void deliverSourcePlay(Object message) {
-        amqpDeliver.request(exchangeTrackListen, message);
+        log.debug("isSendListenLog={}", isSend);
+        if (isSend) {
+            amqpDeliver.request(exchangeTrackListen, message);
+        }
     }
 
     @Override
     public void deliverUserEvent(UserEvent data) {
-        amqpDeliver.request(exchangeUserEvent, data);
+        log.debug("isSendListenLog={}", isSend);
+        if (isSend) {
+            amqpDeliver.request(exchangeUserEvent, data);
+        }
     }
 
     @Override

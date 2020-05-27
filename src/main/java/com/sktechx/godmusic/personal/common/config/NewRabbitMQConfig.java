@@ -71,11 +71,11 @@ public class NewRabbitMQConfig implements RecoveryListener {
 
     @Override
     public void handleRecovery(Recoverable recoverable) {
-        log.warn("MCP-RabbitMQ connection recovered");
+        log.warn("MCP(NEW)-RabbitMQ connection recovered");
     }
 
     @Override
     public void handleRecoveryStarted(Recoverable recoverable) {
-        log.warn("MCP-RabbitMQ connection recovery started");
+        log.warn("MCP(NEW)-RabbitMQ connection recovery started");
     }
 }

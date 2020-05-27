@@ -13,6 +13,7 @@ package com.sktechx.godmusic.personal.rest.service.impl;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
+import com.sktechx.godmusic.personal.common.amqp.service.NewAmqpService;
 import com.sktechx.godmusic.personal.common.domain.type.ResourceLogType;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.rest.model.dto.listen.SourcePlayLog;
@@ -38,8 +39,9 @@ public class ResourceDrmPlayLogServiceImpl extends AbstractRelatedTrackResourceP
     private final TokenService tokenService;
 
     public ResourceDrmPlayLogServiceImpl(AmqpService amqpService,
+                                         NewAmqpService newAmqpService,
                                          TokenService tokenService) {
-        super(amqpService);
+        super(amqpService, newAmqpService);
         this.amqpService = amqpService;
         this.tokenService = tokenService;
     }
@@ -66,6 +68,7 @@ public class ResourceDrmPlayLogServiceImpl extends AbstractRelatedTrackResourceP
         }
 
         amqpService.deliverSourcePlay(sourcePlayLogBuilder.build());
+        newAmqpService.deliverSourcePlay(sourcePlayLogBuilder.build());
         log.info("[DRM TRACK 청취로그][MQ 발송] {}", sourcePlayLogBuilder.toString());
     }
 

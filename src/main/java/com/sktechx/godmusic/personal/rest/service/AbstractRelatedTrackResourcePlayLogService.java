@@ -16,6 +16,7 @@ import com.sktechx.godmusic.personal.common.amqp.domain.UserEvent;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEventTarget;
 import com.sktechx.godmusic.personal.common.amqp.domain.UserEventType;
 import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
+import com.sktechx.godmusic.personal.common.amqp.service.NewAmqpService;
 import com.sktechx.godmusic.personal.common.domain.type.AppNameType;
 import com.sktechx.godmusic.personal.common.domain.type.ResourceLogType;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
@@ -33,9 +34,12 @@ import java.util.Optional;
 public abstract class AbstractRelatedTrackResourcePlayLogService implements ResourcePlayLogService {
 
     protected AmqpService amqpService;
+    protected NewAmqpService newAmqpService;
 
-    public AbstractRelatedTrackResourcePlayLogService(AmqpService amqpService) {
+    public AbstractRelatedTrackResourcePlayLogService(AmqpService amqpService,
+                                                      NewAmqpService newAmqpService) {
         this.amqpService = amqpService;
+        this.newAmqpService = newAmqpService;
     }
 
     /**
@@ -84,6 +88,7 @@ public abstract class AbstractRelatedTrackResourcePlayLogService implements Reso
         // playOfflineYn == N 이고 userEvent가 존재할 때만 UserEvent를 남긴다.
         if (YnType.Y != logRequestParam.getPlayOfflineYn()) {
             this.createUserEventByTrack(gmContext, logRequestParam).ifPresent(amqpService::deliverUserEvent);
+            this.createUserEventByTrack(gmContext, logRequestParam).ifPresent(newAmqpService::deliverUserEvent);
         }
     }
 
