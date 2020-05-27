@@ -183,7 +183,7 @@ public interface PersonalMongoClient {
     /**
      * 좋아요 연계 반응형 패널 곡 목록 조회
      */
-    @PutMapping("/personal-mgo/internal/recommends/{rcmmdId}")
+    @GetMapping("/personal-mgo/internal/recommends/{rcmmdId}")
     CommonApiResponse<AdaptivePanelTrackDto> getLikeRelatedRecommendTracks(
             @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
             @PathVariable(name = "rcmmdId") Long rcmmdId,
