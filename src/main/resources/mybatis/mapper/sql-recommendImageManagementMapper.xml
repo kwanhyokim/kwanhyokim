@@ -127,8 +127,8 @@
 		  img_size,
 		  img_url
 		FROM tb_img_mang
-		WHERE img_content_type = #{recommendType}
-		AND img_disp_type = #{imageType}
+		WHERE img_content_type = 'RX_PANNEL'
+		AND img_disp_type = 'RCT_DTL'
 		AND os_TYPE IN ('ALL', #{osType})
 		LIMIT 1
 	</select>

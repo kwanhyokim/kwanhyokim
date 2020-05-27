@@ -54,9 +54,7 @@ public interface RecommendImageManagementMapper {
     /**
      * 반응형 패널(방금레이더) 추천 이미지 조회
      */
-    List<ImageManagementDto> selectAdaptivePanelImageList(@Param("recommendType") RecommendPanelContentType recommendType,
-                                                          @Param("imageType") ImageDisplayType imageType,
-                                                          @Param("osType") OsType osType);
+    List<ImageManagementDto> selectAdaptivePanelImageList(@Param("osType") OsType osType);
 
 
     // 추천 패널 상세 헤더 배경 이미지
