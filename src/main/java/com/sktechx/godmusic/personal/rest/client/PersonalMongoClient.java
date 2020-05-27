@@ -9,6 +9,7 @@
 
 package com.sktechx.godmusic.personal.rest.client;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.sktechx.godmusic.personal.rest.client.fallback.PersonalMongoClientFallbackFactory;
@@ -32,7 +33,6 @@ import com.sktechx.godmusic.personal.rest.model.vo.test.RecommendChartRequest;
  * @author Daniel/DREAMUS COMPANY (daekwon.song@sk.com)
  * @date 2019. 08. 30.
  */
-@Service
 @FeignClient(value = "personal-mgo-api", fallbackFactory = PersonalMongoClientFallbackFactory.class)
 public interface PersonalMongoClient {
 
@@ -179,6 +179,28 @@ public interface PersonalMongoClient {
             @PathVariable(name = "rcmmdType") String rcmmdType,
             @PathVariable(name = "rcmmdId") Long rcmmdId,
             @RequestBody RecommendUpdateRequest request);
+
+    /**
+     * 좋아요 연계 반응형 패널 곡 목록 조회
+     */
+    @PutMapping("/personal-mgo/internal/recommends/{rcmmdId}")
+    CommonApiResponse<AdaptivePanelTrackDto> getLikeRelatedRecommendTracks(
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
+            @PathVariable(name = "rcmmdId") Long rcmmdId,
+            @RequestParam(name = "rcmmdType") String rcmmdType);
+
+
+    default List<Long> getLikeRelatedRecommendTrackIds(Long characterNo,
+                                                       Long rcmmdId,
+                                                       String rcmmdType) {
+
+        CommonApiResponse<AdaptivePanelTrackDto> response = this.getLikeRelatedRecommendTracks(characterNo, rcmmdId, rcmmdType);
+        if (response != null && response.getData() != null) {
+            return response.getData().getTrackIds();
+        }
+
+        return Collections.emptyList();
+    }
 
     /**
      * 추천 차트 조회

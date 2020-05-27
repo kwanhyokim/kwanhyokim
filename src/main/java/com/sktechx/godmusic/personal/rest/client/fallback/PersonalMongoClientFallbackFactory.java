@@ -189,6 +189,18 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
                 );
                 return emptyApiResponse;
             }
+
+            @Override
+            public CommonApiResponse<AdaptivePanelTrackDto> getLikeRelatedRecommendTracks(Long characterNo,
+                                                                                          Long rcmmdId,
+                                                                                          String rcmmdType) {
+
+                log.warn("{}@getLikeRelatedRecommendTracks-fallback, message={}",
+                        characterNo, throwable.getMessage());
+
+                return emptyApiResponse;
+            }
+
             @Override
             public CommonApiResponse<ChartTrackDto> getRecommendChart(Long characterNo,
                     Long chartId, Integer trackLimitSize) {
