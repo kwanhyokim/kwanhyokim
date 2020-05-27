@@ -22,6 +22,4 @@ public interface NewAmqpService {
 
     void deliverSourcePlay(Object message);
 
-    void deliverUserEvent(UserEvent data);
-
 }

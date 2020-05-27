@@ -97,7 +97,6 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
                     .build();
 
             amqpService.deliverUserEvent(userEvent);
-            newAmqpService.deliverUserEvent(userEvent);
             log.info("[VIDEO 청취로그][UserEvent MQ 발송] {}", userEvent.toString());
         }
     }

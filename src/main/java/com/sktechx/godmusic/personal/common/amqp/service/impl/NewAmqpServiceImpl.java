@@ -10,7 +10,6 @@
 
 package com.sktechx.godmusic.personal.common.amqp.service.impl;
 
-import com.sktechx.godmusic.personal.common.amqp.domain.UserEvent;
 import com.sktechx.godmusic.personal.common.amqp.service.NewAmqpDeliver;
 import com.sktechx.godmusic.personal.common.amqp.service.NewAmqpService;
 import lombok.RequiredArgsConstructor;
@@ -39,10 +38,8 @@ public class NewAmqpServiceImpl implements NewAmqpService, CommandLineRunner, Di
     private boolean isSend;
 
     public final static String propExchangeTrackListen = "amqp.exchange.track_listen";
-    public final static String propExchangeUserEvent = "amqp.exchange.user_event";
 
     private String exchangeTrackListen;
-    private String exchangeUserEvent;
     private NewAmqpDeliver amqpDeliver;
 
     private final Environment environment;
@@ -57,14 +54,6 @@ public class NewAmqpServiceImpl implements NewAmqpService, CommandLineRunner, Di
     }
 
     @Override
-    public void deliverUserEvent(UserEvent data) {
-        log.debug("isSendListenLog={}", isSend);
-        if (isSend) {
-            amqpDeliver.request(exchangeUserEvent, data);
-        }
-    }
-
-    @Override
     public void run(String... args) throws Exception {
         amqpDeliver = new NewAmqpDeliverImpl(newRabbitTemplate);
         this.exchangeTrackListen = environment.getProperty(propExchangeTrackListen);
@@ -72,10 +61,6 @@ public class NewAmqpServiceImpl implements NewAmqpService, CommandLineRunner, Di
             throw new IllegalArgumentException("not found exchange key name : " + propExchangeTrackListen);
         }
 
-        this.exchangeUserEvent = environment.getProperty(propExchangeUserEvent);
-        if (StringUtils.isEmpty(this.exchangeTrackListen)) {
-            throw new IllegalArgumentException("not found exchange key name : " + propExchangeUserEvent);
-        }
         amqpDeliver.start();
     }
 
