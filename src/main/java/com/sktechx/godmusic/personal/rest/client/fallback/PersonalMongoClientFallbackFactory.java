@@ -178,7 +178,6 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
                 return emptyApiResponse;
             }
 
-
             @Override
             public CommonApiResponse<Long> updateRecommendDelTargetYn(Long characterNo,
                     String rcmmdType, Long rcmmdId, RecommendUpdateRequest request) {
@@ -209,6 +208,7 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
                 );
                 return emptyApiResponse;
             }
+
             @Override
             public CommonApiResponse addRecommendChart(
                     Long characterNo,
@@ -218,6 +218,7 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
                 );
                 return emptyApiResponse;
             }
+
             @Override
             public CommonApiResponse deleteRecommendChart(Long characterNo,
                     @RequestBody RecommendChartRequest recommendChartRequest) {
@@ -226,6 +227,7 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
                 );
                 return emptyApiResponse;
             }
+
             @Override
             public CommonApiResponse<ChartTrackTasteMixDto> getRecommendChartTrackTasteMixDto(
                     Long characterNo, Long chartId) {
@@ -234,6 +236,7 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
                 );
                 return emptyApiResponse;
             }
+            
         };
     }
 }
