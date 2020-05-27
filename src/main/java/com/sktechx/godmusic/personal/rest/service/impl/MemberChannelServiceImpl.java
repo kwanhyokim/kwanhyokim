@@ -220,7 +220,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
         if (PinType.RC_LIKE_SML_TR == pinType) {
             memberChannelName = pinType.getTitle();
             trackIdList = personalMgoClient.getLikeRelatedRecommendTrackIds(characterNo, pinTypeId, pinType.getCode());
-            recommendImageList = recommendImageManagementMapper.selectAdaptivePanelImageList(RecommendPanelContentType.RC_LIKE_SML_TR, ImageDisplayType.RCT_DTL, null);
+            recommendImageList = recommendImageManagementMapper.selectAdaptivePanelImageList(null);
         }
         /*} else if (PinType.CHART == pinType) {
             ChartDto chartDto = chartMapper.selectChartMusicContentList(pinId);
