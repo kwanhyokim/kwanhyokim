@@ -34,14 +34,4 @@ public class AdaptivePanelTrackDto {
      * 추천곡 IDs
      */
     List<Long> trackIds;
-
-    /**
-     * 수정일
-     */
-    LocalDateTime updatedAt;
-
-    /**
-     * 생성일
-     */
-    LocalDateTime createdAt;
 }
