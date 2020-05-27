@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 DREAMUS COMPANY.
+ * Copyright (c) 2020 DREAMUS COMPANY.
  * All right reserved.
  * This software is the confidential and proprietary information of DREAMUS COMPANY.
  * You shall not disclose such Confidential Information and
@@ -7,10 +7,11 @@
  * you entered into with DREAMUS COMPANY.
  */
 
-package com.sktechx.godmusic.personal.rest.service.mongo;
+package com.sktechx.godmusic.personal.rest.client;
 
 import java.util.List;
 
+import com.sktechx.godmusic.personal.rest.client.fallback.PersonalMongoClientFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;

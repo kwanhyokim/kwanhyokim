@@ -24,7 +24,7 @@ import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
 import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
-import com.sktechx.godmusic.personal.rest.service.mongo.PersonalMongoClient;
+import com.sktechx.godmusic.personal.rest.client.PersonalMongoClient;
 
 /**
  * 설명 : 추천 데이터 몽고향 조회 서비스
