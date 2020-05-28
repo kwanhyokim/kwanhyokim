@@ -89,7 +89,7 @@ public class PersonalPhaseMeta {
 
     @JsonIgnore
     public boolean isPreferGenreListPresent(){
-         return Optional.ofNullable(this.preferGenreList).isPresent();
+        return !CollectionUtils.isEmpty(getPreferGenreList());
     }
 
     public List<Long> getRecommendPersonalPanelRcmmdIdList(RecommendPanelContentType recommendPanelContentType) {
