@@ -38,7 +38,7 @@ public class GuestPhasePanelAssembly extends PanelNonSignAssembly {
     private GuestPhasePanelAssembly(){}
 
     @Override
-    public List<Panel> assembleRecommendPanel(PersonalPhaseMeta personalPhaseMeta){
+    public List<Panel> makeHomePanelListForMainTop(PersonalPhaseMeta personalPhaseMeta){
 
         final List<Panel> panelList = new ArrayList<>();
 
@@ -51,7 +51,7 @@ public class GuestPhasePanelAssembly extends PanelNonSignAssembly {
         return panelList;
     }
     @Override
-    public List<Panel> getRecommendPanelList(Long characterNo, OsType osType) {
+    public List<Panel> makeHomePanelListForMainMiddle(Long characterNo, OsType osType) {
         return null;
     }
 

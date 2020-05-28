@@ -17,6 +17,7 @@ import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ChannelListResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
 
 /**
@@ -27,6 +28,8 @@ import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
  */
 public interface ChannelService {
 
+    List<ChnlDto> getOperationTpoChannelList();
+
     List<ChnlDto> getAfloChannelList(Long characterNo, int channelLimitSize, int trackLimitSize ,OsType osType);
     ChnlDto getFloAndDataChannel();
 
@@ -36,6 +39,9 @@ public interface ChannelService {
     List<LastListenHistoryDto> getLastListenHistory(Long memberNo, Long characterNo, OsType osType, String appVersion);
 
     List<ChnlDto> getPreferGenreThemeList(List<Long> preferGenreIdList, int trackLimitSize, OsType osType);
+    ChannelListResponse getPreferGenreThemeList(Long characterNo, OsType osType,
+            String appVersion, int trackLimitSize);
+
     void removeLastListenHistory(Long memberNo, Long characterNo, List<ListenRequest> listenRequestList);
 
     List<PreferGenrePopularChnlDto> getPreferGenrePopularChannelListV2(List<Long> preferGenreIdList , int trackLimitSize, OsType osType);

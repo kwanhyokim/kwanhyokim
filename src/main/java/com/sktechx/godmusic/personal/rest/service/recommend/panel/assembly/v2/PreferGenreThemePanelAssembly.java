@@ -41,16 +41,16 @@ public class PreferGenreThemePanelAssembly extends PanelSignAssembly {
     public PreferGenreThemePanelAssembly(){}
 
     @Override
-    protected List<Panel> appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta){
+    public List<Panel> makeHomePanelListForMainTop(PersonalPhaseMeta personalPhaseMeta){
 
        return mergePanelList(
                 this.appendPreferGenreChannelPanelList(personalPhaseMeta, PREFER_GENRE_CHANNEL_LIMIT_PANEL_SIZE ),
-                appendPreferenceChartPanel(personalPhaseMeta),
+                appendPreferenceChartPanel.apply(personalPhaseMeta),
                PREFER_GENRE_CHANNEL_HOME_MAX_PANEL_SIZE);
     }
 
     @Override
-    public List<Panel> getRecommendPanelList(Long characterNo, OsType osType) {
+    public List<Panel> makeHomePanelListForMainMiddle(Long characterNo, OsType osType) {
         return null;
     }
 

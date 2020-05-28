@@ -10,9 +10,13 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto.recommend.like;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
+import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendDto;
 import lombok.Builder;
 import lombok.Data;
 
@@ -22,16 +26,23 @@ import lombok.Data;
 
 @Builder
 @Data
-public class RcmmdLikeTrackDto {
+public class RcmmdLikeTrackDto implements RecommendDto {
 
     private Long rcmmdId;
-
     private Long characterNo;
     private Date createDtime;
     private Date updateDtime;
     private Date dispStartDtime;
 
     private Long seedTrackId;
+
     private List<Long> trackIdList;
+
+    private List<TrackDto> trackDtoList;
+
+    public List<Long> getTrackIdList(){
+        return Optional.ofNullable(this.trackIdList).orElseGet(Collections::emptyList);
+    }
+
 
 }

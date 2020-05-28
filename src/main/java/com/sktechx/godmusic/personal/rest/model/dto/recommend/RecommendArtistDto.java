@@ -15,6 +15,7 @@ import java.util.List;
 
 import com.sktechx.godmusic.personal.common.domain.type.CreateStdType;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
+import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,7 +31,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RecommendArtistDto {
+public class RecommendArtistDto implements RecommendDto{
     private Long characterNo;
     private Date dispStdStartDt;
     private Date dispStdEndDt;
@@ -41,6 +42,8 @@ public class RecommendArtistDto {
     private CreateStdType createStdType;
 
     private int trackCount;
+    private List<Long> trackIdList;
+    private List<TrackDto> trackDtoList;
 
     private List<ArtistDto> artistList;
 

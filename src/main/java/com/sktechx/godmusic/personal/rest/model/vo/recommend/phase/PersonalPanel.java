@@ -13,15 +13,15 @@ package com.sktechx.godmusic.personal.rest.model.vo.recommend.phase;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * 설명 : 개인화 패널 정보
- *
- * @author 오경무/SKTECHX (km.oh@sk.com)
- * @date 2018. 07. 18.
  */
+@EqualsAndHashCode(of={"recommendId"})
 @Data
 public class PersonalPanel {
     private RecommendPanelContentType recommendPanelContentType;
@@ -35,8 +35,13 @@ public class PersonalPanel {
     //청취 무드 무드 아이디
     private Long moodId;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone="Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
     private Date createDtime;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
     private Date dispStdStartDt;
+
+    private OsType exceptionalOsType;
+    private String exceptionalAppVersion;
+
 }

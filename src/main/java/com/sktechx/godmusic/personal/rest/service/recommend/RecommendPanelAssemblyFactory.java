@@ -13,17 +13,16 @@ package com.sktechx.godmusic.personal.rest.service.recommend;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import com.sktechx.godmusic.lib.utils.ComparableVersion;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
+import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.GuestPhasePanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.ListenPhasePanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.RecommendPhasePanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.VisitPhasePanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.v2.*;
-import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 
 /**
  *
@@ -87,12 +86,6 @@ public class RecommendPanelAssemblyFactory {
 
     public PanelAssembly getV2RecommendPanelAssembly(PersonalPhaseMeta personalPhaseMeta){
 
-        // todo: mockup용 코드
-        if(!ObjectUtils.isEmpty(personalPhaseMeta.getAppVer())
-                && new ComparableVersion(personalPhaseMeta.getAppVer()).compareTo( new ComparableVersion("5.1.0")) >= 0 ){
-            return reactivePanelAssembly;
-        }
-
         PersonalPanel personalPanel = personalPhaseMeta.getRecommendPersonalPanelTopItem();
 
         if(!ObjectUtils.isEmpty(personalPanel)) {
@@ -128,12 +121,11 @@ public class RecommendPanelAssemblyFactory {
             // 좋아할만한 아티스트 MIX
             case RC_ATST_TR:
                 return artistFloPanelAssembly;
-            case RC_LIKE_SML_TR:
+            case RC_LKSM_TR:
                 return reactivePanelAssembly;
             default:
                 return null;
         }
-
     }
 
 }
