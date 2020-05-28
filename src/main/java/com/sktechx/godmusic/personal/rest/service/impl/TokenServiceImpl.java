@@ -68,7 +68,7 @@ public class TokenServiceImpl implements TokenService {
                     .build();
 
         } catch (Exception e) {
-            log.warn("sttToken Parse Error", e);
+            log.warn("sttToken Parse Error : {}", e.getMessage());
             return null;
         }
     }
@@ -95,7 +95,7 @@ public class TokenServiceImpl implements TokenService {
                     .build();
 
         } catch (Exception e) {
-            log.warn("Owner Token Parse Error", e);
+            log.warn("Owner Token Parse Error : {}", e.getMessage());
             return null;
         }
     }
@@ -120,7 +120,7 @@ public class TokenServiceImpl implements TokenService {
                     .build();
 
         } catch (Exception e) {
-            log.warn("cachedStreamingToken Parse Error", e);
+            log.warn("cachedStreamingToken Parse Error : {}", e.getMessage());
             return null;
         }
     }
@@ -141,7 +141,7 @@ public class TokenServiceImpl implements TokenService {
                     .build();
 
         } catch (Exception e) {
-            log.warn("freeCachedStreamingToken Parse Error", e);
+            log.warn("freeCachedStreamingToken Parse Error : {}", e.getMessage());
             return null;
         }
     }
