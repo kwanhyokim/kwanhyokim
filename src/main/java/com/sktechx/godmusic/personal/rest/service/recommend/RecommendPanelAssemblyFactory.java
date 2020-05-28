@@ -13,7 +13,6 @@ package com.sktechx.godmusic.personal.rest.service.recommend;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import com.sktechx.godmusic.lib.utils.ComparableVersion;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
@@ -87,11 +86,11 @@ public class RecommendPanelAssemblyFactory {
 
     public PanelAssembly getV2RecommendPanelAssembly(PersonalPhaseMeta personalPhaseMeta){
 
-        // todo: mockup용 코드
-        if(!ObjectUtils.isEmpty(personalPhaseMeta.getAppVer())
-                && new ComparableVersion(personalPhaseMeta.getAppVer()).compareTo( new ComparableVersion("5.1.0")) >= 0 ){
-            return reactivePanelAssembly;
-        }
+//
+//        if(!ObjectUtils.isEmpty(personalPhaseMeta.getAppVer())
+//                && new ComparableVersion(personalPhaseMeta.getAppVer()).compareTo( new ComparableVersion("5.1.0")) >= 0 ){
+//            return reactivePanelAssembly;
+//        }
 
         PersonalPanel personalPanel = personalPhaseMeta.getRecommendPersonalPanelTopItem();
 
