@@ -77,7 +77,7 @@ public class ListenController {
             });
 
         } catch (Exception e) {
-            log.error("Bulk Cached Streaming Log Fail", e);
+            log.warn("Bulk Cached Streaming Log Fail : {}", e.getMessage());
             throw new CommonBusinessException(PersonalErrorDomain.FAIL_BULK_CACHED_STREAMING_PROCESS);
         }
 
