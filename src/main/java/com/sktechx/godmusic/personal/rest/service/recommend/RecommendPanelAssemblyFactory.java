@@ -89,13 +89,10 @@ public class RecommendPanelAssemblyFactory {
         PersonalPanel personalPanel = personalPhaseMeta.getRecommendPersonalPanelTopItem();
 
         if(!ObjectUtils.isEmpty(personalPanel)) {
-
             PanelAssembly panelAssembly = getV2RecommendPanelAssembly(personalPanel.getRecommendPanelContentType());
-
             if(panelAssembly != null){
                 return panelAssembly;
             }
-
         }
 
         // 선호 장르 테마
