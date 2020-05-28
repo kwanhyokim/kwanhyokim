@@ -63,7 +63,8 @@ public class ListenServiceImpl implements ListenService {
         return RC_ATST_TR.getCode().equals(listenType)
                 || RC_SML_TR.getCode().equals(listenType)
                 || RC_GR_TR.getCode().equals(listenType)
-                || RC_CF_TR.getCode().equals(listenType);
+                || RC_CF_TR.getCode().equals(listenType)
+                || RC_LKSM_TR.getCode().equals(listenType);
     }
 
 }

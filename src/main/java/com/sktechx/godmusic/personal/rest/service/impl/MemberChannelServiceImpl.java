@@ -217,7 +217,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
             trackIdList = trackMapper.selectRecommendPanelPopularTrackList(characterNo, pinTypeId);
             recommendImageList = recommendImageManagementMapper.selectFixedRecommendImageList(RecommendPanelContentType.fromCode(pinType.getCode()), pinTypeId, null, null);
         }
-        if (PinType.RC_LIKE_SML_TR == pinType) {
+        if (PinType.RC_LKSM_TR == pinType) {
             memberChannelName = pinType.getTitle();
             trackIdList = personalMgoClient.getLikeRelatedRecommendTrackIds(characterNo, pinTypeId, pinType.getCode());
             recommendImageList = recommendImageManagementMapper.selectAdaptivePanelImageList(null);

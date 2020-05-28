@@ -30,7 +30,7 @@ public enum PinType implements CodeEnum {
     FLAC("FLAC", "FLAC 채널"),
     OCR("OCR", "OCR"),
     AFLO("AFLO", "AFLO 채널"),
-    RC_LIKE_SML_TR("RC_LIKE_SML_TR", "방금 레이더")
+    RC_LKSM_TR("RC_LKSM_TR", "방금 레이더")
     ;
 //    CHART("CHART" , "차트");
 
