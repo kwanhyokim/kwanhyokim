@@ -38,7 +38,7 @@ public class VisitPhasePanelAssembly extends PanelSignAssembly {
     private VisitPhasePanelAssembly(){}
 
     @Override
-    public List<Panel> assembleRecommendPanel(final PersonalPhaseMeta personalPhaseMeta){
+    public List<Panel> makeHomePanelListForMainTop(final PersonalPhaseMeta personalPhaseMeta){
         final List<Panel> panelList = new ArrayList<>();
 
         if(!CollectionUtils.isEmpty(personalPhaseMeta.getPreferGenreList())){
@@ -64,18 +64,8 @@ public class VisitPhasePanelAssembly extends PanelSignAssembly {
         return panelList;
     }
     @Override
-    public List<Panel> getRecommendPanelList(Long characterNo, OsType osType) {
+    public List<Panel> makeHomePanelListForMainMiddle(Long characterNo, OsType osType) {
         return null;
-    }
-
-    @Override
-    protected List<Panel> appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta){
-        final List<Panel> panelList = appendPreferArtistPopularTrackPanel(personalPhaseMeta);
-
-        panelList.addAll(appendPreferenceChartPanel(personalPhaseMeta));
-        sort(personalPhaseMeta, panelList);
-
-        return panelList;
     }
 
     private boolean isDefaultPanelAppend(int panelSize){

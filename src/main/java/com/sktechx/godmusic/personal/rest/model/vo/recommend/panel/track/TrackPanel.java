@@ -14,7 +14,6 @@ import java.util.List;
 
 import org.springframework.util.CollectionUtils;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
@@ -34,12 +33,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class TrackPanel extends Panel {
 
-    @JsonIgnore
-    private RecommendTrackDto recommendTrackDto;
-
     public TrackPanel(RecommendPanelType panelType ,String title, String subTitle, String playListTitle, RecommendTrackDto recommendTrackDto, List<ImageInfo> bgImgList) throws CommonBusinessException {
         super(panelType);
-        this.recommendTrackDto = recommendTrackDto;
         this.imgList = bgImgList;
         this.title = title;
         this.subTitle = subTitle;

@@ -25,4 +25,6 @@ public interface HomeMetaService {
 
     CompletableFuture<List<PersonalPanel>> getPersonalRecommendPanelMeta(Long characterNo, Boolean checkDispEndDate);
 
+    CompletableFuture<List<PersonalPanel>> getPersonalRecommendPanelMgoMeta(Long characterNo);
+
 }

@@ -16,6 +16,7 @@ import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.like.RcmmdLikeTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
@@ -29,15 +30,12 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
  */
 
 public class RcmmdReactivePanel extends Panel {
-
-
-
     public RcmmdReactivePanel(
             List<ImageInfo> bgImgList,
             List<ImageInfo> seedTrackImgList,
             List<ImageInfo> rcmmdTrackImgList,
             TrackDto seedTrackDto,
-            RcmmdLikeTrackDetailDto rcmmdLikeTrackDetailDto){
+            RcmmdLikeTrackDto rcmmdLikeTrackDto){
 
         super(RecommendPanelType.RCMMD_LIKE_TRACK);
 
@@ -47,14 +45,14 @@ public class RcmmdReactivePanel extends Panel {
         this.imgList = bgImgList;
 
         this.content = PanelContentVo.builder()
-                .id(rcmmdLikeTrackDetailDto.getRcmmdId())
-                .type(RecommendPanelContentType.RC_LIKE_SML_TR)
+                .id(rcmmdLikeTrackDto.getRcmmdId())
+                .type(RecommendPanelContentType.RC_LKSM_TR)
                 .seedTrackImgList(seedTrackImgList)
                 .rcmmdTrackImgList(rcmmdTrackImgList)
-                .trackCount(rcmmdLikeTrackDetailDto.getTrackIdList().size() + 1)
+                .trackCount(rcmmdLikeTrackDto.getTrackIdList().size() + 1)
                 .renewYn(YnType.Y)
-                .createDtime(rcmmdLikeTrackDetailDto.getDispStartDtime())
-                .updateDtime(rcmmdLikeTrackDetailDto.getDispStartDtime())
+                .createDtime(rcmmdLikeTrackDto.getDispStartDtime())
+                .updateDtime(rcmmdLikeTrackDto.getDispStartDtime())
                 .build();
 
         this.seedTrackVo = SeedTrackVo.builder()

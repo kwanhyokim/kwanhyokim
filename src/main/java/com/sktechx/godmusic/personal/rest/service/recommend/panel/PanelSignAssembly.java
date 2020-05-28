@@ -44,12 +44,6 @@ import static com.sktechx.godmusic.personal.common.domain.type.RecommendPanelCon
 @Slf4j
 public abstract class PanelSignAssembly extends PanelAssembly {
 
-    protected abstract List<Panel> appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta);
-
-    public List<Panel> assembleRecommendPanel(final PersonalPhaseMeta personalPhaseMeta){
-        return appendPreferencePanel(personalPhaseMeta);
-    }
-
     protected void appendPreferGenreChannelPanelList(final PersonalPhaseMeta personalPhaseMeta,
                                                      final List<Panel> panelList,
                                                      int panelLimitSize) {

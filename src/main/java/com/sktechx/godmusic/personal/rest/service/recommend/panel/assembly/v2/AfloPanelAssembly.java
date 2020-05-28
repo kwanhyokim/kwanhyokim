@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Service("afloPanelAssembly")
-public class AfloPanelAssembly extends PanelSignAssembly {
+public class AfloPanelAssembly extends PanelSignAssembly{
 
     private final int AFLO_PANEL_HOME_LIMIT_SIZE = 5;
     private final int AFLO_PANEL_HOME_MAX_SIZE = 7;
@@ -45,24 +45,23 @@ public class AfloPanelAssembly extends PanelSignAssembly {
     public AfloPanelAssembly(){}
 
     @Override
-    protected List<Panel> appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta){
+    public List<Panel> makeHomePanelListForMainTop(PersonalPhaseMeta personalPhaseMeta){
 
         return mergePanelList(
                 appendAfloChannelPanelList(personalPhaseMeta.getCharacterNo(),
                     personalPhaseMeta.getOsType(), AFLO_PANEL_HOME_LIMIT_SIZE),
-                appendPreferenceChartPanel(personalPhaseMeta),
+                appendPreferenceChartPanel.apply(personalPhaseMeta),
                 AFLO_PANEL_HOME_MAX_SIZE);
     }
 
     @Override
-    public List<Panel> getRecommendPanelList(Long characterNo, OsType osType) {
+    public List<Panel> makeHomePanelListForMainMiddle(Long characterNo, OsType osType) {
 
         List<Panel> panelList =  appendAfloChannelPanelList(characterNo, osType,
                 AFLO_PANEL_DETAIL_LIMIT_SIZE);
 
         // 패널의 트랙리스트에서 대표곡을 제외하고 정보 제거
         if(!CollectionUtils.isEmpty(panelList)){
-
             for(Panel panel : panelList){
 
                 PanelContentVo panelContentVo = panel.getContent();
@@ -74,7 +73,6 @@ public class AfloPanelAssembly extends PanelSignAssembly {
                 );
 
                 panelContentVo.setType(RecommendPanelContentType.AFLO);
-
             }
         }
 
@@ -89,7 +87,6 @@ public class AfloPanelAssembly extends PanelSignAssembly {
                 channelService.getAfloChannelList(characterNo, panelLimitSize,
                         AFLO_PANEL_CHNL_TRACK_MAX_SIZE, osType))
                 .orElseGet(Collections::emptyList);
-
 
         for(ChnlDto chnlDto : appendChannelList) {
 

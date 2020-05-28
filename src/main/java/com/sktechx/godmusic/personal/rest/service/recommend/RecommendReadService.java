@@ -25,54 +25,55 @@ import com.sktechx.godmusic.personal.rest.model.dto.recommend.like.RcmmdLikeTrac
 
 public interface RecommendReadService {
 
-    RecommendForMeDto getRecommendForMeFlo(Long characterNo, Long rcmmdMforuId);
+    // Today FLO
     RecommendSimilarTrackDto getRecommendTodayFlo(Long characterNo, Long rcmmdSimilarTrackId);
-    RecommendArtistDto getRecommendArtistFlo(Long characterNo, Long rcmmdArtistId);
-
-    List<RecommendForMeDto> getRecommendForMeFloListByCharacterNo(Long characterNo);
     List<RecommendSimilarTrackDto> getRecommendTodayFloListByCharacterNo(Long characterNo);
-    List<RecommendArtistDto> getRecommendArtistFloListByCharacterNo(Long characterNo);
-
-    List<RecommendTrackDto> getRecommendForMeFloListWithTrackByCharacterNo(
-            Long characterNo,
-            int panelMaxSize,
-            int trackMaxSize,
-            OsType osType
-    );
-
     List<RecommendTrackDto> getRecommendTodayFloListWithTrackByCharacterNo(
             Long characterNo,
             int panelMaxSize,
             int trackMaxSize,
             OsType osType
     );
+    List<RecommendPanelTrackDto> getRecommendTodayFloTrackListByCharacterNoAndRcmmdId(
+            Long characterNo, Long rcmmdId
+    );
 
+    // Forme FLO
+    RecommendForMeDto getRecommendForMeFlo(Long characterNo, Long rcmmdMforuId);
+    List<RecommendForMeDto> getRecommendForMeFloListByCharacterNo(Long characterNo);
+    List<RecommendTrackDto> getRecommendForMeFloListWithTrackByCharacterNo(
+            Long characterNo,
+            int panelMaxSize,
+            int trackMaxSize,
+            OsType osType
+    );
+    List<RecommendPanelTrackDto> getRecommendForMeFloTrackListByCharacterNoAndRcmmdId(
+            Long characterNo, Long rcmmdId
+    );
+
+    // Artist FLO
+    RecommendArtistDto getRecommendArtistFlo(Long characterNo, Long rcmmdArtistId);
+    List<RecommendArtistDto> getRecommendArtistFloListByCharacterNo(Long characterNo);
     List<RecommendTrackDto> getRecommendArtistFloListWithTrackByCharacterNo(
             Long characterNo,
             int panelMaxSize,
             int trackMaxSize,
             OsType osType
     );
+    List<RecommendPanelTrackDto> getRecommendArtistFloTrackListByCharacterNoAndRcmmdId(
+            Long characterNo, Long rcmmdId
+    );
 
-    List<RcmmdLikeTrackDto> getRecommendReactiveTrackListByCharacterNo(
+
+    // 좋아요 반응형 추천 패널
+    RcmmdLikeTrackDto getRecommendReactiveTrack(Long characterNo, Long rcmmdArtistId);
+    List<RcmmdLikeTrackDto> getRecommendReactiveTrackListByCharacterNo(Long characterNo);
+    List<RcmmdLikeTrackDto> getRecommendReactiveTrackListWithTrackByCharacterNo(
             Long characterNo,
             int panelMaxSize,
             int trackMaxSize,
             OsType osType
     );
-
-    List<RecommendPanelTrackDto> getRecommendForMeFloTrackListByCharacterNoAndRcmmdId(
-            Long characterNo, Long rcmmdId
-    );
-
-    List<RecommendPanelTrackDto> getRecommendArtistFloTrackListByCharacterNoAndRcmmdId(
-            Long characterNo, Long rcmmdId
-    );
-
-    List<RecommendPanelTrackDto> getRecommendTodayFloTrackListByCharacterNoAndRcmmdId(
-            Long characterNo, Long rcmmdId
-    );
-
     List<RecommendPanelTrackDto> getRecommendByRealtimeTrackListByCharacterNoAndRcmmdId(
             Long characterNo, Long rcmmdId
     );

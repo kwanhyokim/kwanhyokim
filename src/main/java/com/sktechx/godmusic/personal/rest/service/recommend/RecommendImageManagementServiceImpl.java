@@ -108,7 +108,8 @@ public class RecommendImageManagementServiceImpl implements RecommendImageManage
     }
 
     @Override
-    public List<ImageInfo> selectRecommendPanelInfoBgImageUrl(String recommendPanelContentType, Long rcmmdId,
+    public List<ImageInfo> selectRecommendPanelInfoBgImageUrl(
+            RecommendPanelContentType recommendPanelContentType, Long rcmmdId,
             OsType osType, int dispSn) {
 
         return Stream.of(75L, 140L, 200L, 350L, 500L, 1000L)

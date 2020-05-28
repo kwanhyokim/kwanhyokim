@@ -27,7 +27,7 @@ import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelSignAssem
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 설명 : 오늘의 플로 생성기
+ * 설명 : 선호 아티스트 비디오 패널
  *
  * @author 김관효(Kwanhyo Kim)/Music사업팀/SKTECH(kwanhyo.kim@sk.com)
  * @date 2019. 5. 8.
@@ -38,23 +38,12 @@ public class PreferArtistVideoPanelAssembly extends PanelSignAssembly {
 
     public static int PREFER_ARTIST_VIDEO_HOME_MAX_PANEL_SIZE = 7;
 
+    private final PreferenceMapper preferMapper;
+    private final MetaClient metaClient;
+
     public PreferArtistVideoPanelAssembly(PreferenceMapper preferMapper, MetaClient metaClient){
         this.preferMapper = preferMapper;
         this.metaClient = metaClient;
-    }
-
-    private final PreferenceMapper preferMapper;
-
-    private final MetaClient metaClient;
-
-    @Override
-    protected List<Panel> appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta){
-
-        return mergePanelList(
-                appendPreferArtistVideoList(personalPhaseMeta, true),
-                appendPreferenceChartPanel(personalPhaseMeta),
-                PREFER_ARTIST_VIDEO_HOME_MAX_PANEL_SIZE
-        );
     }
 
     private List<Panel> appendPreferArtistVideoList(final PersonalPhaseMeta personalPhaseMeta, Boolean isTop) {
@@ -94,8 +83,19 @@ public class PreferArtistVideoPanelAssembly extends PanelSignAssembly {
                         .collect(Collectors.toList());
     }
 
+
     @Override
-    public List<Panel> getRecommendPanelList(Long characterNo, OsType osType){
+    public List<Panel> makeHomePanelListForMainTop(PersonalPhaseMeta personalPhaseMeta){
+
+        return mergePanelList(
+                appendPreferArtistVideoList(personalPhaseMeta, true),
+                appendPreferenceChartPanel.apply(personalPhaseMeta),
+                PREFER_ARTIST_VIDEO_HOME_MAX_PANEL_SIZE
+        );
+    }
+
+    @Override
+    public List<Panel> makeHomePanelListForMainMiddle(Long characterNo, OsType osType){
         PersonalPhaseMeta personalPhaseMeta = new PersonalPhaseMeta();
         personalPhaseMeta.setCharacterNo(characterNo);
         personalPhaseMeta.setOsType(osType);

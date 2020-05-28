@@ -97,4 +97,6 @@ public class RedisKeyConstant {
 	public static final String PERSONAL_PREFERENCE_VIDEO_GENRE_NEW_DEFAULT_LIST=
 			"godmusic.personalapi.preference.video.genre.new.default.list";
 
+	// mongo 사용 여부
+	public static final String PERSONAL_USEMGO_KEY = "godmusic.personal.usemongo:%s";
 }

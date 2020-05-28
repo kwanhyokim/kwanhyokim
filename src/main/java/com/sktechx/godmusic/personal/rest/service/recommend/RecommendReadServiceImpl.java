@@ -41,8 +41,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service("recommendReadService")
 public class RecommendReadServiceImpl implements RecommendReadService {
 
-    private final PersonalMongoClient personalMongoClient;
-
     private final RecommendReadMapper recommendReadMapper;
 
     private final RecommendImageManagementService recommendImageManagementService;
@@ -53,13 +51,11 @@ public class RecommendReadServiceImpl implements RecommendReadService {
 
     private final RedisService redisService;
 
-    public RecommendReadServiceImpl(PersonalMongoClient personalMongoClient,
-            RecommendReadMapper recommendReadMapper,
+    public RecommendReadServiceImpl(RecommendReadMapper recommendReadMapper,
             RecommendImageManagementService recommendImageManagementService,
             TrackMapper trackMapper,
             MetaClient metaClient,
             RedisService redisService) {
-        this.personalMongoClient = personalMongoClient;
         this.recommendReadMapper = recommendReadMapper;
         this.recommendImageManagementService = recommendImageManagementService;
         this.trackMapper = trackMapper;
@@ -69,7 +65,11 @@ public class RecommendReadServiceImpl implements RecommendReadService {
 
     @Override
     public RecommendForMeDto getRecommendForMeFlo(Long characterNo, Long rcmmdMforuId) {
-        return recommendReadMapper.selectRecommendGenreByRcmmdId(rcmmdMforuId);
+        return recommendReadMapper.selectRecommendForMeFlo(rcmmdMforuId);
+    }
+    @Override
+    public List<RecommendForMeDto> getRecommendForMeFloListByCharacterNo(Long characterNo) {
+        return null;
     }
 
     @Override
@@ -80,10 +80,6 @@ public class RecommendReadServiceImpl implements RecommendReadService {
     @Override
     public RecommendArtistDto getRecommendArtistFlo(Long characterNo, Long rcmmdArtistId) {
         return recommendReadMapper.selectRecommendArtistById(rcmmdArtistId);
-    }
-    @Override
-    public List<RecommendForMeDto> getRecommendForMeFloListByCharacterNo(Long characterNo) {
-        return null;
     }
     @Override
     public List<RecommendSimilarTrackDto> getRecommendTodayFloListByCharacterNo(Long characterNo) {
@@ -140,12 +136,6 @@ public class RecommendReadServiceImpl implements RecommendReadService {
             int panelMaxSize, int trackMaxSize, OsType osType) {
         return null;
     }
-    @Override
-    public List<RcmmdLikeTrackDto> getRecommendReactiveTrackListByCharacterNo(Long characterNo,
-            int panelMaxSize, int trackMaxSize, OsType osType) {
-
-        return null;
-    }
 
     @Override
     public List<RecommendPanelTrackDto> getRecommendForMeFloTrackListByCharacterNoAndRcmmdId(
@@ -189,6 +179,19 @@ public class RecommendReadServiceImpl implements RecommendReadService {
         );
     }
 
+    @Override
+    public RcmmdLikeTrackDto getRecommendReactiveTrack(Long characterNo, Long rcmmdArtistId) {
+        return null;
+    }
+    @Override
+    public List<RcmmdLikeTrackDto> getRecommendReactiveTrackListByCharacterNo(Long characterNo) {
+        return null;
+    }
+    @Override
+    public List<RcmmdLikeTrackDto> getRecommendReactiveTrackListWithTrackByCharacterNo(
+            Long characterNo, int panelMaxSize, int trackMaxSize, OsType osType) {
+        return null;
+    }
 
     private List<RecommendPanelTrackDto> getTrackList(List<Long> trackIdList){
 

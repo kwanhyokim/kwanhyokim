@@ -24,8 +24,6 @@ import lombok.Data;
 /**
  * 설명 : XXXXXXXXX
  *
- * @author 정덕진(Deockjin Chung)/Music사업팀/SKTECH(djin.chung@sk.com)
- * @date 2018.07.03
  */
 
 @Data

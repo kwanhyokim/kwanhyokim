@@ -33,6 +33,6 @@ public interface RecommendImageManagementService {
     List<ImageInfo> getRecommendPanelDefaultImageList(OsType osType);
 
 
-    List<ImageInfo> selectRecommendPanelInfoBgImageUrl(String recommendPanelContentType, Long rcmmdId
+    List<ImageInfo> selectRecommendPanelInfoBgImageUrl(RecommendPanelContentType recommendPanelContentType, Long rcmmdId
             , OsType osType, int dispSn);
 }
