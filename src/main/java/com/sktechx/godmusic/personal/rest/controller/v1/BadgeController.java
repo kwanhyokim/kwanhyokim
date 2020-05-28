@@ -76,7 +76,7 @@ public class BadgeController {
 
     @ApiOperation(value = "배지 확인")
     @PutMapping("/confirm")
-    private CommonApiResponse<?> confirmMyNewBadge(@RequestParam("badgeIssueId") int badgeIssueId) {
+    public CommonApiResponse<?> confirmMyNewBadge(@RequestParam("badgeIssueId") int badgeIssueId) {
         GMContext gmContext = GMContext.getContext();
         Long characterNo = gmContext.getCharacterNo();
         OsType osType = gmContext.getOsType();

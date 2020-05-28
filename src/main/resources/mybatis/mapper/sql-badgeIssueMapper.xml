@@ -62,7 +62,6 @@
         JOIN    tb_badge_type c ON b.badge_type_id = c.badge_type_id
         WHERE   a.badge_issu_id = #{badgeIssueId}
         AND     a.character_no = #{characterNo}
-        AND     b.use_yn = 'Y'
     </select>
 
     <select id="findAllBadgeIssueDtimeByCharacterNo"
@@ -135,7 +134,6 @@
         JOIN    tb_badge b ON a.badge_id = b.badge_id
         JOIN    tb_badge_type c ON b.badge_type_id = c.badge_type_id
         WHERE   a.character_no = #{characterNo}
-        AND     b.use_yn = 'Y'
         ORDER BY    a.create_dtime DESC
     </select>
 
