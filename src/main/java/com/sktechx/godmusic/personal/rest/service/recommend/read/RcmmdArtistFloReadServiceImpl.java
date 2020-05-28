@@ -22,10 +22,10 @@ import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
+import com.sktechx.godmusic.personal.rest.client.PersonalMongoClient;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
 import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
 import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
-import com.sktechx.godmusic.personal.rest.service.mongo.PersonalMongoClient;
 
 /**
  * 설명 : 나를 위한 FLO 조회
