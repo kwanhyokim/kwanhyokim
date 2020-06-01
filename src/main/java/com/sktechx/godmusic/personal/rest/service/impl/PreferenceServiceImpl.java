@@ -415,7 +415,10 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 	private void setRedisWithWrapper(String key, PreferenceSimilarArtistListRedisWrapper preferenceSimilarArtistListRedisWrapper) {
 		// 캐쉬 만기는 당일 자정
-		redisService.setWithPrefix(key, preferenceSimilarArtistListRedisWrapper, (int) LocalTime.now().until(LocalTime.MAX, ChronoUnit.SECONDS));
+		long expiredSec = LocalTime.now().until(LocalTime.MAX, ChronoUnit.SECONDS);
+		if ( expiredSec > 0) {
+			redisService.setWithPrefix(key, preferenceSimilarArtistListRedisWrapper, Long.valueOf(expiredSec).intValue());
+		}
 	}
 
     private List<Artist> preferenceArtistListConvert(List<ArtistDto> artistDtoList) {
