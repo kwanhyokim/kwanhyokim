@@ -311,7 +311,7 @@ public class MemberChannelServiceImpl implements MemberChannelService {
             sqlSession.commit();
             sqlSession.close();
         }catch(Exception e){
-            log.error("MyChannel :: track id list order modify :: Error Message", e.getMessage());
+            log.error("MyChannel :: track id list order modify ::", e);
             throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
         }
 
