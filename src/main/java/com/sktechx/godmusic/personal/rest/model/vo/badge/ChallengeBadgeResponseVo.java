@@ -10,7 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.badge;
 
-import com.sktechx.godmusic.personal.rest.domain.badge.BadgeTypeDto;
+import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeTypeDto;
 import lombok.Getter;
 import lombok.ToString;
 

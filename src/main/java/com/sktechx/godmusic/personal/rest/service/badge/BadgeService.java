@@ -11,8 +11,8 @@
 package com.sktechx.godmusic.personal.rest.service.badge;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
-import com.sktechx.godmusic.personal.rest.model.vo.badge.AllBadgeListResponseVo;
 import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDetailResponseDto;
+import com.sktechx.godmusic.personal.rest.model.vo.badge.AllBadgeListResponseVo;
 import com.sktechx.godmusic.personal.rest.model.vo.badge.ChallengeBadgeResponseVo;
 import com.sktechx.godmusic.personal.rest.model.vo.badge.NewBadgeExistCheckVo;
 

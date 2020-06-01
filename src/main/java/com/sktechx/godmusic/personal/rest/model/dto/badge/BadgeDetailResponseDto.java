@@ -12,7 +12,6 @@ package com.sktechx.godmusic.personal.rest.model.dto.badge;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sktechx.godmusic.personal.rest.domain.badge.BadgeIssueDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import lombok.Getter;

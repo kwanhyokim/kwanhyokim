@@ -14,7 +14,7 @@
 
 <mapper namespace="com.sktechx.godmusic.personal.rest.repository.BadgeMapper">
 
-    <select id="findAll" resultType="com.sktechx.godmusic.personal.rest.domain.badge.BadgeDto">
+    <select id="findAll" resultType="com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDto">
         SELECT  a.badge_id,
                 a.badge_nm
         FROM    tb_badge a

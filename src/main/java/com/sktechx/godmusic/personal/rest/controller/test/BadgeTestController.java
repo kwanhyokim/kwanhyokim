@@ -1,8 +1,8 @@
 package com.sktechx.godmusic.personal.rest.controller.test;
 
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
-import com.sktechx.godmusic.personal.rest.domain.badge.BadgeDto;
-import com.sktechx.godmusic.personal.rest.domain.badge.BadgeIssueDto;
+import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDto;
+import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeIssueDto;
 import com.sktechx.godmusic.personal.rest.repository.BadgeIssueMapper;
 import com.sktechx.godmusic.personal.rest.repository.BadgeMapper;
 import com.sktechx.godmusic.personal.rest.repository.BadgeTypeMapper;
