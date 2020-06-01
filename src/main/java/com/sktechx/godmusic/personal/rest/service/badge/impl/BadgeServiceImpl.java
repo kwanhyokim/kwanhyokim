@@ -12,6 +12,8 @@ package com.sktechx.godmusic.personal.rest.service.badge.impl;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.code.YnType;
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
+import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.domain.badge.BadgeIssueDto;
@@ -26,7 +28,9 @@ import com.sktechx.godmusic.personal.rest.service.badge.BadgeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -53,6 +57,9 @@ public class BadgeServiceImpl implements BadgeService {
     @Override
     public BadgeDetailResponseDto getBadgeDetailResponseDtoByBadgeIssueId(Long characterNo, int badgeIssueId) {
         BadgeIssueDto badgeIssueDto = badgeIssueMapper.findByCharacterNoAndBadgeIssueId(characterNo, badgeIssueId);
+        if (badgeIssueDto == null) {
+            throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
+        }
         BadgeDetailResponseDto badgeDetailResponseDto = new BadgeDetailResponseDto(badgeIssueDto);
         return this.appendIssueTargetInfoByBadgeType(badgeIssueDto, badgeDetailResponseDto);
     }
@@ -87,7 +94,7 @@ public class BadgeServiceImpl implements BadgeService {
     private void appendTrackIssueTargetTypeInfo(BadgeIssueDto badgeIssueDto,
                                                 BadgeDetailResponseDto badgeDetailResponseDto) {
 
-        TrackDto floTrack = metaClient.track(Long.valueOf(badgeIssueDto.getIssuTypeId())).getData();
+        TrackDto floTrack = metaClient.track(badgeIssueDto.getIssuTypeIdToLong()).getData();
 
         // 미권리곡일 경우
         if (null == floTrack ||
@@ -99,7 +106,6 @@ public class BadgeServiceImpl implements BadgeService {
         } else {
             badgeDetailResponseDto.hasRightTrackCase(floTrack);
         }
-
     }
 
     /**
@@ -109,11 +115,13 @@ public class BadgeServiceImpl implements BadgeService {
     public NewBadgeExistCheckVo getNewBadgeExistCheckVoByCharacterNo(Long characterNo) {
         List<BadgeIssueDto> badgeIssueList = badgeIssueMapper.findAllBadgeIssueDtimeByCharacterNo(characterNo);
 
-        Date now = new Date();
-        for (BadgeIssueDto badgeIssue : badgeIssueList) {
-            int afterDays = DateUtil.getAfterDays(now, badgeIssue.getIssuDtime());
-            if (afterDays <= 30) {
-                return new NewBadgeExistCheckVo(true);
+        if (!CollectionUtils.isEmpty(badgeIssueList)) {
+            Date now = new Date();
+            for (BadgeIssueDto badgeIssue : badgeIssueList) {
+                int afterDays = DateUtil.getAfterDays(now, badgeIssue.getIssuDtime());
+                if (afterDays <= 30) {
+                    return new NewBadgeExistCheckVo(true);
+                }
             }
         }
         return new NewBadgeExistCheckVo(false);
@@ -134,6 +142,11 @@ public class BadgeServiceImpl implements BadgeService {
     public List<BadgeDetailResponseDto> getAllNewBadgeList(Long characterNo) {
         Date now = new Date();
 
+        List<BadgeIssueDto> allNewBadgeList = badgeIssueMapper.findAllNewBadgeListByCharacterNo(characterNo);
+        if (CollectionUtils.isEmpty(allNewBadgeList)) {
+            throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
+        }
+
         return badgeIssueMapper.findAllNewBadgeListByCharacterNo(characterNo)
                 .stream()
                 .filter(badgeIssue -> DateUtil.getAfterDays(now, badgeIssue.getIssuDtime()) <= 30)
@@ -147,8 +160,14 @@ public class BadgeServiceImpl implements BadgeService {
     /**
      * 획득한 배지 목록 조회
      */
+    @SuppressWarnings("unchecked")
     @Override
     public List<BadgeDetailResponseDto> getAllReceivedBadgeList(Long characterNo) {
+        List<BadgeIssueDto> allReceivedBadgeList = badgeIssueMapper.findAllReceivedBadgeListByCharacterNo(characterNo);
+        if (CollectionUtils.isEmpty(allReceivedBadgeList)) {
+            return Collections.EMPTY_LIST;
+        }
+
         return badgeIssueMapper.findAllReceivedBadgeListByCharacterNo(characterNo)
                 .stream()
                 .map(badgeIssueDto -> {
