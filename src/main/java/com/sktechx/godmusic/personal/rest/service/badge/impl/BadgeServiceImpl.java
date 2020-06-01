@@ -147,8 +147,7 @@ public class BadgeServiceImpl implements BadgeService {
             throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
         }
 
-        return badgeIssueMapper.findAllNewBadgeListByCharacterNo(characterNo)
-                .stream()
+        return allNewBadgeList.stream()
                 .filter(badgeIssue -> DateUtil.getAfterDays(now, badgeIssue.getIssuDtime()) <= 30)
                 .map(badgeIssueDto -> {
                     BadgeDetailResponseDto badgeDetailResponseDto = new BadgeDetailResponseDto(badgeIssueDto);
@@ -168,8 +167,7 @@ public class BadgeServiceImpl implements BadgeService {
             return Collections.EMPTY_LIST;
         }
 
-        return badgeIssueMapper.findAllReceivedBadgeListByCharacterNo(characterNo)
-                .stream()
+        return allReceivedBadgeList.stream()
                 .map(badgeIssueDto -> {
                     BadgeDetailResponseDto badgeDetailResponseDto = new BadgeDetailResponseDto(badgeIssueDto);
                     return this.appendIssueTargetInfoByBadgeType(badgeIssueDto, badgeDetailResponseDto);
