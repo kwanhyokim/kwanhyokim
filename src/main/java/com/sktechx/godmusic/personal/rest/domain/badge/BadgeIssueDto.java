@@ -45,4 +45,8 @@ public class BadgeIssueDto {
 
     private BadgeDto badgeDto;
     private BadgeTypeDto badgeTypeDto;
+
+    public Long getIssuTypeIdToLong() {
+        return Long.valueOf(issuTypeId);
+    }
 }
