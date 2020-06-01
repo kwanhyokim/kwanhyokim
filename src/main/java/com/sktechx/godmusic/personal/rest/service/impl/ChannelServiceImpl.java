@@ -311,9 +311,20 @@ public class ChannelServiceImpl implements ChannelService {
             lastListenHistory.addAll(lastListenHistoryByPrivateChart);
         }
 
+        /*
+         * 반응형 추천 패널 (방금 레이)의 최근 감상 목록 조회
+         * Note. v5.1.0 이상 App에서만 listen_type = RC_LKSM_TR 인 경우 별도의 추천 패널 API를 호출하기 때문에
+         *       반응형 추천 패널 청취이력 리스트는 v5.1.0 이상만 반환한다
+         */
+        boolean OVER_VERSION_5_1_0 = !Strings.isNullOrEmpty(appVersion) && new ComparableVersion(appVersion).compareTo(new ComparableVersion("5.1.0")) >= 0;
+
+        if (OVER_VERSION_5_1_0) {
+
+        }
+
         return lastListenHistory.stream()
-                .distinct()
                 .sorted(Comparator.comparing(LastListenHistoryDto::getLastListenDtime).reversed())
+                .distinct()
                 .limit(RECENT_LISTENED_LIST_LIMIT)
                 .collect(Collectors.toList());
     }
