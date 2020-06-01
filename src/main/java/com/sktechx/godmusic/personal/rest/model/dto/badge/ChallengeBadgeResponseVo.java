@@ -22,12 +22,12 @@ import lombok.ToString;
  */
 @Getter
 @ToString
-public class ChallengeBadgeResponseDto {
+public class ChallengeBadgeResponseVo {
     private String title;
     private String badgeImgUrl;
     private String bgColorCode;
 
-    public ChallengeBadgeResponseDto(BadgeTypeDto badgeTypeDto) {
+    public ChallengeBadgeResponseVo(BadgeTypeDto badgeTypeDto) {
         this.title = badgeTypeDto.getBadgeTypeNm();
         this.badgeImgUrl = badgeTypeDto.getIssuBfImgUrl();
         this.bgColorCode = badgeTypeDto.getBackgroundRgbValue();

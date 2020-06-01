@@ -14,10 +14,9 @@ import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
-import com.sktechx.godmusic.personal.rest.model.dto.badge.AllBadgeListResponseDto;
-import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDetailListResponseDto;
+import com.sktechx.godmusic.personal.rest.model.dto.badge.AllBadgeListResponseVo;
+import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDetailListResponseVo;
 import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDetailResponseDto;
-import com.sktechx.godmusic.personal.rest.model.dto.badge.ChallengeBadgeResponseDto;
 import com.sktechx.godmusic.personal.rest.model.vo.badge.NewBadgeExistCheckVo;
 import com.sktechx.godmusic.personal.rest.service.badge.BadgeService;
 import io.swagger.annotations.Api;
@@ -50,21 +49,17 @@ public class BadgeController {
 
     @ApiOperation(value = "캐릭터별 배지 전체 리스트 조회(획득 + 미획득)")
     @GetMapping("/list/all")
-    public CommonApiResponse<AllBadgeListResponseDto> getBadgeList() {
+    public CommonApiResponse<AllBadgeListResponseVo> getBadgeList() {
         Long characterNo = GMContext.getContext().getCharacterNo();
-
-        List<BadgeDetailResponseDto> allReceivedBadgeList = badgeService.getAllReceivedBadgeList(characterNo);
-        List<ChallengeBadgeResponseDto> allChallengeBadgeList = badgeService.getAllChallengeBadgeList(characterNo, allReceivedBadgeList);
-
-        return new CommonApiResponse<>(new AllBadgeListResponseDto(allReceivedBadgeList, allChallengeBadgeList));
+        return new CommonApiResponse<>(badgeService.getAllBadgeListByCharacterNo(characterNo));
     }
 
     @ApiOperation(value = "New 배지 리스트 조회 (상세 팝업 용도)")
     @GetMapping("/list/new")
-    public CommonApiResponse<BadgeDetailListResponseDto> getNewBadgeList() {
+    public CommonApiResponse<BadgeDetailListResponseVo> getNewBadgeList() {
         Long characterNo = GMContext.getContext().getCharacterNo();
         List<BadgeDetailResponseDto> allNewBadgeList = badgeService.getAllNewBadgeList(characterNo);
-        return new CommonApiResponse<>(new BadgeDetailListResponseDto(allNewBadgeList));
+        return new CommonApiResponse<>(new BadgeDetailListResponseVo(allNewBadgeList));
     }
 
     @ApiOperation(value = "배지 상세 조회")

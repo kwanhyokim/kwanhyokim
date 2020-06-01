@@ -82,14 +82,14 @@ public class BadgeDetailResponseDto {
         this.defaultPopupImgUrl = badgeIssue.getBadgeDto().getDefaultPopupImgUrl();
     }
 
-    public void nonRightTrackCase(BadgeIssueDto badgeIssueDto) {
+    public void setNonRightTrackInfo(BadgeIssueDto badgeIssueDto) {
         this.uiType = "B";
         this.description = badgeIssueDto.getBadgeDto().getDefaultDesc();
         this.badgeImgUrl = badgeIssueDto.getBadgeDto().getDefaultImgUrl();
         this.popupImgUrl = badgeIssueDto.getBadgeDto().getDefaultPopupImgUrl();
     }
 
-    public void hasRightTrackCase(TrackDto floTrack) {
+    public void setRightTrackInfo(TrackDto floTrack) {
         this.subTitle1 = floTrack.getTrackNm();
         this.subTitle2 = floTrack.getArtist().getArtistName();
         this.subImgList = floTrack.getAlbum().getImgList();
