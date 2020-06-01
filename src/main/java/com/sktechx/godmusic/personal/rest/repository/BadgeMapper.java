@@ -1,7 +1,7 @@
 package com.sktechx.godmusic.personal.rest.repository;
 
 import com.sktechx.godmusic.lib.mybatis.annotation.ReadOnlyMapper;
-import com.sktechx.godmusic.personal.rest.domain.badge.BadgeDto;
+import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDto;
 
 import java.util.List;
 

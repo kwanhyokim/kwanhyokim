@@ -12,7 +12,7 @@ package com.sktechx.godmusic.personal.rest.repository;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.mybatis.annotation.BaseMapper;
-import com.sktechx.godmusic.personal.rest.domain.badge.BadgeIssueDto;
+import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeIssueDto;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

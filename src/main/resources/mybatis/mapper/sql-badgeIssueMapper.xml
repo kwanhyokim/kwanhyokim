@@ -14,11 +14,11 @@
 
 <mapper namespace="com.sktechx.godmusic.personal.rest.repository.BadgeIssueMapper">
 
-    <resultMap id="badgeIssueDetail" type="com.sktechx.godmusic.personal.rest.domain.badge.BadgeIssueDto"
+    <resultMap id="badgeIssueDetail" type="com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeIssueDto"
                autoMapping="true">
         <id property="badgeIssuId" column="badge_issu_id"/>
 
-        <association property="badgeDto" javaType="com.sktechx.godmusic.personal.rest.domain.badge.BadgeDto">
+        <association property="badgeDto" javaType="com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDto">
             <id property="badgeId" column="badge_id"/>
             <result property="badgeCd" column="badge_cd"/>
             <result property="badgeNm" column="badge_nm"/>
@@ -32,7 +32,7 @@
             <result property="backgroundRgbValue" column="background_rgb_value"/>
         </association>
 
-        <association property="badgeTypeDto" javaType="com.sktechx.godmusic.personal.rest.domain.badge.BadgeTypeDto">
+        <association property="badgeTypeDto" javaType="com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeTypeDto">
             <id property="badgeTypeId" column="badge_type_id"/>
             <result property="badgeType" column="badge_type"/>
             <result property="badgeUiType" column="badge_ui_type"/>
@@ -65,7 +65,7 @@
     </select>
 
     <select id="findAllBadgeIssueDtimeByCharacterNo"
-            resultType="com.sktechx.godmusic.personal.rest.domain.badge.BadgeIssueDto">
+            resultType="com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeIssueDto">
         SELECT  a.badge_issu_id,
                 a.issu_dtime
         FROM    tb_badge_issue a
@@ -164,7 +164,7 @@
         )
     </insert>
 
-    <select id="findByCharacterNoAndBadgeId" resultType="com.sktechx.godmusic.personal.rest.domain.badge.BadgeIssueDto">
+    <select id="findByCharacterNoAndBadgeId" resultType="com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeIssueDto">
         SELECT  badge_issu_id
         FROM    tb_badge_issue
         WHERE   character_no = #{characterNo}
