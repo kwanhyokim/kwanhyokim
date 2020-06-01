@@ -8,8 +8,9 @@
  * you entered into with DREAMUS COMPANY.
  */
 
-package com.sktechx.godmusic.personal.rest.model.dto.badge;
+package com.sktechx.godmusic.personal.rest.model.vo.badge;
 
+import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDetailResponseDto;
 import lombok.Getter;
 import lombok.ToString;
 
