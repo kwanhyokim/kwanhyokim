@@ -23,10 +23,10 @@ import java.util.List;
  */
 @Getter
 @ToString
-public class BadgeDetailListResponseDto {
+public class BadgeDetailListResponseVo {
     private List<BadgeDetailResponseDto> newBadgeList;
 
-    public BadgeDetailListResponseDto(List<BadgeDetailResponseDto> newBadgeList) {
+    public BadgeDetailListResponseVo(List<BadgeDetailResponseDto> newBadgeList) {
         this.newBadgeList = newBadgeList;
     }
 }

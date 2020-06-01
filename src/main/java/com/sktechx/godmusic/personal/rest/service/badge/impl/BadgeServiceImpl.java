@@ -19,8 +19,9 @@ import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.domain.badge.BadgeIssueDto;
 import com.sktechx.godmusic.personal.rest.domain.badge.BadgeTypeDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
+import com.sktechx.godmusic.personal.rest.model.dto.badge.AllBadgeListResponseVo;
 import com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDetailResponseDto;
-import com.sktechx.godmusic.personal.rest.model.dto.badge.ChallengeBadgeResponseDto;
+import com.sktechx.godmusic.personal.rest.model.dto.badge.ChallengeBadgeResponseVo;
 import com.sktechx.godmusic.personal.rest.model.vo.badge.NewBadgeExistCheckVo;
 import com.sktechx.godmusic.personal.rest.repository.BadgeIssueMapper;
 import com.sktechx.godmusic.personal.rest.repository.BadgeTypeMapper;
@@ -101,10 +102,10 @@ public class BadgeServiceImpl implements BadgeService {
                 YnType.Y != floTrack.getSvcStreamingYn() && YnType.Y != floTrack.getSvcDrmYn()) {
 
             log.debug("### BadgeDto {}", badgeIssueDto.getBadgeDto());
-            badgeDetailResponseDto.nonRightTrackCase(badgeIssueDto);
+            badgeDetailResponseDto.setNonRightTrackInfo(badgeIssueDto);
 
         } else {
-            badgeDetailResponseDto.hasRightTrackCase(floTrack);
+            badgeDetailResponseDto.setRightTrackInfo(floTrack);
         }
     }
 
@@ -140,13 +141,12 @@ public class BadgeServiceImpl implements BadgeService {
      */
     @Override
     public List<BadgeDetailResponseDto> getAllNewBadgeList(Long characterNo) {
-        Date now = new Date();
-
         List<BadgeIssueDto> allNewBadgeList = badgeIssueMapper.findAllNewBadgeListByCharacterNo(characterNo);
         if (CollectionUtils.isEmpty(allNewBadgeList)) {
             throw new CommonBusinessException(CommonErrorDomain.EMPTY_DATA);
         }
 
+        Date now = new Date();
         return allNewBadgeList.stream()
                 .filter(badgeIssue -> DateUtil.getAfterDays(now, badgeIssue.getIssuDtime()) <= 30)
                 .map(badgeIssueDto -> {
@@ -179,8 +179,9 @@ public class BadgeServiceImpl implements BadgeService {
      * 도전 중인 배지 목록 조회
      */
     @Override
-    public List<ChallengeBadgeResponseDto> getAllChallengeBadgeList(Long characterNo,
-                                                                    List<BadgeDetailResponseDto> receivedBadgeList) {
+    public List<ChallengeBadgeResponseVo> getAllChallengeBadgeList(Long characterNo,
+                                                                   List<BadgeDetailResponseDto> receivedBadgeList) {
+
         List<BadgeTypeDto> badgeTypeDtoList = badgeTypeMapper.findAllBadgeType();
         Set<String> receivedBadgeTypeSet = receivedBadgeList.stream()
                 .map(BadgeDetailResponseDto::getBadgeType)
@@ -188,8 +189,18 @@ public class BadgeServiceImpl implements BadgeService {
 
         return badgeTypeDtoList.stream()
                 .filter(badgeTypeDto -> !receivedBadgeTypeSet.contains(badgeTypeDto.getBadgeType()))
-                .map(ChallengeBadgeResponseDto::new)
+                .map(ChallengeBadgeResponseVo::new)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 도전중인 배지, 획득한 배지 전체 조회
+     */
+    @Override
+    public AllBadgeListResponseVo getAllBadgeListByCharacterNo(Long characterNo) {
+        List<BadgeDetailResponseDto> allReceivedBadgeList = this.getAllReceivedBadgeList(characterNo);
+        List<ChallengeBadgeResponseVo> allChallengeBadgeList = this.getAllChallengeBadgeList(characterNo, allReceivedBadgeList);
+        return new AllBadgeListResponseVo(allReceivedBadgeList, allChallengeBadgeList);
     }
 
 }
