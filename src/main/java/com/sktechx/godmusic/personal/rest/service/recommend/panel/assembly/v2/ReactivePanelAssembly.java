@@ -26,6 +26,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.reactive.RcmmdReactivePanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
+import com.sktechx.godmusic.personal.rest.service.recommend.RecommendImageManagementService;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelSignAssembly;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,6 +45,9 @@ public class ReactivePanelAssembly extends PanelSignAssembly {
 
     @Autowired
     MetaClient metaClient;
+
+    @Autowired
+    RecommendImageManagementService recommendImageManagementService;
 
     public ReactivePanelAssembly(){ }
 
@@ -65,6 +69,7 @@ public class ReactivePanelAssembly extends PanelSignAssembly {
                 .stream()
                 .map( recommendDto -> (RcmmdLikeTrackDto) recommendDto)
                 .collect(Collectors.toList());
+
 
         for(RcmmdLikeTrackDto rcmmdLikeTrackDto :
                 rcmmdLikeTrackDtoList) {
@@ -112,7 +117,12 @@ public class ReactivePanelAssembly extends PanelSignAssembly {
 
                 panelList.add(
                         new RcmmdReactivePanel(
-                                getDefaultBgImageList(new ArrayList<>(),
+                                getDefaultBgImageList(
+                                        recommendImageManagementService
+                                                .getAdaptivePanelHomeImageList(
+                                                        personalPhaseMeta.getOsType()
+                                                )
+                                        ,
                                     personalPhaseMeta.getOsType()),
                                 seedTrackImgList,
                                 rcmmdTrackImgList,

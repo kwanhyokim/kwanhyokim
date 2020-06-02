@@ -56,6 +56,10 @@ public class RedisKeyConstant {
 	public static final String PERSONAL_IMAGE_MANAGEMENT_KEY =
 			"godmusic.personalapi.image.management:{}.{}.{}";
 
+	// 반응형 패널 배경 이미지
+	public static final String REACTIVE_PANEL_IMGLIST_KEY =
+			"godmusic.personalapi.reactive.panel.imglist";
+
 	// 추천 패널 디폴트 이미지 ( 배경 이미지 없을 경우 대체)
 	public static final String RECOMMEND_PANEL_DEFAULT_IMGLIST_KEY =
 			"godmusic.personalapi.recommend.home.panel.default.imglist";

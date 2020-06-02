@@ -35,4 +35,6 @@ public interface RecommendImageManagementService {
 
     List<ImageInfo> selectRecommendPanelInfoBgImageUrl(RecommendPanelContentType recommendPanelContentType, Long rcmmdId
             , OsType osType, int dispSn);
+
+    List<ImageInfo> getAdaptivePanelHomeImageList(OsType osType);
 }
