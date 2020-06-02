@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.service.home;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentTyp
 import com.sktechx.godmusic.personal.rest.client.PersonalMongoClient;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferDispDto;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import com.sktechx.godmusic.personal.rest.repository.CharacterPreferGenreMapper;
 import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
@@ -97,8 +99,10 @@ public class HomeMetaServiceImpl implements HomeMetaService {
     @Override
     public CompletableFuture<List<PersonalPanel>> getPersonalRecommendPanelMgoMeta(
             Long characterNo) {
-        return CompletableFuture.completedFuture(
-                personalMongoClient.getRcmmdPanelMetaByCharacterNo(characterNo).getData().getList()
+        return CompletableFuture.completedFuture(Optional.ofNullable(
+                personalMongoClient.getRcmmdPanelMetaByCharacterNo(characterNo).getData()
+                ).orElseGet(()-> new ListDto<>(null))
+                .getList()
         );
 
     }
