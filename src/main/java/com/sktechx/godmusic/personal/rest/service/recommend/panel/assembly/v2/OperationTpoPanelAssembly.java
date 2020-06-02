@@ -76,7 +76,12 @@ public class OperationTpoPanelAssembly extends PanelNonSignAssembly {
     private Panel createTPOChannelPanel(final ChnlDto channel,final PersonalPhaseMeta personalPhaseMeta){
 
         TPOChannelPanel tpoChannelPanel = new TPOChannelPanel(channel,
+
+                getDefaultBgImageList(
                 getTpoAndThemeBackgroundImageList(personalPhaseMeta.getOsType())
+                        ,
+                        personalPhaseMeta.getOsType()
+                )
         );
         tpoChannelPanel.setType(RecommendPanelType.POPULAR_CHANNEL);
         PanelContentVo panelContentVo = tpoChannelPanel.getContent();

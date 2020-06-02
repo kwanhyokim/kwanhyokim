@@ -135,10 +135,9 @@
 
 	<select id="selectAdaptivePanelHomeImageList" resultType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo">
 		SELECT
-			img_disp_type,
 			os_type,
-			img_size,
-			img_url
+			img_size AS size,
+			img_url AS url
 		FROM tb_img_mang
 		WHERE img_content_type = 'RX_PANNEL'
 		  AND img_disp_type = 'MAIN_TOP'
