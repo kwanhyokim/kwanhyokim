@@ -43,7 +43,7 @@ public class ListenLogAmqpServiceImpl implements ListenLogAmqpService, CommandLi
     private ListenLogAmqpDeliver amqpDeliver;
 
     private final Environment environment;
-    private final RabbitTemplate newRabbitTemplate;
+    private final RabbitTemplate listenLogRabbitTemplate;
 
     @Override
     public void deliverSourcePlay(Object message) {
@@ -55,7 +55,7 @@ public class ListenLogAmqpServiceImpl implements ListenLogAmqpService, CommandLi
 
     @Override
     public void run(String... args) throws Exception {
-        amqpDeliver = new ListenLogAmqpDeliverImpl(newRabbitTemplate);
+        amqpDeliver = new ListenLogAmqpDeliverImpl(listenLogRabbitTemplate);
         this.exchangeTrackListen = environment.getProperty(propExchangeTrackListen);
         if (StringUtils.isEmpty(this.exchangeTrackListen)) {
             throw new IllegalArgumentException("not found exchange key name : " + propExchangeTrackListen);
