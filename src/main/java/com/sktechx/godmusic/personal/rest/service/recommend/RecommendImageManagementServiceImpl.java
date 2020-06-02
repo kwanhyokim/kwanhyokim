@@ -132,4 +132,34 @@ public class RecommendImageManagementServiceImpl implements RecommendImageManage
                 .collect(Collectors.toList());
 
     }
+    @Override
+    public List<ImageInfo> getAdaptivePanelHomeImageList(OsType osType) {
+        List<ImageInfo> imgList = null;
+
+        try{
+            imgList = redisService.getListWithPrefix(RedisKeyConstant.REACTIVE_PANEL_IMGLIST_KEY,
+                    ImageInfo.class);
+
+        }catch(Exception e){
+            log.error("getAdaptivePanelHomeImageList error : {}",e.getMessage());
+        }finally {
+            if(CollectionUtils.isEmpty(imgList)){
+                imgList = recommendImageManagementMapper.selectAdaptivePanelHomeImageList();
+                if(!CollectionUtils.isEmpty(imgList)){
+                    int recommendPanelDefaultImageExpiredSec = 3600;
+                    redisService.setWithPrefix(RedisKeyConstant.REACTIVE_PANEL_IMGLIST_KEY, imgList,
+                            recommendPanelDefaultImageExpiredSec);
+                }
+            }
+        }
+
+        if(!CollectionUtils.isEmpty(imgList)){
+            Collections.shuffle(imgList);
+
+            return Collections.singletonList(
+                    imgList.stream().filter(imageInfo -> osType.equals(imageInfo.getOsType()))
+                            .findFirst().orElse(null));
+        }
+        return null;
+    }
 }
