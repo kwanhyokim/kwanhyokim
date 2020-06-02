@@ -10,6 +10,8 @@
 
 package com.sktechx.godmusic.personal.rest.service.chart;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -20,15 +22,16 @@ import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
-import com.sktechx.godmusic.personal.rest.model.dto.chart.DispPropsImageDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackTasteMixTrackDto;
+import com.sktechx.godmusic.personal.rest.model.dto.chart.DispPropsImageDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartDispPropsVo;
 import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartVo;
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
 import com.sktechx.godmusic.personal.rest.service.image.ImageReadService;
-import com.sktechx.godmusic.personal.rest.service.mongo.PersonalMongoClient;
+import com.sktechx.godmusic.personal.rest.client.PersonalMongoClient;
 import lombok.extern.slf4j.Slf4j;
 
 import static java.util.Comparator.comparingInt;
@@ -82,13 +85,20 @@ public class MongoChartServiceImpl implements ChartService {
                         currentChartDispPropsDto.getChartId().equals(chartId)
         );
 
+        final List<ImageInfo> bgImgList = new ArrayList<>();
+
         ChartTrackDto chartTrackDto = getChartTrackDto(characterNo, trackLimitSize,
                 chartDispPropsVo);
 
         chartTrackDto.disableRank();
         chartTrackDto.makeTrackDispSn();
 
-        return ChartVo.from( chartDispPropsVo, chartTrackDto );
+        imageReadService.getChartDetailThumbnailImage(chartDispPropsVo.getChartId(), osType)
+                .ifPresent(
+                        dispPropsImageDto -> bgImgList.addAll(dispPropsImageDto.getImgList())
+                );
+
+        return ChartVo.from( chartDispPropsVo, chartTrackDto, bgImgList);
     }
 
     // 개인화 차트 홈
@@ -113,15 +123,12 @@ public class MongoChartServiceImpl implements ChartService {
         chartTrackDto.disableRank();
         chartTrackDto.makeTrackDispSn();
 
-        chartTrackDto.getTrackIdOfFirstTrack()
-                .ifPresent(
-                        trackId ->
-                            getChartBackgroundImage(chartMapper.selectSvcGenreIdFromTrack(trackId),
-                                    chartDispPropsVo.getChartId(), osType)
-                            .ifPresent(
-                                    dispPropsImageDto -> dispPropsImageDtos[0] = dispPropsImageDto
-                            )
-                );
+        chartTrackDto.getTrackIdOfFirstTrack().flatMap(
+                trackId -> getChartBackgroundImage(
+                        chartMapper.selectSvcGenreIdFromTrack(trackId),
+                        chartDispPropsVo.getChartId(), osType)
+        )
+        .ifPresent(dispPropsImageDto -> dispPropsImageDtos[0] = dispPropsImageDto);
 
         return ChartDto.from( chartDispPropsVo, chartTrackDto, dispPropsImageDtos[0]);
     }

@@ -16,9 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
@@ -29,6 +27,7 @@ import com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.like.RcmmdLikeTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.header.RecommendPanelHeaderVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedArtistVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedGenreVo;
@@ -36,6 +35,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedTrac
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
+import com.sktechx.godmusic.personal.rest.service.recommend.read.RcmmdReadServiceFactory;
 
 /**
  * 설명 : 설명 : 추천 패널 상세 헤더 ( 4.6.0 부터 이용 )
@@ -54,19 +54,19 @@ public class V2RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderSe
     private RecommendPanelService recommendPanelService;
 
     @Autowired
-    @Qualifier("recommendReadService")
-    private RecommendReadService recommendReadService;
+    private RecommendImageManagementService recommendImageManagementService;
 
     @Autowired
-    private RecommendImageManagementService recommendImageManagementService;
+    private RcmmdReadServiceFactory rcmmdReadServiceFactory;
 
     @Override
     public RecommendImageManagementService getRecommendImageManagementService() {
         return recommendImageManagementService;
     }
+
     @Override
     public RecommendPanelHeaderVo getRecommendPanelInfo(Long characterNo,
-            String recommendPanelContentType,
+            RecommendPanelContentType recommendPanelContentType,
             Long panelContentId,
             OsType osType
             ) {
@@ -82,11 +82,11 @@ public class V2RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderSe
     }
 
     private RecommendPanelHeaderVo getRecommendPanelInfo(
-            String recommendPanelContentType,
+            RecommendPanelContentType recommendPanelContentType,
             Long panelContentId,
             Long characterNo,
             OsType osType,
-            ListDto<List<RecommendPanelTrackDto>> trackList) {
+            ListDto<List<RecommendPanelTrackDto>> trackListDto) {
 
         RecommendPanelHeaderVo panel = null;
 
@@ -94,40 +94,58 @@ public class V2RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderSe
                 .getPersonalRecommendPhaseMeta(characterNo, osType, "4.6.0"
                 );
 
-        int trackCount = 0;
+        List<RecommendPanelTrackDto> trackList = Optional.ofNullable(trackListDto.getList())
+                .orElseGet(Collections::emptyList);
 
-        if( trackList != null && !CollectionUtils.isEmpty(trackList.getList())){
-            trackCount = trackList.getList().size();
-        }
+        RecommendDto recommendDto = rcmmdReadServiceFactory
+                .getRcmmdReadService(recommendPanelContentType)
+                .getRecommend(personalPhaseMeta.getCharacterNo(), panelContentId);
 
         switch (recommendPanelContentType){
             // 좋아할만한 아티스트 MIX
-            case "RC_ATST_TR":
-                panel = getArtistFloRecommendPanelInfoDto(characterNo, panelContentId);
+            case RC_ATST_TR:
+                panel = getArtistFloRecommendPanelInfoDto(recommendDto);
                 break;
             // 오늘의 추천
-            case "RC_SML_TR":
-                panel = getTodayFloRecommendPanelInfoDto(characterNo, recommendPanelContentType, panelContentId,
-                        osType, trackList, trackCount);
+            case RC_SML_TR:
+                panel = getTodayFloRecommendPanelInfoDto(recommendPanelContentType,
+                        panelContentId, osType, trackList, trackList.size(), recommendDto);
                 break;
 
             // 나를 위한 새로운 발견
-            case "RC_GR_TR":
-            case "RC_CF_TR":
+            case RC_GR_TR:
+            case RC_CF_TR:
                 panel = getForMeRecommendPanelInfoDto(recommendPanelContentType, panelContentId,
-                        osType, personalPhaseMeta, trackCount);
+                        osType, personalPhaseMeta, trackList.size(), recommendDto);
                 break;
+
+            case RC_LKSM_TR:
+                panel = getLikeTrackRecommendPanelInfoDto(recommendDto);
         }
+
         return panel;
     }
 
-    private RecommendPanelHeaderVo getForMeRecommendPanelInfoDto(
-            String recommendPanelContentType, Long panelContentId, OsType osType,
-            PersonalPhaseMeta personalPhaseMeta, int trackCount) {
+    private RecommendPanelHeaderVo getLikeTrackRecommendPanelInfoDto(
+            RecommendDto recommendDto) {
 
-        RecommendForMeDto recommendForMeDto =
-                recommendReadService.getRecommendForMeFlo(
-                        personalPhaseMeta.getCharacterNo(), panelContentId);
+        RcmmdLikeTrackDto rcmmdLikeTrackDto = (RcmmdLikeTrackDto) recommendDto;
+
+        Date dispDate = rcmmdLikeTrackDto.getDispStartDtime();
+        return RecommendPanelHeaderVo.builder()
+                .title(RecommendConstant.RCMMD_REACTIVE_PANEL_TITLE)
+                .subTitle(RecommendConstant.RCMMD_REACTIVE_PANEL_SUB_TITLE)
+                .trackCount(rcmmdLikeTrackDto.getTrackIdList().size())
+                .newYn(this.getNewYn(dispDate))
+                .renewDtime(dispDate)
+                .build();
+    }
+
+    private RecommendPanelHeaderVo getForMeRecommendPanelInfoDto(
+            RecommendPanelContentType recommendPanelContentType, Long panelContentId, OsType osType,
+            PersonalPhaseMeta personalPhaseMeta, int trackCount, RecommendDto recommendDto) {
+
+        RecommendForMeDto recommendForMeDto = (RecommendForMeDto) recommendDto;
 
         Date dispStdStartDt = new Date();
         SeedGenreVo seedGenreVo = null;
@@ -179,17 +197,13 @@ public class V2RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderSe
     }
 
     private RecommendPanelHeaderVo getTodayFloRecommendPanelInfoDto(
-            Long characterNo,
-            String recommendPanelContentType,
+            RecommendPanelContentType recommendPanelContentType,
             Long panelContentId,
             OsType osType,
-            ListDto<List<RecommendPanelTrackDto>> trackList,
-            int trackCount) {
+            List<RecommendPanelTrackDto> trackList,
+            int trackCount, RecommendDto recommendDto) {
 
-        RecommendSimilarTrackDto recommendSimilarTrackDto =
-                Optional.ofNullable(
-                    recommendReadService.getRecommendTodayFlo(characterNo, panelContentId)
-                ).orElseThrow( () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
+        RecommendSimilarTrackDto recommendSimilarTrackDto = (RecommendSimilarTrackDto)recommendDto;
 
         Date dispDate = recommendSimilarTrackDto.getDispStdStartDt();
 
@@ -208,7 +222,7 @@ public class V2RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderSe
                 .renewDtime(dispDate)
                 .build();
 
-        trackList.getList().stream()
+        trackList.stream()
                 .findFirst()
                 .ifPresent(
                         recommendPanelTrackDto ->
@@ -233,10 +247,8 @@ public class V2RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderSe
         return panel;
     }
 
-    private RecommendPanelHeaderVo getArtistFloRecommendPanelInfoDto(Long characterNo,
-            Long panelContentId) {
-        RecommendArtistDto recommendArtistDto =
-                recommendReadService.getRecommendArtistFlo(characterNo, panelContentId);
+    private RecommendPanelHeaderVo getArtistFloRecommendPanelInfoDto(RecommendDto recommendDto) {
+        RecommendArtistDto recommendArtistDto = (RecommendArtistDto)recommendDto;
 
         List<ArtistDto> artistDtoList =
 

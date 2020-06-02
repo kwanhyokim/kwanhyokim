@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.CreateStdType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.util.BooleanComparator;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
@@ -38,76 +39,74 @@ import lombok.extern.slf4j.Slf4j;
 @Service("artistFloPanelAssembly")
 public class ArtistFloPanelAssembly extends PanelSignAssembly {
 
-    private final int ARTIST_FLO_PANNEL_HOME_MAX_SIZE = 7;
-    private final int ARTIST_FLO_PANNEL_LIMIT_SIZE = 4;
+    private final int ARTIST_FLO_PANEL_HOME_MAX_SIZE = 7;
+    private final int ARTIST_FLO_PANEL_LIMIT_SIZE = 4;
 
-    public ArtistFloPanelAssembly(){}
-
-    @Override
-    protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
-        return new ArrayList<>();
-    }
+    public ArtistFloPanelAssembly(){ }
 
     @Override
-    protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){
-        mergePanelList(panelList,
-                appendPreferArtistPopularTrackPanel(personalPhaseMeta),
-                appendPreferenceChartPanel(personalPhaseMeta),
-                ARTIST_FLO_PANNEL_HOME_MAX_SIZE
+    public List<Panel> makeHomePanelListForMainTop(PersonalPhaseMeta personalPhaseMeta){
+        return mergePanelList(
+                makeRcmmdPanelList(personalPhaseMeta),
+                appendPreferenceChartPanel.apply(personalPhaseMeta),
+                ARTIST_FLO_PANEL_HOME_MAX_SIZE
         );
 
     }
 
-    private List<Panel> appendPreferArtistPopularTrackPanel(final PersonalPhaseMeta personalPhaseMeta) {
-
-        final List<Panel> panelList = new ArrayList<>();
-
-        List<RecommendArtistDto> recommendArtistDtoList =
-                recommendReadService.getRecommendArtistFloListByCharacterNo(
-                        personalPhaseMeta.getCharacterNo()
-                );
-
-        Stream.concat(
-            Optional.ofNullable(recommendArtistDtoList).orElseGet(Collections::emptyList).stream()
-                .filter(recommendArtistDtoDf -> CreateStdType.DF.equals(recommendArtistDtoDf.getCreateStdType()))
-                .limit(1),
-            Optional.ofNullable(recommendArtistDtoList).orElseGet(Collections::emptyList).stream()
-                .filter(recommendArtistDtoRcmmd -> CreateStdType.RCMMD.equals(recommendArtistDtoRcmmd.getCreateStdType()))
-        )
-        .filter(Objects::nonNull)
-        .filter(recommendArtistDto -> !recommendArtistDto.getArtistList().isEmpty())
-        .sorted(Comparator.comparing(RecommendArtistDto::getDispStdStartDt).reversed())
-        .limit(ARTIST_FLO_PANNEL_LIMIT_SIZE)
-        .collect(Collectors.toList())
-        .forEach(
-                recommendArtistDto -> {
-                    try {
-
-                        recommendArtistDto.getArtistList()
-                                .sort(
-                                        (ArtistDto a, ArtistDto b) -> (BooleanComparator.TRUE_HIGH.compare(a.hasDefaultImage(), b.hasDefaultImage()))
-                                );
-
-                        panelList.add(new ArtistPanel(recommendArtistDto));
-
-                    } catch (Exception e) {
-                        log.error("PanelSignAssembly appendPreferArtistPanel artistPanel create error : {}", e.getMessage());
-                    }
-                }
-
-        );
-
-        return panelList;
-    }
-
     @Override
-    public List<Panel> getRecommendPanelList(Long characterNo, OsType osType){
+    public List<Panel> makeHomePanelListForMainMiddle(Long characterNo, OsType osType){
         PersonalPhaseMeta personalPhaseMeta = new PersonalPhaseMeta();
         personalPhaseMeta.setCharacterNo(characterNo);
         personalPhaseMeta.setOsType(osType);
 
-        return appendPreferArtistPopularTrackPanel(personalPhaseMeta);
+        return makeRcmmdPanelList(personalPhaseMeta);
 
+    }
+
+    private List<Panel> makeRcmmdPanelList(PersonalPhaseMeta personalPhaseMeta) {
+        final List<Panel> panelList = new ArrayList<>();
+
+        List<RecommendArtistDto> recommendArtistDtoList = (List<RecommendArtistDto>)
+                rcmmdReadServiceFactory.getRcmmdReadService(RecommendPanelContentType.RC_ATST_TR)
+                .getRecommendListWithTrackByCharacterNoOrderByDispStartDtime(
+                        personalPhaseMeta.getCharacterNo(),
+                        10,
+                        0,
+                        personalPhaseMeta.getOsType()
+                );
+
+        Stream.concat(
+                Optional.ofNullable(recommendArtistDtoList).orElseGet(Collections::emptyList).stream()
+                        .filter(recommendArtistDtoDf -> CreateStdType.DF.equals(recommendArtistDtoDf.getCreateStdType()))
+                        .limit(1),
+                Optional.ofNullable(recommendArtistDtoList).orElseGet(Collections::emptyList).stream()
+                        .filter(recommendArtistDtoRcmmd -> CreateStdType.RCMMD.equals(recommendArtistDtoRcmmd.getCreateStdType()))
+        )
+                .filter(Objects::nonNull)
+                .filter(recommendArtistDto -> !recommendArtistDto.getArtistList().isEmpty())
+                .sorted(Comparator.comparing(RecommendArtistDto::getDispStdStartDt).reversed())
+                .limit(ARTIST_FLO_PANEL_LIMIT_SIZE)
+                .collect(Collectors.toList())
+                .forEach(
+                        recommendArtistDto -> {
+                            try {
+
+                                recommendArtistDto.getArtistList()
+                                        .sort(
+                                                (ArtistDto a, ArtistDto b) -> (BooleanComparator.TRUE_HIGH.compare(a.hasDefaultImage(), b.hasDefaultImage()))
+                                        );
+
+                                panelList.add(new ArtistPanel(recommendArtistDto));
+
+                            } catch (Exception e) {
+                                log.error("PanelSignAssembly appendPreferArtistPanel artistPanel create error : {}", e.getMessage());
+                            }
+                        }
+
+                );
+
+        return panelList;
     }
 }
 

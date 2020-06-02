@@ -23,8 +23,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.mybatis.code.CodeEnum;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.chart.TasteMixVo;
 import lombok.Builder;
 import lombok.Data;
@@ -67,8 +69,13 @@ public class PanelContentVo {
     private String chartTaste;
 
     public TasteMixVo getTasteMix(){
-        return TasteMixVo.from(chartTaste);
+        return type == RecommendPanelType.PRI_LIVE_CHART ||
+                type == RecommendPanelType.PRI_KIDS_CHART ?
+                TasteMixVo.from(chartTaste) : null;
     }
+
+    private List<ImageInfo> seedTrackImgList;
+    private List<ImageInfo> rcmmdTrackImgList;
 
     // WEB 에서 추천 아이디가 javascript가 파싱 가능한 숫자 범위를 넘어가므로, web 요청일 경우 String 타입으로 내려줌
     public Object getId(){

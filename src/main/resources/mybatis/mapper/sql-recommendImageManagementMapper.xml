@@ -120,6 +120,29 @@
 		LIMIT 1
 	</select>
 
+	<select id="selectAdaptivePanelImageList" resultMap="recommendImageResultMap">
+		SELECT
+		  img_disp_type,
+		  os_type,
+		  img_size,
+		  img_url
+		FROM tb_img_mang
+		WHERE img_content_type = 'RX_PANNEL'
+		AND img_disp_type = 'RCT_DTL'
+		AND os_TYPE IN ('ALL', #{osType})
+		LIMIT 1
+	</select>
+
+	<select id="selectAdaptivePanelHomeImageList" resultType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo">
+		SELECT
+			os_type,
+			img_size AS size,
+			img_url AS url
+		FROM tb_img_mang
+		WHERE img_content_type = 'RX_PANNEL'
+		  AND img_disp_type = 'MAIN_TOP'
+	</select>
+
 	<select id="selectRecommendPanelDefaultImageList" resultType="com.sktechx.godmusic.personal.rest.model.vo.ImageInfo">
 		SELECT
 			os_type,

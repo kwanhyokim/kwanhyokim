@@ -34,33 +34,30 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
 @Service("preferGenreThemePanelAssembly")
 public class PreferGenreThemePanelAssembly extends PanelSignAssembly {
 
+    public static int PREFER_GENRE_CHANNEL_HOME_MAX_PANEL_SIZE = 7;
+
+    public static int PREFER_GENRE_CHANNEL_LIMIT_PANEL_SIZE = 5;
+
     public PreferGenreThemePanelAssembly(){}
 
     @Override
-    protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
-        return new ArrayList<>();
+    public List<Panel> makeHomePanelListForMainTop(PersonalPhaseMeta personalPhaseMeta){
+
+       return mergePanelList(
+                this.appendPreferGenreChannelPanelList(personalPhaseMeta, PREFER_GENRE_CHANNEL_LIMIT_PANEL_SIZE ),
+                appendPreferenceChartPanel.apply(personalPhaseMeta),
+               PREFER_GENRE_CHANNEL_HOME_MAX_PANEL_SIZE);
     }
 
     @Override
-    protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){
-
-        List<Panel> myPanelList = new ArrayList<>();
-        List<Panel> chartPanelList = appendPreferenceChartPanel(personalPhaseMeta);
-
-        this.appendPreferGenreChannelPanelList(personalPhaseMeta, myPanelList, 5 );
-
-        mergePanelList(panelList, myPanelList, chartPanelList, 7);
-    }
-
-    @Override
-    public List<Panel> getRecommendPanelList(Long characterNo, OsType osType) {
+    public List<Panel> makeHomePanelListForMainMiddle(Long characterNo, OsType osType) {
         return null;
     }
 
-    @Override
-    protected void appendPreferGenreChannelPanelList(final PersonalPhaseMeta personalPhaseMeta,
-            final List<Panel> panelList,
+    private List<Panel> appendPreferGenreChannelPanelList(final PersonalPhaseMeta personalPhaseMeta,
             int panelLimitSize) {
+
+        List<Panel> panelList = new ArrayList<>();
 
         Optional.ofNullable(
                 personalPhaseMeta.getPreferGenreIdList(panelLimitSize)
@@ -82,7 +79,9 @@ public class PreferGenreThemePanelAssembly extends PanelSignAssembly {
 
                                 try {
                                     panelList.add(
-                                            createPreferGenrePopularChannelPanel(personalPhaseMeta, preferGenrePopularChnlDto)
+                                            createPreferGenrePopularChannelPanel(
+                                                    personalPhaseMeta,
+                                                    preferGenrePopularChnlDto)
                                     );
                                 } catch (Exception e) {
                                     log.error("appendPreferGenreChannelPanelList error : {}", e.getMessage());
@@ -90,6 +89,8 @@ public class PreferGenreThemePanelAssembly extends PanelSignAssembly {
                             });
                 }
         );
+
+        return panelList;
     }
 }
 

@@ -13,14 +13,12 @@ package com.sktechx.godmusic.personal.rest.service.recommend;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javax.annotation.PostConstruct;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +43,7 @@ import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.v2.AfloPanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
+import com.sktechx.godmusic.personal.rest.service.recommend.read.RcmmdReadServiceFactory;
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -72,11 +71,9 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
     @Value("${personal.prefer.artist.panel.addPreferArtistPanel.instrumentalTrackRegexPattern}")
     private String instrumentalTrackRegexPattern;
 
-    private RecommendReadService recommendReadService;
-
-    private final RecommendReadService mongoRecommendReadService;
-
     private final RedisService redisService;
+
+    private final RcmmdReadServiceFactory rcmmdReadServiceFactory;
 
     @Autowired
     public RecommendPanelServiceImpl(
@@ -86,9 +83,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             RecommendPanelAssemblyFactory recommendPanelAssemblyFactory,
             PersonalRecommendPhaseService personalRecommendPhaseService,
             SqlSessionTemplate sqlSessionTemplate,
-            @Qualifier("recommendReadService") RecommendReadService recommendReadService,
-            @Qualifier("mongoRecommendReadService")RecommendReadService mongoRecommendReadService,
-            RedisService redisService
+            RedisService redisService,
+            RcmmdReadServiceFactory rcmmdReadServiceFactory
     ) {
 
         this.afloPanelAssembly = afloPanelAssembly;
@@ -97,18 +93,8 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         this.recommendPanelAssemblyFactory = recommendPanelAssemblyFactory;
         this.personalRecommendPhaseService = personalRecommendPhaseService;
         this.sqlSessionTemplate = sqlSessionTemplate;
-        this.recommendReadService = recommendReadService;
-        this.mongoRecommendReadService = mongoRecommendReadService;
         this.redisService = redisService;
-    }
-
-    @PostConstruct
-    public void init(){
-        String useMongoYn = redisService.getWithPrefix("godmusic.personal.usemongo", String.class);
-
-        if("Y".equals(useMongoYn)) {
-            this.recommendReadService = mongoRecommendReadService;
-        }
+        this.rcmmdReadServiceFactory = rcmmdReadServiceFactory;
     }
 
     @Override
@@ -120,7 +106,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
             personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType, appVer);
             panelAssembly = recommendPanelAssemblyFactory.getRecommendPanelAssembly(personalPhaseMeta.getFirstPhaseType());
-            panelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
+            panelList = panelAssembly.makeHomePanelListForMainTop(personalPhaseMeta);
 
             if(!ObjectUtils.isEmpty(personalPhaseMeta.getAfloCharacterExpireDtime())){
                 List<Panel> afloPanelList =  afloPanelAssembly.appendAfloChannelPanelList(
@@ -141,7 +127,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 if(panelAssembly == null)
                     panelAssembly = recommendPanelAssemblyFactory.getRecommendPanelAssembly();
                 try{
-                    panelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
+                    panelList = panelAssembly.makeHomePanelListForMainTop(personalPhaseMeta);
                 }catch(Exception e){
                     log.error("createRecommendPanel recovery not catched exception : {}",e.getMessage());
                 }
@@ -161,7 +147,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         try{
             personalPhaseMeta = personalRecommendPhaseService.getPersonalRecommendPhaseMeta(characterNo, osType, appVer);
             panelAssembly = recommendPanelAssemblyFactory.getV2RecommendPanelAssembly(personalPhaseMeta);
-            recommendPanelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
+            recommendPanelList = panelAssembly.makeHomePanelListForMainTop(personalPhaseMeta);
 
         }catch(CommonBusinessException cbex){
             log.error("createRecommendPanelV2 business exception : {}", cbex.getDisplayMessage());
@@ -175,7 +161,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 log.info("recommendPanelAssembly chosen : {}", panelAssembly);
 
                 try{
-                    recommendPanelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
+                    recommendPanelList = panelAssembly.makeHomePanelListForMainTop(personalPhaseMeta);
 
                 }catch(Exception e){
                     e.printStackTrace();
@@ -201,45 +187,13 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
     @Override
     public ListDto<List<RecommendPanelTrackDto>> getRecommendPanelTrackList(
-            Long characterNo, String recommendPanelContentType, Long panelContentId) {
+            Long characterNo, RecommendPanelContentType recommendPanelContentType,
+            Long panelContentId) {
 
-        ListDto<List<RecommendPanelTrackDto>> listDto = null;
-
-        switch (recommendPanelContentType){
-            // 아티스트 FLO
-            case "RC_ATST_TR":
-                listDto = new ListDto<>(
-                        recommendReadService.getRecommendArtistFloTrackListByCharacterNoAndRcmmdId(
-                                characterNo, panelContentId
-                        )
-                );
-                break;
-            // 오늘의 FLO
-            case "RC_SML_TR":
-                listDto = new ListDto<>(
-                        recommendReadService.getRecommendTodayFloTrackListByCharacterNoAndRcmmdId(
-                                characterNo, panelContentId
-                        )
-                );
-                break;
-            //
-            case "RC_GR_TR":
-                listDto = new ListDto<>(
-                        recommendReadService.getRecommendByRealtimeTrackListByCharacterNoAndRcmmdId(
-                                characterNo, panelContentId
-                        )
-                );
-            // 나를 위한 FLO
-            case "RC_CF_TR":
-                listDto = new ListDto<>(
-                        recommendReadService.getRecommendForMeFloTrackListByCharacterNoAndRcmmdId(
-                                characterNo, panelContentId
-                        )
-                );
-                break;
-        }
-
-        return listDto;
+        return new ListDto<>(
+                rcmmdReadServiceFactory.getRcmmdReadService(recommendPanelContentType)
+                .getRecommendTrackListByCharacterNoAndRcmmdId(characterNo, panelContentId)
+        );
     }
 
     @Override
@@ -396,15 +350,15 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
 
     @Override
     public List<Panel> getRecommendPanelList(Long characterNo,
-            String recommendPanelType, OsType osType, String appVersion) {
+            RecommendPanelContentType recommendPanelType, OsType osType, String appVersion) {
 
         PanelAssembly panelAssembly = recommendPanelAssemblyFactory
-                .getV2RecommendPanelAssembly(RecommendPanelContentType.fromCode(recommendPanelType));
+                .getV2RecommendPanelAssembly(recommendPanelType);
 
         try {
 
             return Optional.ofNullable(
-                    panelAssembly.getRecommendPanelList(characterNo, osType)
+                    panelAssembly.makeHomePanelListForMainMiddle(characterNo, osType)
             )
                     .orElseGet(Collections::emptyList)
                     .stream()

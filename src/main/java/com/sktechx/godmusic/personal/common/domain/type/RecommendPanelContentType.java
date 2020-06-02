@@ -33,7 +33,8 @@ public enum RecommendPanelContentType implements CodeEnum{
     RC_ATST_TR("RC_ATST_TR" , "아티스트 인기곡"),
     RC_GR_TR("RC_GR_TR" , "선호 장르 유사곡"),
     RC_MD_CN("RC_MD_CN" , "청취 무드 인기채널"),
-    PRI_CHART("PRI_CHART", "개인화 차트")
+    PRI_CHART("PRI_CHART", "개인화 차트"),
+    RC_LKSM_TR("RC_LKSM_TR", "방금 레이더")
     ;
 
     private final String code;

@@ -390,8 +390,7 @@
                  , LIKE_TYPE
                  , DISP_SN
                  , L.UPDATE_DTIME
-            FROM
-                (
+            FROM (
                     SELECT
                         LIKE_TYPE_ID
                          , LIKE_TYPE
@@ -400,12 +399,7 @@
                     FROM TB_CHARACTER_LIKE
                     WHERE CHARACTER_NO = #{characterNo}
                             AND LIKE_TYPE = 'CHART') L
-                    INNER JOIN TB_CHART A
-                               ON L.LIKE_TYPE_ID = A.CHART_ID
-                                   AND EXISTS(SELECT *
-                                              FROM TB_CHART_MUSIC_CONTENT B
-                                              WHERE A.CHART_ID = B.CHART_ID AND B.DISP_SN = 1 AND
-                                                    EXISTS(SELECT * FROM TB_TRACK C WHERE B.MUSIC_CONTENT_ID = C.TRACK_ID))
+                    INNER JOIN TB_CHART A ON L.LIKE_TYPE_ID = A.CHART_ID
             UNION ALL
             SELECT
                 LIKE_TYPE_ID

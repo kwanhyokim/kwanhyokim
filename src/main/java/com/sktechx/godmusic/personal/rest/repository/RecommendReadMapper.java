@@ -29,13 +29,14 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel
  */
 @ReadOnlyMapper
 public interface RecommendReadMapper {
-    List<PersonalPanel> selectPersonalRecommendPanelMeta(@Param("characterNo") Long characterNo,
-                                                         @Param("similarTrackDispStandardCount") int
-                                                                 similarTrackDispStandardCount,
-                                                         @Param("rcmmdCfTrackDispStandardCount") int
-                                                                 rcmmdCfTrackDispStandardCount,
-                                                         @Param("checkDispEndDt") Boolean checkDispEndDt
-
+    List<PersonalPanel> selectPersonalRecommendPanelMeta(
+            @Param("characterNo") Long characterNo,
+            @Param("similarTrackDispStandardCount") int similarTrackDispStandardCount,
+            @Param("rcmmdCfTrackDispStandardCount") int rcmmdCfTrackDispStandardCount,
+            @Param("checkDispEndDt") Boolean checkDispEndDt,
+            @Param("useForMeFloMongo") Boolean useForMeFloMongo,
+            @Param("useTodayFloMongo") Boolean useTodayFloMongo,
+            @Param("useArtistFloMongo") Boolean useArtistFloMongo
     );
 
     // 2-A' 선호장르 유사곡 패널
@@ -76,7 +77,7 @@ public interface RecommendReadMapper {
 
     List<SimilarTrackDto> selectSimilarTrackListByIdList(@Param("trackIds") List<Long> trackIds);
 
-    RecommendForMeDto selectRecommendGenreByRcmmdId(@Param("rcmmdId") Long rcmmdId);
+    RecommendForMeDto selectRecommendForMeFlo(@Param("rcmmdId") Long rcmmdId);
 
     RecommendDuplicateCountDto selectSimilarTrackPanelBetweenDuplicateCount(@Param("characterNo") Long characterNo);
     RecommendDuplicateCountDto selectPreferGenreSimilarTrackPanelBetweenDuplicateCount(@Param("characterNo") Long characterNo);

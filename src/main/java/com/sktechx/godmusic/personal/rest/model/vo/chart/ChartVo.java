@@ -136,7 +136,8 @@ public class ChartVo {
 
     }
 
-    public static ChartVo from (ChartDispPropsVo chartDispPropsDto, ChartTrackDto chartTrackDto){
+    public static ChartVo from (ChartDispPropsVo chartDispPropsDto, ChartTrackDto chartTrackDto,
+            List<ImageInfo> bgImgList){
 
         if(chartDispPropsDto == null || chartTrackDto == null){
             return null;
@@ -188,9 +189,7 @@ public class ChartVo {
                         .chartType(chartTrackDto.getChartType())
                         .renewYn(chartTrackDto.getRenewYn())
                         .totalCount(chartTrackDto.getTotalCount())
-                        .imgList(
-                                chartDispPropsDto.getImgList()
-                        )
+                        .imgList(bgImgList)
                         .tasteMixDto(tasteMixDto)
                         .build()
                 ;

@@ -56,6 +56,10 @@ public class RedisKeyConstant {
 	public static final String PERSONAL_IMAGE_MANAGEMENT_KEY =
 			"godmusic.personalapi.image.management:{}.{}.{}";
 
+	// 반응형 패널 배경 이미지
+	public static final String REACTIVE_PANEL_IMGLIST_KEY =
+			"godmusic.personalapi.reactive.panel.imglist";
+
 	// 추천 패널 디폴트 이미지 ( 배경 이미지 없을 경우 대체)
 	public static final String RECOMMEND_PANEL_DEFAULT_IMGLIST_KEY =
 			"godmusic.personalapi.recommend.home.panel.default.imglist";
@@ -68,6 +72,9 @@ public class RedisKeyConstant {
 	// 추천 차트 장르별 배경 이미지
 	public static final String PERSONAL_PRICHART_BACKGROUND_IMAGE_KEY =
 			"godmusic.personalapi.prichart.background.image:%s.%s";
+	// 차트 상세 썸네일 이미지
+	public static final String PERSONAL_CHART_DETAIL_THUMBNAIL_IMAGE_KEY =
+			"godmusic.personalapi.chart.detail.thumbnail.image:%s.%s";
 
 	/** 선호와 유사한 아티스트 **/
 
@@ -94,4 +101,6 @@ public class RedisKeyConstant {
 	public static final String PERSONAL_PREFERENCE_VIDEO_GENRE_NEW_DEFAULT_LIST=
 			"godmusic.personalapi.preference.video.genre.new.default.list";
 
+	// mongo 사용 여부
+	public static final String PERSONAL_USEMGO_KEY = "godmusic.personal.usemongo:%s";
 }

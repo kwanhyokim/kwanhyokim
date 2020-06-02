@@ -17,7 +17,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendUpdateRequest;
 import com.sktechx.godmusic.personal.rest.repository.ListenMapper;
 import com.sktechx.godmusic.personal.rest.service.ListenService;
-import com.sktechx.godmusic.personal.rest.service.mongo.PersonalMongoClient;
+import com.sktechx.godmusic.personal.rest.client.PersonalMongoClient;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendDummyDataService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -63,7 +63,8 @@ public class ListenServiceImpl implements ListenService {
         return RC_ATST_TR.getCode().equals(listenType)
                 || RC_SML_TR.getCode().equals(listenType)
                 || RC_GR_TR.getCode().equals(listenType)
-                || RC_CF_TR.getCode().equals(listenType);
+                || RC_CF_TR.getCode().equals(listenType)
+                || RC_LKSM_TR.getCode().equals(listenType);
     }
 
 }

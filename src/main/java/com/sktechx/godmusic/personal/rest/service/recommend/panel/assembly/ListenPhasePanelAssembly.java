@@ -37,7 +37,7 @@ public class ListenPhasePanelAssembly extends PanelSignAssembly {
     private ListenPhasePanelAssembly(){}
 
     @Override
-    protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
+    public List<Panel> makeHomePanelListForMainTop(final PersonalPhaseMeta personalPhaseMeta){
         final List<Panel> panelList = new ArrayList<>();
 
         appendPreferGenreSimilarTrackPanelList(personalPhaseMeta, panelList , PREFER_GENRE_SIMILAR_PANEL_SIZE  );
@@ -71,17 +71,10 @@ public class ListenPhasePanelAssembly extends PanelSignAssembly {
     }
 
     @Override
-    public List<Panel> getRecommendPanelList(Long characterNo, OsType osType) {
+    public List<Panel> makeHomePanelListForMainMiddle(Long characterNo, OsType osType) {
         return null;
     }
-    @Override
-    protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){
-        appendPreferArtistPopularTrackPanel(personalPhaseMeta,panelList);
-        panelList.addAll(appendPreferenceChartPanel(personalPhaseMeta));
 
-        sort(personalPhaseMeta , panelList);
-
-    }
     private boolean isAppendSimilarTrackPanel(int panelListSize){
         return PREFER_GENRE_SIMILAR_PANEL_SIZE > panelListSize;
     }

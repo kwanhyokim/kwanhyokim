@@ -22,6 +22,7 @@ import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.personal.common.domain.ListResponse;
 import com.sktechx.godmusic.personal.common.domain.domain.Naming;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto;
 import com.sktechx.godmusic.personal.rest.model.dto.MemberChannelDto;
@@ -144,7 +145,7 @@ public class ChannelController {
 
         Long characterNo = ctx.getCharacterNo();
         List<Panel> recommendPanelList = recommendPanelService.getRecommendPanelList(
-                characterNo, "AFLO",
+                characterNo, RecommendPanelContentType.AFLO,
                 ctx.getOsType(),
                 ctx.getAppVer()
         );

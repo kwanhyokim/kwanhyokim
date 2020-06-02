@@ -22,6 +22,7 @@ import org.springframework.util.ObjectUtils;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.header.RecommendPanelHeaderVo;
@@ -56,7 +57,7 @@ public class RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderServ
     }
 
     @Override
-    public RecommendPanelHeaderVo getRecommendPanelInfo(Long characterNo, String rcmmdType,
+    public RecommendPanelHeaderVo getRecommendPanelInfo(Long characterNo, RecommendPanelContentType rcmmdType,
             Long panelContentId, OsType osType) {
 
         RecommendPanelHeaderVo panel = null;
@@ -71,7 +72,7 @@ public class RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderServ
 
         switch (rcmmdType){
             // 아티스트
-            case "RC_ATST_TR":
+            case RC_ATST_TR:
 
                 RecommendArtistDto recommendArtistDto = recommendReadMapper.selectRecommendArtistById(panelContentId);
 
@@ -113,7 +114,7 @@ public class RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderServ
                         .build();
                 break;
             // 선호 유사
-            case "RC_SML_TR":
+            case RC_SML_TR:
 
                 List<RecommendTrackDto> similarTrackList =
                         recommendReadMapper.selectRecommendSimilarTrackListByIdList(
@@ -141,7 +142,7 @@ public class RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderServ
                         .build();
                 break;
             // 유사 장르
-            case "RC_GR_TR":
+            case RC_GR_TR:
                 Date createDateTime = new Date();
                 panel = RecommendPanelHeaderVo.builder()
                         .title(RecommendConstant.SIMILAR_TRACK_PANEL_TITLE)
@@ -156,8 +157,8 @@ public class RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderServ
                 break;
             // 추천
 
-            case "RC_CF_TR":
-                RecommendForMeDto recommendGenreVo = recommendReadMapper.selectRecommendGenreByRcmmdId(panelContentId);
+            case RC_CF_TR:
+                RecommendForMeDto recommendGenreVo = recommendReadMapper.selectRecommendForMeFlo(panelContentId);
                 String genreNm = "";
                 Date createDTime = new Date();
                 YnType newYn = YnType.N;

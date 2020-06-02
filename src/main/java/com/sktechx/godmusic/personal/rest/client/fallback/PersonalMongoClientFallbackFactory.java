@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 DREAMUS COMPANY.
+ * Copyright (c) 2020 DREAMUS COMPANY.
  * All right reserved.
  * This software is the confidential and proprietary information of DREAMUS COMPANY.
  * You shall not disclose such Confidential Information and
@@ -7,7 +7,7 @@
  * you entered into with DREAMUS COMPANY.
  */
 
-package com.sktechx.godmusic.personal.rest.service.mongo;
+package com.sktechx.godmusic.personal.rest.client.fallback;
 
 import java.util.List;
 
@@ -20,12 +20,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.personal.common.domain.ListResponse;
-import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
+import com.sktechx.godmusic.personal.rest.client.PersonalMongoClient;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackTasteMixDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.like.RcmmdLikeTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.like.*;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenDeleteTrackRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendUpdateRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.test.RecommendChartRequest;
 import com.sktechx.godmusic.personal.rest.service.LikeService;
 import com.sktechx.godmusic.personal.rest.service.TrackService;
@@ -55,6 +57,7 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
     public PersonalMongoClient create(Throwable throwable) {
 
         final CommonApiResponse emptyApiResponse = new CommonApiResponse<>(null);
+        final CommonApiResponse emptyListApiResponse = new CommonApiResponse<>(new ListDto<>(null));
 
         return new PersonalMongoClient() {
 
@@ -137,46 +140,79 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
             }
 
             @Override
-            public CommonApiResponse<List<RecommendPanelTrackDto>> getRecommendTrackListByRcmmdTypeAndRcmmdId(
+            public CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>> getRecommendTrackListByRcmmdTypeAndRcmmdId(
                     String rcmmdType, Long rcmmdId, Long characterNo, int size) {
-                log.warn("{}@getRecommendTrackListByRcmmdTypeAndRcmmdId-fallback, message={}", characterNo, throwable.getMessage());
-                return emptyApiResponse;
+                log.warn("{}@getRecommendTrackListByRcmmdTypeAndRcmmdId-fallback, message={}",
+                        characterNo, throwable.getMessage());
+                return emptyListApiResponse;
             }
 
             @Override
             public CommonApiResponse<RecommendArtistDto> getRecommendArtistFlo(Long rcmmdId,
                     Long characterNo) {
-                log.warn("{}@getRecommendArtistFlo-fallback, message={}", characterNo, throwable.getMessage());
+                log.warn("{}@getRecommendArtistFlo-fallback, message={}",
+                        characterNo, throwable.getMessage());
                 return emptyApiResponse;
+            }
+            @Override
+            public CommonApiResponse<ListDto<List<RecommendArtistDto>>> getRecommendArtistFloListByCharacterNo(
+                    Long characterNo) {
+                log.warn("{}@getRecommendArtistFloListByCharacterNo-fallback, message={}",
+                        characterNo, throwable.getMessage());
+                return emptyListApiResponse;
+            }
+            @Override
+            public CommonApiResponse<ListDto<List<RecommendArtistDto>>> getRecommendArtistFloListWithTrackByCharacterNo(
+                    Long characterNo) {
+                log.warn("{}@getRecommendArtistFloListWithTrackByCharacterNo-fallback, message={}",
+                        characterNo, throwable.getMessage());
+                return emptyListApiResponse;
             }
 
             @Override
-            public CommonApiResponse<RecommendForMeDto> getRecommendFormeFlo(Long rcmmdId,
+            public CommonApiResponse<RecommendForMeDto> getRecommendForMeFlo(Long rcmmdId,
                     Long characterNo) {
-                log.warn("{}@getRecommendFormeFlo-fallback, message={}", characterNo, throwable.getMessage());
+                log.warn("{}@getRecommendFormeFlo-fallback, message={}",
+                        characterNo, throwable.getMessage());
                 return emptyApiResponse;
+            }
+            @Override
+            public CommonApiResponse<ListDto<List<RecommendForMeDto>>> getRecommendForMeFloListByCharacterNo(
+                    Long characterNo) {
+                log.warn("{}@getRecommendFormeFloListByCharacterNo-fallback, message={}",
+                        characterNo, throwable.getMessage());
+                return emptyListApiResponse;
+            }
+            @Override
+            public CommonApiResponse<ListDto<List<RecommendForMeDto>>> getRecommendForMeFloListWithTrackByCharacterNo(
+                    Long characterNo) {
+                log.warn("{}@getRecommendFormeFloListWithTrackByCharacterNo-fallback, message={}",
+                        characterNo, throwable.getMessage());
+                return emptyListApiResponse;
             }
 
             @Override
             public CommonApiResponse<RecommendSimilarTrackDto> getRecommendTodayFlo(Long rcmmdId,
                     Long characterNo) {
-                log.warn("{}@getRecommendTodayFlo-fallback, message={}", characterNo, throwable.getMessage());
+                log.warn("{}@getRecommendTodayFlo-fallback, message={}",
+                        characterNo, throwable.getMessage());
                 return emptyApiResponse;
             }
 
             @Override
             public CommonApiResponse<ListDto<List<RecommendSimilarTrackDto>>> getRecommendTodayFloListByCharacterNo(
                     Long characterNo) {
-                log.warn("{}@getRecommendTodayFloListByCharacterNo-fallback, message={}", characterNo, throwable.getMessage());
-                return emptyApiResponse;
+                log.warn("{}@getRecommendTodayFloListByCharacterNo-fallback, message={}",
+                        characterNo, throwable.getMessage());
+                return emptyListApiResponse;
             }
             @Override
-            public CommonApiResponse<ListDto<List<RecommendTrackDto>>> getRecommendTodayFloListWithTrackByCharacterNo(
+            public CommonApiResponse<ListDto<List<RecommendSimilarTrackDto>>> getRecommendTodayFloListWithTrackByCharacterNo(
                     Long characterNo) {
-                log.warn("{}@getRecommendTodayFloListWithTrackByCharacterNo-fallback, message={}", characterNo, throwable.getMessage());
-                return emptyApiResponse;
+                log.warn("{}@getRecommendTodayFloListWithTrackByCharacterNo-fallback, message={}",
+                        characterNo, throwable.getMessage());
+                return emptyListApiResponse;
             }
-
 
             @Override
             public CommonApiResponse<Long> updateRecommendDelTargetYn(Long characterNo,
@@ -189,15 +225,16 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
                 return emptyApiResponse;
             }
             @Override
-            public CommonApiResponse<ChartTrackDto> getRecommendChart(Long characterNo,
-                    Long chartId, Integer trackLimitSize) {
-                log.warn("{}@getRecommendChart-fallback, message={}",
+            public CommonApiResponse<ListDto<List<PersonalPanel>>> getRcmmdPanelMetaByCharacterNo(
+                    Long characterNo) {
+                log.warn("{}@getRcmmdPanelMetaByCharacterNo-fallback, message={}",
                         characterNo, throwable.getMessage()
                 );
-                return emptyApiResponse;
+                return emptyListApiResponse;
             }
+
             @Override
-            public CommonApiResponse addRecommendChart(
+            public CommonApiResponse<Void> addRecommendChart(
                     Long characterNo,
                     RecommendChartRequest recommendChartRequest) {
                 log.warn("{}@addRecommentChart-fallback, message={}",
@@ -206,7 +243,7 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
                 return emptyApiResponse;
             }
             @Override
-            public CommonApiResponse deleteRecommendChart(Long characterNo,
+            public CommonApiResponse<Void> deleteRecommendChart(Long characterNo,
                     @RequestBody RecommendChartRequest recommendChartRequest) {
                 log.warn("{}@deleteRecommentChart-fallback, message={}",
                         characterNo, throwable.getMessage()
@@ -219,6 +256,37 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
                 log.warn("{}@getRecommendChartTrackTasteMixDto-fallback, message={}",
                         characterNo, throwable.getMessage()
                 );
+                return emptyApiResponse;
+            }
+            @Override
+            public CommonApiResponse<RcmmdLikeTrackDto> getRecommendLikeTrack(Long characterNo,
+                    Long rcmmdId) {
+
+                log.warn("{}{}@getRecommendLikeTrack-fallback, message={}",
+                        characterNo, rcmmdId, throwable.getMessage()
+                );
+
+                return emptyApiResponse;
+            }
+            @Override
+            public CommonApiResponse<ListDto<List<RcmmdLikeTrackDto>>> getRecommendLikeTracksList(
+                    Long characterNo) {
+
+                log.warn("{}@getRecommendLikeTracksList-fallback, message={}",
+                        characterNo, throwable.getMessage()
+                );
+
+                return emptyApiResponse;
+            }
+
+            @Override
+            public CommonApiResponse<AdaptivePanelTrackDto> getLikeRelatedRecommendTracks(Long characterNo,
+                    Long rcmmdId,
+                    String rcmmdType) {
+
+                log.warn("{}@getLikeRelatedRecommendTracks-fallback, message={}",
+                        characterNo, throwable.getMessage());
+
                 return emptyApiResponse;
             }
         };

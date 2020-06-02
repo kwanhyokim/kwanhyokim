@@ -10,16 +10,15 @@
 
 package com.sktechx.godmusic.personal.rest.client;
 
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.rest.client.fallback.MemberClientFallbackFactory;
 import com.sktechx.godmusic.personal.rest.model.dto.member.CharacterDto;
 import com.sktechx.godmusic.personal.rest.model.vo.member.InnerMemberVo;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * 설명 : XXXXXXXXX

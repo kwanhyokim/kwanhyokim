@@ -22,11 +22,13 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.sktechx.godmusic.personal.common.util.DateUtil;
+import com.sktechx.godmusic.personal.rest.client.PersonalMongoClient;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.logging.log4j.util.Strings;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.PageImpl;
@@ -99,6 +101,10 @@ public class MemberChannelServiceImpl implements MemberChannelService {
 
     @Autowired
     private SqlSessionTemplate sqlSessionTemplate;
+
+    @Autowired
+    PersonalMongoClient personalMgoClient;
+
 
     @Override
     @Transactional(readOnly = true)
@@ -210,6 +216,11 @@ public class MemberChannelServiceImpl implements MemberChannelService {
             memberChannelName = pinType.getTitle();
             trackIdList = trackMapper.selectRecommendPanelPopularTrackList(characterNo, pinTypeId);
             recommendImageList = recommendImageManagementMapper.selectFixedRecommendImageList(RecommendPanelContentType.fromCode(pinType.getCode()), pinTypeId, null, null);
+        }
+        if (PinType.RC_LKSM_TR == pinType) {
+            memberChannelName = pinType.getTitle();
+            trackIdList = personalMgoClient.getLikeRelatedRecommendTrackIds(characterNo, pinTypeId, pinType.getCode());
+            recommendImageList = recommendImageManagementMapper.selectAdaptivePanelImageList(null);
         }
         /*} else if (PinType.CHART == pinType) {
             ChartDto chartDto = chartMapper.selectChartMusicContentList(pinId);

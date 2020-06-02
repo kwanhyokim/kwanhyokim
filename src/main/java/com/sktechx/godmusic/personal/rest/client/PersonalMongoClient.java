@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 DREAMUS COMPANY.
+ * Copyright (c) 2020 DREAMUS COMPANY.
  * All right reserved.
  * This software is the confidential and proprietary information of DREAMUS COMPANY.
  * You shall not disclose such Confidential Information and
@@ -7,22 +7,24 @@
  * you entered into with DREAMUS COMPANY.
  */
 
-package com.sktechx.godmusic.personal.rest.service.mongo;
+package com.sktechx.godmusic.personal.rest.client;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.personal.common.domain.ListResponse;
-import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
+import com.sktechx.godmusic.personal.rest.client.fallback.PersonalMongoClientFallbackFactory;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackTasteMixDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.like.RcmmdLikeTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.like.*;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenDeleteTrackRequest;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendUpdateRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.test.RecommendChartRequest;
 
 /**
@@ -31,7 +33,6 @@ import com.sktechx.godmusic.personal.rest.model.vo.test.RecommendChartRequest;
  * @author Daniel/DREAMUS COMPANY (daekwon.song@sk.com)
  * @date 2019. 08. 30.
  */
-@Service
 @FeignClient(value = "personal-mgo-api", fallbackFactory = PersonalMongoClientFallbackFactory.class)
 public interface PersonalMongoClient {
 
@@ -119,7 +120,7 @@ public interface PersonalMongoClient {
      * 추천 패널의 추천 트랙 조회
      */
     @GetMapping("/personal-mgo/v1/recommends/{rcmmdType}/{rcmmdId}/tracks")
-    CommonApiResponse<List<RecommendPanelTrackDto>> getRecommendTrackListByRcmmdTypeAndRcmmdId(
+    CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>> getRecommendTrackListByRcmmdTypeAndRcmmdId(
             @PathVariable(name = "rcmmdType") String rcmmdType,
             @PathVariable(name = "rcmmdId") Long rcmmdId,
             @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
@@ -129,8 +130,44 @@ public interface PersonalMongoClient {
      * 나를 위한 FLO 추천 상세 정보
      */
     @GetMapping("/personal-mgo/v1/recommends/RC_CF_TR/{rcmmdId}")
-    CommonApiResponse<RecommendForMeDto> getRecommendFormeFlo(
+    CommonApiResponse<RecommendForMeDto> getRecommendForMeFlo(
             @PathVariable(name = "rcmmdId") Long rcmmdId,
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo);
+
+    /**
+     * 나를 위한 FLO 추천 목록 (트랙 정보 없음)
+     */
+    @GetMapping("/personal-mgo/v1/recommends/RC_CF_TR/?includeTrackYn=N")
+    CommonApiResponse<ListDto<List<RecommendForMeDto>>> getRecommendForMeFloListByCharacterNo(
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo);
+
+    /**
+     * 나를 위한 FLO 추천 목록 (트랙 정보 있음)
+     */
+    @GetMapping("/personal-mgo/v1/recommends/RC_CF_TR/?includeTrackYn=Y")
+    CommonApiResponse<ListDto<List<RecommendForMeDto>>> getRecommendForMeFloListWithTrackByCharacterNo(
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo);
+
+    /**
+     * 오늘의 FLO 추천 상세 정보
+     */
+    @GetMapping("/personal-mgo/v1/recommends/RC_SML_TR/{rcmmdId}")
+    CommonApiResponse<RecommendSimilarTrackDto> getRecommendTodayFlo(
+            @PathVariable(name = "/rcmmdId") Long rcmmdId,
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo);
+
+    /**
+     * 오늘의 FLO 추천 목록 조회
+     */
+    @GetMapping("/personal-mgo/v1/recommends/RC_SML_TR?includeTrackYn=N")
+    CommonApiResponse<ListDto<List<RecommendSimilarTrackDto>>> getRecommendTodayFloListByCharacterNo(
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo);
+
+    /**
+     * 오늘의 FLO 추천 목록 트랙 정보 포함 조회
+     */
+    @GetMapping("/personal-mgo/v1/recommends/RC_SML_TR?includeTrackYn=Y")
+    CommonApiResponse<ListDto<List<RecommendSimilarTrackDto>>> getRecommendTodayFloListWithTrackByCharacterNo(
             @RequestHeader(name = "x-gm-fallback-cno") Long characterNo);
 
     /**
@@ -142,35 +179,21 @@ public interface PersonalMongoClient {
             @RequestHeader(name = "x-gm-fallback-cno") Long characterNo);
 
     /**
-     * 오늘의 FLO 추천 상세 정보
+     * 아티스트 FLO 추천 목록 (트랙 정보 없음)
      */
-    @GetMapping("/personal-mgo/v1/recommends/RC_SML_TR/{rcmmdId}")
-    CommonApiResponse<RecommendSimilarTrackDto> getRecommendTodayFlo(
-            @PathVariable(name = "rcmmdId") Long rcmmdId,
+    @GetMapping("/personal-mgo/v1/recommends/RC_CF_TR/?includeTrackYn=N")
+    CommonApiResponse<ListDto<List<RecommendArtistDto>>> getRecommendArtistFloListByCharacterNo(
             @RequestHeader(name = "x-gm-fallback-cno") Long characterNo);
 
     /**
-     * 오늘의 FLO 추천 목록 조회
+     * 아티스트 FLO 추천 목록 (트랙 정보 있음)
      */
-    @GetMapping("/personal-mgo/v1/recommends/RC_SML_TR?incldueTrackYn=N")
-    CommonApiResponse<ListDto<List<RecommendSimilarTrackDto>>> getRecommendTodayFloListByCharacterNo(
-            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo);
-
-    /**
-     * 오늘의 FLO 추천 목록 트랙 정보 포함 조회
-     */
-    @GetMapping("/personal-mgo/v1/recommends/RC_SML_TR?includeTrackYn=Y")
-    CommonApiResponse<ListDto<List<RecommendTrackDto>>> getRecommendTodayFloListWithTrackByCharacterNo(
+    @GetMapping("/personal-mgo/v1/recommends/RC_CF_TR/?includeTrackYn=Y")
+    CommonApiResponse<ListDto<List<RecommendArtistDto>>> getRecommendArtistFloListWithTrackByCharacterNo(
             @RequestHeader(name = "x-gm-fallback-cno") Long characterNo);
 
     /**
      * 추천 데이터의 삭제 여부 플래그 변경
-     *
-     * @param characterNo
-     * @param rcmmdType
-     * @param rcmmdId
-     * @param request
-     * @return
      */
     @PutMapping("/personal-mgo/internal/recommends/{rcmmdType}/{rcmmdId}")
     CommonApiResponse<Long> updateRecommendDelTargetYn(
@@ -180,31 +203,67 @@ public interface PersonalMongoClient {
             @RequestBody RecommendUpdateRequest request);
 
     /**
-     * 추천 차트 조회
-     *
-     * @param characterNo
-     * @param chartId
-     * @param trackLimitSize
-     * @return
+     * 캐릭터 번호로 추천 데이터 전부 가져오기
      */
-    @GetMapping("/personal-mgo/v1/recommends/chart/{chartId}")
-    CommonApiResponse<ChartTrackDto> getRecommendChart(
-            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
-            @PathVariable(name = "chartId") Long chartId,
-            @RequestParam(name = "size") Integer trackLimitSize);
+    @GetMapping("/personal-mgo/v1/recommends")
+    CommonApiResponse<ListDto<List<PersonalPanel>>> getRcmmdPanelMetaByCharacterNo(
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo
+    );
 
-    @PutMapping("/personal-mgo/test/recommends/chart")
-    CommonApiResponse addRecommendChart(
-            @RequestHeader(name = "x-gm-fallback-cno") Long fallBackCharacterNo,
-            @RequestBody RecommendChartRequest recommendChartRequest);
-
-    @DeleteMapping("/personal-mgo/test/recommends/chart")
-    CommonApiResponse deleteRecommendChart(
-            @RequestHeader(name = "x-gm-fallback-cno") Long fallBackCharacterNo,
-            @RequestBody RecommendChartRequest recommendChartRequest);
-
+    /**
+     * 개인화 차트 정렬 순서 조회
+     */
     @GetMapping("/personal-mgo/v1/recommends/chart/{chartId}/tracks")
     CommonApiResponse<ChartTrackTasteMixDto> getRecommendChartTrackTasteMixDto(
             @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
             @PathVariable(name = "chartId") Long chartId);
+
+    /**
+     * 좋아요 트랙 (반응형 추천) 단 건 조회
+     */
+    @GetMapping("/personal-mgo/v1/recommends/RC_LKSM_TR/{rcmmdId}")
+    CommonApiResponse<RcmmdLikeTrackDto> getRecommendLikeTrack(
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
+            @PathVariable(name = "rcmmdId") Long rcmmdId);
+
+    /**
+     * 좋아요 트랙(반응형 추천) 목록 조회
+     */
+    @GetMapping("/personal-mgo/v1/recommends/RC_LKSM_TR?includeTrackYn=N")
+    CommonApiResponse<ListDto<List<RcmmdLikeTrackDto>>> getRecommendLikeTracksList(
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo);
+
+    // for Test dummy data
+    @PutMapping("/personal-mgo/test/recommends/chart")
+    CommonApiResponse<Void> addRecommendChart(
+            @RequestHeader(name = "x-gm-fallback-cno") Long fallBackCharacterNo,
+            @RequestBody RecommendChartRequest recommendChartRequest);
+
+    @DeleteMapping("/personal-mgo/test/recommends/chart")
+    CommonApiResponse<Void> deleteRecommendChart(
+            @RequestHeader(name = "x-gm-fallback-cno") Long fallBackCharacterNo,
+            @RequestBody RecommendChartRequest recommendChartRequest);
+
+    /**
+     * 좋아요 연계 반응형 패널 곡 목록 조회
+     */
+    @GetMapping("/personal-mgo/internal/recommends/{rcmmdId}")
+    CommonApiResponse<AdaptivePanelTrackDto> getLikeRelatedRecommendTracks(
+            @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
+            @PathVariable(name = "rcmmdId") Long rcmmdId,
+            @RequestParam(name = "rcmmdType") String rcmmdType);
+
+
+    default List<Long> getLikeRelatedRecommendTrackIds(Long characterNo,
+                                                       Long rcmmdId,
+                                                       String rcmmdType) {
+
+        CommonApiResponse<AdaptivePanelTrackDto> response = this.getLikeRelatedRecommendTracks(characterNo, rcmmdId, rcmmdType);
+        if (response != null && response.getData() != null) {
+            return response.getData().getTrackIds();
+        }
+
+        return Collections.emptyList();
+    }
+
 }

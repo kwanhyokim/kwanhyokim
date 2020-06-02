@@ -14,7 +14,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.google.common.base.Strings;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
@@ -23,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import com.google.common.base.Strings;
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
@@ -31,7 +31,9 @@ import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.lib.utils.ComparableVersion;
 import com.sktechx.godmusic.personal.common.domain.type.ChannelType;
 import com.sktechx.godmusic.personal.common.domain.type.PopularChnlType;
+import com.sktechx.godmusic.personal.rest.client.DisplayClient;
 import com.sktechx.godmusic.personal.rest.client.MemberClient;
+import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.LastListenHistoryDto;
 import com.sktechx.godmusic.personal.rest.model.dto.member.CharacterDto;
@@ -40,10 +42,13 @@ import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlDto
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.MoodPopularChnlListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.PreferGenrePopularChnlListDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ChannelListResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.listen.ListenRequest;
+import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.repository.AlbumMapper;
 import com.sktechx.godmusic.personal.rest.repository.ChannelMapper;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
+import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.*;
@@ -58,7 +63,7 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConst
 @Slf4j
 public class ChannelServiceImpl implements ChannelService {
 
-    private static int RECENT_LISTENED_LIST_LIMIT = 300;
+    private static final int RECENT_LISTENED_LIST_LIMIT = 300;
     private static final String PREFIX_STR_PRIVATE_CHART = "내 취향 MIX";
 
     @Autowired
@@ -74,8 +79,23 @@ public class ChannelServiceImpl implements ChannelService {
     private RedisService redisService;
 
     @Autowired
+    private PersonalRecommendPhaseService personalRecommendPhaseService;
+
+    @Autowired
     private MemberClient memberClient;
 
+    @Autowired
+    private DisplayClient displayClient;
+
+    @Override
+    public List<ChnlDto> getOperationTpoChannelList() {
+        return Optional.ofNullable(
+                displayClient.getOperationTpoList().getData().getList()
+        ).orElseGet( Collections::emptyList)
+                .stream()
+                .sorted(Comparator.comparing(ChnlDto::getCreateDtime).reversed())
+                .collect(Collectors.toList());
+    }
     @Override
     public List<ChnlDto> getAfloChannelList(Long characterNo, int channelLimitSize, int trackLimitSize ,OsType osType){
 
@@ -87,7 +107,7 @@ public class ChannelServiceImpl implements ChannelService {
                 afloChnlList = afloChnlList.subList(0, channelLimitSize);
             }
 
-            afloChnlList.stream().forEach(chnlDto -> chnlDto.setChnlType(ChannelType.AFLO));
+            afloChnlList.forEach(chnlDto -> chnlDto.setChnlType(ChannelType.AFLO));
         }
 
         return afloChnlList;
@@ -235,7 +255,23 @@ public class ChannelServiceImpl implements ChannelService {
         return chnlDtoList;
 
     }
+    @Override
+    public ChannelListResponse getPreferGenreThemeList(Long characterNo, OsType osType,
+            String appVersion, int trackLimitSize) {
+        PersonalPhaseMeta personalPhaseMeta = personalRecommendPhaseService
+                .getPersonalRecommendPhaseMeta(characterNo, osType, appVersion);
 
+        return ChannelListResponse.builder().list(
+                Optional.ofNullable(
+                        this.getPreferGenreThemeList(
+                                personalPhaseMeta.getPreferGenreList().stream()
+                                        .map(CharacterPreferGenreDto::getPreferGenreId)
+                                        .collect(Collectors.toList()),
+                                50,
+                                osType)
+                ).orElseThrow(()-> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA))
+        ).build();
+    }
 
     public List<MoodPopularChnlDto> getListenMoodPopularChannelIdList(List<Long> moodIdList , int trackLimitSize , OsType osType){
         List<MoodPopularChnlListDto> moodPopularChannelList = null;
@@ -302,9 +338,8 @@ public class ChannelServiceImpl implements ChannelService {
          *       개인화차트 청취이력리스트는 v4.15.0 이상만 반환한다
          */
         boolean OVER_VERSION_4_15_0 = !Strings.isNullOrEmpty(appVersion) && new ComparableVersion(appVersion).compareTo(new ComparableVersion("4.15.0")) >= 0;
-        boolean isNotWeb = OsType.WEB != osType;
 
-        if (OVER_VERSION_4_15_0 && isNotWeb) {
+        if (OVER_VERSION_4_15_0) {
             List<LastListenHistoryDto> lastListenHistoryByPrivateChart = channelMapper.selectLastListenHistoryWithPrivateChart(memberNo, characterNo, osType);
             for (LastListenHistoryDto each : lastListenHistoryByPrivateChart) {
                 each.setContentTitle(each.getContentTitle() + " " + PREFIX_STR_PRIVATE_CHART);
