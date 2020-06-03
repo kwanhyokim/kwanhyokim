@@ -70,7 +70,6 @@ public class ResourceVideoPlayLogServiceImpl implements ResourcePlayLogService {
             sourcePlayLogBuilder = this.buildOneMinVideoPlayLog(logRequestParam, sourcePlayLogBuilder);
         }
 
-        amqpService.deliverSourcePlay(sourcePlayLogBuilder.build());
         listenLogAmqpService.deliverSourcePlay(sourcePlayLogBuilder.build());
         log.info("[VIDEO 청취로그 MQ 발송] {}", sourcePlayLogBuilder.toString());
     }

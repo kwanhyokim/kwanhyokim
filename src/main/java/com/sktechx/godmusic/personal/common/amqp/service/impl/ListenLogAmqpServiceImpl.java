@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -34,9 +33,6 @@ import org.springframework.util.ObjectUtils;
 @Component
 public class ListenLogAmqpServiceImpl implements ListenLogAmqpService, CommandLineRunner, DisposableBean {
 
-    @Value("${send.listen.log}")
-    private boolean isSend;
-
     public final static String propExchangeTrackListen = "amqp.exchange.track_listen";
 
     private String exchangeTrackListen;
@@ -47,10 +43,7 @@ public class ListenLogAmqpServiceImpl implements ListenLogAmqpService, CommandLi
 
     @Override
     public void deliverSourcePlay(Object message) {
-        log.debug("isSendListenLog={}", isSend);
-        if (isSend) {
-            amqpDeliver.request(exchangeTrackListen, message);
-        }
+        amqpDeliver.request(exchangeTrackListen, message);
     }
 
     @Override

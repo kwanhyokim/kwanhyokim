@@ -79,7 +79,6 @@ public class ResourceStrmPlayLogServiceImpl extends AbstractRelatedTrackResource
             sourcePlayLogBuilder.free(true);
         }
 
-        amqpService.deliverSourcePlay(sourcePlayLogBuilder.build());
         listenLogAmqpService.deliverSourcePlay(sourcePlayLogBuilder.build());
         log.info("[STRM TRACK 청취로그][MQ 발송] {}", sourcePlayLogBuilder.toString());
     }
