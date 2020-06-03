@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.google.common.base.Strings;
+import com.sktechx.godmusic.personal.rest.client.PersonalMongoClient;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
@@ -75,6 +76,9 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Autowired
     private MemberClient memberClient;
+
+    @Autowired
+    private PersonalMongoClient personalMongoClient;
 
     @Override
     public List<ChnlDto> getAfloChannelList(Long characterNo, int channelLimitSize, int trackLimitSize ,OsType osType){
@@ -286,21 +290,33 @@ public class ChannelServiceImpl implements ChannelService {
          * 채널 대표 이미지가 존재하는 경우 채널 대표이미지로 교체
          */
         if (!CollectionUtils.isEmpty(lastListenHistoryByChannel)) {
-
             lastListenHistoryByChannel.stream()
                     .forEach(LastListenHistoryDto::replacePlayListImageIfRepImageExists);
-
             lastListenHistory.addAll(lastListenHistoryByChannel);
         }
-
         lastListenHistory.addAll(lastListenHistoryByAlbum);
 
         /*
-         * FLO, KIDS 내취향 MIX 차트 추가 ( 2020.4.10 )
-         * 해당 차트의 보관함 > 최근감상리스트 노출을 위해 이미지 코드 추가됨
-         * Note. v4.15.0 이상 App에서는 listen_type = PRI_CHART 인 경우 별도의 개인화 차트 API를 호출하기 때문에
-         *       개인화차트 청취이력리스트는 v4.15.0 이상만 반환한다
+         * FLO, KIDS 내취향 MIX 차트 감상 목록 추가 (2020.4.10)
          */
+        List<LastListenHistoryDto> privateChartHis =  getPrivateChartListenHistory(memberNo, characterNo, osType, appVersion);
+        lastListenHistory.addAll(privateChartHis);
+
+        return lastListenHistory.stream()
+                .sorted(Comparator.comparing(LastListenHistoryDto::getLastListenDtime).reversed())
+                .distinct()
+                .limit(RECENT_LISTENED_LIST_LIMIT)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * FLO, KIDS 내취향 MIX 차트 추가 ( 2020.4.10 )
+     * 해당 차트의 보관함 > 최근감상리스트 노출을 위해 이미지 코드 추가됨
+     * Note. v4.15.0 이상 App에서는 listen_type = PRI_CHART 인 경우 별도의 개인화 차트 API를 호출하기 때문에
+     *       개인화차트 청취이력리스트는 v4.15.0 이상만 반환한다
+     */
+    private List<LastListenHistoryDto> getPrivateChartListenHistory(Long memberNo, Long characterNo, OsType osType, String appVersion) {
+
         boolean OVER_VERSION_4_15_0 = !Strings.isNullOrEmpty(appVersion) && new ComparableVersion(appVersion).compareTo(new ComparableVersion("4.15.0")) >= 0;
 
         if (OVER_VERSION_4_15_0) {
@@ -308,25 +324,12 @@ public class ChannelServiceImpl implements ChannelService {
             for (LastListenHistoryDto each : lastListenHistoryByPrivateChart) {
                 each.setContentTitle(each.getContentTitle() + " " + PREFIX_STR_PRIVATE_CHART);
             }
-            lastListenHistory.addAll(lastListenHistoryByPrivateChart);
+            log.debug("[최근감상리스트][개인화차트감상목록] 목록개수 = {}", lastListenHistoryByPrivateChart.size());
+
+            return lastListenHistoryByPrivateChart;
         }
 
-        /*
-         * 반응형 추천 패널 (방금 레이)의 최근 감상 목록 조회
-         * Note. v5.1.0 이상 App에서만 listen_type = RC_LKSM_TR 인 경우 별도의 추천 패널 API를 호출하기 때문에
-         *       반응형 추천 패널 청취이력 리스트는 v5.1.0 이상만 반환한다
-         */
-        boolean OVER_VERSION_5_1_0 = !Strings.isNullOrEmpty(appVersion) && new ComparableVersion(appVersion).compareTo(new ComparableVersion("5.1.0")) >= 0;
-
-        if (OVER_VERSION_5_1_0) {
-
-        }
-
-        return lastListenHistory.stream()
-                .sorted(Comparator.comparing(LastListenHistoryDto::getLastListenDtime).reversed())
-                .distinct()
-                .limit(RECENT_LISTENED_LIST_LIMIT)
-                .collect(Collectors.toList());
+        return Collections.emptyList();
     }
 
     private List<PreferGenrePopularChnlDto> getPreferGenreUniqueChannelList(final List<Long> preferGenreIdList ,
