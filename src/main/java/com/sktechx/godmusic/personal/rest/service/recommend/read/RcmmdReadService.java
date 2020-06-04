@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend.read;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,7 +74,7 @@ public interface RcmmdReadService {
             CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>> response =
                     getMetaClient().recommendPanelTracks(trackIdList.toArray(new Long[0]));
 
-            return response.getData().getList();
+            return response.getData() != null ? response.getData().getList() : Collections.emptyList();
         });
     }
 
