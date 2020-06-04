@@ -63,7 +63,8 @@ public class BadgeTestController {
      */
     @PostMapping("/save")
     public String testReceivedBadge(@RequestParam("characterNo") String characterNo,
-                                    @RequestParam("badgeId") int badgeId) {
+                                    @RequestParam("badgeId") int badgeId,
+                                    @RequestParam(value = "trackId", required = false) String trackId) {
         int badgeTypeId = badgeMapper.findByBadgeId(badgeId);
         String badgeType = badgeTypeMapper.findByBadgeTypeId(badgeTypeId);
         Long characterNoParseLong = Long.valueOf(characterNo);
@@ -80,7 +81,7 @@ public class BadgeTestController {
                         characterNoParseLong,
                         badgeId,
                         "TRACK",
-                        "31006619",
+                        trackId,
                         (int) (Math.random() * 10000 + 1)
                 );
                 break;
