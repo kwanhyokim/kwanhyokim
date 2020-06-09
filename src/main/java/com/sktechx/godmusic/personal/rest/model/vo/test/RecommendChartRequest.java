@@ -26,6 +26,9 @@ import lombok.Data;
 public class RecommendChartRequest {
 
     @NotEmpty
+    private Long chartId;
+
+    @NotEmpty
     private Long characterNo;
 
     @NotEmpty

@@ -14,6 +14,7 @@ import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.appinfo.InstanceInfo.InstanceStatus;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.rest.client.DisplayClient;
+import com.sktechx.godmusic.personal.rest.client.ExternalClient;
 import com.sktechx.godmusic.personal.rest.client.MemberClient;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.client.StreamClient;
@@ -51,6 +52,7 @@ public class WarmUpConfig {
     private final MemberClient memberClient;
     private final MetaClient metaClient;
     private final StreamClient streamClient;
+    private final ExternalClient externalClient;
     private final RedisService redisService;
     private final WarmUpMapper warmUpMapper;
 
@@ -68,6 +70,7 @@ public class WarmUpConfig {
                         MemberClient memberClient,
                         MetaClient metaClient,
                         StreamClient streamClient,
+                        ExternalClient externalClient,
                         RedisService redisService,
                         WarmUpMapper warmUpMapper) {
 
@@ -76,6 +79,7 @@ public class WarmUpConfig {
         this.memberClient = memberClient;
         this.metaClient = metaClient;
         this.streamClient = streamClient;
+        this.externalClient = externalClient;
         this.redisService = redisService;
         this.warmUpMapper = warmUpMapper;
     }
@@ -97,6 +101,7 @@ public class WarmUpConfig {
                 executor.run("MemberFeignClient", memberClient::ping, getFeignClientWarmingUpTryCounts());
                 executor.run("MetaFeignClient", metaClient::ping, getFeignClientWarmingUpTryCounts());
                 executor.run("StreamFeignClient", streamClient::ping, getFeignClientWarmingUpTryCounts());
+                executor.run("ExternalFeignClient", externalClient::ping, getFeignClientWarmingUpTryCounts());
             }
 
             log.info("[WarmUp] 서버 워밍업 종료");

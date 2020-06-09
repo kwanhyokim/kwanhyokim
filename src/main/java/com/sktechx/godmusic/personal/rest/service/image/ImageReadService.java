@@ -11,12 +11,18 @@ package com.sktechx.godmusic.personal.rest.service.image;
  */
 
 import java.util.List;
+import java.util.Optional;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.rest.model.dto.ImageManagementDto;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.DispPropsImageDto;
 
 public interface ImageReadService {
+
+    Optional<DispPropsImageDto> getChartDetailThumbnailImage(
+            Long chartId,
+            OsType osType
+    );
 
     DispPropsImageDto getChartBackgroundImage(
             Long chartId,
