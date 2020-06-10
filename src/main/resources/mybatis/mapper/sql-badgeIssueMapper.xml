@@ -109,7 +109,7 @@
         WHERE   a.character_no = #{characterNo}
         AND     a.confrm_dtime IS NULL
         AND     b.use_yn = 'Y'
-        ORDER BY    a.create_dtime DESC
+        ORDER BY    a.create_dtime
     </select>
 
     <select id="findAllReceivedBadgeListByCharacterNo" resultMap="badgeIssueDetail">
