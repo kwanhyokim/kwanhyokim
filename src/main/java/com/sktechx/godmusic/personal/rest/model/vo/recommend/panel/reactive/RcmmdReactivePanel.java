@@ -19,6 +19,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedTrackVo;
+import com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.v2.ReactivePanelAssembly.PanelImageHolder;
 
 import java.util.List;
 
@@ -30,13 +31,13 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
  */
 
 public class RcmmdReactivePanel extends Panel {
-    public RcmmdReactivePanel(
-            List<ImageInfo> bgImgList,
-            List<ImageInfo> seedTrackImgList,
-            List<ImageInfo> rcmmdTrackImgList,
-            TrackDto seedTrackDto,
-            RcmmdLikeTrackDto rcmmdLikeTrackDto,
-            int totalTrackCount){
+
+    @Deprecated
+    public RcmmdReactivePanel(List<ImageInfo> bgImgList,
+                              List<ImageInfo> seedTrackImgList,
+                              List<ImageInfo> rcmmdTrackImgList,
+                              TrackDto seedTrackDto,
+                              RcmmdLikeTrackDto rcmmdLikeTrackDto) {
 
         super(RecommendPanelType.RCMMD_LIKE_TRACK);
 
@@ -50,7 +51,7 @@ public class RcmmdReactivePanel extends Panel {
                 .type(RecommendPanelContentType.RC_LKSM_TR)
                 .seedTrackImgList(seedTrackImgList)
                 .rcmmdTrackImgList(rcmmdTrackImgList)
-                .trackCount(totalTrackCount)
+                .trackCount(rcmmdLikeTrackDto.getTrackIdList().size())
                 .renewYn(YnType.Y)
                 .createDtime(rcmmdLikeTrackDto.getDispStartDtime())
                 .updateDtime(rcmmdLikeTrackDto.getDispStartDtime())
@@ -62,6 +63,40 @@ public class RcmmdReactivePanel extends Panel {
                 .artistName(seedTrackDto.getArtist().getArtistName())
                 .suffix("")
                 .build();
+    }
+
+    public RcmmdReactivePanel(List<ImageInfo> bgImgList,
+                              PanelImageHolder panelImageHolder,
+                              RcmmdLikeTrackDto rcmmdLikeTrackDto,
+                              TrackDto seedTrackDto,
+                              int totalTrackCount) {
+
+        super(RecommendPanelType.RCMMD_LIKE_TRACK);
+
+        this.title = RCMMD_REACTIVE_PANEL_TITLE;
+        this.subTitle = RCMMD_REACTIVE_PANEL_SUB_TITLE;
+        this.playListTitle = RCMMD_REACTIVE_PANEL_TITLE;
+        this.imgList = bgImgList;
+
+        this.content =
+                PanelContentVo.builder()
+                        .id(rcmmdLikeTrackDto.getRcmmdId())
+                        .type(RecommendPanelContentType.RC_LKSM_TR)
+                        .seedTrackImgList(panelImageHolder.getSeedThumbnailImageList())
+                        .rcmmdTrackImgList(panelImageHolder.getGridThumbnailImageList())
+                        .trackCount(totalTrackCount)
+                        .renewYn(YnType.Y)
+                        .createDtime(rcmmdLikeTrackDto.getDispStartDtime())
+                        .updateDtime(rcmmdLikeTrackDto.getDispStartDtime())
+                        .build();
+
+        this.seedTrackVo =
+                SeedTrackVo.builder()
+                        .id(seedTrackDto.getTrackId())
+                        .name(seedTrackDto.getTrackNm())
+                        .artistName(seedTrackDto.getArtist().getArtistName())
+                        .suffix("")
+                        .build();
 
     }
 }
