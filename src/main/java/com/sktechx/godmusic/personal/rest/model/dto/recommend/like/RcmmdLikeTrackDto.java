@@ -43,6 +43,4 @@ public class RcmmdLikeTrackDto implements RecommendDto {
     public List<Long> getTrackIdList(){
         return Optional.ofNullable(this.trackIdList).orElseGet(Collections::emptyList);
     }
-
-
 }

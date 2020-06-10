@@ -10,8 +10,6 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.reactive;
 
-import java.util.List;
-
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
@@ -21,6 +19,8 @@ import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.SeedTrackVo;
+
+import java.util.List;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.RCMMD_REACTIVE_PANEL_SUB_TITLE;
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.RCMMD_REACTIVE_PANEL_TITLE;
@@ -35,7 +35,8 @@ public class RcmmdReactivePanel extends Panel {
             List<ImageInfo> seedTrackImgList,
             List<ImageInfo> rcmmdTrackImgList,
             TrackDto seedTrackDto,
-            RcmmdLikeTrackDto rcmmdLikeTrackDto){
+            RcmmdLikeTrackDto rcmmdLikeTrackDto,
+            int totalTrackCount){
 
         super(RecommendPanelType.RCMMD_LIKE_TRACK);
 
@@ -49,7 +50,7 @@ public class RcmmdReactivePanel extends Panel {
                 .type(RecommendPanelContentType.RC_LKSM_TR)
                 .seedTrackImgList(seedTrackImgList)
                 .rcmmdTrackImgList(rcmmdTrackImgList)
-                .trackCount(rcmmdLikeTrackDto.getTrackIdList().size() + 1)
+                .trackCount(totalTrackCount)
                 .renewYn(YnType.Y)
                 .createDtime(rcmmdLikeTrackDto.getDispStartDtime())
                 .updateDtime(rcmmdLikeTrackDto.getDispStartDtime())

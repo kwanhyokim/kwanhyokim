@@ -10,12 +10,6 @@
 
 package com.sktechx.godmusic.personal.rest.controller.v1;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.web.bind.annotation.*;
-
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.CommonConstant;
 import com.sktechx.godmusic.lib.domain.GMContext;
@@ -37,7 +31,12 @@ import com.sktechx.godmusic.personal.rest.validate.Validator;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * 설명 : 추천 컨트롤러
@@ -119,8 +118,7 @@ public class RecommendPanelController {
 			@RequestHeader(value = CommonConstant.X_GM_CHARACTER_NO, required = false) Long characterNo,
 			@RequestHeader(value = CommonConstant.X_GM_OS_TYPE) OsType osType,
 			@ApiParam(defaultValue = "52") @PathVariable Long panelContentId,
-			@ApiParam(value = "추천 패널 컨텐트 타입", allowableValues = "RC_ATST_TR, RC_SML_TR, RC_GR_TR, RC_CF_TR")
-			@RequestParam(value = "type") RecommendPanelContentType recommendPanelContentType){
+			@ApiParam(value = "추천 패널 컨텐트 타입") @RequestParam(value = "type") RecommendPanelContentType recommendPanelContentType){
 
 		return new CommonApiResponse<>(
 					recommendPanelHeaderService.getRecommendPanelInfo(

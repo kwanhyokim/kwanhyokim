@@ -10,15 +10,6 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend;
 
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
-
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
@@ -36,6 +27,14 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import com.sktechx.godmusic.personal.rest.service.recommend.read.RcmmdReadServiceFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * 설명 : 설명 : 추천 패널 상세 헤더 ( 4.6.0 부터 이용 )
@@ -120,14 +119,14 @@ public class V2RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderSe
                 break;
 
             case RC_LKSM_TR:
-                panel = getLikeTrackRecommendPanelInfoDto(recommendDto);
+                panel = getLikeTrackRecommendPanelInfoDto(recommendDto, trackList.size());
+                break;
         }
 
         return panel;
     }
 
-    private RecommendPanelHeaderVo getLikeTrackRecommendPanelInfoDto(
-            RecommendDto recommendDto) {
+    private RecommendPanelHeaderVo getLikeTrackRecommendPanelInfoDto(RecommendDto recommendDto, int trackCount) {
 
         RcmmdLikeTrackDto rcmmdLikeTrackDto = (RcmmdLikeTrackDto) recommendDto;
 
@@ -135,7 +134,7 @@ public class V2RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderSe
         return RecommendPanelHeaderVo.builder()
                 .title(RecommendConstant.RCMMD_REACTIVE_PANEL_TITLE)
                 .subTitle(RecommendConstant.RCMMD_REACTIVE_PANEL_SUB_TITLE)
-                .trackCount(rcmmdLikeTrackDto.getTrackIdList().size())
+                .trackCount(trackCount)
                 .newYn(this.getNewYn(dispDate))
                 .renewDtime(dispDate)
                 .build();
