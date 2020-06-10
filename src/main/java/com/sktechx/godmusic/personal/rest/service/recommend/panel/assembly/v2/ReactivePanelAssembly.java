@@ -10,17 +10,12 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.v2;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.client.model.GetTrackListRequest;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.like.RcmmdLikeTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
@@ -29,8 +24,13 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendImageManagementService;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelSignAssembly;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.RCMMD_CF_TRACK_LIMIT_SIZE;
+import static java.util.stream.Collectors.toList;
 
 /**
  * 설명 : 좋아요 트랙(반응형 레이더) 플로 패널 생성기
@@ -51,6 +51,68 @@ public class ReactivePanelAssembly extends PanelSignAssembly {
 
     public ReactivePanelAssembly(){ }
 
+    private List<Panel> appendRecommendLikeTrackPanelListV2(PersonalPhaseMeta personalPhaseMeta) {
+
+        List<Panel> panelList = new ArrayList<>(3);
+
+        List<RcmmdLikeTrackDto> rcmmdLikeTrackDtoList =
+                Optional.ofNullable(
+                        rcmmdReadServiceFactory.getRcmmdReadService(
+                                RecommendPanelContentType.RC_LKSM_TR
+                        ).getRecommendListWithTrackByCharacterNoOrderByDispStartDtime(
+                                personalPhaseMeta.getCharacterNo(),
+                                REACTIVE_LIMIT_PANEL_SIZE,
+                                RCMMD_CF_TRACK_LIMIT_SIZE,
+                                personalPhaseMeta.getOsType()
+                        )
+                ).orElseGet( Collections::emptyList )
+                        .stream()
+                        .map( recommendDto -> (RcmmdLikeTrackDto) recommendDto)
+                        .collect(toList());
+
+
+        for (RcmmdLikeTrackDto rcmmdLikeTrackDto : rcmmdLikeTrackDtoList) {
+
+            try {
+
+                int displayTrackCount = 5;
+
+                ListDto<List<TrackDto>> listResponse =
+                        metaClient.getTrackList(new GetTrackListRequest(rcmmdLikeTrackDto.getTrackIdList())).getData();
+
+                if (listResponse != null && listResponse.isNotEmpty()) {
+
+                    int totalTrackCount = listResponse.getList().size();
+                    List<TrackDto> recommendTrackDtoList =
+                            listResponse.getList().subList(0, Math.min(displayTrackCount, totalTrackCount));
+                    TrackDto expectedSeedTrackDto = recommendTrackDtoList.get(0);
+
+                    // seed track takedown 되지 않았을 경우
+                    if (expectedSeedTrackDto.getTrackId().equals(rcmmdLikeTrackDto.getSeedTrackId())) {
+                        panelList.add(new RcmmdReactivePanel(
+                                getDefaultBgImageList(
+                                        recommendImageManagementService.getAdaptivePanelHomeImageList(personalPhaseMeta.getOsType()),
+                                        personalPhaseMeta.getOsType()
+                                ),
+                                Collections.singletonList(expectedSeedTrackDto.getAlbum().getImgList().get(0)),
+                                recommendTrackDtoList
+                                        .stream()
+                                        .skip(1)
+                                        .map(trackDto -> trackDto.getAlbum().getImgList().get(0)).collect(toList()),
+                                expectedSeedTrackDto,
+                                rcmmdLikeTrackDto,
+                                totalTrackCount)
+                        );
+                    }
+                }
+            } catch (Exception e) {
+                log.error("RecommendPhasePanelAssembly appendRecommendCfTrackPanelList error", e);
+            }
+        }
+
+        return panelList;
+    }
+
     private List<Panel> appendRecommendLikeTrackPanelList(PersonalPhaseMeta personalPhaseMeta) {
 
         List<Panel> panelList = new ArrayList<>();
@@ -68,7 +130,7 @@ public class ReactivePanelAssembly extends PanelSignAssembly {
                 ).orElseGet( Collections::emptyList )
                 .stream()
                 .map( recommendDto -> (RcmmdLikeTrackDto) recommendDto)
-                .collect(Collectors.toList());
+                .collect(toList());
 
 
         for(RcmmdLikeTrackDto rcmmdLikeTrackDto :
@@ -85,7 +147,7 @@ public class ReactivePanelAssembly extends PanelSignAssembly {
                 int i = 1;
 
                 for(Long trackId :
-                        rcmmdLikeTrackDto.getTrackIdList().stream().limit(4).collect(Collectors.toList())){
+                        rcmmdLikeTrackDto.getTrackIdList().stream().limit(4).collect(toList())){
                     trackIds[i++] = trackId;
                 }
 
@@ -127,7 +189,8 @@ public class ReactivePanelAssembly extends PanelSignAssembly {
                                 seedTrackImgList,
                                 rcmmdTrackImgList,
                                 seedTrackDto[0],
-                                rcmmdLikeTrackDto
+                                rcmmdLikeTrackDto,
+                                rcmmdLikeTrackDto.getTrackIdList().size()
                         )
                 );
 
@@ -144,7 +207,7 @@ public class ReactivePanelAssembly extends PanelSignAssembly {
     public List<Panel> makeHomePanelListForMainTop(PersonalPhaseMeta personalPhaseMeta){
 
         return mergePanelList(
-                appendRecommendLikeTrackPanelList(personalPhaseMeta),
+                appendRecommendLikeTrackPanelListV2(personalPhaseMeta),
                 appendPreferenceChartPanel.apply(personalPhaseMeta),
                 REACTIVE_HOME_MAX_PANEL_SIZE
         );
@@ -156,9 +219,7 @@ public class ReactivePanelAssembly extends PanelSignAssembly {
         personalPhaseMeta.setCharacterNo(characterNo);
         personalPhaseMeta.setOsType(osType);
 
-        return appendRecommendLikeTrackPanelList(personalPhaseMeta);
-
+        return appendRecommendLikeTrackPanelListV2(personalPhaseMeta);
     }
-
 }
 
