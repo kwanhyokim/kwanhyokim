@@ -29,6 +29,7 @@ public enum ChartType implements CodeEnum {
     , WEEKLY("WEEKLY", "주간")
     , MONTHLY("MONTHLY" , "월간")
     , NOTABLE("NOTABLE", "주목할만한 차트")
+    , MANAGED("MANAGED", "해외 소셜 차트")
     ;
     private final String code;
     private final String value;

@@ -63,6 +63,7 @@ public class MetaClientFallbackFactory implements FallbackFactory<MetaClient>{
             }
             @Override
             public CommonApiResponse<PlayListDto> chart(Long chartId) {
+                log.warn("[차트조회] 조회실패 - {}", throwable.getMessage());
                 return null;
             }
             @Override
