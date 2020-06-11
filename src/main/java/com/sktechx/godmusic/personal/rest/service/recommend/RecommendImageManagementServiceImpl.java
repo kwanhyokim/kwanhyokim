@@ -12,15 +12,6 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant;
@@ -29,7 +20,20 @@ import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentTyp
 import com.sktechx.godmusic.personal.rest.model.dto.ImageManagementDto;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.repository.RecommendImageManagementMapper;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 설명 :
@@ -133,6 +137,7 @@ public class RecommendImageManagementServiceImpl implements RecommendImageManage
 
     }
     @Override
+    @Deprecated
     public List<ImageInfo> getAdaptivePanelHomeImageList(OsType osType) {
         List<ImageInfo> imgList = null;
 
@@ -161,5 +166,48 @@ public class RecommendImageManagementServiceImpl implements RecommendImageManage
                             .findFirst().orElse(null));
         }
         return null;
+    }
+
+    @Override
+    public List<ImageInfo> getAdaptivePanelBgImageAtRandomlyByOsType(OsType osType, int count) {
+        List<ImageInfo> imageInfoList = fetchAllAdaptivePanelBgImageAndCacheIt().getImageListByOsType(osType);
+        Collections.shuffle(imageInfoList);
+        return imageInfoList.subList(0, Math.min(count, imageInfoList.size()));
+    }
+
+    private AdaptivePanelBgImageHolder fetchAllAdaptivePanelBgImageAndCacheIt() {
+
+        AdaptivePanelBgImageHolder imageHolder =
+                redisService.getWithPrefix(RedisKeyConstant.REACTIVE_PANEL_IMGLIST_KEY, AdaptivePanelBgImageHolder.class);
+
+        if (imageHolder == null) {
+            imageHolder = new AdaptivePanelBgImageHolder(
+                    recommendImageManagementMapper
+                            .selectAdaptivePanelHomeImageList()
+                            .stream()
+                            .collect(Collectors.groupingBy(ImageInfo::getOsType)));
+
+            if (imageHolder.isNotEmpty()) {
+                redisService.setWithPrefix(RedisKeyConstant.REACTIVE_PANEL_IMGLIST_KEY, imageHolder, 3_600);
+            }
+        }
+
+        return imageHolder;
+    }
+
+    @NoArgsConstructor
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @Getter
+    static class AdaptivePanelBgImageHolder {
+
+        private Map<OsType, List<ImageInfo>> osTypeImagesPair;
+
+        List<ImageInfo> getImageListByOsType(OsType osType) {
+            return osTypeImagesPair.getOrDefault(osType, Collections.emptyList());
+        }
+
+        boolean isNotEmpty() {
+            return !CollectionUtils.isEmpty(osTypeImagesPair);
+        }
     }
 }

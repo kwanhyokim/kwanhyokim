@@ -10,6 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -108,5 +109,15 @@ public class AlbumDto implements Comparable<AlbumDto> {
     public int compareTo(@Nullable AlbumDto o) {
         if (o == null) return -1;
         return Long.compare(this.albumId, o.albumId);
+    }
+
+    @JsonIgnore
+    public ImageInfo getImageInfoBySize(Long size) {
+
+        if (!CollectionUtils.isEmpty(imgList)) {
+            return imgList.stream().filter(imageInfo -> imageInfo.getSize().equals(size)).findFirst().orElse(imgList.get(0));
+        }
+
+        return null;
     }
 }

@@ -37,4 +37,6 @@ public interface RecommendImageManagementService {
             , OsType osType, int dispSn);
 
     List<ImageInfo> getAdaptivePanelHomeImageList(OsType osType);
+
+    List<ImageInfo> getAdaptivePanelBgImageAtRandomlyByOsType(OsType osType, int count);
 }
