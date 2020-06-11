@@ -78,8 +78,6 @@ public class ReactivePanelAssembly extends PanelSignAssembly {
 
     private List<Panel> appendRecommendLikeTrackPanelListV2(PersonalPhaseMeta personalPhaseMeta) {
 
-        List<Panel> panelList = new ArrayList<>(3);
-
         List<RcmmdLikeTrackDto> rcmmdLikeTrackDtoList =
                 Optional.ofNullable(
                         rcmmdReadServiceFactory.getRcmmdReadService(
@@ -95,12 +93,17 @@ public class ReactivePanelAssembly extends PanelSignAssembly {
                         .map( recommendDto -> (RcmmdLikeTrackDto) recommendDto)
                         .collect(toList());
 
+        int rcmmdTrackCount = rcmmdLikeTrackDtoList.size();
+        int displayTrackCount = 5;
+        List<Panel> panelList = new ArrayList<>(rcmmdTrackCount);
+        List<ImageInfo> backgroundImageList =
+                recommendImageManagementService.getAdaptivePanelBgImageAtRandomlyByOsType(personalPhaseMeta.getOsType(), rcmmdTrackCount);
 
-        for (RcmmdLikeTrackDto rcmmdLikeTrackDto : rcmmdLikeTrackDtoList) {
+        for (int index = 0; index < rcmmdTrackCount; index++) {
+
+            RcmmdLikeTrackDto rcmmdLikeTrackDto = rcmmdLikeTrackDtoList.get(index);
 
             try {
-
-                int displayTrackCount = 5;
 
                 ListDto<List<TrackDto>> listResponse =
                         metaClient.getTrackList(new GetTrackListRequest(rcmmdLikeTrackDto.getTrackIdList())).getData();
@@ -115,10 +118,7 @@ public class ReactivePanelAssembly extends PanelSignAssembly {
                     // seed track takedown 되지 않았을 경우
                     if (expectedSeedTrackDto.getTrackId().equals(rcmmdLikeTrackDto.getSeedTrackId())) {
                         panelList.add(new RcmmdReactivePanel(
-                                getDefaultBgImageList(
-                                        recommendImageManagementService.getAdaptivePanelHomeImageList(personalPhaseMeta.getOsType()),
-                                        personalPhaseMeta.getOsType()
-                                ),
+                                Collections.singletonList(backgroundImageList.get((index % backgroundImageList.size()))),
                                 createPanelThumbnailImages(listResponse.getList()),
                                 rcmmdLikeTrackDto,
                                 expectedSeedTrackDto,
@@ -137,7 +137,7 @@ public class ReactivePanelAssembly extends PanelSignAssembly {
     private PanelImageHolder createPanelThumbnailImages(List<TrackDto> entireRecommendTrackDtoList) {
 
         TrackDto seedTrackDto = entireRecommendTrackDtoList.get(0);
-        ImageInfo seedTrackImageInfo = seedTrackDto.getAlbum().getImgList().get(0);
+        AlbumDto seedTrackAlbum = seedTrackDto.getAlbum();
 
         Set<AlbumDto> uniqueAlbumDtos =
                 entireRecommendTrackDtoList
@@ -150,13 +150,14 @@ public class ReactivePanelAssembly extends PanelSignAssembly {
         List<ImageInfo> gridThumbnailImageList;
 
         if (uniqueAlbumDtos.isEmpty()) {
-            gridThumbnailImageList = Stream.generate(() -> seedTrackImageInfo).limit(panelGridThumbnailImageCount).collect(toList());
+            ImageInfo seedTrackAlbum200Image = seedTrackAlbum.getImageInfoBySize(200L);
+            gridThumbnailImageList = Stream.generate(() -> seedTrackAlbum200Image).limit(panelGridThumbnailImageCount).collect(toList());
         } else {
             gridThumbnailImageList =
                     uniqueAlbumDtos
                             .stream()
                             .limit(panelGridThumbnailImageCount)
-                            .map(albumDto -> albumDto.getImgList().get(0))
+                            .map(albumDto -> albumDto.getImageInfoBySize(200L))
                             .collect(toList());
 
             if (uniqueAlbumDtos.size() < panelGridThumbnailImageCount) {
@@ -166,7 +167,7 @@ public class ReactivePanelAssembly extends PanelSignAssembly {
             }
         }
 
-        return new PanelImageHolder(Collections.singletonList(seedTrackImageInfo), gridThumbnailImageList);
+        return new PanelImageHolder(Collections.singletonList(seedTrackAlbum.getImageInfoBySize(500L)), gridThumbnailImageList);
     }
 
     @Deprecated
