@@ -142,7 +142,7 @@ public class ReactivePanelAssembly extends PanelSignAssembly {
         Set<AlbumDto> uniqueAlbumDtos =
                 entireRecommendTrackDtoList
                         .stream()
-                        .filter(trackDto -> !trackDto.getAlbum().getAlbumId().equals(seedTrackDto.getAlbum().getAlbumId()))
+                        .filter(trackDto -> !trackDto.getAlbum().getAlbumId().equals(seedTrackAlbum.getAlbumId()))
                         .map(TrackDto::getAlbum)
                         .collect(toCollection(LinkedHashSet::new));
 
