@@ -46,7 +46,7 @@
     <logger name="org.springframework" level="info" />
     <logger name="org.springframework.jdbc" level="info" />
 
-    <logger name="java.sql" level="error" />
+
     <logger name="com.spring.ibatis" level="debug" />
     <logger name="org.apache.ibatis" level="debug" />
     <logger name="org.mybatis.spring" level="debug" />
@@ -56,12 +56,20 @@
     <logger name="io.swagger.models.parameters.AbstractSerializableParameter" level="error" />
 
     <logger name="com.sktechx" level="trace" />
-	
-	<logger name="jdbc.sqlonly" level="INFO"/>
-	<logger name="jdbc.resultsettable" level="INFO"/>
-	<logger name="jdbc.audit" level="OFF"/>
-	<logger name="jdbc.connection" level="OFF"/>
-	<logger name="jdbc.resultset" level="OFF"/>
+
+    <logger name="jdbc" level="OFF"/>
+<!--	<logger name="jdbc.sqlonly" level="OFF"/>-->
+<!--	<logger name="jdbc.resultsettable" level="OFF"/>-->
+<!--	<logger name="jdbc.audit" level="OFF"/>-->
+<!--	<logger name="jdbc.connection" level="OFF"/>-->
+<!--	<logger name="jdbc.resultset" level="OFF"/>-->
+
+    <logger name="java.sql" level="OFF" />
+
+    <logger name="com.zaxxer.hikari" level="OFF" />
+    <logger name="com.zaxxer.hikari.pool.HikariPool" level="OFF" />
+    <logger name="com.zaxxer.hikari.HikariDataSource" level="OFF" />
+    <logger name="com.zaxxer.hikari.util.DriverDataSource" level="OFF" />
 	
     <root level="info">
         <appender-ref ref="CONSOLE" />
