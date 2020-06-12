@@ -42,7 +42,7 @@ public class ApiErrorResponseControllerAdvice {
             MethodArgumentNotValidException.class,
             MissingServletRequestParameterException.class
     })
-    public ResponseEntity<CommonApiResponse<?>> handleException(Throwable ex, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<CommonApiResponse<?>> handleBadRequestException(Exception ex, HttpServletRequest request, HttpServletResponse response) {
 
         log.warn("[ApiErrorResponseControllerAdvice] 파라미터전달값오류 - {}", ex.getMessage());
 
@@ -62,7 +62,7 @@ public class ApiErrorResponseControllerAdvice {
     @ExceptionHandler(value = {
             DuplicateKeyException.class
     })
-    public ResponseEntity<CommonApiResponse<?>> handleSQLException(Throwable ex, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<CommonApiResponse<?>> handleDuplicateKeyException(DuplicateKeyException ex, HttpServletRequest request, HttpServletResponse response) {
 
         log.warn("[ApiErrorResponseControllerAdvice] DB중복에러발생 - {}", ex.getMessage());
         return ResponseEntity
