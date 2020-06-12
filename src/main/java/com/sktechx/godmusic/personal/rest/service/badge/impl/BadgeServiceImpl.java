@@ -73,15 +73,12 @@ public class BadgeServiceImpl implements BadgeService {
         String badgeType = badgeIssueDto.getBadgeTypeDto().getBadgeType();
         switch (badgeType) {
             case "BA01":
+            case "BA02":
                 badgeDetailResponseDto.setDescription(
                         String.format(badgeDetailResponseDto.getDescription(), badgeIssueDto.getListenCnt())
                 );
                 this.appendTrackIssueTargetTypeInfo(badgeIssueDto, badgeDetailResponseDto);
                 log.debug("### BA01 {}", badgeDetailResponseDto);
-                return badgeDetailResponseDto;
-
-            case "BA02":
-                this.appendTrackIssueTargetTypeInfo(badgeIssueDto, badgeDetailResponseDto);
                 return badgeDetailResponseDto;
 
             default:
