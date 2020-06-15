@@ -15,6 +15,7 @@ import com.sktechx.godmusic.lib.domain.GMContext;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.amqp.service.AmqpService;
+import com.sktechx.godmusic.personal.common.amqp.service.ListenLogAmqpService;
 import com.sktechx.godmusic.personal.common.domain.type.ResourceLogType;
 import com.sktechx.godmusic.personal.common.domain.type.SourceType;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
@@ -47,10 +48,11 @@ public class ResourceStrmPlayLogServiceImpl extends AbstractRelatedTrackResource
     private final McpService mcpService;
 
     public ResourceStrmPlayLogServiceImpl(AmqpService amqpService,
+                                          ListenLogAmqpService listenLogAmqpService,
                                           TokenService tokenService,
                                           SettlementService settlementService,
                                           McpService mcpService) {
-        super(amqpService);
+        super(amqpService, listenLogAmqpService);
         this.tokenService = tokenService;
         this.settlementService = settlementService;
         this.mcpService = mcpService;
@@ -77,7 +79,7 @@ public class ResourceStrmPlayLogServiceImpl extends AbstractRelatedTrackResource
             sourcePlayLogBuilder.free(true);
         }
 
-        amqpService.deliverSourcePlay(sourcePlayLogBuilder.build());
+        listenLogAmqpService.deliverSourcePlay(sourcePlayLogBuilder.build());
         log.info("[STRM TRACK 청취로그][MQ 발송] {}", sourcePlayLogBuilder.toString());
     }
 
