@@ -10,12 +10,22 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend;
 
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
+import com.sktechx.godmusic.personal.rest.client.MetaMgoClient;
 import com.sktechx.godmusic.personal.rest.model.dto.ArtistDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.*;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.like.RcmmdLikeTrackDto;
@@ -27,14 +37,6 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 import com.sktechx.godmusic.personal.rest.service.recommend.phase.PersonalRecommendPhaseService;
 import com.sktechx.godmusic.personal.rest.service.recommend.read.RcmmdReadServiceFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
-
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 /**
  * 설명 : 설명 : 추천 패널 상세 헤더 ( 4.6.0 부터 이용 )
@@ -57,6 +59,9 @@ public class V2RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderSe
 
     @Autowired
     private RcmmdReadServiceFactory rcmmdReadServiceFactory;
+
+    @Autowired
+    private MetaMgoClient metaMgoClient;
 
     @Override
     public RecommendImageManagementService getRecommendImageManagementService() {
@@ -98,7 +103,8 @@ public class V2RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderSe
 
         RecommendDto recommendDto = rcmmdReadServiceFactory
                 .getRcmmdReadService(recommendPanelContentType)
-                .getRecommend(personalPhaseMeta.getCharacterNo(), panelContentId);
+                .getRecommend(personalPhaseMeta.getCharacterNo(), panelContentId)
+                .orElseThrow( () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
 
         switch (recommendPanelContentType){
             // 좋아할만한 아티스트 MIX
@@ -131,13 +137,27 @@ public class V2RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderSe
         RcmmdLikeTrackDto rcmmdLikeTrackDto = (RcmmdLikeTrackDto) recommendDto;
 
         Date dispDate = rcmmdLikeTrackDto.getDispStartDtime();
+
         return RecommendPanelHeaderVo.builder()
                 .title(RecommendConstant.RCMMD_REACTIVE_PANEL_TITLE)
                 .subTitle(RecommendConstant.RCMMD_REACTIVE_PANEL_SUB_TITLE)
                 .trackCount(trackCount)
                 .newYn(this.getNewYn(dispDate))
                 .renewDtime(dispDate)
+                .seedTrackVo(
+                        Optional.ofNullable(
+                                metaMgoClient.track(rcmmdLikeTrackDto.getSeedTrackId()).getData()
+                        ).map(
+                                trackDto ->
+                                        SeedTrackVo.builder()
+                                                .id(trackDto.getTrackId())
+                                                .name(trackDto.getTrackNm())
+                                                .artistName(trackDto.getArtist().getArtistName())
+                                        .build()
+                        ).orElse(null)
+                )
                 .build();
+
     }
 
     private RecommendPanelHeaderVo getForMeRecommendPanelInfoDto(
@@ -279,10 +299,11 @@ public class V2RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderSe
     }
 
     private YnType getNewYn(Date dispDate){
-        Date stdDate = new Date((System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1)));
-
-        if(stdDate.before(dispDate)){
-            return YnType.Y;
+        if(dispDate != null) {
+            Date stdDate = new Date((System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1)));
+            if (stdDate.before(dispDate)) {
+                return YnType.Y;
+            }
         }
 
         return YnType.N;

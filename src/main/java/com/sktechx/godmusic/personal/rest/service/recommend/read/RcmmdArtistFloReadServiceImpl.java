@@ -41,17 +41,20 @@ public class RcmmdArtistFloReadServiceImpl implements RcmmdReadService {
     }
 
     @Override
-    public RecommendArtistDto getRecommend(Long characterNo,
+    public Optional<RecommendArtistDto> getRecommend(Long characterNo,
             Long rcmmdId) {
-        return Optional.ofNullable(
-                checkUseMongo() ?
-                        personalMongoClient.getRecommendArtistFlo(rcmmdId, characterNo)
-                                .getData()
-                        :
-                        null
-        ).orElseGet(
-                () -> recommendReadMapper.selectRecommendArtistById(rcmmdId)
-        );
+        RecommendArtistDto recommendArtistDto = null;
+
+        if(checkUseMongo()){
+            recommendArtistDto = personalMongoClient.getRecommendArtistFlo(rcmmdId, characterNo)
+                    .getData();
+        }
+
+        if(recommendArtistDto == null){
+            recommendArtistDto = recommendReadMapper.selectRecommendArtistById(rcmmdId);
+        }
+
+        return Optional.ofNullable(recommendArtistDto);
     }
 
     @Override

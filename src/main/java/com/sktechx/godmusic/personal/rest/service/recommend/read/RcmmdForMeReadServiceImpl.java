@@ -39,17 +39,21 @@ public class RcmmdForMeReadServiceImpl implements RcmmdReadService {
     }
 
     @Override
-    public RecommendForMeDto getRecommend(Long characterNo,
+    public Optional<RecommendForMeDto> getRecommend(Long characterNo,
             Long rcmmdId) {
-        return Optional.ofNullable(
-                checkUseMongo() ?
-                        personalMongoClient.getRecommendForMeFlo(rcmmdId, characterNo)
-                                .getData()
-                        :
-                        null
-        ).orElseGet(
-                () -> recommendReadMapper.selectRecommendForMeFlo(rcmmdId)
-        );
+
+        RecommendForMeDto recommendForMeDto = null;
+
+        if(checkUseMongo()){
+            recommendForMeDto = personalMongoClient.getRecommendForMeFlo(rcmmdId, characterNo)
+                    .getData();
+        }
+
+        if(recommendForMeDto == null) {
+            recommendForMeDto = recommendReadMapper.selectRecommendForMeFlo(rcmmdId);
+        }
+
+        return Optional.ofNullable(recommendForMeDto);
     }
 
     @Override

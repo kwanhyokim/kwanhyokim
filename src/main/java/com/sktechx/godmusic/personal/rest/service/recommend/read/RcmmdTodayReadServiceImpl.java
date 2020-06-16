@@ -39,17 +39,20 @@ public class RcmmdTodayReadServiceImpl implements RcmmdReadService {
         return RecommendPanelContentType.RC_SML_TR;
     }
     @Override
-    public RecommendSimilarTrackDto getRecommend(Long characterNo,
+    public Optional<RecommendSimilarTrackDto> getRecommend(Long characterNo,
             Long rcmmdId) {
-        return Optional.ofNullable(
-                checkUseMongo() ?
-                        personalMongoClient.getRecommendTodayFlo(rcmmdId, characterNo)
-                                .getData()
-                        :
-                        null
-        ).orElseGet(
-                () -> recommendReadMapper.selectRecommendSimilarTrack(rcmmdId)
-        );
+
+        RecommendSimilarTrackDto recommendSimilarTrackDto = null;
+
+        if(checkUseMongo()){
+            recommendSimilarTrackDto =
+                        personalMongoClient.getRecommendTodayFlo(rcmmdId, characterNo).getData();
+        }
+        if(recommendSimilarTrackDto == null) {
+            recommendSimilarTrackDto = recommendReadMapper.selectRecommendSimilarTrack(rcmmdId);
+        }
+
+        return Optional.ofNullable(recommendSimilarTrackDto);
     }
 
     @Override
