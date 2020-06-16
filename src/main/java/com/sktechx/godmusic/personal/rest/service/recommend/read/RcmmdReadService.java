@@ -40,7 +40,7 @@ public interface RcmmdReadService {
     RecommendPanelContentType getRecommendPanelContentType();
 
     // 상세 헤더 조회용
-    RecommendDto getRecommend(Long characterNo, Long rcmmdId);
+    Optional<? extends RecommendDto> getRecommend(Long characterNo, Long rcmmdId);
 
     // 홈 중단 조회용 ( 캐쉬 사용?)
     List<? extends RecommendDto> getRecommendListByCharacterNo(Long characterNo);

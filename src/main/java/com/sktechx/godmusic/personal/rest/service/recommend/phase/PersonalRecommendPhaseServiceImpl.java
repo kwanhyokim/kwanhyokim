@@ -158,8 +158,8 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
 
             Set<PersonalPanel> rcmmdPanelSet = new HashSet<>();
 
-            rcmmdPanelSet.addAll(futureRcmmdPanelList.get());
-            rcmmdPanelSet.addAll(futureRcmmdMgoPanelList.get());
+            Optional.ofNullable(futureRcmmdPanelList.get()).ifPresent(rcmmdPanelSet::addAll);
+            Optional.ofNullable(futureRcmmdMgoPanelList.get()).ifPresent(rcmmdPanelSet::addAll);
 
             List<PersonalPanel> rcmmdPanelList =
                     rcmmdPanelSet.stream()

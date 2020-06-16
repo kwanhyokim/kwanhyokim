@@ -38,17 +38,17 @@ public class RcmmdLikeTrackReadServiceImpl implements RcmmdReadService {
     }
 
     @Override
-    public RcmmdLikeTrackDto getRecommend(Long characterNo,
+    public Optional<RcmmdLikeTrackDto> getRecommend(Long characterNo,
             Long rcmmdId) {
-        return Optional.ofNullable(
-                checkUseMongo() ?
-                        personalMongoClient.getRecommendLikeTrack(characterNo, rcmmdId)
-                                .getData()
-                        :
-                        null
-        ).orElseGet(
-                () -> RcmmdLikeTrackDto.builder().build()
-        );
+
+        RcmmdLikeTrackDto rcmmdLikeTrackDto = null;
+
+        if(checkUseMongo()){
+            rcmmdLikeTrackDto = personalMongoClient.getRecommendLikeTrack(characterNo, rcmmdId)
+                    .getData();
+        }
+
+        return Optional.ofNullable(rcmmdLikeTrackDto);
     }
 
     @Override

@@ -12,6 +12,7 @@ package com.sktechx.godmusic.personal.rest.service.recommend.read;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -34,24 +35,25 @@ import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
 public class RcmmdEmptyReadServiceImpl implements RcmmdReadService {
 
     @Override
-    public RecommendDto getRecommend(Long characterNo,
+    public Optional<RecommendDto> getRecommend(Long characterNo,
             Long rcmmdId) {
-        return new RecommendDto() {
-            @Override
-            public List<TrackDto> getTrackDtoList() {
-                return null;
+        return Optional.of(new RecommendDto() {
+                @Override
+                public List<TrackDto> getTrackDtoList() {
+                    return null;
+                }
+                @Override
+                public void setTrackDtoList(List<TrackDto> trackVoList) {
+                }
+                @Override
+                public List<Long> getTrackIdList() {
+                    return null;
+                }
+                @Override
+                public void setTrackIdList(List<Long> trackIdList) {
+                }
             }
-            @Override
-            public void setTrackDtoList(List<TrackDto> trackVoList) {
-            }
-            @Override
-            public List<Long> getTrackIdList() {
-                return null;
-            }
-            @Override
-            public void setTrackIdList(List<Long> trackIdList) {
-            }
-        };
+        );
     }
 
     @Override
