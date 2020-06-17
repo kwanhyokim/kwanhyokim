@@ -12,6 +12,7 @@ package com.sktechx.godmusic.personal.rest.support.error;
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.FileUploadBase.SizeLimitExceededException;
 import org.slf4j.MDC;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -20,8 +21,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,7 +43,9 @@ public class ApiErrorResponseControllerAdvice {
 
     @ExceptionHandler(value = {
             MethodArgumentNotValidException.class,
-            MissingServletRequestParameterException.class
+            MissingServletRequestParameterException.class,
+            MaxUploadSizeExceededException.class,
+            ServletRequestBindingException.class
     })
     public ResponseEntity<CommonApiResponse<?>> handleBadRequestException(Exception ex, HttpServletRequest request, HttpServletResponse response) {
 
