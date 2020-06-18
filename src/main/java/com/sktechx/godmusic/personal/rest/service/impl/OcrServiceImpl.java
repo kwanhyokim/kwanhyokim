@@ -78,11 +78,11 @@ public class OcrServiceImpl implements OcrService {
 
         OcrFileDto ocrFileDto = ocrMapper.selectOcrFile(characterNo, ocrNo, ocrFileNo);
         if(ObjectUtils.isEmpty(ocrFileDto)) {
-            log.error("OcrServiceImpl::uploadOcrFile - not found ocrFile! characterNo:{}, ocrNo:{}, ocrFileNo:{}", characterNo, ocrNo, ocrFileNo);
+            log.warn("OcrServiceImpl::uploadOcrFile - not found ocrFile! characterNo:{}, ocrNo:{}, ocrFileNo:{}", characterNo, ocrNo, ocrFileNo);
             throw new CommonBusinessException(PersonalErrorDomain.NOT_FOUND_OCR_FILE);
         }
         if(ocrFileDto.getUploadYn() == YnType.Y) {
-            log.error("OcrServiceImpl::uploadOcrFile - already upload ocrFile! ocrNo:{}, ocrFileNo:{}", ocrNo, ocrFileNo);
+            log.warn("OcrServiceImpl::uploadOcrFile - already upload ocrFile! ocrNo:{}, ocrFileNo:{}", ocrNo, ocrFileNo);
             throw new CommonBusinessException(PersonalErrorDomain.ALREADY_UPLOAD_OCR_FILE);
         }
 

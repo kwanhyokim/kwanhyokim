@@ -57,6 +57,12 @@
 
     <logger name="com.sktechx" level="info" />
 
+    <logger name="jdbc" level="OFF"/>
+    <logger name="com.zaxxer.hikari" level="OFF" />
+    <logger name="com.zaxxer.hikari.pool.HikariPool" level="OFF" />
+    <logger name="com.zaxxer.hikari.HikariDataSource" level="OFF" />
+    <logger name="com.zaxxer.hikari.util.DriverDataSource" level="OFF" />
+
     <root level="info">
         <!--<appender-ref ref="CONSOLE"/>-->
         <appender-ref ref="FILE" />
