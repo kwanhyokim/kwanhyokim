@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
@@ -73,26 +74,31 @@ public class RcmmdForMeReadServiceImpl implements RcmmdReadService {
     @Override
     public List<RecommendForMeDto> getRecommendListWithTrackByCharacterNoOrderByDispStartDtime(Long characterNo,
             int panelMaxSize, int trackMaxSize, OsType osType) {
-        return Optional.ofNullable(
-                checkUseMongo() ?
-                    personalMongoClient.getRecommendForMeFloListWithTrackByCharacterNo(characterNo)
-                            .getData()
-                            .getList()
-                        :
-                        null
-        ).orElseGet( () ->
-                Optional.ofNullable(recommendReadMapper.selectRecommendCfTrackListByCharacterNo(
+
+        List<RecommendForMeDto> recommendForMeDtoList = null;
+
+        if(checkUseMongo()){
+            recommendForMeDtoList = personalMongoClient
+                    .getRecommendForMeFloListWithTrackByCharacterNo(characterNo)
+                    .getData().getList();
+        }
+
+        if(CollectionUtils.isEmpty(recommendForMeDtoList)){
+            recommendForMeDtoList = Optional.ofNullable(
+                    recommendReadMapper.selectRecommendCfTrackListByCharacterNo(
                         characterNo,
                         panelMaxSize,
                         trackMaxSize,
                         osType
                         )
-                ).map(
-                        recommendTrackDtoList ->
-                                recommendTrackDtoList.stream().map(RecommendForMeDto::from).collect(
-                                        Collectors.toList())
-                ).orElseGet(Collections::emptyList)
-        );
+            ).map(
+                    recommendTrackDtoList ->
+                            recommendTrackDtoList.stream().map(RecommendForMeDto::from).collect(
+                                    Collectors.toList())
+            ).orElseGet(Collections::emptyList);
+        }
+
+        return recommendForMeDtoList;
     }
 
     @Override

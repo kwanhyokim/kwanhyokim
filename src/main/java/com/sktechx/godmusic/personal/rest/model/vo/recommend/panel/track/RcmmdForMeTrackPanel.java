@@ -10,12 +10,14 @@
 
 package com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendForMeDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.GenreVo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.data.PanelContentVo;
@@ -28,7 +30,8 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RecommendCons
  * RecommendPanelType : RC_CF_TR
  */
 public class RcmmdForMeTrackPanel extends Panel {
-    public RcmmdForMeTrackPanel( RecommendForMeDto recommendForMeDto)throws CommonBusinessException {
+    public RcmmdForMeTrackPanel( RecommendForMeDto recommendForMeDto, List<ImageInfo> bgImgList
+            )throws CommonBusinessException {
 
         super(RecommendPanelType.RCMMD_TRACK);
         this.title = RCMMD_TRACK_PANEL_TITLE;
@@ -43,6 +46,8 @@ public class RcmmdForMeTrackPanel extends Panel {
                 .createDtime(recommendForMeDto.getCreateDtime())
                 .updateDtime(recommendForMeDto.getCreateDtime())
                 .build();
+
+        this.imgList = bgImgList;
 
         Optional.ofNullable(this.content.getGenre())
                 .ifPresent(

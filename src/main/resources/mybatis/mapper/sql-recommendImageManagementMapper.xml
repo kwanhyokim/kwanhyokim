@@ -161,7 +161,7 @@
 		SELECT
 		c.img_url
 		FROM
-		<if test="recommendPanelContentType != null and recommendPanelContentType == 'RC_SML_TR'">
+		<if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_SML_TR'">
 			tb_rcmmd_img_mang c
 			WHERE
 			c.dfk_type = CASE DAYOFWEEK(NOW())
@@ -180,7 +180,7 @@
 			ORDER BY c.disp_sn
 			LIMIT 1
 		</if>
-		<if test="recommendPanelContentType != null and recommendPanelContentType == 'RC_GR_TR'">
+		<if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_GR_TR'">
 			tb_rcmmd_prefer_genre_similar_track a
 			INNER JOIN
 			tb_svc_genre b ON a.svc_genre_id = b.svc_genre_id
@@ -204,7 +204,7 @@
 
 			LIMIT 1
 		</if>
-		<if test="recommendPanelContentType != null and recommendPanelContentType == 'RC_CF_TR'">
+		<if test="recommendPanelContentType != null and recommendPanelContentType.getCode() == 'RC_CF_TR'">
 			tb_rcmmd_mforu a
 			INNER JOIN
 			tb_svc_genre b ON a.svc_genre_id = b.svc_genre_id

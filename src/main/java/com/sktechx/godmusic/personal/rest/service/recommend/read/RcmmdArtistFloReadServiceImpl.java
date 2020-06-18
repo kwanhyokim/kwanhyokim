@@ -17,13 +17,18 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
+import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.util.DateUtil;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.client.PersonalMongoClient;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendArtistDto;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
 import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
 import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
 
@@ -98,6 +103,24 @@ public class RcmmdArtistFloReadServiceImpl implements RcmmdReadService {
                 }
         );
     }
+
+    @Override
+    public List<RecommendPanelTrackDto> getRecommendTrackListByCharacterNoAndRcmmdId(
+            Long characterNo, Long rcmmdId) {
+        List<Long> trackIdList =
+                Optional.ofNullable(
+                        trackMapper.selectRecommendPanelPopularTrackList(characterNo,
+                                rcmmdId)
+                ).orElseThrow( () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
+
+        CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>> response =
+                getMetaClient().recommendPanelTracks(trackIdList.toArray(new Long[0]));
+
+        return response.getData() != null ? response.getData().getList() : Collections.emptyList();
+    }
+
+
+
     @Override
     public PersonalMongoClient getPersonalMongoClient() {
         return this.personalMongoClient;
