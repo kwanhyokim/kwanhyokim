@@ -10,22 +10,16 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend.read;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.OsType;
-import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
-import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.client.PersonalMongoClient;
-import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
-import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConstant.PERSONAL_USEMGO_KEY;
 
@@ -54,33 +48,11 @@ public interface RcmmdReadService {
     );
 
     // 상세 트랙 조회용
-    default List<RecommendPanelTrackDto> getRecommendTrackListByCharacterNoAndRcmmdId(
-            Long characterNo, Long rcmmdId) {
-        return Optional.ofNullable(
-                checkUseMongo() ?
-                        getPersonalMongoClient().getRecommendTrackListByRcmmdTypeAndRcmmdId(
-                                getRecommendPanelContentType().getCode(), rcmmdId, characterNo, 50)
-                                .getData().getList()
-                        :
-                        null
-        ).orElseGet( () -> {
-
-            List<Long> trackIdList =
-                    Optional.ofNullable(
-                            getTrackMapper().selectRecommendPanelSimilarTrackList(characterNo,
-                                    rcmmdId)
-                    ).orElseThrow( () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
-
-            CommonApiResponse<ListDto<List<RecommendPanelTrackDto>>> response =
-                    getMetaClient().recommendPanelTracks(trackIdList.toArray(new Long[0]));
-
-            return response.getData() != null ? response.getData().getList() : Collections.emptyList();
-        });
-    }
+    List<RecommendPanelTrackDto> getRecommendTrackListByCharacterNoAndRcmmdId(
+            Long characterNo, Long rcmmdId);
 
     PersonalMongoClient getPersonalMongoClient();
     MetaClient getMetaClient();
-    TrackMapper getTrackMapper();
 
     RedisService getRedisService();
 

@@ -24,7 +24,6 @@ import com.sktechx.godmusic.personal.rest.client.PersonalMongoClient;
 import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
-import com.sktechx.godmusic.personal.rest.repository.TrackMapper;
 
 /**
  * 설명 : 나를 위한 FLO 조회
@@ -80,11 +79,6 @@ public class RcmmdEmptyReadServiceImpl implements RcmmdReadService {
     public MetaClient getMetaClient() {
         return null;
     }
-    @Override
-    public TrackMapper getTrackMapper() {
-        return null;
-    }
-
     @Override
     public RedisService getRedisService() {
         return null;
