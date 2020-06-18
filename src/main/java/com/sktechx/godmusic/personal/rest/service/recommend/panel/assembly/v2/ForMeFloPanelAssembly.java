@@ -11,19 +11,16 @@
 package com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.v2;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.UnaryOperator;
 
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendForMeDto;
-import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.track.RcmmdForMeTrackPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
@@ -48,37 +45,41 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
 
     public ForMeFloPanelAssembly(){ }
 
-    // 배경 이미지 설정 function
-    private final UnaryOperator<List<Panel>> decoratePanelBgImgList =
-            panelList -> {
-                if (!CollectionUtils.isEmpty(panelList)) {
-                    for (int i = 0; i < panelList.size(); i++) {
-                        Panel myPanel = panelList.get(i);
-                        if (!CollectionUtils.isEmpty(myPanel.getImgList())
-                                && myPanel.getImgList().size() >= 2) {
-                            ImageInfo tempImageInfo;
-                            if ((i % 2) != 0) {
-                                tempImageInfo = myPanel.getImgList().get(0);
-                            } else {
-                                tempImageInfo = myPanel.getImgList().get(1);
-                            }
-                            myPanel.setImgList(Collections.singletonList(tempImageInfo));
-                        }
-
-                    }
-                }
-                return panelList;
-            };
-
     private final Function<PersonalPhaseMeta, List<Panel>> appendRecommendPanelList =
             personalPhaseMeta -> {
                 List<Panel> panelList = new ArrayList<>();
-                rcmmdReadServiceFactory.getRcmmdReadService(RecommendPanelContentType.RC_CF_TR)
+
+                List<? extends RecommendDto> recommendForMeDtoList =
+                        rcmmdReadServiceFactory.getRcmmdReadService(RecommendPanelContentType.RC_CF_TR)
                         .getRecommendListWithTrackByCharacterNoOrderByDispStartDtime(
                                 personalPhaseMeta.getCharacterNo(), FORME_FLO_PANEL_LIMIT_SIZE,
-                                RCMMD_CF_TRACK_LIMIT_SIZE, personalPhaseMeta.getOsType()).forEach(
-                        recommendDto -> panelList
-                                .add(new RcmmdForMeTrackPanel((RecommendForMeDto) recommendDto)));
+                                RCMMD_CF_TRACK_LIMIT_SIZE, personalPhaseMeta.getOsType()
+                        );
+
+                recommendForMeDtoList.forEach(
+                            recommendDto -> {
+                                RecommendForMeDto recommendForMeDto =
+                                        (RecommendForMeDto) recommendDto;
+
+                                int dispSn =
+                                        ((recommendForMeDtoList.indexOf(recommendDto)+1) %2 == 0
+                                                    ? 2: 1);
+
+                                panelList.add(new RcmmdForMeTrackPanel(
+                                        recommendForMeDto,
+                                        getDefaultBgImageList(recommendImageManagementService
+                                                .selectRecommendPanelInfoBgImageUrl(
+                                                        RecommendPanelContentType.RC_CF_TR,
+                                                        recommendForMeDto.getRcmmdMforuId(),
+                                                        personalPhaseMeta.getOsType(), dispSn
+                                                        ),
+                                                personalPhaseMeta.getOsType()
+                                        )
+                                    )
+                                );
+
+                            }
+                );
                 return panelList;
             }
     ;
@@ -86,7 +87,7 @@ public class ForMeFloPanelAssembly extends PanelSignAssembly {
     @Override
     public List<Panel> makeHomePanelListForMainTop(PersonalPhaseMeta personalPhaseMeta){
         return mergePanelList(
-                appendRecommendPanelList.andThen(decoratePanelBgImgList).apply(personalPhaseMeta),
+                appendRecommendPanelList.apply(personalPhaseMeta),
                 appendPreferenceChartPanel.apply(personalPhaseMeta),
                 FORME_FLO_PANEL_HOME_MAX_SIZE
         );
