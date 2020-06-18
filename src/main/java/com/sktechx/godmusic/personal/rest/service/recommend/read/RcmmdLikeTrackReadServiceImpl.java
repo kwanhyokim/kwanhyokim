@@ -94,11 +94,6 @@ public class RcmmdLikeTrackReadServiceImpl implements RcmmdReadService {
         return this.metaClient;
     }
     @Override
-    public TrackMapper getTrackMapper() {
-        return this.trackMapper;
-    }
-
-    @Override
     public RedisService getRedisService() {
         return redisService;
     }

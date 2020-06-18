@@ -103,7 +103,7 @@ public class V2RecommendPanelHeaderServiceImpl implements RecommendPanelHeaderSe
 
         RecommendDto recommendDto = rcmmdReadServiceFactory
                 .getRcmmdReadService(recommendPanelContentType)
-                .getRecommend(personalPhaseMeta.getCharacterNo(), panelContentId)
+                    .getRecommend(personalPhaseMeta.getCharacterNo(), panelContentId)
                 .orElseThrow( () -> new CommonBusinessException(CommonErrorDomain.EMPTY_DATA));
 
         switch (recommendPanelContentType){

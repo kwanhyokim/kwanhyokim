@@ -64,6 +64,7 @@ public class ArtistFloPanelAssembly extends PanelSignAssembly {
 
     }
 
+    @SuppressWarnings("unchecked")
     private List<Panel> makeRcmmdPanelList(PersonalPhaseMeta personalPhaseMeta) {
         final List<Panel> panelList = new ArrayList<>();
 
