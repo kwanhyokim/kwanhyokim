@@ -34,7 +34,7 @@ public class RecommendChartServiceImpl implements RecommendChartService{
     public ChartVo getRecommendChart(Long characterNo, OsType osType, Long chartId, String mixYn) {
         ChartVo chartVo = null;
 
-        if("Y".equals(mixYn) && characterNo != null){
+        if("Y".equals(mixYn)){
             chartVo =
                     chartServiceFactory.getChartServiceBy(ChartType.MONGO)
                             .getChartVoForDetailWithTrackList(
