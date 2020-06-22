@@ -39,7 +39,7 @@ public class AfloPanelAssembly extends PanelSignAssembly{
 
     private final int AFLO_PANEL_HOME_LIMIT_SIZE = 5;
     private final int AFLO_PANEL_HOME_MAX_SIZE = 7;
-    private final int AFLO_PANEL_DETAIL_LIMIT_SIZE = 4;
+    private final int AFLO_PANEL_DETAIL_LIMIT_SIZE = 10;
     private final int AFLO_PANEL_CHNL_TRACK_MAX_SIZE = 10;
 
     public AfloPanelAssembly(){}
