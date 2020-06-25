@@ -186,13 +186,13 @@ public class OcrServiceImpl implements OcrService {
     private AwsFileVo uploadFile(MultipartFile file, AwsBucketType awsBucketType, Long memberNo) {
 
         log.debug("Aws FileUpload start:");
-        CommonApiResponse<AwsFileVo> response = externalApiProxy.createOcrFile(file, awsBucketType, memberNo);
+        CommonApiResponse<?> response = externalApiProxy.createOcrFile(file, awsBucketType, memberNo);
         log.debug("Aws FileUpload end");
 
         if(StringUtils.isEmpty(response) || StringUtils.isEmpty(response.getCode())
                 || !"2000000".equals(response.getCode()) || CommonUtils.empty(response.getData())) throw new CommonBusinessException("file upload fail");
 
-        return response.getData();
+        return (AwsFileVo) response.getData();
     }
 
     private MemberDvcDto getMemberDvc(Long memberNo, String deviceId) {
