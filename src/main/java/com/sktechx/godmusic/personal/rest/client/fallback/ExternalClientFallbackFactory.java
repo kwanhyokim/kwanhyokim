@@ -51,7 +51,7 @@ public class ExternalClientFallbackFactory implements FallbackFactory<ExternalCl
             }
 
             @Override
-            public CommonApiResponse<AwsFileVo> createOcrFile(MultipartFile file,
+            public CommonApiResponse<?> createOcrFile(MultipartFile file,
                                                               AwsBucketType awsBucketType,
                                                               Long memberNo) {
 
@@ -60,8 +60,9 @@ public class ExternalClientFallbackFactory implements FallbackFactory<ExternalCl
 
                 if (HttpStatus.valueOf(status).is4xxClientError()) {
                     log.warn("[createOcrFile] 호출 실패, message={}", throwable.getMessage());
-                    return null;
-                } else {
+                    return CommonApiResponse.buildError(throwable, HttpStatus.valueOf(status));
+                }
+                else {
                     log.error("[createOcrFile] 호출 실패, message={}", throwable.getMessage());
                     return null;
                 }

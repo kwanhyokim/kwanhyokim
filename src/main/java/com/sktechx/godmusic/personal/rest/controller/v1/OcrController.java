@@ -59,7 +59,7 @@ public class OcrController {
     @PostMapping(value="/test", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public CommonApiResponse uploadOcrFile(MultipartFile file){
         log.debug("Aws FileUpload start:");
-        CommonApiResponse<AwsFileVo> response = externalApiProxy.createOcrFile(file, AwsBucketType.OCR, GMContext.getContext().getMemberNo());
+        CommonApiResponse<?> response = externalApiProxy.createOcrFile(file, AwsBucketType.OCR, GMContext.getContext().getMemberNo());
         log.debug("Aws FileUpload end");
 
         if(StringUtils.isEmpty(response) || StringUtils.isEmpty(response.getCode())
