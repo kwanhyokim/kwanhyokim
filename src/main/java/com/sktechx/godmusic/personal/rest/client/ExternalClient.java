@@ -47,7 +47,7 @@ public interface ExternalClient {
                                    @RequestParam("bucketName") String bucketName);
 
     @PostMapping(value = "/external/v1/aws/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    CommonApiResponse<?> createOcrFile(@RequestPart(value = "file") MultipartFile file,
+    CommonApiResponse<AwsFileVo> createOcrFile(@RequestPart(value = "file") MultipartFile file,
                                                @RequestParam("awsBucketType") AwsBucketType awsBucketType,
                                                @RequestParam("memberNo") Long memberNo);
 

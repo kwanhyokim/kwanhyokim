@@ -51,7 +51,7 @@ public class ExternalClientFallbackFactory implements FallbackFactory<ExternalCl
             }
 
             @Override
-            public CommonApiResponse<?> createOcrFile(MultipartFile file,
+            public CommonApiResponse createOcrFile(MultipartFile file,
                                                               AwsBucketType awsBucketType,
                                                               Long memberNo) {
 
