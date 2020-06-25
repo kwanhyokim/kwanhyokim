@@ -10,8 +10,16 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.v2;
 
+import java.util.*;
+import java.util.stream.Stream;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
+import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.client.model.GetTrackListRequest;
 import com.sktechx.godmusic.personal.rest.model.dto.AlbumDto;
@@ -28,11 +36,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.*;
-import java.util.stream.Stream;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.RCMMD_CF_TRACK_LIMIT_SIZE;
 import static java.util.stream.Collectors.toCollection;
@@ -124,9 +127,21 @@ public class ReactivePanelAssembly extends PanelSignAssembly {
                                 expectedSeedTrackDto,
                                 totalTrackCount)
                         );
+                    }else{
+                        throw new CommonBusinessException(PersonalErrorDomain.HOME_PANNEL_CREATION_FAILED
+                                , RecommendPanelContentType.RC_LKSM_TR);
                     }
                 }
-            } catch (Exception e) {
+            }
+            catch (CommonBusinessException cbe){
+                if(cbe.getErrorDomain() == PersonalErrorDomain.HOME_PANNEL_CREATION_FAILED){
+                    throw cbe;
+                }else{
+                    log.error("RecommendPhasePanelAssembly appendRecommendCfTrackPanelList error"
+                            , cbe);
+                }
+            }
+            catch (Exception e) {
                 log.error("RecommendPhasePanelAssembly appendRecommendCfTrackPanelList error", e);
             }
         }

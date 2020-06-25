@@ -57,34 +57,29 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConst
 @Service
 @Slf4j
 public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhaseService {
-    @Autowired
-    private RecommendPanelAssemblyFactory recommendPanelAssemblyFactory;
-
-    @Autowired
-    private CharacterPreferGenreMapper characterPreferGenreMapper;
-
-    @Autowired
-    private RecommendReadMapper recommendReadMapper;
-
-    @Autowired
-    private RedisService redisService;
-
-    @Autowired
-    private HomeMetaService homeMetaService;
-
-    @Autowired
-    private AfloMapper afloMapper;
-
-    @Autowired
-    private ChannelMapper channelMapper;
 
     @Override
     public void clearPersonalRecommendPhaseMetaCache(Long characterNo) {
         redisService.delWithPrefix(String.format(PERSONAL_RECOMMEND_PHASE_KEY, characterNo));
     }
+    @Override
+    public PersonalPhaseMeta getPersonalRecommendPhaseMetaExcept(Long characterNo, OsType osType,
+            String appVer, RecommendPanelContentType recommendPanelContentType) {
+
+        return personalPhaseMetaSupport.filterPanelByRecommendContentType(
+            getInnerPersonalRecommendPhaseMeta(characterNo, osType, appVer),
+            recommendPanelContentType
+        );
+    }
 
     @Override
     public PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType,
+            String appVer) {
+
+        return getInnerPersonalRecommendPhaseMeta(characterNo, osType, appVer);
+    }
+
+    private PersonalPhaseMeta getInnerPersonalRecommendPhaseMeta(Long characterNo , OsType osType,
             String appVer) {
 
         if(characterNo == null){
@@ -325,5 +320,30 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
         guestPhaseMeta.setOsType(osType);
         return guestPhaseMeta;
     }
+
+    @Autowired
+    private RecommendPanelAssemblyFactory recommendPanelAssemblyFactory;
+
+    @Autowired
+    private CharacterPreferGenreMapper characterPreferGenreMapper;
+
+    @Autowired
+    private RecommendReadMapper recommendReadMapper;
+
+    @Autowired
+    private RedisService redisService;
+
+    @Autowired
+    private HomeMetaService homeMetaService;
+
+    @Autowired
+    private AfloMapper afloMapper;
+
+    @Autowired
+    private ChannelMapper channelMapper;
+
+    @Autowired
+    private PersonalPhaseMetaSupport personalPhaseMetaSupport;
+
 
 }

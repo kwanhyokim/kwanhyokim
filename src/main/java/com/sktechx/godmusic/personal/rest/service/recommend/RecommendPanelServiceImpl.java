@@ -150,18 +150,27 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
             recommendPanelList = panelAssembly.makeHomePanelListForMainTop(personalPhaseMeta);
 
         }catch(CommonBusinessException cbex){
-            log.error("createRecommendPanelV2 business exception : {}", cbex.getDisplayMessage());
+            if(cbex.getErrorDomain() == PersonalErrorDomain.HOME_PANNEL_CREATION_FAILED){
+
+                log.error("createRecommendPanelV2 home panel creation failed : {} {}",
+                        characterNo, cbex.getExtraAction());
+                personalPhaseMeta =
+                        personalRecommendPhaseService.getPersonalRecommendPhaseMetaExcept(characterNo
+                                , osType, appVer, (RecommendPanelContentType)cbex.getExtraAction());
+                panelAssembly = recommendPanelAssemblyFactory.getV2RecommendPanelAssembly(personalPhaseMeta);
+                recommendPanelList = panelAssembly.makeHomePanelListForMainTop(personalPhaseMeta);
+            }else {
+                log.error("createRecommendPanelV2 business exception : {}", cbex.getDisplayMessage());
+            }
+
+
         }catch(Exception ex){
             log.error("createRecommendPanelV2 not catched exception : {}", ex.getMessage());
         }finally{
             if(CollectionUtils.isEmpty(recommendPanelList)){
-                if(panelAssembly == null)
-                    panelAssembly = recommendPanelAssemblyFactory.getRecommendPanelAssembly();
-
-                log.info("recommendPanelAssembly chosen : {}", panelAssembly);
-
+                // 추천 패널 응답이 비어서 내려온 경우, 비정상 상황으로 판단하여 비로그인 패널로 생성
                 try{
-                    recommendPanelList = panelAssembly.makeHomePanelListForMainTop(personalPhaseMeta);
+                    recommendPanelList = recommendPanelAssemblyFactory.getRecommendPanelAssembly().makeHomePanelListForMainTop(personalPhaseMeta);
 
                 }catch(Exception e){
                     e.printStackTrace();
