@@ -3,6 +3,10 @@ package com.sktechx.godmusic.personal.rest.controller.v1;
 import javax.validation.Valid;
 
 import com.sktechx.godmusic.lib.domain.code.YnType;
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
+import com.sktechx.godmusic.personal.common.domain.type.AwsBucketType;
+import com.sktechx.godmusic.personal.common.util.CommonUtils;
+import com.sktechx.godmusic.personal.rest.client.ExternalClient;
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrEventDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrEventMemberDto;
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrFileDto;
@@ -11,6 +15,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.ocr.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,6 +41,9 @@ public class OcrController {
     @Autowired
     private OcrService ocrService;
 
+    @Autowired
+    private ExternalClient externalApiProxy;
+
 
     @ApiOperation(value = "OCR 세션 정보 생성", httpMethod = "POST", notes = "OCR 분석할 파일을 올리기 위한, 세션 아이디를 생성 한다")
     @PostMapping("")
@@ -46,6 +54,20 @@ public class OcrController {
         OcrDto ocrDto = ocrService.createOcr(GMContext.getContext().getMemberNo(), GMContext.getContext().getCharacterNo(), GMContext.getContext().getDeviceId(), request.getTotalFileCnt());
         return new CommonApiResponse<>(CreateOcrSessionResponse.builder().ocrNo(ObjectUtils.isEmpty(ocrDto) ? null : ocrDto.getOcrNo() ).build());
     }
+
+
+    @PostMapping(value="/test", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public CommonApiResponse uploadOcrFile(MultipartFile file){
+        log.debug("Aws FileUpload start:");
+        CommonApiResponse<AwsFileVo> response = externalApiProxy.createOcrFile(file, AwsBucketType.OCR, GMContext.getContext().getMemberNo());
+        log.debug("Aws FileUpload end");
+
+        if(StringUtils.isEmpty(response) || StringUtils.isEmpty(response.getCode())
+                || !"2000000".equals(response.getCode()) || CommonUtils.empty(response.getData())) throw new CommonBusinessException("file upload fail");
+
+        return response;
+    }
+
 
     @ApiOperation(value = "OCR 파일 업로드", httpMethod = "POST", notes = "플레이리스트 이미지 업로드 한다.")
     @PostMapping(value="/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
