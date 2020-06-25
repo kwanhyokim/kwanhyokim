@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 /**
@@ -62,7 +63,7 @@ public class ListenController {
     @ApiOperation(value = "Resource Bulk 청취 로그", notes = "Resource 재생(청취) Bulk로 받는 api (For Cached Streaming)")
     @PostMapping("/resource/list")
     public CommonApiResponse addBulkCachedListenHistByResource(
-            @RequestBody List<ResourcePlayLogRequestParam> logRequestParamList) {
+            @RequestBody(required = false) List<ResourcePlayLogRequestParam> logRequestParamList) {
 
         GMContext gmContext = GMContext.getContext();
         Validator.loginValidate(gmContext);
