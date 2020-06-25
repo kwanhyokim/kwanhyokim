@@ -36,25 +36,25 @@ import com.sktechx.godmusic.personal.rest.model.vo.video.VideoVo;
 @FeignClient(value = "meta-mgo-api", fallbackFactory = MetaMgoClientFallbackFactory.class)
 public interface MetaMgoClient {
 
-    @GetMapping("/meta/v1/artist/{artistId}")
+    @GetMapping("/meta-mgo/v1/artist/{artistId}")
     CommonApiResponse<ArtistDto> artists(@PathVariable("artistId") Long artistId);
 
-    @GetMapping("/meta/v1/album/{albumId}")
+    @GetMapping("/meta-mgo/v1/album/{albumId}")
     CommonApiResponse<AlbumDto> album(@PathVariable("albumId") Long albumId);
 
-    @GetMapping("/meta/v1/track/{trackId}")
+    @GetMapping("/meta-mgo/v1/track/{trackId}")
     CommonApiResponse<TrackDto> track(@PathVariable("trackId") Long trackId);
 
-    @PostMapping("/meta/internal/videos")
+    @PostMapping("/meta-mgo/internal/videos")
     CommonApiResponse<ListDto<List<VideoVo>>> getVideos(@RequestBody MetaVideoRequestVo metaVideoRequestVo);
 
-    @GetMapping("/meta/internal/videos/{videoId}")
+    @GetMapping("/meta-mgo/internal/videos/{videoId}")
     CommonApiResponse<VideoVo> getVideo(@PathVariable("videoId") Long videoId);
 
-    @GetMapping("/meta/v1/ping")
+    @GetMapping("/meta-mgo/v1/ping")
     CommonApiResponse<Void> ping();
 
-    @PostMapping("/meta/v2/track/list")
+    @PostMapping("/meta-mgo/v2/track/list")
     CommonApiResponse<ListDto<List<TrackDto>>> getTrackList(@RequestBody GetTrackListRequest request);
 
 }

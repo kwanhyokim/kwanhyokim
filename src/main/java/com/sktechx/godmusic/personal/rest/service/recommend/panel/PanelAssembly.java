@@ -232,6 +232,12 @@ public abstract class PanelAssembly {
     }
 
     protected List<Panel> mergePanelList(List<Panel> myPanelList, List<Panel> chartPanelList, int panelMaxSize) {
+
+        // 패널이 비어있는 경우, 비정상으로 판단
+        if(CollectionUtils.isEmpty(myPanelList)){
+            return Collections.emptyList();
+        }
+
         Optional<Panel> liveChartPanel = Optional.ofNullable(chartPanelList)
                 .orElseGet(Collections::emptyList)
                 .stream()

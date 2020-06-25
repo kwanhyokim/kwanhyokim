@@ -50,7 +50,7 @@ public class MetaMgoClientFallbackFactory implements FallbackFactory<MetaMgoClie
             }
             @Override
             public CommonApiResponse<TrackDto> track(Long trackId) {
-                return null;
+                return CommonApiResponse.<TrackDto>builder().data(null).build();
             }
             @Override
             public CommonApiResponse<ListDto<List<VideoVo>>> getVideos(

@@ -11,6 +11,7 @@
 package com.sktechx.godmusic.personal.rest.service.recommend.phase;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
 
 /**
@@ -22,4 +23,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase
 public interface PersonalRecommendPhaseService {
     PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType, String appVer);
     void clearPersonalRecommendPhaseMetaCache(Long characterNo);
+
+    PersonalPhaseMeta getPersonalRecommendPhaseMetaExcept(Long characterNo , OsType osType,
+            String appVer, RecommendPanelContentType recommendPanelContentType);
 }

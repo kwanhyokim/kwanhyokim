@@ -44,4 +44,6 @@ public class PersonalPanel {
     private OsType exceptionalOsType;
     private String exceptionalAppVersion;
 
+    private Long seedTrackId;
+
 }

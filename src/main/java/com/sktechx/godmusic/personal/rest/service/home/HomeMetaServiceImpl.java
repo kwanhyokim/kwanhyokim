@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
+import com.sktechx.godmusic.personal.rest.client.MetaMgoClient;
 import com.sktechx.godmusic.personal.rest.client.PersonalMongoClient;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferDispDto;
 import com.sktechx.godmusic.personal.rest.model.dto.CharacterPreferGenreDto;
@@ -55,6 +56,9 @@ public class HomeMetaServiceImpl implements HomeMetaService {
 
     @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private MetaMgoClient metaMgoClient;
 
     @Async
     @Override
@@ -99,11 +103,13 @@ public class HomeMetaServiceImpl implements HomeMetaService {
     @Override
     public CompletableFuture<List<PersonalPanel>> getPersonalRecommendPanelMgoMeta(
             Long characterNo) {
-        return CompletableFuture.completedFuture(Optional.ofNullable(
+
+        List<PersonalPanel> personalPanelList = Optional.ofNullable(
                 personalMongoClient.getRcmmdPanelMetaByCharacterNo(characterNo).getData()
-                ).orElseGet(()-> new ListDto<>(null))
-                .getList()
-        );
+        ).orElseGet( () ->new ListDto<>(null))
+                .getList();
+
+        return CompletableFuture.completedFuture(personalPanelList);
 
     }
 }
