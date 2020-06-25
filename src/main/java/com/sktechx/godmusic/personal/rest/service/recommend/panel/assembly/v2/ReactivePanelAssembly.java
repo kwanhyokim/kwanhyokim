@@ -48,9 +48,9 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 @Service("reactivePanelAssembly")
 public class ReactivePanelAssembly extends PanelSignAssembly {
-    public static int REACTIVE_HOME_MAX_PANEL_SIZE = 6;
+    public static int REACTIVE_HOME_MAX_PANEL_SIZE = 7;
 
-    public static int REACTIVE_LIMIT_PANEL_SIZE = 4;
+    public static int REACTIVE_LIMIT_PANEL_SIZE = 5;
 
     @Autowired
     MetaClient metaClient;
