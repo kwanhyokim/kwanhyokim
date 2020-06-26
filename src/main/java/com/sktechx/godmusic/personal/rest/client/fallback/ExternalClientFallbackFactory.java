@@ -11,7 +11,9 @@
 package com.sktechx.godmusic.personal.rest.client.fallback;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
+import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.AwsBucketType;
+import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.rest.client.ExternalClient;
 import com.sktechx.godmusic.personal.rest.model.vo.external.AwsFileVo;
 import feign.FeignException;
@@ -56,11 +58,16 @@ public class ExternalClientFallbackFactory implements FallbackFactory<ExternalCl
                                                               Long memberNo) {
 
                 // 4XX error warn 처리
-                int status = ((FeignException) throwable).status();
+                FeignException fe = ((FeignException) throwable);
+                int status = fe.status();
 
                 if (HttpStatus.valueOf(status).is4xxClientError()) {
-                    log.warn("[createOcrFile] 호출 실패, message={}", throwable.getMessage());
-                    return CommonApiResponse.buildError(throwable, HttpStatus.valueOf(status));
+                    log.warn("[createOcrFile] 호출 실패, status={}, message={}", status, fe.getMessage());
+
+                    // return CommonApiResponse.buildError(PersonalErrorDomain.FAIL_UPLOAD_OCR_FILE, HttpStatus.valueOf(status));
+                    return CommonApiResponse.builder()
+                            .errorDomain(PersonalErrorDomain.FAIL_UPLOAD_OCR_FILE)
+                            .build();
                 }
                 else {
                     log.error("[createOcrFile] 호출 실패, message={}", throwable.getMessage());

@@ -64,19 +64,12 @@ public class OcrController {
         log.debug("Aws FileUpload end");
 
         // 4xx test
-        if(response.getErrorDomain().getHttpStatus().is4xxClientError()){
-            throw new CommonBusinessException(PersonalErrorDomain.FAIL_UPLOAD_OCR_FILE, response.getMessage());
+        if (response.getErrorDomain().getHttpStatus().is4xxClientError()) {
+            throw new CommonBusinessException(response.getErrorDomain());
         }
 
-        log.info("[code] : {}", response.getCode());
-        log.info("[data] : {}", response.getData());
-        log.info("[error domain] : {}", response.getErrorDomain());
-        log.info("[message] : {}", response.getMessage());
-        log.info("[traceId] : {}", response.getTraceId());
-        log.info("[class] : {}", response.getClass());
-
         if(StringUtils.isEmpty(response) || StringUtils.isEmpty(response.getCode())
-                || !"2000000".equals(response.getCode()) || CommonUtils.empty(response.getData())) throw new CommonBusinessException("file upload fail");
+                || !"2000000".equals(response.getCode()) || CommonUtils.empty(response.getData())) throw new CommonBusinessException(response.getErrorDomain(), "file upload fail");
 
         return response.getData();
     }
