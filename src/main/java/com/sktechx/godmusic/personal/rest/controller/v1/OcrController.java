@@ -5,6 +5,7 @@ import javax.validation.Valid;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.personal.common.domain.type.AwsBucketType;
+import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
 import com.sktechx.godmusic.personal.common.util.CommonUtils;
 import com.sktechx.godmusic.personal.rest.client.ExternalClient;
 import com.sktechx.godmusic.personal.rest.model.dto.ocr.OcrEventDto;
@@ -64,7 +65,7 @@ public class OcrController {
 
         // 4xx test
         if(response.getErrorDomain().getHttpStatus().is4xxClientError()){
-            throw new CommonBusinessException(response.getErrorDomain().getHttpStatus(), response.getMessage());
+            throw new CommonBusinessException(PersonalErrorDomain.FAIL_UPLOAD_OCR_FILE, response.getMessage());
         }
 
         if(StringUtils.isEmpty(response) || StringUtils.isEmpty(response.getCode())
