@@ -63,7 +63,7 @@ public class OcrController {
         CommonApiResponse<AwsFileVo> response = externalApiProxy.createOcrFile(file, AwsBucketType.OCR, GMContext.getContext().getMemberNo());
         log.debug("Aws FileUpload end");
 
-        log.info(response.toString());
+        log.info("[response] : {}", response.toString());
 
         // 4xx test
         if(response.getErrorDomain().getHttpStatus().is4xxClientError()){

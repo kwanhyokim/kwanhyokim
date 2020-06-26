@@ -59,9 +59,10 @@ public class ExternalClientFallbackFactory implements FallbackFactory<ExternalCl
                 int status = ((FeignException) throwable).status();
 
                 if (HttpStatus.valueOf(status).is4xxClientError()) {
-                    log.info("e : " , throwable.getClass());
+                    log.info("class : " , throwable.getClass());
+                    log.info("cuase : " , throwable.getCause());
                     log.warn("[createOcrFile] 호출 실패, message={}", throwable.getMessage());
-                    return CommonApiResponse.buildError(throwable, HttpStatus.valueOf(status));
+                    return CommonApiResponse.buildError(throwable.getCause(), HttpStatus.valueOf(status));
                 }
                 else {
                     log.error("[createOcrFile] 호출 실패, message={}", throwable.getMessage());
