@@ -45,10 +45,6 @@ public class OcrController {
     @Autowired
     private OcrService ocrService;
 
-    @Autowired
-    private ExternalClient externalApiProxy;
-
-
     @ApiOperation(value = "OCR 세션 정보 생성", httpMethod = "POST", notes = "OCR 분석할 파일을 올리기 위한, 세션 아이디를 생성 한다")
     @PostMapping("")
     public CommonApiResponse<CreateOcrSessionResponse> createOcrSession(
