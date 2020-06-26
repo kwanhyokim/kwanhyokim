@@ -215,7 +215,7 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
             }
 
             @Override
-            public CommonApiResponse<Long> updateRecommendDelTargetYn(Long characterNo,
+            public CommonApiResponse<Void> updateRecommendDelTargetYn(Long characterNo,
                     String rcmmdType, Long rcmmdId, RecommendUpdateRequest request) {
 
                 log.warn("{}@updateRecommendDelTargetYn-fallback, message={}, params={},{}",

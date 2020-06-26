@@ -196,7 +196,7 @@ public interface PersonalMongoClient {
      * 추천 데이터의 삭제 여부 플래그 변경
      */
     @PutMapping("/personal-mgo/internal/recommends/{rcmmdType}/{rcmmdId}")
-    CommonApiResponse<Long> updateRecommendDelTargetYn(
+    CommonApiResponse<Void> updateRecommendDelTargetYn(
             @RequestHeader(name = "x-gm-fallback-cno") Long characterNo,
             @PathVariable(name = "rcmmdType") String rcmmdType,
             @PathVariable(name = "rcmmdId") Long rcmmdId,
