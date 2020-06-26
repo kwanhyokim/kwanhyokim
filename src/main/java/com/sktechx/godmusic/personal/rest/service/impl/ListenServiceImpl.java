@@ -44,16 +44,23 @@ public class ListenServiceImpl implements ListenService {
 
     @Override
     public void addListenHistByChannel(ListenRequest param, Long memberNo, Long characterNo) {
-        listenMapper.addListenHistByChannel(param.getListenType(), param.getListenTypeId(),
-                memberNo, characterNo);
+
+        String listenType = param.getListenType();
+        Long listenTypeId = param.getListenTypeId();
+
+        listenMapper.addListenHistByChannel(listenType, listenTypeId, memberNo, characterNo);
 
         //추천 패널의 경우 기존 추천 데이터  삭제 방지를 위한 DB 업데이트 처리
-        if (isRecommendListen(param.getListenType())) {
-            recommendDummyDataService.updateRecommendDataRemovePrevent(param, characterNo);
+        if (isRecommendListen(listenType)) {
+
+            // 방금레이더 추천 정보는 Mongo에 만 존재하므로 mysql 쪽은 Update 하지 않는다.
+            if (!RC_LKSM_TR.getCode().equals(listenType)) {
+                recommendDummyDataService.updateRecommendDataRemovePrevent(param, characterNo);
+            }
 
             // mongo
             personalMongoClient.updateRecommendDelTargetYn(
-                    characterNo, param.getListenType(), param.getListenTypeId(),
+                    characterNo, listenType, listenTypeId,
                     RecommendUpdateRequest.builder().delTargetYn("N").build()
             );
         }
