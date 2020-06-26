@@ -59,33 +59,6 @@ public class OcrController {
         return new CommonApiResponse<>(CreateOcrSessionResponse.builder().ocrNo(ObjectUtils.isEmpty(ocrDto) ? null : ocrDto.getOcrNo()).build());
     }
 
-
-    @PostMapping(value = "/test", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public AwsFileVo uploadOcrFile(MultipartFile file) {
-        log.debug("Aws FileUpload start:");
-        CommonApiResponse<AwsFileVo> response = externalApiProxy.createOcrFile(file, AwsBucketType.OCR, GMContext.getContext().getMemberNo());
-        log.debug("Aws FileUpload end");
-
-        // 4xx test
-        if (Optional.ofNullable(response)
-                .map(CommonApiResponse::getErrorDomain)
-                .map(ErrorDomain::getHttpStatus)
-                .map(HttpStatus::is4xxClientError)
-                .isPresent()) {
-
-            if (response.getErrorDomain().getHttpStatus().is4xxClientError()) {
-                throw new CommonBusinessException(response.getErrorDomain());
-            }
-        }
-
-        if (StringUtils.isEmpty(response) || StringUtils.isEmpty(response.getCode())
-                || !"2000000".equals(response.getCode()) || CommonUtils.empty(response.getData()))
-            throw new CommonBusinessException("file upload fail");
-
-        return response.getData();
-    }
-
-
     @ApiOperation(value = "OCR 파일 업로드", httpMethod = "POST", notes = "플레이리스트 이미지 업로드 한다.")
     @PostMapping(value = "/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public CommonApiResponse uploadOcrFile(MultipartFile file, @RequestParam("ocrNo") Long ocrNo, @RequestParam("ocrFileNo") Integer ocrFileNo) {

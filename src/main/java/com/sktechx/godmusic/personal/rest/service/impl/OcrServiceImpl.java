@@ -4,6 +4,7 @@ import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.lib.domain.code.YnType;
 import com.sktechx.godmusic.lib.domain.exception.CommonBusinessException;
 import com.sktechx.godmusic.lib.domain.exception.CommonErrorDomain;
+import com.sktechx.godmusic.lib.domain.exception.ErrorDomain;
 import com.sktechx.godmusic.personal.common.domain.type.AnalsStatusType;
 import com.sktechx.godmusic.personal.common.domain.type.AwsBucketType;
 import com.sktechx.godmusic.personal.common.exception.PersonalErrorDomain;
@@ -23,6 +24,7 @@ import com.sktechx.godmusic.personal.rest.service.OcrHelperService;
 import com.sktechx.godmusic.personal.rest.service.OcrService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -30,6 +32,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
@@ -189,11 +192,27 @@ public class OcrServiceImpl implements OcrService {
         CommonApiResponse<AwsFileVo> response = externalApiProxy.createOcrFile(file, awsBucketType, memberNo);
         log.debug("Aws FileUpload end");
 
+        inspect4xxClientError(response);
+
         if(StringUtils.isEmpty(response) || StringUtils.isEmpty(response.getCode())
                 || !"2000000".equals(response.getCode()) || CommonUtils.empty(response.getData())) throw new CommonBusinessException("file upload fail");
 
         return response.getData();
     }
+
+
+    private void inspect4xxClientError(CommonApiResponse<AwsFileVo> response) {
+        boolean is4xxClientError = Optional.ofNullable(response)
+                .map(CommonApiResponse::getErrorDomain)
+                .map(ErrorDomain::getHttpStatus)
+                .map(HttpStatus::is4xxClientError)
+                .orElse(false);
+
+        if (is4xxClientError) {
+            throw new CommonBusinessException(response.getErrorDomain());
+        }
+    }
+
 
     private MemberDvcDto getMemberDvc(Long memberNo, String deviceId) {
 

@@ -64,7 +64,6 @@ public class ExternalClientFallbackFactory implements FallbackFactory<ExternalCl
                 if (HttpStatus.valueOf(status).is4xxClientError()) {
                     log.warn("[createOcrFile] 호출 실패, status={}, message={}", status, fe.getMessage());
 
-                    // return CommonApiResponse.buildError(PersonalErrorDomain.FAIL_UPLOAD_OCR_FILE, HttpStatus.valueOf(status));
                     return CommonApiResponse.builder()
                             .errorDomain(PersonalErrorDomain.FAIL_UPLOAD_OCR_FILE)
                             .build();
