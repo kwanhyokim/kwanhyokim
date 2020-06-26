@@ -68,13 +68,6 @@ public class OcrController {
             throw new CommonBusinessException(PersonalErrorDomain.FAIL_UPLOAD_OCR_FILE, response.getMessage());
         }
 
-        log.info("[code] : {}", response.getCode());
-        log.info("[data] : {}", response.getData());
-        log.info("[error domain] : {}", response.getErrorDomain());
-        log.info("[message] : {}", response.getMessage());
-        log.info("[traceId] : {}", response.getTraceId());
-        log.info("[class] : {}", response.getClass());
-
         if(StringUtils.isEmpty(response) || StringUtils.isEmpty(response.getCode())
                 || !"2000000".equals(response.getCode()) || CommonUtils.empty(response.getData())) throw new CommonBusinessException("file upload fail");
 
