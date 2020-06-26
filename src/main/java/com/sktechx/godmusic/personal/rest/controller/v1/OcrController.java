@@ -62,8 +62,13 @@ public class OcrController {
         CommonApiResponse<AwsFileVo> response = externalApiProxy.createOcrFile(file, AwsBucketType.OCR, GMContext.getContext().getMemberNo());
         log.debug("Aws FileUpload end");
 
+        // 4xx test
+        if(response.getErrorDomain().getHttpStatus().is4xxClientError()){
+            throw new CommonBusinessException(response.getErrorDomain().getHttpStatus(), response.getMessage());
+        }
+
         if(StringUtils.isEmpty(response) || StringUtils.isEmpty(response.getCode())
-                || !"2000000".equals(response.getCode()) || CommonUtils.empty(response.getData())) throw new CommonBusinessException(response.getErrorDomain(), "file upload fail");
+                || !"2000000".equals(response.getCode()) || CommonUtils.empty(response.getData())) throw new CommonBusinessException("file upload fail");
 
         return response.getData();
     }
