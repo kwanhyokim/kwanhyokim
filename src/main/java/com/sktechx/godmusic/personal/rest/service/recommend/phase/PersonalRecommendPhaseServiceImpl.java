@@ -80,7 +80,8 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
         PersonalPhaseMeta personalPhaseMeta = getInnerPersonalRecommendPhaseMeta(characterNo,
                 osType, appVer);
 
-        if(new ComparableVersion(appVer).compareTo( new ComparableVersion("5.1.0")) < 0){
+        if(characterNo != null &&
+                new ComparableVersion(appVer).compareTo( new ComparableVersion("5.1.0")) < 0){
             personalPhaseMeta = getPersonalRecommendPhaseMetaExcept(characterNo, osType, appVer,
                     RecommendPanelContentType.RC_LKSM_TR);
         }
