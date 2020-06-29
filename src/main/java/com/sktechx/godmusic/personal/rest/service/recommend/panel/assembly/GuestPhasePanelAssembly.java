@@ -42,6 +42,10 @@ public class GuestPhasePanelAssembly extends PanelNonSignAssembly {
 
         final List<Panel> panelList = new ArrayList<>();
 
+        if(personalPhaseMeta != null && personalPhaseMeta.getOsType() == null){
+            personalPhaseMeta.setOsType(OsType.IOS);
+        }
+
         appendDefaultPopularChannelPanel(personalPhaseMeta , panelList , POPULAR_CHNL_LIST_SIZE , null);
 
         Panel chartPanel = createChartPanel(RecommendPanelType.LIVE_CHART,personalPhaseMeta.getOsType(),PREFER_DISP_CHART_TRACK_LIMIT_SIZE);

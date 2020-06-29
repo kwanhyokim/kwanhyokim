@@ -99,7 +99,11 @@ public abstract class PanelAssembly {
     }
 
     protected void appendDefaultPopularChannelPanel(final PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList, int panelLimitSize , List<Long> filterChnlIdList) {
-        List<ChnlDto> popularChannelList = channelService.getPopularChannelList(panelLimitSize,POPULAR_CHNL_TRACK_LIMIT_SIZE ,personalPhaseMeta.getOsType(),filterChnlIdList);
+        List<ChnlDto> popularChannelList = channelService.getPopularChannelList(
+                panelLimitSize,POPULAR_CHNL_TRACK_LIMIT_SIZE ,
+                (personalPhaseMeta == null ? OsType.ALL : personalPhaseMeta.getOsType()),
+                filterChnlIdList
+        );
 
         if(!CollectionUtils.isEmpty(popularChannelList)){
             popularChannelList
