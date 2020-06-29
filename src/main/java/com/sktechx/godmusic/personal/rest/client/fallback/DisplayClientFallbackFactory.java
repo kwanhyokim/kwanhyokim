@@ -35,7 +35,11 @@ public class DisplayClientFallbackFactory implements FallbackFactory<DisplayClie
             @Override
             public CommonApiResponse<ChannelListResponse> getOperationTpoList(){
                 log.error(e.getMessage());
-                return null;
+                return CommonApiResponse.<ChannelListResponse>builder()
+                        .data(
+                                ChannelListResponse.builder().build()
+                        )
+                        .build();
             }
 
             @Override

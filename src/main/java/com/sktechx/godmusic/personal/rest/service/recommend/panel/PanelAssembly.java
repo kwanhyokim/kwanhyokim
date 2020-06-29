@@ -11,11 +11,11 @@
 package com.sktechx.godmusic.personal.rest.service.recommend.panel;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.util.CollectionUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
@@ -36,7 +36,7 @@ import com.sktechx.godmusic.personal.rest.repository.*;
 import com.sktechx.godmusic.personal.rest.service.ChannelService;
 import com.sktechx.godmusic.personal.rest.service.chart.ChartService;
 import com.sktechx.godmusic.personal.rest.service.recommend.RecommendImageManagementService;
-import com.sktechx.godmusic.personal.rest.service.recommend.RecommendReadService;
+import com.sktechx.godmusic.personal.rest.service.recommend.read.RcmmdReadServiceFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.sktechx.godmusic.personal.common.domain.constant.RecommendConstant.POPULAR_CHNL_TRACK_LIMIT_SIZE;
@@ -63,10 +63,6 @@ public abstract class PanelAssembly {
     protected ChannelService channelService;
 
     @Autowired
-    @Lazy
-    protected RecommendReadService recommendReadService;
-
-    @Autowired
     protected RecommendImageManagementService recommendImageManagementService;
 
     @Autowired
@@ -82,14 +78,14 @@ public abstract class PanelAssembly {
     @Autowired
     protected CharacterPreferGenreMapper characterPreferGenreMapper;
 
-    public abstract List<Panel> assembleRecommendPanel(PersonalPhaseMeta personalPhaseMeta) throws Exception;
-    protected abstract List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta);
+    @Autowired
+    protected RcmmdReadServiceFactory rcmmdReadServiceFactory;
 
-    public abstract List<Panel> getRecommendPanelList(Long characterNo, OsType osType);
+    public abstract List<Panel> makeHomePanelListForMainTop(PersonalPhaseMeta personalPhaseMeta);
+    public abstract List<Panel> makeHomePanelListForMainMiddle(Long characterNo, OsType osType);
 
     protected int panelCount(RecommendPanelType recommendPanelType ,final List<Panel> panelList){
         return (int)Optional.ofNullable(panelList).orElse(Collections.emptyList()).stream().filter(panel -> recommendPanelType.equals(panel.getType())).count();
-
     }
     protected void sort(final PersonalPhaseMeta personalPhaseMeta,final List<Panel> panelList){
         panelList.sort((panel1, panel2) -> {
@@ -235,7 +231,12 @@ public abstract class PanelAssembly {
         }
     }
 
-    protected void mergePanelList(List<Panel> panelList, List<Panel> myPanelList, List<Panel> chartPanelList, int panelMaxSize) {
+    protected List<Panel> mergePanelList(List<Panel> myPanelList, List<Panel> chartPanelList, int panelMaxSize) {
+
+        // 패널이 비어있는 경우, 비정상으로 판단
+        if(CollectionUtils.isEmpty(myPanelList)){
+            return Collections.emptyList();
+        }
 
         Optional<Panel> liveChartPanel = Optional.ofNullable(chartPanelList)
                 .orElseGet(Collections::emptyList)
@@ -263,12 +264,13 @@ public abstract class PanelAssembly {
             panelMaxSize--;
         }
 
-        panelList.addAll(
-                myPanelList.stream().limit(panelMaxSize).collect(Collectors.toList())
-        );
+        List<Panel> panelList = myPanelList.stream().limit(panelMaxSize)
+                .collect(Collectors.toList());
 
         liveChartPanel.ifPresent(panel -> panelList.add(0, panel));
         kidsChartPanel.ifPresent(panelList::add);
+
+        return panelList;
     }
 
     protected List<ImageInfo> getTpoAndThemeBackgroundImageList(OsType osType) {
@@ -290,32 +292,33 @@ public abstract class PanelAssembly {
                         ));
     }
 
-    public List<Panel> appendPreferenceChartPanel(final PersonalPhaseMeta personalPhaseMeta) {
+    public Function<PersonalPhaseMeta, List<Panel>> appendPreferenceChartPanel =
 
-        final List<Panel> finalPanelList = new ArrayList<>();
+        personalPhaseMeta -> {
+            final List<Panel> finalPanelList = new ArrayList<>();
 
-        Optional.ofNullable(
-            personalPhaseMeta.getPreferDispList()
-        )
-        .ifPresent(
-                preferDispDtoList -> {
-                    for(CharacterPreferDispDto characterPreferDispDto : preferDispDtoList){
+            Optional.ofNullable(
+                personalPhaseMeta.getPreferDispList()
+            )
+            .ifPresent(
+                    preferDispDtoList -> {
+                        for(CharacterPreferDispDto characterPreferDispDto : preferDispDtoList){
 
-                        Panel panel =
-                                ServiceUtils.getFormattedAppVersion(
-                                    personalPhaseMeta.getAppVer()
-                                ).compareTo(41500) < 0 ?
-                                createChartPanel(characterPreferDispDto, personalPhaseMeta.getOsType(),
-                                        PREFER_DISP_CHART_TRACK_LIMIT_SIZE) :
-                                createPrivateChartPanel(personalPhaseMeta.getCharacterNo(),
-                                        characterPreferDispDto, personalPhaseMeta.getOsType(),
-                                        PREFER_DISP_CHART_TRACK_LIMIT_SIZE);
-                        finalPanelList.add(panel);
+                            Panel panel =
+                                    ServiceUtils.getFormattedAppVersion(
+                                        personalPhaseMeta.getAppVer()
+                                    ).compareTo(41500) < 0 ?
+                                    createChartPanel(characterPreferDispDto, personalPhaseMeta.getOsType(),
+                                            PREFER_DISP_CHART_TRACK_LIMIT_SIZE) :
+                                    createPrivateChartPanel(personalPhaseMeta.getCharacterNo(),
+                                            characterPreferDispDto, personalPhaseMeta.getOsType(),
+                                            PREFER_DISP_CHART_TRACK_LIMIT_SIZE);
+                            finalPanelList.add(panel);
+                        }
                     }
-                }
-        );
+            );
 
-        return finalPanelList;
-    }
+            return finalPanelList;
+        };
 
 }

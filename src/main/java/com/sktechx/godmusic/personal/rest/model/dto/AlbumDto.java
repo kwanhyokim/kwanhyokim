@@ -10,11 +10,7 @@
 
 package com.sktechx.godmusic.personal.rest.model.dto;
 
-import java.util.List;
-
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -24,6 +20,11 @@ import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
+import org.springframework.lang.Nullable;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
+
+import java.util.List;
 
 /**
  * 설명 : 앨범 DTO
@@ -39,7 +40,7 @@ import lombok.*;
 @JsonPropertyOrder({"id", "title", "categoryType", "representationArtist", "artistList", "imgList", "releaseYmd", "genreStyle", "albumTypeStr", "likeYn"})
 @ApiModel(value = "앨범")
 @EqualsAndHashCode
-public class AlbumDto {
+public class AlbumDto implements Comparable<AlbumDto> {
 
     @JsonProperty("id")
     @ApiModelProperty(required = true, example = "2834", value = "아이디")
@@ -102,5 +103,21 @@ public class AlbumDto {
         }
 
         this.imgList = imgList;
+    }
+
+    @Override
+    public int compareTo(@Nullable AlbumDto o) {
+        if (o == null) return -1;
+        return Long.compare(this.albumId, o.albumId);
+    }
+
+    @JsonIgnore
+    public ImageInfo getImageInfoBySize(Long size) {
+
+        if (!CollectionUtils.isEmpty(imgList)) {
+            return imgList.stream().filter(imageInfo -> imageInfo.getSize().equals(size)).findFirst().orElse(imgList.get(0));
+        }
+
+        return null;
     }
 }

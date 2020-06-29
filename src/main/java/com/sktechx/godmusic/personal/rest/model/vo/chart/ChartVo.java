@@ -204,7 +204,7 @@ public class ChartVo {
                 TasteMixDto.builder()
                         .mixYn(YnType.N)
                         .status("NOT_MIXED")
-                        .descriptionMessage("취향이 충분히 쌓일 때 까지 일반 순위가 표시됩니다.")
+                        .descriptionMessage("취향이 충분히 쌓일 때까지 일반 순위가 표시됩니다.")
                         .displayMessage("%s를 내 취향 순서로 변경했습니다.")
                         .build()
         );

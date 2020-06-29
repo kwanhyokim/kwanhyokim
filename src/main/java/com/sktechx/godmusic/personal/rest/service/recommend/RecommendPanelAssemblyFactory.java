@@ -17,12 +17,12 @@ import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
+import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.GuestPhasePanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.ListenPhasePanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.RecommendPhasePanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.VisitPhasePanelAssembly;
 import com.sktechx.godmusic.personal.rest.service.recommend.panel.assembly.v2.*;
-import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelAssembly;
 
 /**
  *
@@ -42,6 +42,7 @@ public class RecommendPanelAssemblyFactory {
     private final AfloPanelAssembly afloPanelAssembly;
     private final PreferGenreThemePanelAssembly preferGenreThemePanelAssembly;
     private final OperationTpoPanelAssembly operationTpoPanelAssembly;
+    private final ReactivePanelAssembly reactivePanelAssembly;
 
     public RecommendPanelAssemblyFactory(VisitPhasePanelAssembly visitPhasePanelAssembly,
             ListenPhasePanelAssembly listenPhasePanelAssembly,
@@ -51,7 +52,8 @@ public class RecommendPanelAssemblyFactory {
             ArtistFloPanelAssembly artistFloPanelAssembly,
             TodayFloPanelAssembly todayFloPanelAssembly, AfloPanelAssembly afloPanelAssembly,
             PreferGenreThemePanelAssembly preferGenreThemePanelAssembly,
-            OperationTpoPanelAssembly operationTpoPanelAssembly) {
+            OperationTpoPanelAssembly operationTpoPanelAssembly,
+            ReactivePanelAssembly reactivePanelAssembly) {
         this.visitPhasePanelAssembly = visitPhasePanelAssembly;
         this.listenPhasePanelAssembly = listenPhasePanelAssembly;
         this.recommendPhasePanelAssembly = recommendPhasePanelAssembly;
@@ -62,6 +64,7 @@ public class RecommendPanelAssemblyFactory {
         this.afloPanelAssembly = afloPanelAssembly;
         this.preferGenreThemePanelAssembly = preferGenreThemePanelAssembly;
         this.operationTpoPanelAssembly = operationTpoPanelAssembly;
+        this.reactivePanelAssembly = reactivePanelAssembly;
     }
 
     public PanelAssembly getRecommendPanelAssembly(PersonalPhaseType personalPhaseType ){
@@ -83,16 +86,19 @@ public class RecommendPanelAssemblyFactory {
 
     public PanelAssembly getV2RecommendPanelAssembly(PersonalPhaseMeta personalPhaseMeta){
 
+//
+//        if(!ObjectUtils.isEmpty(personalPhaseMeta.getAppVer())
+//                && new ComparableVersion(personalPhaseMeta.getAppVer()).compareTo( new ComparableVersion("5.1.0")) >= 0 ){
+//            return reactivePanelAssembly;
+//        }
+
         PersonalPanel personalPanel = personalPhaseMeta.getRecommendPersonalPanelTopItem();
 
         if(!ObjectUtils.isEmpty(personalPanel)) {
-
             PanelAssembly panelAssembly = getV2RecommendPanelAssembly(personalPanel.getRecommendPanelContentType());
-
             if(panelAssembly != null){
                 return panelAssembly;
             }
-
         }
 
         // 선호 장르 테마
@@ -118,10 +124,11 @@ public class RecommendPanelAssemblyFactory {
             // 좋아할만한 아티스트 MIX
             case RC_ATST_TR:
                 return artistFloPanelAssembly;
+            case RC_LKSM_TR:
+                return reactivePanelAssembly;
             default:
                 return null;
         }
-
     }
 
 }

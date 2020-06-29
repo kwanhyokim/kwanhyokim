@@ -87,10 +87,10 @@ public class PersonalPhaseMeta {
         return null;
     }
 
+    @JsonIgnore
     public boolean isPreferGenreListPresent(){
-         return !CollectionUtils.isEmpty(getPreferGenreList());
+        return !CollectionUtils.isEmpty(getPreferGenreList());
     }
-
 
     public List<Long> getRecommendPersonalPanelRcmmdIdList(RecommendPanelContentType recommendPanelContentType) {
         if(!CollectionUtils.isEmpty(rcmmdPanelList)) {
@@ -98,7 +98,8 @@ public class PersonalPhaseMeta {
                     .filter(personalPanel ->
                             Objects.nonNull(personalPanel) && recommendPanelContentType.equals(personalPanel.getRecommendPanelContentType()))
                     .sorted(
-                            Comparator.comparing(PersonalPanel::getRecommendId, (r1, r2) -> r1.compareTo(r2)).reversed()
+                            Comparator.comparing(PersonalPanel::getRecommendId,
+                                    Comparator.naturalOrder()).reversed()
                                     .thenComparing(PersonalPanel::getDispSn,
                                             Comparator.naturalOrder()))
                     .map(PersonalPanel::getRecommendId)
@@ -171,11 +172,9 @@ public class PersonalPhaseMeta {
 
     public void removeRecommendPersonalPanel(RecommendPanelContentType recommendPanelContentType ,Long rcmmdId){
         if(!CollectionUtils.isEmpty(rcmmdPanelList)){
-            rcmmdPanelList.removeIf(personalPanel -> {
-	            return personalPanel.getRecommendPanelContentType()
-			            .equals(recommendPanelContentType) && personalPanel.getRecommendId()
-			            .equals(rcmmdId);
-            });
+            rcmmdPanelList.removeIf(personalPanel -> personalPanel.getRecommendPanelContentType()
+                    .equals(recommendPanelContentType) && personalPanel.getRecommendId()
+                    .equals(rcmmdId));
 
 
         }
@@ -206,4 +205,5 @@ public class PersonalPhaseMeta {
             }
         }
     }
+
 }

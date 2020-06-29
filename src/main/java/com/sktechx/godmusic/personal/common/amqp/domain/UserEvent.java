@@ -58,7 +58,10 @@ public class UserEvent {
 
 	@JsonProperty("elapsed_tm")
 	private Long				elapsedTm;
-	
+
+	@JsonProperty("bulk")
+	private Boolean bulk;
+
 	@Override
 	public String toString() {
 		return "UserEvent{" +
@@ -70,6 +73,9 @@ public class UserEvent {
 				", targetType=" + targetType +
 				", targetId='" + targetId + '\'' +
 				", sourceType=" + sourceType +
+				", trackTotTm=" + trackTotTm +
+				", elapsedTm=" + elapsedTm +
+				", bulk=" + bulk +
 				'}';
 	}
 }

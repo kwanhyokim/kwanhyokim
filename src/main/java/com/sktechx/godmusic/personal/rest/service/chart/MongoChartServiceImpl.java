@@ -31,7 +31,7 @@ import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartDispPropsVo;
 import com.sktechx.godmusic.personal.rest.model.vo.chart.ChartVo;
 import com.sktechx.godmusic.personal.rest.repository.ChartMapper;
 import com.sktechx.godmusic.personal.rest.service.image.ImageReadService;
-import com.sktechx.godmusic.personal.rest.service.mongo.PersonalMongoClient;
+import com.sktechx.godmusic.personal.rest.client.PersonalMongoClient;
 import lombok.extern.slf4j.Slf4j;
 
 import static java.util.Comparator.comparingInt;

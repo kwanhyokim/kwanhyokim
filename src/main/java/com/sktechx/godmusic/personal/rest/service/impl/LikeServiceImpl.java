@@ -248,7 +248,7 @@ public class LikeServiceImpl implements LikeService {
 					characterNo,
 					request.getLikeTypeId(),
 					UserEventTarget.valueOf(request.getLikeType()),
-					sourceType);
+					sourceType, null);
 		}
 		catch (Exception e){
 			log.warn("[UserEvent] Like :: like add UserEvent :: failed Message :: {}", e.getMessage());
@@ -289,14 +289,40 @@ public class LikeServiceImpl implements LikeService {
 		}
 
 		try {
-			IntStream.range(0, request.getLikeTypeList().size()).forEach(
-					index -> sendUserEvent(UserEventType.UNLIKE, AppNameType.FLO_APP.getCode(),
-							GMContext.getContext().getMemberNo(), characterNo,
-							request.getLikeTypeList().get(index).getLikeTypeId(),
-							UserEventTarget.valueOf(request.getLikeTypeList().get(index).getLikeType()), null));
-		}catch (Exception e){
+			/*
+			 * UserEvent 에 bulk field 추가 됨
+			 * bulk 필드는 해당 이벤트에서 이벤트의 개별처리가 아닌 캐릭터별 처리가 필요한 경우를 위해서 사용하며
+			 * 기본값은 bulk = false or null 이다.
+			 * bulk = true 인 경우 Batch 에서 skip 용도를 활용된다
+			 */
+			boolean notBulked = true;
+			for (LikeTypeVo each : request.getLikeTypeList()) {
+
+				UserEvent.UserEventBuilder builder = UserEvent.newBuilder()
+						.playChnl(AppNameType.FLO_APP.getCode())
+						.event(UserEventType.UNLIKE)
+						.memberNo(GMContext.getContext().getMemberNo())
+						.charactorNo(characterNo)
+						.targetId(String.valueOf(each.getLikeTypeId()))
+						.targetType(UserEventTarget.valueOf(each.getLikeType()))
+						.sourceType(null)
+						.timeMillis(System.currentTimeMillis());
+
+				if (notBulked) {
+					builder.bulk(Boolean.FALSE);
+					notBulked = false;
+				}
+				else {
+					builder.bulk(Boolean.TRUE);
+				}
+
+				UserEvent userEvent = builder.build();
+				amqpService.deliverUserEvent(userEvent);
+				log.info("[UserEvent] {}", userEvent);
+			}
+		}
+		catch (Exception e) {
 			log.warn("Like :: like delete UserEvent :: failed Message :: {}", e.getMessage());
-//			throw new CommonBusinessException(CommonErrorDomain.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -497,7 +523,7 @@ public class LikeServiceImpl implements LikeService {
 
 	private void sendUserEvent(UserEventType userEventType, String appName, Long memberNo,
 							   Long characterNo, Long targetId, UserEventTarget targetType,
-							   @Nullable String sourceType) {
+							   @Nullable String sourceType, @Nullable Boolean bulked) {
 
 		log.debug("[SendUserEvent] sourceType = {}", sourceType);
 
@@ -510,6 +536,7 @@ public class LikeServiceImpl implements LikeService {
 				.targetType(targetType)
 				.sourceType(SourceType.fromCode(sourceType))
 				.timeMillis(System.currentTimeMillis())
+				.bulk(bulked == null ? Boolean.FALSE : bulked)
 				.build();
 
 		amqpService.deliverUserEvent(userEvent);

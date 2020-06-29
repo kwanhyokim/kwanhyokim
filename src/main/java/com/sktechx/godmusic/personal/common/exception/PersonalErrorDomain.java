@@ -10,8 +10,9 @@
 
 package com.sktechx.godmusic.personal.common.exception;
 
-import com.sktechx.godmusic.lib.domain.exception.ErrorDomain;
 import org.springframework.http.HttpStatus;
+
+import com.sktechx.godmusic.lib.domain.exception.ErrorDomain;
 
 public enum PersonalErrorDomain implements ErrorDomain {
 	GM_CONTEXT_MEMBER_NO_NOT_EXIST(4030701, HttpStatus.FORBIDDEN ,"회원 정보 없음", "유효하지 않은 API 접근입니다.")
@@ -36,7 +37,7 @@ public enum PersonalErrorDomain implements ErrorDomain {
 	, TRACK_NOT_FOUND(4090719,HttpStatus.BAD_REQUEST ,"권리가 중단되어 서비스가 불가능한 곡입니다.","곡 정보 없음"  )
     , VIDEO_OVER_ADD_LIKE(4090720, HttpStatus.CONFLICT,"좋아요 한 영상을 더 이상 추가할 수 없습니다. 최대 1000개까지 담을 수 있습니다.","좋아하는 영상 추가 최대값 초과")
     , VIDEO_NOT_FOUND(4090721,HttpStatus.BAD_REQUEST ,"권리가 중단되어 서비스가 불가능한 영상입니다.","영상 정보 없음"  )
-    , VIDEO_DUPLICATED_LIKE(4090722, HttpStatus.CONFLICT, "이미 추가된 영상 입니다.", "이미 추가된 영상")
+    , VIDEO_DUPLICATED_LIKE(4090729, HttpStatus.CONFLICT, "이미 추가된 영상 입니다.", "이미 추가된 영상")
 
 	, PREFER_ARTIST_PANEL_FAIL(4090720,HttpStatus.CONFLICT ,"선호/유사 아티스트 인기곡 입력시 문제가 발생했습니다.","데이터 문제"  )
 	, PREFER_GENRE_PANEL_FAIL(4090721,HttpStatus.CONFLICT ,"선호 장르 유사곡 입력시 문제가 발생했습니다.","데이터 문제"  )
@@ -51,14 +52,15 @@ public enum PersonalErrorDomain implements ErrorDomain {
     , FAIL_BULK_CACHED_STREAMING_PROCESS(4090726, HttpStatus.CONFLICT, "청취 로그 대량 전송 실패", "청취 로그 대량 전송 실패")
     , BULK_LIST_SIZE_ZERO(4090727, HttpStatus.BAD_REQUEST, "벌크 청취 로그 요청 리스트가 비었습니다.", "벌크 청취 로그 요청 리스트가 비었습니다.")
     , MUST_NEED_VALUE(4090728, HttpStatus.BAD_REQUEST, "반드시 값이 있어야 합니다.", "반드시 값이 있어야 합니다.")
+    , HOME_PANNEL_CREATION_FAILED(4170701, HttpStatus.EXPECTATION_FAILED, "홈패널 생성 실패", "홈패널 생성 실패")
     ;
 
-    private int code;
-    private HttpStatus httpStatus;
-    private String message;
-    private String logMessage;
+    private final int code;
+    private final HttpStatus httpStatus;
+    private final String message;
+    private final String logMessage;
 
-    private PersonalErrorDomain(int code, HttpStatus httpStatus,String message, String logMessage) {
+    PersonalErrorDomain(int code, HttpStatus httpStatus, String message, String logMessage) {
         this.code = code;
         this.httpStatus = httpStatus;
         this.message = message;

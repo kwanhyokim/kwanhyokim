@@ -29,7 +29,8 @@ public enum PinType implements CodeEnum {
     MY_CHNL("MY_CHNL", "마이 채널"),
     FLAC("FLAC", "FLAC 채널"),
     OCR("OCR", "OCR"),
-    AFLO("AFLO", "AFLO 채널")
+    AFLO("AFLO", "AFLO 채널"),
+    RC_LKSM_TR("RC_LKSM_TR", "방금 레이더")
     ;
 //    CHART("CHART" , "차트");
 

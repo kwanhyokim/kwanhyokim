@@ -12,6 +12,7 @@ package com.sktechx.godmusic.personal.rest.model.dto.recommend;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+import org.springframework.util.ObjectUtils;
 
 /**
  * 설명 : Json list 형식 응답용
@@ -30,4 +31,7 @@ public class ListDto<T> {
 		this.list = list;
 	}
 
+	public boolean isNotEmpty() {
+		return !ObjectUtils.isEmpty(list);
+	}
 }

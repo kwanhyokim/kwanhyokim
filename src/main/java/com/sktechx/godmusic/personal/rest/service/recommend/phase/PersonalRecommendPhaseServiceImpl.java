@@ -11,7 +11,8 @@
 package com.sktechx.godmusic.personal.rest.service.recommend.phase;
 
 import java.sql.Timestamp;
-import java.time.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -56,34 +57,30 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConst
 @Service
 @Slf4j
 public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhaseService {
-    @Autowired
-    private RecommendPanelAssemblyFactory recommendPanelAssemblyFactory;
-
-    @Autowired
-    private CharacterPreferGenreMapper characterPreferGenreMapper;
-
-    @Autowired
-    private RecommendReadMapper recommendReadMapper;
-
-    @Autowired
-    private RedisService redisService;
-
-    @Autowired
-    private HomeMetaService homeMetaService;
-
-    @Autowired
-    private AfloMapper afloMapper;
-
-    @Autowired
-    private ChannelMapper channelMapper;
 
     @Override
     public void clearPersonalRecommendPhaseMetaCache(Long characterNo) {
         redisService.delWithPrefix(String.format(PERSONAL_RECOMMEND_PHASE_KEY, characterNo));
     }
+    @Override
+    public PersonalPhaseMeta getPersonalRecommendPhaseMetaExcept(Long characterNo, OsType osType,
+            String appVer, RecommendPanelContentType recommendPanelContentType) {
+
+        return personalPhaseMetaSupport.filterPanelByRecommendContentType(
+            getInnerPersonalRecommendPhaseMeta(characterNo, osType, appVer),
+            recommendPanelContentType
+        );
+    }
 
     @Override
-    public PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType, String appVer) {
+    public PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType,
+            String appVer) {
+
+        return getInnerPersonalRecommendPhaseMeta(characterNo, osType, appVer);
+    }
+
+    private PersonalPhaseMeta getInnerPersonalRecommendPhaseMeta(Long characterNo , OsType osType,
+            String appVer) {
 
         if(characterNo == null){
             return getGuestPhaseMeta(osType);
@@ -102,15 +99,15 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
             }
 
             // AFLO 채널 최신 생성 시각
-            Date afloChnlRecentCreateDtime = Optional.ofNullable(channelMapper.selectAfloChannelList(characterNo)).orElseGet(Collections::emptyList)
+            Date afloChnlRecentCreateDtime = Optional.ofNullable(
+                    channelMapper.selectAfloChannelList(characterNo)
+            ).orElseGet(Collections::emptyList)
                     .stream()
                     .filter(Objects::nonNull)
                     .filter(chnlDto -> Objects.nonNull(chnlDto.getCreateDtime()))
                     .findFirst()
                     .orElseGet(ChnlDto::new)
-                    .getCreateDtime()
-
-                    ;
+                    .getCreateDtime();
 
             String personalRecommendPhaseKey = String.format(PERSONAL_RECOMMEND_PHASE_KEY, characterNo);
             personalPhaseMeta = redisService.getWithPrefix(personalRecommendPhaseKey, PersonalPhaseMeta.class);
@@ -140,15 +137,29 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
             personalPhaseMeta.setAfloChnlRecentCreateDtime(afloChnlRecentCreateDtime);
 
             //선호 장르 리스트
-            CompletableFuture<List<CharacterPreferGenreDto>> futureCharacterPreferGenreList = homeMetaService.getCharacterPreferGenreList(characterNo);
-            CompletableFuture<List<CharacterPreferDispDto>> futureCharacterPreferDispList = homeMetaService.getCharacterPreferDispList(characterNo);
-            CompletableFuture<List<PersonalPanel>> futureRcmmdPanelList = homeMetaService.getPersonalRecommendPanelMeta(characterNo, false);
-
-            CompletableFuture.allOf(futureCharacterPreferGenreList, futureCharacterPreferDispList, futureRcmmdPanelList);
+            CompletableFuture<List<CharacterPreferGenreDto>> futureCharacterPreferGenreList =
+                    homeMetaService.getCharacterPreferGenreList(characterNo);
+            CompletableFuture<List<CharacterPreferDispDto>> futureCharacterPreferDispList =
+                    homeMetaService.getCharacterPreferDispList(characterNo);
+            CompletableFuture<List<PersonalPanel>> futureRcmmdPanelList =
+                    homeMetaService.getPersonalRecommendPanelMeta(characterNo, false);
+            CompletableFuture<List<PersonalPanel>> futureRcmmdMgoPanelList =
+                    homeMetaService.getPersonalRecommendPanelMgoMeta(characterNo);
+            CompletableFuture.allOf(futureCharacterPreferGenreList, futureCharacterPreferDispList
+                    , futureRcmmdPanelList, futureRcmmdMgoPanelList);
 
             List<CharacterPreferGenreDto> characterPreferGenreList = futureCharacterPreferGenreList.get();
             List<CharacterPreferDispDto> characterPreferDispList = futureCharacterPreferDispList.get();
-            List<PersonalPanel> rcmmdPanelList = futureRcmmdPanelList.get();
+
+            Set<PersonalPanel> rcmmdPanelSet = new HashSet<>();
+
+            Optional.ofNullable(futureRcmmdPanelList.get()).ifPresent(rcmmdPanelSet::addAll);
+            Optional.ofNullable(futureRcmmdMgoPanelList.get()).ifPresent(rcmmdPanelSet::addAll);
+
+            List<PersonalPanel> rcmmdPanelList =
+                    rcmmdPanelSet.stream()
+                    .sorted(Comparator.comparing(PersonalPanel::getDispStdStartDt).reversed())
+                    .collect(Collectors.toList());
 
             characterPreferGenreList = fillCharacterPreferGenre(characterPreferGenreList , characterNo);
             personalPhaseMeta.setPreferGenreList(characterPreferGenreList);
@@ -164,7 +175,7 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
             //현재 노출 되는 패널 정보 입력
             if(isRcmmdUsageChannelIdFilter(personalPhaseMeta.getFirstPhaseType())){
                 PanelAssembly panelAssembly = recommendPanelAssemblyFactory.getRecommendPanelAssembly(personalPhaseMeta.getFirstPhaseType());
-                List<Panel> panelList = panelAssembly.assembleRecommendPanel(personalPhaseMeta);
+                List<Panel> panelList = panelAssembly.makeHomePanelListForMainTop(personalPhaseMeta);
                 List<Long> filterChnlIdList =  getRcmmdUsageChannelIdList(panelList);
                 if(!CollectionUtils.isEmpty(filterChnlIdList)){
                     personalPhaseMeta.setRcmmdPanelDispChnlIdList(filterChnlIdList);
@@ -309,5 +320,30 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
         guestPhaseMeta.setOsType(osType);
         return guestPhaseMeta;
     }
+
+    @Autowired
+    private RecommendPanelAssemblyFactory recommendPanelAssemblyFactory;
+
+    @Autowired
+    private CharacterPreferGenreMapper characterPreferGenreMapper;
+
+    @Autowired
+    private RecommendReadMapper recommendReadMapper;
+
+    @Autowired
+    private RedisService redisService;
+
+    @Autowired
+    private HomeMetaService homeMetaService;
+
+    @Autowired
+    private AfloMapper afloMapper;
+
+    @Autowired
+    private ChannelMapper channelMapper;
+
+    @Autowired
+    private PersonalPhaseMetaSupport personalPhaseMetaSupport;
+
 
 }

@@ -10,11 +10,6 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend.panel;
 
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
-import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
-
-import java.util.List;
-
 /**
  * 설명 : 비로그인 사용자 추천 패널 생성기
  *
@@ -22,10 +17,5 @@ import java.util.List;
  * @date 2018. 07. 24.
  */
 public abstract class PanelNonSignAssembly extends PanelAssembly{
-
-    @Override
-    public List<Panel> assembleRecommendPanel(final PersonalPhaseMeta personalPhaseMeta) throws Exception{
-        return defaultPanelSetting(personalPhaseMeta);
-    }
 
 }

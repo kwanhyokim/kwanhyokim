@@ -13,6 +13,7 @@ package com.sktechx.godmusic.personal.rest.service.recommend;
 import java.util.List;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.header.RecommendPanelHeaderVo;
 
@@ -28,12 +29,13 @@ public interface RecommendPanelHeaderService {
     RecommendImageManagementService getRecommendImageManagementService();
 
     RecommendPanelHeaderVo getRecommendPanelInfo(Long characterNo,
-            String recommendPanelContentType,
+            RecommendPanelContentType recommendPanelContentType,
             Long panelContentId,
             OsType osType);
 
 
-    default List<ImageInfo> getRecommendPanelInfoBgImage(String recommendPanelContentType,
+    default List<ImageInfo> getRecommendPanelInfoBgImage(
+            RecommendPanelContentType recommendPanelContentType,
             Long panelContentId, OsType osType , int dispSn){
 
         return getRecommendImageManagementService().selectRecommendPanelInfoBgImageUrl(

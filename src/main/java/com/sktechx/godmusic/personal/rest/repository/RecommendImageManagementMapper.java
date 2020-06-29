@@ -51,9 +51,19 @@ public interface RecommendImageManagementMapper {
 
     List<ImageInfo> selectRecommendPanelDefaultImageList();
 
+    /**
+     * 반응형 패널(방금레이더) 추천 이미지 조회
+     */
+    List<ImageManagementDto> selectAdaptivePanelImageList(@Param("osType") OsType osType);
+
+    /**
+     * 반응형 패널(방금레이더) 홈 이미지 조회
+     */
+    List<ImageInfo> selectAdaptivePanelHomeImageList();
 
     // 추천 패널 상세 헤더 배경 이미지
-    String selectRecommendPanelInfoBgImageUrl(@Param("recommendPanelContentType") String recommendPanelContentType
+    String selectRecommendPanelInfoBgImageUrl(
+            @Param("recommendPanelContentType") RecommendPanelContentType recommendPanelContentType
             , @Param("rcmmdId") Long rcmmdId
             , @Param("osType") OsType osType
             , @Param("dispSn") int dispSn);

@@ -10,10 +10,8 @@
 
 package com.sktechx.godmusic.personal.common.config;
 
-import feign.RequestTemplate;
-import feign.codec.EncodeException;
-import feign.codec.Encoder;
-import feign.form.spring.SpringFormEncoder;
+import java.lang.reflect.Type;
+
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.cloud.openfeign.support.SpringEncoder;
@@ -21,7 +19,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.lang.reflect.Type;
+import feign.RequestTemplate;
+import feign.codec.EncodeException;
+import feign.codec.Encoder;
+import feign.form.spring.SpringFormEncoder;
 
 /**
  * 설명 : XXXXXXXXXXX
@@ -44,9 +45,14 @@ public class FeignDefaultConfig {
                 }
             }
 
-            private SpringFormEncoder springFormEncoder = new SpringFormEncoder();
-            private SpringEncoder springEncoder = new SpringEncoder(messageConverterObjectFactory);
+            private final SpringFormEncoder springFormEncoder = new SpringFormEncoder();
+            private final SpringEncoder springEncoder = new SpringEncoder(messageConverterObjectFactory);
         };
     }
+
+//    @Bean
+//    Logger.Level feignLoggerLevel() {
+//        return Logger.Level.FULL;
+//    }
 
 }

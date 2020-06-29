@@ -13,16 +13,15 @@ package com.sktechx.godmusic.personal.rest.service.recommend;
 import java.util.List;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
+import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.RecommendPanelResponse;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.panel.Panel;
 
 /**
- * 설명 : XXXXXXXX
+ * 설명 : 추천 패널 서비스
  *
- * @author 오경무/SKTECHX (km.oh@sk.com)
- * @date 2018. 07. 09.
  */
 public interface RecommendPanelService {
 
@@ -31,13 +30,13 @@ public interface RecommendPanelService {
 	RecommendPanelResponse createRecommendV2PanelList(Long characterNo, OsType osType, String appVer);
 
 	ListDto<List<RecommendPanelTrackDto>> getRecommendPanelTrackList(
-			Long characterNo, String recommendPanelType, Long panelContentId
+			Long characterNo, RecommendPanelContentType recommendPanelType, Long panelContentId
 	);
 
 	void addPreferArtistPanel(Long characterNo);
 
 	void addPreferGenrePanel(Long characterNo);
 
-	List<Panel> getRecommendPanelList(Long characterNo, String recommendPanelType, OsType osType, String appVersion);
+	List<Panel> getRecommendPanelList(Long characterNo, RecommendPanelContentType recommendPanelType, OsType osType, String appVersion);
 
 }

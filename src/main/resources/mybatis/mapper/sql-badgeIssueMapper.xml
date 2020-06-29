@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2020 DREAMUS COMPANY.
+  ~ All right reserved.
+  ~
+  ~ This software is the confidential and proprietary information of DREAMUS COMPANY.
+  ~ You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with DREAMUS COMPANY.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sktechx.godmusic.personal.rest.repository.BadgeIssueMapper">
+
+    <resultMap id="badgeIssueDetail" type="com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeIssueDto"
+               autoMapping="true">
+        <id property="badgeIssuId" column="badge_issu_id"/>
+
+        <association property="badgeDto" javaType="com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeDto">
+            <id property="badgeId" column="badge_id"/>
+            <result property="badgeCd" column="badge_cd"/>
+            <result property="badgeNm" column="badge_nm"/>
+            <result property="badgeDesc" column="badge_desc"/>
+            <result property="defaultDesc" column="default_desc"/>
+            <result property="defaultImgUrl" column="default_img_url"/>
+            <result property="defaultPopupImgUrl" column="default_popup_img_url"/>
+            <result property="popupImgUrl" column="popup_img_url"/>
+            <result property="issuAfImgUrl" column="issu_af_img_url"/>
+            <result property="useYn" column="use_yn"/>
+            <result property="backgroundRgbValue" column="background_rgb_value"/>
+        </association>
+
+        <association property="badgeTypeDto" javaType="com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeTypeDto">
+            <id property="badgeTypeId" column="badge_type_id"/>
+            <result property="badgeType" column="badge_type"/>
+            <result property="badgeUiType" column="badge_ui_type"/>
+        </association>
+    </resultMap>
+
+    <select id="findByCharacterNoAndBadgeIssueId" resultMap="badgeIssueDetail">
+        SELECT  a.badge_issu_id,
+                a.badge_id,
+                a.issu_type,
+                a.issu_type_id,
+                a.listen_cnt,
+                a.issu_dtime,
+                b.badge_nm,
+                b.badge_desc,
+                b.default_desc,
+                b.default_img_url,
+                b.default_popup_img_url,
+                b.issu_af_img_url,
+                b.popup_img_url,
+                b.use_yn,
+                b.background_rgb_value,
+                c.badge_type,
+                c.badge_ui_type
+        FROM    tb_badge_issue a
+        JOIN    tb_badge b ON a.badge_id = b.badge_id
+        JOIN    tb_badge_type c ON b.badge_type_id = c.badge_type_id
+        WHERE   a.badge_issu_id = #{badgeIssueId}
+        AND     a.character_no = #{characterNo}
+    </select>
+
+    <select id="findAllBadgeIssueDtimeByCharacterNo"
+            resultType="com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeIssueDto">
+        SELECT  a.badge_issu_id,
+                a.issu_dtime
+        FROM    tb_badge_issue a
+        JOIN    tb_badge b ON a.badge_id = b.badge_id
+        WHERE   a.character_no = #{characterNo}
+        AND     a.confrm_dtime IS NULL
+        AND     b.use_yn = 'Y'
+    </select>
+
+    <update id="updateConfirmDtimeAndOsType">
+        UPDATE  tb_badge_issue
+        SET
+            confrm_dtime = NOW(),
+            confrm_dvc_os_type = #{osType},
+            update_dtime = NOW()
+        WHERE   badge_issu_id = #{badgeIssueId}
+        AND     character_no = #{characterNo}
+    </update>
+
+    <select id="findAllNewBadgeListByCharacterNo" resultMap="badgeIssueDetail">
+        SELECT  a.badge_issu_id,
+                a.badge_id,
+                a.issu_type,
+                a.issu_type_id,
+                a.listen_cnt,
+                a.issu_dtime,
+                b.badge_nm,
+                b.badge_desc,
+                b.default_desc,
+                b.default_img_url,
+                b.default_popup_img_url,
+                b.issu_af_img_url,
+                b.popup_img_url,
+                b.use_yn,
+                b.background_rgb_value,
+                c.badge_type,
+                c.badge_ui_type
+        FROM    tb_badge_issue a
+        JOIN    tb_badge b ON a.badge_id = b.badge_id
+        JOIN    tb_badge_type c ON b.badge_type_id = c.badge_type_id
+        WHERE   a.character_no = #{characterNo}
+        AND     a.confrm_dtime IS NULL
+        AND     b.use_yn = 'Y'
+        ORDER BY    a.create_dtime
+    </select>
+
+    <select id="findAllReceivedBadgeListByCharacterNo" resultMap="badgeIssueDetail">
+        SELECT  a.badge_issu_id,
+                a.badge_id,
+                a.issu_type,
+                a.issu_type_id,
+                a.listen_cnt,
+                a.issu_dtime,
+                b.badge_nm,
+                b.badge_desc,
+                b.default_desc,
+                b.default_img_url,
+                b.default_popup_img_url,
+                b.issu_af_img_url,
+                b.popup_img_url,
+                b.use_yn,
+                b.background_rgb_value,
+                c.badge_type,
+                c.badge_ui_type
+        FROM    tb_badge_issue a
+        JOIN    tb_badge b ON a.badge_id = b.badge_id
+        JOIN    tb_badge_type c ON b.badge_type_id = c.badge_type_id
+        WHERE   a.character_no = #{characterNo}
+        ORDER BY    a.create_dtime DESC
+    </select>
+
+    <insert id="testSaveBadgeIssue">
+        INSERT INTO tb_badge_issue (
+            character_no,
+            badge_id,
+            issu_type,
+            issu_type_id,
+            issu_dtime,
+            listen_cnt,
+            update_dtime,
+            create_dtime
+        ) VALUES (
+            #{characterNo},
+            #{badgeId},
+            #{issueType},
+            #{issueTypeId},
+            NOW(),
+            <if test="listenCnt != 0">
+                #{listenCnt},
+            </if>
+            <if test="listenCnt == 0">
+                null,
+            </if>
+            NOW(),
+            NOW()
+        )
+    </insert>
+
+    <select id="findByCharacterNoAndBadgeId" resultType="com.sktechx.godmusic.personal.rest.model.dto.badge.BadgeIssueDto">
+        SELECT  badge_issu_id
+        FROM    tb_badge_issue
+        WHERE   character_no = #{characterNo}
+        AND     badge_id = #{badgeId}
+    </select>
+
+    <delete id="testDeleteByBadgeIssueId">
+        DELETE FROM tb_badge_issue
+        WHERE   badge_issu_id = #{badgeIssueId}
+    </delete>
+
+</mapper>

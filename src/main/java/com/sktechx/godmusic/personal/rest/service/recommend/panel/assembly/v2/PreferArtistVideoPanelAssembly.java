@@ -27,7 +27,7 @@ import com.sktechx.godmusic.personal.rest.service.recommend.panel.PanelSignAssem
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 설명 : 오늘의 플로 생성기
+ * 설명 : 선호 아티스트 비디오 패널
  *
  * @author 김관효(Kwanhyo Kim)/Music사업팀/SKTECH(kwanhyo.kim@sk.com)
  * @date 2019. 5. 8.
@@ -36,33 +36,17 @@ import lombok.extern.slf4j.Slf4j;
 @Service("preferArtistVideoPanelAssembly")
 public class PreferArtistVideoPanelAssembly extends PanelSignAssembly {
 
+    public static int PREFER_ARTIST_VIDEO_HOME_MAX_PANEL_SIZE = 7;
+
+    private final PreferenceMapper preferMapper;
+    private final MetaClient metaClient;
+
     public PreferArtistVideoPanelAssembly(PreferenceMapper preferMapper, MetaClient metaClient){
         this.preferMapper = preferMapper;
         this.metaClient = metaClient;
     }
 
-    private final PreferenceMapper preferMapper;
-
-    private final MetaClient metaClient;
-
-    @Override
-    protected List<Panel> defaultPanelSetting(PersonalPhaseMeta personalPhaseMeta) {
-        return new ArrayList<>();
-    }
-    @Override
-    protected void appendPreferencePanel(PersonalPhaseMeta personalPhaseMeta ,final List<Panel> panelList){
-
-        List<Panel> myPanelList = new ArrayList<>();
-        List<Panel> chartPanelList = appendPreferenceChartPanel(personalPhaseMeta);
-
-        appendPreferArtistVideoList(personalPhaseMeta, myPanelList, true);
-
-
-        mergePanelList(panelList, myPanelList, chartPanelList, 7);
-    }
-
-    private void appendPreferArtistVideoList(final PersonalPhaseMeta personalPhaseMeta,
-            final List<Panel> panelList, Boolean isTop) {
+    private List<Panel> appendPreferArtistVideoList(final PersonalPhaseMeta personalPhaseMeta, Boolean isTop) {
 
         Date from;
         Date to;
@@ -78,33 +62,45 @@ public class PreferArtistVideoPanelAssembly extends PanelSignAssembly {
             to = DateUtil.getDate(from, 259200);
         }
 
-        panelList.addAll(
-                Optional.ofNullable(
+        return Optional.ofNullable(
                         metaClient.getVideos(
                                 MetaVideoRequestVo.builder()
-                                        .videoIds(preferMapper.selectPreferArtistVideoIdListByCharacterNo(personalPhaseMeta.getCharacterNo()))
+                                        .videoIds(
+                                                preferMapper.selectPreferArtistVideoIdListByCharacterNo(
+                                                        personalPhaseMeta.getCharacterNo()
+                                                )
+                                        )
                                         .build()
                         ).getData().getList()
 
                 ).orElseGet(Collections::emptyList)
                         .stream()
                         .filter(Objects::nonNull)
-                        .filter(videoVo -> videoVo.getDispStartDtime().after(from) && videoVo.getDispStartDtime().before(to))
+                        .filter(videoVo ->
+                                    videoVo.getDispStartDtime().after(from) &&
+                                    videoVo.getDispStartDtime().before(to))
                         .map(VideoVo::convertToVideoPanel)
-                        .collect(Collectors.toList())
-        );
+                        .collect(Collectors.toList());
+    }
 
+
+    @Override
+    public List<Panel> makeHomePanelListForMainTop(PersonalPhaseMeta personalPhaseMeta){
+
+        return mergePanelList(
+                appendPreferArtistVideoList(personalPhaseMeta, true),
+                appendPreferenceChartPanel.apply(personalPhaseMeta),
+                PREFER_ARTIST_VIDEO_HOME_MAX_PANEL_SIZE
+        );
     }
 
     @Override
-    public List<Panel> getRecommendPanelList(Long characterNo, OsType osType){
+    public List<Panel> makeHomePanelListForMainMiddle(Long characterNo, OsType osType){
         PersonalPhaseMeta personalPhaseMeta = new PersonalPhaseMeta();
         personalPhaseMeta.setCharacterNo(characterNo);
         personalPhaseMeta.setOsType(osType);
 
-        List<Panel> panelList = new ArrayList<>();
-
-        appendPreferArtistVideoList(personalPhaseMeta, panelList, false);
+        List<Panel> panelList = appendPreferArtistVideoList(personalPhaseMeta, false);
 
         if(panelList.size() > 5){
             Collections.shuffle(panelList);

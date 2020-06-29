@@ -11,20 +11,20 @@
 package com.sktechx.godmusic.personal.rest.model.dto.recommend;
 
 import java.util.Date;
+import java.util.List;
 
+import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
+import com.sktechx.godmusic.personal.rest.model.vo.ImageInfo;
 import lombok.Builder;
 import lombok.Data;
 
 /**
- * 설명 : XXXXXXXXX
- *
- * @author 김관효(Kwanhyo Kim)/Music사업팀/SKTECH(kwanhyo.kim@sk.com)
- * @date 2019. 5. 21.
+ * 설명 : 오늘의 추천 dto
  */
 
 @Builder
 @Data
-public class RecommendSimilarTrackDto {
+public class RecommendSimilarTrackDto implements RecommendDto{
 	private Long rcmmdSimilarTrackId;
 	private String seedTrackNm;
 	private String seedArtistNm;
@@ -32,4 +32,21 @@ public class RecommendSimilarTrackDto {
 	private Date createDtime;
 
 	private Date dispStdStartDt;
+
+	private int trackCount;
+	private List<Long> trackIdList;
+	private List<TrackDto> trackDtoList;
+	private List<ImageInfo> imgList;
+
+	public static RecommendSimilarTrackDto from (RecommendTrackDto recommendTrackDto){
+		return RecommendSimilarTrackDto.builder()
+				.rcmmdSimilarTrackId(recommendTrackDto.getRcmmdId())
+				.createDtime(recommendTrackDto.getRcmmdCreateDtime())
+				.dispStdStartDt(recommendTrackDto.getDispStdStartDt())
+				.dispSn(recommendTrackDto.getDispSn())
+				.trackDtoList(recommendTrackDto.getTrackList())
+				.trackCount(recommendTrackDto.getTrackCount())
+				.imgList(recommendTrackDto.getImgList())
+				.build();
+	}
 }

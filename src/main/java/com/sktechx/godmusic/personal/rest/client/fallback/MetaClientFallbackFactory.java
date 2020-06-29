@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.sktechx.godmusic.lib.domain.CommonApiResponse;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
+import com.sktechx.godmusic.personal.rest.client.model.GetTrackListRequest;
 import com.sktechx.godmusic.personal.rest.client.model.MetaVideoRequestVo;
 import com.sktechx.godmusic.personal.rest.model.dto.*;
 import com.sktechx.godmusic.personal.rest.model.dto.chart.ChartTrackDto;
@@ -62,6 +63,7 @@ public class MetaClientFallbackFactory implements FallbackFactory<MetaClient>{
             }
             @Override
             public CommonApiResponse<PlayListDto> chart(Long chartId) {
+                log.warn("[차트조회] 조회실패 - {}", throwable.getMessage());
                 return null;
             }
             @Override
@@ -95,6 +97,12 @@ public class MetaClientFallbackFactory implements FallbackFactory<MetaClient>{
                         chartId, throwable.getMessage()
                 );
                 return new CommonApiResponse<>(null);
+            }
+            @Override
+            public CommonApiResponse<ListDto<List<TrackDto>>> getTrackList(
+                    GetTrackListRequest request) {
+                return CommonApiResponse.<ListDto<List<TrackDto>>>builder()
+                        .data(new ListDto<>(null)).build();
             }
         };
     }
