@@ -10,21 +10,16 @@
 
 package com.sktechx.godmusic.personal.rest.service.recommend.phase;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
+import com.sktechx.godmusic.lib.utils.ComparableVersion;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
-import com.sktechx.godmusic.personal.rest.client.MetaMgoClient;
-import com.sktechx.godmusic.personal.rest.client.model.GetTrackListRequest;
-import com.sktechx.godmusic.personal.rest.model.dto.TrackDto;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPanel;
 import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhaseMeta;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 설명 : 퍼스널 전시 정보에 대한 제약 사항
@@ -33,11 +28,22 @@ import com.sktechx.godmusic.personal.rest.model.vo.recommend.phase.PersonalPhase
  * @date 2020/06/23
  */
 
+@Slf4j
 @Component
 public class PersonalPhaseMetaSupport {
 
-        @Autowired
-        private MetaMgoClient metaMgoClient;
+        public PersonalPhaseMeta filterPanelByAppVer(PersonalPhaseMeta personalPhaseMeta){
+            List<PersonalPanel> personalPanelList = personalPhaseMeta.getRcmmdPanelList();
+            personalPhaseMeta.setRcmmdPanelList(
+                    personalPanelList.stream()
+                            .filter(personalPanel ->
+                                    new ComparableVersion(personalPhaseMeta.getAppVer()).compareTo( new ComparableVersion(personalPanel.getExceptionalAppVersion())) < 0
+            )
+                            .collect(Collectors.toList())
+            );
+
+            return personalPhaseMeta;
+        }
 
         public PersonalPhaseMeta filterPanelByRecommendContentType(
                 PersonalPhaseMeta personalPhaseMeta,
@@ -55,46 +61,4 @@ public class PersonalPhaseMetaSupport {
             return personalPhaseMeta;
         }
 
-        public PersonalPhaseMeta filterSeedTrackTakeDownedLikeTrack(
-                PersonalPhaseMeta personalPhaseMeta
-        ){
-
-            List<PersonalPanel> personalPanelList = personalPhaseMeta.getRcmmdPanelList();
-
-            if(CollectionUtils.isEmpty(personalPanelList)){
-                return personalPhaseMeta;
-            }
-
-            List<Long> resultlikeTrackSeedTrackIdList =
-                    Optional.ofNullable(
-                            metaMgoClient.getTrackList(
-                                    new GetTrackListRequest(
-                                            personalPanelList.stream()
-                                                    .filter(personalPanel ->
-                                                            RecommendPanelContentType.RC_LKSM_TR ==
-                                                                    personalPanel.getRecommendPanelContentType())
-                                                    .map(PersonalPanel::getSeedTrackId)
-                                                    .collect(Collectors.toList()))
-                            ).getData().getList()
-                    )
-                            .orElseGet(Collections::emptyList)
-                            .stream()
-                            .map(TrackDto::getTrackId)
-                            .collect(Collectors.toList());
-
-
-            personalPhaseMeta.setRcmmdPanelList(
-                    personalPanelList.stream()
-                    .filter(personalPanel ->
-                            RecommendPanelContentType.RC_LKSM_TR != personalPanel.getRecommendPanelContentType() ||
-                            (RecommendPanelContentType.RC_LKSM_TR ==
-                                    personalPanel.getRecommendPanelContentType() &&
-                                    resultlikeTrackSeedTrackIdList.contains(personalPanel.getSeedTrackId())
-                            )
-                    )
-                    .collect(Collectors.toList())
-            );
-
-            return personalPhaseMeta;
-        }
 }

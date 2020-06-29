@@ -163,7 +163,6 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
                 log.error("createRecommendPanelV2 business exception : {}", cbex.getDisplayMessage());
             }
 
-
         }catch(Exception ex){
             log.error("createRecommendPanelV2 not catched exception : {}", ex.getMessage());
         }finally{

@@ -24,6 +24,7 @@ import org.springframework.util.ObjectUtils;
 
 import com.sktechx.godmusic.lib.domain.code.OsType;
 import com.sktechx.godmusic.lib.redis.service.RedisService;
+import com.sktechx.godmusic.lib.utils.ComparableVersion;
 import com.sktechx.godmusic.personal.common.domain.type.PersonalPhaseType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelType;
@@ -76,7 +77,15 @@ public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhas
     public PersonalPhaseMeta getPersonalRecommendPhaseMeta(Long characterNo , OsType osType,
             String appVer) {
 
-        return getInnerPersonalRecommendPhaseMeta(characterNo, osType, appVer);
+        PersonalPhaseMeta personalPhaseMeta = getInnerPersonalRecommendPhaseMeta(characterNo,
+                osType, appVer);
+
+        if(new ComparableVersion(appVer).compareTo( new ComparableVersion("5.1.0")) < 0){
+            personalPhaseMeta = getPersonalRecommendPhaseMetaExcept(characterNo, osType, appVer,
+                    RecommendPanelContentType.RC_LKSM_TR);
+        }
+
+        return personalPhaseMeta;
     }
 
     private PersonalPhaseMeta getInnerPersonalRecommendPhaseMeta(Long characterNo , OsType osType,
