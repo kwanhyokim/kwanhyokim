@@ -109,7 +109,7 @@
         WHERE   a.character_no = #{characterNo}
         AND     a.confrm_dtime IS NULL
         AND     b.use_yn = 'Y'
-        ORDER BY    c.disp_sn, b.disp_sn, a.create_dtime
+        ORDER BY    a.create_dtime
     </select>
 
     <select id="findAllReceivedBadgeListByCharacterNo" resultMap="badgeIssueDetail">
@@ -134,7 +134,7 @@
         JOIN    tb_badge b ON a.badge_id = b.badge_id
         JOIN    tb_badge_type c ON b.badge_type_id = c.badge_type_id
         WHERE   a.character_no = #{characterNo}
-        ORDER BY    a.create_dtime DESC
+        ORDER BY    c.disp_sn, b.disp_sn, a.create_dtime DESC
     </select>
 
     <insert id="testSaveBadgeIssue">
