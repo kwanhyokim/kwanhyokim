@@ -21,6 +21,7 @@ import com.sktechx.godmusic.lib.redis.service.RedisService;
 import com.sktechx.godmusic.personal.common.domain.type.RecommendPanelContentType;
 import com.sktechx.godmusic.personal.rest.client.MetaClient;
 import com.sktechx.godmusic.personal.rest.client.PersonalMongoClient;
+import com.sktechx.godmusic.personal.rest.model.dto.recommend.ListDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.RecommendPanelTrackDto;
 import com.sktechx.godmusic.personal.rest.model.dto.recommend.like.RcmmdLikeTrackDto;
 import com.sktechx.godmusic.personal.rest.repository.RecommendReadMapper;
@@ -68,11 +69,12 @@ public class RcmmdLikeTrackReadServiceImpl implements RcmmdReadService {
     @Override
     public List<RcmmdLikeTrackDto> getRecommendListWithTrackByCharacterNoOrderByDispStartDtime(Long characterNo,
             int panelMaxSize, int trackMaxSize, OsType osType) {
-        return Optional.ofNullable(
-                personalMongoClient.getRecommendLikeTracksList(characterNo).getData().getList()
-        ).orElseGet(
-                Collections::emptyList
-        );
+
+        ListDto<List<RcmmdLikeTrackDto>> listDto = Optional.ofNullable(
+                personalMongoClient.getRecommendLikeTracksList(characterNo).getData()
+        ).orElse(null);
+
+        return listDto != null ? listDto.getList() : Collections.emptyList();
     }
 
     @Override
