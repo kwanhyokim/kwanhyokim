@@ -91,10 +91,17 @@ public class ReactivePanelAssembly extends PanelSignAssembly {
                                 RCMMD_CF_TRACK_LIMIT_SIZE,
                                 personalPhaseMeta.getOsType()
                         )
-                ).orElseGet( Collections::emptyList )
-                        .stream()
-                        .map( recommendDto -> (RcmmdLikeTrackDto) recommendDto)
-                        .collect(toList());
+                )
+                .orElseGet( Collections::emptyList)
+                .stream()
+                .map( recommendDto -> (RcmmdLikeTrackDto) recommendDto)
+                .collect(toList());
+
+        if(rcmmdLikeTrackDtoList.isEmpty()){
+            throw new CommonBusinessException(PersonalErrorDomain.HOME_PANNEL_CREATION_FAILED
+                            , RecommendPanelContentType.RC_LKSM_TR)
+            ;
+        }
 
         int rcmmdTrackCount = rcmmdLikeTrackDtoList.size();
         int displayTrackCount = 5;

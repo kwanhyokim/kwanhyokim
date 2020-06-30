@@ -276,7 +276,7 @@ public class PersonalMongoClientFallbackFactory implements FallbackFactory<Perso
                         characterNo, throwable.getMessage()
                 );
 
-                return emptyApiResponse;
+                return emptyListApiResponse;
             }
 
             @Override
