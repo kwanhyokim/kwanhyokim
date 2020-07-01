@@ -610,6 +610,7 @@ public class DateUtil {
 	}
 
 	public static long hourlyRemainMillisecond(){
+
 		Calendar cal = Calendar.getInstance();
 
 		cal.set(Calendar.HOUR_OF_DAY, 5);
@@ -619,10 +620,10 @@ public class DateUtil {
 		cal.add(Calendar.DAY_OF_YEAR, 1);
 
 		long remainMillisecond = cal.getTimeInMillis() - System.currentTimeMillis();
+
 		if(remainMillisecond > 0)
 			return remainMillisecond;
 		return 0;
-
 	}
 
 	public static long getMillisecondRemainToHour(){

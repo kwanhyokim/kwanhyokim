@@ -57,20 +57,31 @@ import static com.sktechx.godmusic.personal.common.domain.constant.RedisKeyConst
  */
 @Service
 @Slf4j
-public class PersonalRecommendPhaseServiceImpl  implements PersonalRecommendPhaseService {
+public class PersonalRecommendPhaseServiceImpl implements PersonalRecommendPhaseService {
 
     @Override
     public void clearPersonalRecommendPhaseMetaCache(Long characterNo) {
         redisService.delWithPrefix(String.format(PERSONAL_RECOMMEND_PHASE_KEY, characterNo));
     }
+
     @Override
     public PersonalPhaseMeta getPersonalRecommendPhaseMetaExcept(Long characterNo, OsType osType,
             String appVer, RecommendPanelContentType recommendPanelContentType) {
 
-        return personalPhaseMetaSupport.filterPanelByRecommendContentType(
+        PersonalPhaseMeta personalPhaseMeta =
+                personalPhaseMetaSupport.filterPanelByRecommendContentType(
             getInnerPersonalRecommendPhaseMeta(characterNo, osType, appVer),
             recommendPanelContentType
         );
+
+        redisService.setWithPrefix(
+                String.format(PERSONAL_RECOMMEND_PHASE_KEY, characterNo), personalPhaseMeta,
+                "XX",
+                "PX",
+                DateUtil.hourlyRemainMillisecond()
+        );
+
+        return personalPhaseMeta;
     }
 
     @Override
