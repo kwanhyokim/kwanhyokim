@@ -12,30 +12,39 @@
 
 package com.sktechx.godmusic.personal.common.config;
 
+import java.lang.reflect.Method;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.mvc.condition.RequestCondition;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.sktechx.godmusic.personal.common.domain.annotation.NumberBasedVersionRequestCondition;
+import com.sktechx.godmusic.personal.common.domain.annotation.NumberBasedVersionRequestMapping;
 import com.sktechx.godmusic.personal.common.interceptor.TransactionIdInterceptor;
 import lombok.extern.slf4j.Slf4j;
 //import com.sktechx.godmusic.meta.common.interceptor.TransactionIdInterceptor;
@@ -50,7 +59,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @EnableScheduling
 @Configuration
-public class PersonalWebMvcConfig implements WebMvcConfigurer {
+public class PersonalWebMvcConfig implements WebMvcConfigurer, WebMvcRegistrations {
+
     @Autowired
     private MappingJackson2HttpMessageConverter jsonConverter;
 
@@ -110,13 +120,13 @@ public class PersonalWebMvcConfig implements WebMvcConfigurer {
 
     @Bean
     public StringHttpMessageConverter stringHttpMessageConverter() {
-        return new StringHttpMessageConverter(Charset.forName("UTF-8"));
+        return new StringHttpMessageConverter(StandardCharsets.UTF_8);
     }
 
     @Bean
     public FormHttpMessageConverter formHttpMessageConverter() {
         FormHttpMessageConverter formHttpMessageConverter = new FormHttpMessageConverter();
-        formHttpMessageConverter.setCharset(Charset.forName("UTF-8"));
+        formHttpMessageConverter.setCharset(StandardCharsets.UTF_8);
         return formHttpMessageConverter;
     }
 
@@ -136,6 +146,26 @@ public class PersonalWebMvcConfig implements WebMvcConfigurer {
         pageableResolver.setOneIndexedParameters(true);
 
         argumentResolvers.add(pageableResolver);
+    }
+
+    @Override
+    public RequestMappingHandlerMapping getRequestMappingHandlerMapping(){
+        return new RequestMappingHandlerMapping() {
+            @Override
+            protected RequestCondition<?> getCustomTypeCondition(@NonNull Class<?> handlerType) {
+                return createCondition(
+                        AnnotationUtils.findAnnotation(handlerType, NumberBasedVersionRequestMapping.class));
+            }
+
+            @Override
+            protected RequestCondition<?> getCustomMethodCondition(@NonNull Method method) {
+                return createCondition(AnnotationUtils.findAnnotation(method, NumberBasedVersionRequestMapping.class));
+            }
+
+            private RequestCondition<?> createCondition(NumberBasedVersionRequestMapping mapping) {
+                return NumberBasedVersionRequestCondition.createInstance(mapping);
+            }
+        };
     }
 
 }

@@ -152,7 +152,7 @@ public class RecommendPanelServiceImpl implements RecommendPanelService {
         }catch(CommonBusinessException cbex){
             if(cbex.getErrorDomain() == PersonalErrorDomain.HOME_PANNEL_CREATION_FAILED){
 
-                log.error("createRecommendPanelV2 home panel creation failed : {} {}",
+                log.warn("createRecommendPanelV2 home panel creation failed : {} {}",
                         characterNo, cbex.getExtraAction());
                 personalPhaseMeta =
                         personalRecommendPhaseService.getPersonalRecommendPhaseMetaExcept(characterNo
